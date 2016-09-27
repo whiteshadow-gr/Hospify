@@ -1,0 +1,32 @@
+PODS:
+  - Alamofire (3.4.1)
+  - FBAnnotationClusteringSwift (1.0.1)
+  - JLToast (1.4.2)
+  - Realm (1.0.2):
+    - Realm/Headers (= 1.0.2)
+  - Realm/Headers (1.0.2)
+  - RealmSwift (1.0.2):
+    - Realm (= 1.0.2)
+  - SwiftSpinner (0.9.5)
+  - SwiftyJSON (2.3.2)
+
+DEPENDENCIES:
+  - Alamofire
+  - FBAnnotationClusteringSwift
+  - JLToast
+  - RealmSwift
+  - SwiftSpinner
+  - SwiftyJSON
+
+SPEC CHECKSUMS:
+  Alamofire: 01a82e2f6c0f860ade35534c8dd88be61bdef40c
+  FBAnnotationClusteringSwift: a1f4c07f5472b13acd69de04c61e68e2d7daaad3
+  JLToast: bf63282a7df069557e80c77dbd2c6b9f9fc4de72
+  Realm: 9d5c46a4d7d27958530a8dfc58f63a99e5c2cba3
+  RealmSwift: 82f3ac5e24530143dddfde2033acc0d308f27d96
+  SwiftSpinner: c6585a0ae5c67eb33e737695cce88f0262008cce
+  SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
+
+PODFILE CHECKSUM: 85690cc02af6689cada36bb3a2e6e596b9b32704
+
+COCOAPODS: 1.0.1

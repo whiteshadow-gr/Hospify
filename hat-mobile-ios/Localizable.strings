@@ -1,0 +1,76 @@
+/** Copyright (C) 2016 HAT Data Exchange Ltd
+ * SPDX-License-Identifier: AGPL-3.0
+ *
+ * This file is part of the Hub of All Things project (HAT).
+ *
+ * RumpelLite is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation, version 3 of
+ * the License.
+ *
+ * RumpelLite is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General
+ * Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
+"yes_label" = "Yes";
+"no_label" = "No";
+"ok_label" = "OK";
+"error_label" = "Error";
+
+/* logon and register */
+"logon_label" = "Sign In";
+"logout_label" = "Sign Out";
+"attempting_to_login" = "Checking privileges...";
+
+
+/* placeholders */
+"hat_domain_placeholder" = "Your personal HAT address";
+
+/* map */
+"map_label" = "Map";
+"yesterday_label" = "Yesterday";
+"today_label" = "Today";
+"lastweek_label" = "Last Week";
+
+/* data */
+"data_label" = "Data Today";
+"purge_label" = "Purge All";
+"purge_message_label" = "Are you sure you want to purge all data points (local only)?";
+"fetching_points_label" = "Fetching and clustering points...";
+"settings_label" = "Settings";
+"date_points_returned_label" = "data points found";
+"information_label" = "Last location";
+"information_synced_label" = "Last synced";
+"feedback_success_label" = "Feedback Success";
+"feedback_problem_label" = "Feedback Problem";
+"not_synced_label" = "Not yet synced";
+
+
+/* notifications */
+"sync_reminder_title" = "Reminder to sync";
+"sync_reminder_message" = "It's been more than 3 days since you last syned your data";
+
+
+"logout_message_label" = "Are you sure you want to sign out?";
+
+/* exception friendly messages */
+"exception_401" = "Submitted HAT domain does not exist. Please check the name for typos and try again.";
+"exception_400" = "Looks like there was a problem communicating with your HAT. Please report the issue in HAT forums.";
+"exception_500" = "HAT encountered some problems. If the problem persists, please report the issue in HAT forums";
+"exception_504" = "Ooops, something went wrong. Please try again in a few moment as this is most likely temporary problem.";
+
+"location_kCLLocationAccuracyKilometer" = "Accurate to the nearest kilometer";
+"location_kCLLocationAccuracyBest" = "Use the highest-level of accuracy";
+"location_kCLLocationAccuracyHundredMeters" = "Accurate to within one hundred meters";
+"location_kCLLocationAccuracyNearestTenMeters" = "Accurate to within ten meters of the desired target";
+"location_kCLLocationAccuracyThreeKilometers" = "Accurate to the nearest three kilometers";
+
+
+
+

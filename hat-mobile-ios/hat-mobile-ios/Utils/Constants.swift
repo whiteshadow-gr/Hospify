@@ -29,6 +29,7 @@ class Constants  {
     typealias UserHATDomainAlias = String
     typealias HATRegistrationURLAlias = String
     typealias UserHATAccessTokenURLAlias = String
+    typealias UserHATDomainPublicTokenURLAlias = String
 
     
     /**
@@ -50,7 +51,7 @@ class Constants  {
      *  DataPoint Block size
      */
     struct DataSync {
-        static let DataSyncPeriod:UInt64 = 7
+        static let DataSyncPeriod:UInt64 = 10
     }
     
     /**
@@ -66,7 +67,28 @@ class Constants  {
     struct Colours {
         static let AppBase:UIColor = Helper.UIColorFromRGB(0x018675)
     }
+    
+    /**
+     *  DataPoint Block size
+     */
+    struct Auth {
+        static let URLScheme:String = "rumpellocationtrackerapp" // this is delcared in our url schemes info.list
+        static let ServiceName:String = "RumpelLite" // the service name
+        static let LocalAuthHost:String = "rumpellocationtrackerapphost" // this can be anything
+        static let NotificationHandlerName:String = "rumpellocationtrackerappnotificationhandler" // this can be anything
+        static let TokenParamName:String = "token" // QS param
 
+    }
+    
+    
+    /**
+     *  Keychain. HATDomain: String value
+     */
+    struct Keychain {
+        // UTC format
+        static let HATDomainKey:String = "user_hat_domain"
+    }
+    
     
     // the request urls
     struct RequestUrls {
@@ -75,8 +97,13 @@ class Constants  {
         
     }
     
+    struct ContentType {
+        static let JSON = "application/json"
+        static let Text = "text/plain"
+        
+    }
+     
     // the HAT data-plug credentials
-    // TODO.. can these be hidden ?
     struct HATDataPlugCredentials {
         // hat username
         static let HAT_Username = "location"
@@ -94,9 +121,7 @@ class Constants  {
      *  The user token
      */
     struct Preferences {
-        // login
-        static let UserHATDomain = "shared_preferences_usre_hat_domain"
-        
+
         // map
         static let MapLocationAccuracy = "shared_map_location_accuracy"
         static let MapLocationDistance = "shared_map_location_distance"
@@ -150,26 +175,16 @@ class Constants  {
 
             // return the json as dictionary
             return [
-                "name": self.name,
-                "source": self.source,
+                "name": self.name as AnyObject,
+                "source": self.source as AnyObject,
                 "fields": 
-                    dictionaries
+                    dictionaries as AnyObject
                 
             ]
         }
 
     }
-
-    
-    
-    
-    
-    
-    
     
 
-    
-    
-    
     
 }

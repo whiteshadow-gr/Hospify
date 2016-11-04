@@ -35,9 +35,9 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
         delegate = self
         dataSource = self
         
-        let startOfToday = NSCalendar.currentCalendar().startOfDayForDate(NSDate())
-        let predicate = NSPredicate(format: "dateAdded >= %@", startOfToday)
-        dataResults = RealmHelper.GetResults(predicate)?.sorted("dateAdded", ascending: false)
+        let startOfToday = Calendar.current.startOfDay(for: Date())
+        let predicate = NSPredicate(format: "dateAdded >= %@", startOfToday as CVarArg)
+        dataResults = RealmHelper.GetResults(predicate)?.sorted(byProperty: "dateAdded", ascending: false)
         reloadData()
     }
     
@@ -46,41 +46,34 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
     /**
      Part of UITableViewDataSource.
      */
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.dataResults.count
     }
     
     /**
      Part of UITableViewDataSource.
      */
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell : DataPointTableViewCell? = tableView.dequeueReusableCellWithIdentifier(basicCellIdentifier) as! DataPointTableViewCell?
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell : DataPointTableViewCell? = tableView.dequeueReusableCell(withIdentifier: basicCellIdentifier) as! DataPointTableViewCell?
         
         if (cell == nil) {
-            cell = DataPointTableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: basicCellIdentifier)
+            cell = DataPointTableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: basicCellIdentifier)
         }
         
         let dataPoint:DataPoint = dataResults[indexPath.row]
         
-        if let latitude:Double = dataPoint.lat
-        {
-            if let longitude:Double = dataPoint.lng
-            {
-                cell!.labelLatitude.text = String(latitude) + ", " + String(longitude) + ", " + String(dataPoint.accuracy)
-            }
-        }
+        cell!.labelLatitude.text = String(dataPoint.lat) + ", " + String(dataPoint.lng) + ", " + String(dataPoint.accuracy)
         
-        if let time:NSDate = dataPoint.dateAdded {
-            cell!.labelDateAdded.text = "Added " + Helper.getDateString(time)
-        }
+        cell!.labelDateAdded.text = "Added " + Helper.getDateString(dataPoint.dateAdded)
+        
         
         // last sync date
-        if let lastSynced:NSDate = dataPoint.lastSynced {
+        if let lastSynced:Date = dataPoint.lastSynced as Date? {
             cell!.labelSyncDate.text = "Synced " + Helper.getDateString(lastSynced)
             cell!.labelSyncDate.textColor = Constants.Colours.AppBase
         }else{
             cell?.labelSyncDate.text = NSLocalizedString("not_synced_label", comment:  "")
-            cell!.labelSyncDate.textColor = UIColor.redColor()
+            cell!.labelSyncDate.textColor = UIColor.red
         }
 
         return cell!
@@ -92,7 +85,7 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
     /**
      Part of UITableViewDelegate.
      */
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // do nothing
     }
     

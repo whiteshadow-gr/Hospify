@@ -44,13 +44,13 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         pickerAccuracy.dataSource = self
         pickerAccuracy.delegate = self
         
-        textFieldDistance.text = String(self.getUserPreferencesDistance())
-        textFieldDeferredDistance.text = String(self.getUserPreferencesDeferredDistance())
-        textFieldDeferredTime.text = String(self.getUserPreferencesDeferredTimeout())
+        textFieldDistance.text = String(Helper.GetUserPreferencesDistance())
+        textFieldDeferredDistance.text = String(Helper.GetUserPreferencesDeferredDistance())
+        textFieldDeferredTime.text = String(Helper.GetUserPreferencesDeferredTimeout())
        
         
         var selectedAccuracyIndex: Int = 1
-        switch self.getUserPreferencesAccuracy() {
+        switch Helper.GetUserPreferencesAccuracy() {
         case kCLLocationAccuracyKilometer:
             selectedAccuracyIndex = 0
         case kCLLocationAccuracyBest:
@@ -73,25 +73,25 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         
     }
     
-    func typeName(some: Any) -> String {
-        return (some is Any.Type) ? "\(some)" : "\(some.dynamicType)"
+    func typeName(_ some: Any) -> String {
+        return (some is Any.Type) ? "\(some)" : "\(type(of: (some) as AnyObject))"
     }
 
     //MARK: - Delegates and data sources
     //MARK: Data Sources
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return pickerAccuracyData.count
     }
     
     //MARK: Delegates
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return pickerAccuracyData[row]
     }
     
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
        
         let valueSelected:String = pickerAccuracyData[row]
         var locationAccuracy:CLLocationAccuracy = kCLLocationAccuracyBest //default
@@ -111,12 +111,12 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         }
         
         
-        let preferences = NSUserDefaults.standardUserDefaults()
-        preferences.setObject(locationAccuracy, forKey: Constants.Preferences.MapLocationAccuracy)
+        let preferences = UserDefaults.standard
+        preferences.set(locationAccuracy, forKey: Constants.Preferences.MapLocationAccuracy)
 
     }
     
-    func pickerView(pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusingView view: UIView?) -> UIView {
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         let pickerLabel = UILabel()
         var titleData:String = pickerAccuracyData[row]
         
@@ -137,14 +137,14 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
             titleData = NSLocalizedString("location_kCLLocationAccuracyBest", comment:  "")
         }
         
-        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "Helvetica", size: 14.0)!,NSForegroundColorAttributeName:UIColor.blackColor()])
+        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "Helvetica", size: 14.0)!,NSForegroundColorAttributeName:UIColor.black])
         pickerLabel.attributedText = myTitle
-        pickerLabel.textAlignment = NSTextAlignment.Center
+        pickerLabel.textAlignment = NSTextAlignment.center
         return pickerLabel
     }
     
-    override func willMoveToParentViewController(parent: UIViewController?) {
-        super.willMoveToParentViewController(parent)
+    override func willMove(toParentViewController parent: UIViewController?) {
+        super.willMove(toParentViewController: parent)
         if parent == nil {
             // the back button was pressed.
             if (self.mapSettingsDelegate != nil) {
@@ -163,13 +163,13 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
 
                 // save diatnae and time prefs
                 // distance
-                let preferences = NSUserDefaults.standardUserDefaults()
+                let preferences = UserDefaults.standard
                 // distance
-                preferences.setDouble(Double(textFieldDistance.text!)!, forKey: Constants.Preferences.MapLocationDistance)
+                preferences.set(Double(textFieldDistance.text!)!, forKey: Constants.Preferences.MapLocationDistance)
                 // deferred distance
-                preferences.setDouble(Double(textFieldDeferredDistance.text!)!, forKey: Constants.Preferences.MapLocationDeferredDistance)
+                preferences.set(Double(textFieldDeferredDistance.text!)!, forKey: Constants.Preferences.MapLocationDeferredDistance)
                 // time
-                preferences.setDouble(Double(textFieldDeferredTime.text!)!, forKey: Constants.Preferences.MapLocationDeferredTimeout)
+                preferences.set(Double(textFieldDeferredTime.text!)!, forKey: Constants.Preferences.MapLocationDeferredTimeout)
                 
                 self.mapSettingsDelegate?.onChanged()
             }

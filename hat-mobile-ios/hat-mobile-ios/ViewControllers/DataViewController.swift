@@ -39,21 +39,23 @@ class DataViewController: BaseViewController {
      
      - parameter sender: UIBarButtonItem
      */
-    @IBAction func buttonPurge(sender: UIBarButtonItem) {
+    @IBAction func buttonPurge(_ sender: UIBarButtonItem) {
         
         // show alert
-        let alert = UIAlertController(title: NSLocalizedString("purge_label", comment:  "purge"), message: NSLocalizedString("purge_message_label", comment:  "purge message"), preferredStyle: .Alert)
+        let alert = UIAlertController(title: NSLocalizedString("purge_label", comment:  "purge"), message: NSLocalizedString("purge_message_label", comment:  "purge message"), preferredStyle: .alert)
         // add the actions (buttons)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("no_label", comment:  "no"), style: UIAlertActionStyle.Default, handler: nil))
+        alert.addAction(UIAlertAction(title: NSLocalizedString("no_label", comment:  "no"), style: UIAlertActionStyle.default, handler: nil))
         // yes button with action
-        let yesButtonOnAlertAction = UIAlertAction(title: NSLocalizedString("yes_label", comment:  "yes"), style: .Default)
+        let yesButtonOnAlertAction = UIAlertAction(title: NSLocalizedString("yes_label", comment:  "yes"), style: .default)
         { (action) -> Void in
             // yes..
-            RealmHelper.Purge()
-            self.dataTableView.reloadData()
+            if (RealmHelper.Purge())
+            {
+                self.dataTableView.reloadData()
+            }
         }
         // add and present
         alert.addAction(yesButtonOnAlertAction)
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
     }
 }

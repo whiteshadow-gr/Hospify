@@ -22,8 +22,7 @@
 import MapKit
 import FBAnnotationClusteringSwift
 import RealmSwift
-import SwiftSpinner
-import JLToast
+import Toaster
 import SwiftyJSON
 
 /*
@@ -45,10 +44,10 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     
     let clusteringManager = FBClusteringManager()
     let syncDataHelper = SyncDataHelper()
-    let concurrentDataPointQueue = dispatch_queue_create("com.hat.app.data-point-queue", DISPATCH_QUEUE_CONCURRENT)
-    var timer: dispatch_source_t!
-    var timerSync: dispatch_source_t!
-    var timePeriodSelectedEnum: Helper.TimePeriodSelected = Helper.TimePeriodSelected.None
+    let concurrentDataPointQueue = DispatchQueue(label: "com.hat.app.data-point-queue", attributes: DispatchQueue.Attributes.concurrent)
+    var timer: DispatchSource!
+    var timerSync: DispatchSource!
+    var timePeriodSelectedEnum: Helper.TimePeriodSelected = Helper.TimePeriodSelected.none
     var lastErrorMessage:String = ""
     
     
@@ -59,9 +58,9 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         self.title = NSLocalizedString("map_label", comment:  "map title")
 
         // UI asset labels
-        buttonYesterday.setTitle(NSLocalizedString("yesterday_label", comment:  "yesterday"), forState: UIControlState.Normal)
-        buttonToday.setTitle(NSLocalizedString("today_label", comment:  "today"), forState: UIControlState.Normal)
-        buttonLastWeek.setTitle(NSLocalizedString("lastweek_label", comment:  "last week"), forState: UIControlState.Normal)
+        buttonYesterday.setTitle(NSLocalizedString("yesterday_label", comment:  "yesterday"), for: UIControlState())
+        buttonToday.setTitle(NSLocalizedString("today_label", comment:  "today"), for: UIControlState())
+        buttonLastWeek.setTitle(NSLocalizedString("lastweek_label", comment:  "last week"), for: UIControlState())
         buttonLogout.title = NSLocalizedString("logout_label", comment:  "out")
         
 
@@ -83,35 +82,33 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         // sync feedback delegate
         self.syncDataHelper.dataSyncDelegate = self
         
-        // UI progress view
-        SwiftSpinner.useContainerView(self.view)
-        
-        
+    
         self.startAnyTimers()
         
         // cancel all notifications
-        UIApplication.sharedApplication().cancelAllLocalNotifications()
+        UIApplication.shared.cancelAllLocalNotifications()
 
 
         let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.LongPressOnToday)) //Long function will call when user long press on button.
         buttonToday.addGestureRecognizer(longGesture)
         
         // notifiy if entered background mode
-        NSNotificationCenter.defaultCenter().addObserver(
+        NotificationCenter.default.addObserver(
             self,
             selector: #selector(didEnterBackgroundNotification),
-            name: UIApplicationDidEnterBackgroundNotification,
+            name: NSNotification.Name.UIApplicationDidEnterBackground,
             object: nil)
         
         
-        NSNotificationCenter.defaultCenter().addObserver(
+        NotificationCenter.default.addObserver(
             self,
             selector: #selector(didBecomeActiveNotification),
-            name: UIApplicationDidBecomeActiveNotification,
+            name: NSNotification.Name.UIApplicationDidBecomeActive,
             object: nil)
         
+        
         // label click
-        labelLastSyncInformation.userInteractionEnabled = true
+        labelLastSyncInformation.isUserInteractionEnabled = true
         let labelLastSyncInformationTap = UITapGestureRecognizer(target: self, action: #selector(MapViewController.LastSyncLabelTap))
         labelLastSyncInformation.addGestureRecognizer(labelLastSyncInformationTap)
         
@@ -119,13 +116,13 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         
     }
     
-    func LastSyncLabelTap(sender: UITapGestureRecognizer) -> Void {
+    func LastSyncLabelTap(_ sender: UITapGestureRecognizer) -> Void {
         
         if !lastErrorMessage.isEmpty {
-            let alert = UIAlertController(title: "Last Message", message: lastErrorMessage, preferredStyle: .Alert)
+            let alert = UIAlertController(title: "Last Message", message: lastErrorMessage, preferredStyle: .alert)
             // add the actions (buttons)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("ok_label", comment:  "ok"), style: UIAlertActionStyle.Default, handler: nil))
-            self.presentViewController(alert, animated: true, completion: nil)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("ok_label", comment:  "ok"), style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         }
         
     }
@@ -135,19 +132,19 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      
      - parameter sender: <#sender description#>
      */
-    func LongPressOnToday(sender: UILongPressGestureRecognizer) -> Void {
+    func LongPressOnToday(_ sender: UILongPressGestureRecognizer) -> Void {
         
-        if (sender.state == UIGestureRecognizerState.Ended) {
+        if (sender.state == UIGestureRecognizerState.ended) {
             self.syncDataHelper.CheckNextBlockToSync()
-        } else if (sender.state == UIGestureRecognizerState.Began) {
+        } else if (sender.state == UIGestureRecognizerState.began) {
             // do ended
         }
     }
         
     
     /// Utility Queie var
-    var GlobalMainQueue: dispatch_queue_t {
-        return dispatch_get_main_queue()
+    var GlobalMainQueue: DispatchQueue {
+        return DispatchQueue.main
     }
    
     /**
@@ -155,15 +152,15 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      
      - parameter sender: <#sender description#>
      */
-    @IBAction func buttonLogoutPressed(sender: UIBarButtonItem) {
+    @IBAction func buttonLogoutPressed(_ sender: UIBarButtonItem) {
         
         // show alert
-        let alert = UIAlertController(title: NSLocalizedString("logout_label", comment:  "logout"), message: NSLocalizedString("logout_message_label", comment:  "logout message"), preferredStyle: .Alert)
+        let alert = UIAlertController(title: NSLocalizedString("logout_label", comment:  "logout"), message: NSLocalizedString("logout_message_label", comment:  "logout message"), preferredStyle: .alert)
 
         // add the actions (buttons)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("no_label", comment:  "no"), style: UIAlertActionStyle.Default, handler: nil))
+        alert.addAction(UIAlertAction(title: NSLocalizedString("no_label", comment:  "no"), style: UIAlertActionStyle.default, handler: nil))
         // yes button with action
-        let yesButtonOnAlertAction = UIAlertAction(title: NSLocalizedString("yes_label", comment:  "yes"), style: .Default)
+        let yesButtonOnAlertAction = UIAlertAction(title: NSLocalizedString("yes_label", comment:  "yes"), style: .default)
         { (action) -> Void in
             // yes..
             // stop location updating
@@ -172,19 +169,18 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
             // any timers
             self.stopAnyTimers()
             
-            // clear the user hat domain 
-            let preferences = NSUserDefaults.standardUserDefaults()
-            preferences.setObject("", forKey: Constants.Preferences.UserHATDomain)
+            // clear the user hat domain in keychain
+            _ = Helper.ClearKeychainKey(key: Constants.Keychain.HATDomainKey)
             
             // reset the stack to avoid allowing back
-            let vc: LoginViewController = self.getMainStoryboard().instantiateViewControllerWithIdentifier("LoginViewController") as! LoginViewController
+            let vc: LoginViewController = self.getMainStoryboard().instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
             self.navigationController!.setViewControllers([vc], animated: false)
             self.navigationController?.pushViewController(vc, animated: true)
 
         }
         // add and present
         alert.addAction(yesButtonOnAlertAction)
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
     }
     
     /**
@@ -193,12 +189,12 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      
      - parameter sender: UIBarButtonItem
      */
-    @IBAction func buttonLastWeekTouchUp(sender: UIBarButtonItem) {
+    @IBAction func buttonLastWeekTouchUp(_ sender: UIBarButtonItem) {
         
-        self.timePeriodSelectedEnum = Helper.TimePeriodSelected.LastWeek
+        self.timePeriodSelectedEnum = Helper.TimePeriodSelected.lastWeek
         
-        let lastWeek = NSDate().dateByAddingTimeInterval(Helper.FutureTimeInterval.init(days: Double(7), timeType: Helper.TimeType.Past).interval)
-        let predicate = NSPredicate(format: "dateAdded >= %@", lastWeek)
+        let lastWeek = Date().addingTimeInterval(Helper.FutureTimeInterval.init(days: Double(7), timeType: Helper.TimeType.past).interval)
+        let predicate = NSPredicate(format: "dateAdded >= %@", lastWeek as CVarArg)
         self.fetchAndClusterPoints(predicate)
 
     }
@@ -209,12 +205,12 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      
      - parameter sender: UIBarButtonItem
      */
-    @IBAction func buttonTodayTouchUp(sender: UIBarButtonItem) {
+    @IBAction func buttonTodayTouchUp(_ sender: UIBarButtonItem) {
         
-        self.timePeriodSelectedEnum = Helper.TimePeriodSelected.Today
+        self.timePeriodSelectedEnum = Helper.TimePeriodSelected.today
         
-        let startOfToday = NSCalendar.currentCalendar().startOfDayForDate(NSDate())
-        let predicate = NSPredicate(format: "dateAdded >= %@", startOfToday)
+        let startOfToday = Calendar.current.startOfDay(for: Date())
+        let predicate = NSPredicate(format: "dateAdded >= %@", startOfToday as CVarArg)
         self.fetchAndClusterPoints(predicate)
     }
     
@@ -224,14 +220,14 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      
      - parameter sender: <#sender description#>
      */
-    @IBAction func buttonYesterdayTouchUp(sender: UIBarButtonItem) {
+    @IBAction func buttonYesterdayTouchUp(_ sender: UIBarButtonItem) {
         
         
-        self.timePeriodSelectedEnum = Helper.TimePeriodSelected.Yesyerday
+        self.timePeriodSelectedEnum = Helper.TimePeriodSelected.yesyerday
         
-        let startOfToday = NSCalendar.currentCalendar().startOfDayForDate(NSDate())
-        let yesteday = startOfToday.dateByAddingTimeInterval(Helper.FutureTimeInterval.init(days: Double(1), timeType: Helper.TimeType.Past).interval) // remove 24hrs
-        let predicate = NSPredicate(format: "dateAdded >= %@ and dateAdded <= %@", yesteday, startOfToday)
+        let startOfToday = Calendar.current.startOfDay(for: Date())
+        let yesteday = startOfToday.addingTimeInterval(Helper.FutureTimeInterval.init(days: Double(1), timeType: Helper.TimeType.past).interval) // remove 24hrs
+        let predicate = NSPredicate(format: "dateAdded >= %@ and dateAdded <= %@", yesteday as CVarArg, startOfToday as CVarArg)
         self.fetchAndClusterPoints(predicate)
 
     }
@@ -248,8 +244,8 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      - parameter mapView:  the mapview
      - parameter animated: animated
      */
-    func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool){
-        NSOperationQueue().addOperationWithBlock({
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool){
+        OperationQueue().addOperation({
             let mapBoundsWidth = Double(self.mapView.bounds.size.width)
             let mapRectWidth:Double = self.mapView.visibleMapRect.size.width
             let scale:Double = mapBoundsWidth / mapRectWidth
@@ -266,18 +262,18 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      
      - returns: <#return value description#>
      */
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         var reuseId = ""
-        if annotation.isKindOfClass(FBAnnotationCluster) {
+        if annotation.isKind(of: FBAnnotationCluster.self) {
             reuseId = "Cluster"
-            var clusterView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId)
+            var clusterView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId)
             clusterView = FBAnnotationClusterView(annotation: annotation, reuseIdentifier: reuseId, options: nil)
             return clusterView
         } else {
             reuseId = "Pin"
-            var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
+            var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            pinView!.pinColor = .Green
+            pinView!.pinTintColor = .green
             return pinView
         }
     }
@@ -288,25 +284,25 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      
      - parameter count: the current point count
      */
-    func onUpdateCount(count: Int) {
+    func onUpdateCount(_ count: Int) {
         
         displayLastDataPointTime()
         
         
         // only update if today
-        if self.timePeriodSelectedEnum == Helper.TimePeriodSelected.Today {
+        if self.timePeriodSelectedEnum == Helper.TimePeriodSelected.today {
             // refresh map UI too on changed
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 
                 // refresh map UI too
-                self.buttonToday.sendActionsForControlEvents(.TouchUpInside)
+                self.buttonToday.sendActions(for: .touchUpInside)
             })
         }
         
     }
     
 
-    func onUpdateError(error: String) {
+    func onUpdateError(_ error: String) {
         // used for debug only
         //self.labelErrors.text = error
     }
@@ -318,11 +314,12 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     {
         // restart LocationManager and apply changes
         
+        //Location
         // stop
         self.locationManager.stopUpdatingLocation()
         // apply changes
-        self.locationManager.desiredAccuracy = self.getUserPreferencesAccuracy()
-        self.locationManager.distanceFilter = self.getUserPreferencesDistance()
+        self.locationManager.desiredAccuracy = Helper.GetUserPreferencesAccuracy()
+        self.locationManager.distanceFilter = Helper.GetUserPreferencesDistance()
         // begin again
         self.beginLocationTracking()
     }
@@ -330,15 +327,15 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     /**
      DataSyncDelegate
      */
-    func onDataSyncFeedback(isSuccess: Bool, message: String)
+    func onDataSyncFeedback(_ isSuccess: Bool, message: String)
     {
         
         if !isSuccess {
             lastErrorMessage = message;
-            labelLastSyncInformation.textColor = UIColor.redColor();
+            labelLastSyncInformation.textColor = UIColor.red;
         }else{
             lastErrorMessage = "";
-            labelLastSyncInformation.textColor = UIColor.whiteColor();
+            labelLastSyncInformation.textColor = UIColor.white;
         }
 
     }
@@ -351,13 +348,10 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      
      - parameter predicate: <#predicate description#>
      */
-    func fetchAndClusterPoints(predicate: NSPredicate) -> Void
+    func fetchAndClusterPoints(_ predicate: NSPredicate) -> Void
     {
         
-        //SwiftSpinner.show(NSLocalizedString("fetching_points_label", comment:  "fetch message"))
-        
-        
-        dispatch_barrier_async(concurrentDataPointQueue) { // 1
+        concurrentDataPointQueue.async(flags: .barrier, execute: { // 1
             
             var annottationArray:[FBAnnotation] = []
             //var datePointCount:Int = 0;
@@ -376,7 +370,7 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
                 // force map changed to refresh the map and any pins
                 self.mapView(self.mapView, regionDidChangeAnimated: true)
                 
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     //self.mapView.showAnnotations(annottationArray, animated: true)
                     if(annottationArray.count > 0){
                         self.fitMapViewToAnnotaionList(annottationArray)
@@ -385,18 +379,15 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
 
             }
             
-            dispatch_async(self.GlobalMainQueue) { // 3
-                SwiftSpinner.hide()
-                
-                //JLToast.makeText(String(datePointCount) + " " +  NSLocalizedString("date_points_returned_label", comment:  "dp message")).show()
+            (self.GlobalMainQueue).async { // 3
                 
 
             }
-        }
+        }) 
 
     }
     
-    func fitMapViewToAnnotaionList(annotations: [FBAnnotation]) -> Void {
+    func fitMapViewToAnnotaionList(_ annotations: [FBAnnotation]) -> Void {
         let mapEdgePadding = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         var zoomRect:MKMapRect = MKMapRectNull
         
@@ -415,10 +406,10 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         mapView.setVisibleMapRect(zoomRect, edgePadding: mapEdgePadding, animated: true)
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any!) {
         if (segue.identifier == "SettingsSequeID") {
             // pass data to next view
-            let settingsVC = segue.destinationViewController as! SettingsViewController
+            let settingsVC = segue.destination as! SettingsViewController
             
             settingsVC.mapSettingsDelegate = self
         }
@@ -432,20 +423,18 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         if let dataPoint:DataPoint = RealmHelper.GetLastDataPoint()
         {
             // update on ui thread
-            if let addedOn:NSDate = dataPoint.dateAdded
-            {
-                dispatch_async(dispatch_get_main_queue(), {
+            let addedOn:Date = dataPoint.dateAdded as Date
+            DispatchQueue.main.async(execute: {
                     self.labelMostRecentInformation.text = NSLocalizedString("information_label", comment:  "info") + " " + Helper.TimeAgoSinceDate(addedOn)
-                    
-                                   })
-            }            
+                    })
+                        
 
         }
         
         // sync date
         // last sync date
-        dispatch_async(dispatch_get_main_queue(), {
-            if let dateSynced:NSDate = self.getLastSuccessfulSyncDate()
+        DispatchQueue.main.async(execute: {
+            if let dateSynced:Date = self.getLastSuccessfulSyncDate() as Date?
             {
 
                 self.labelLastSyncInformation.text = NSLocalizedString("information_synced_label", comment:  "info") + " " +
@@ -462,29 +451,36 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      Times for syncing data with HAT and timer to update UI to reflect any changes
      */
     func startTimer() {
-        let queue = dispatch_queue_create("com.hat.app.timer", nil)
+        let queue = DispatchQueue(label: "com.hat.app.timer", attributes: [])
         
         // user info
-        timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue)
-        dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC, 1 * NSEC_PER_SEC) // every 10 seconds, with leeway of 1 second
-        dispatch_source_set_event_handler(timer) {
+        timer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: queue) /*Migrator FIXME: Use DispatchSourceTimer to avoid the cast*/ as! DispatchSource
+        timer.scheduleRepeating(deadline: DispatchTime.now(),
+                                interval: .seconds(10),
+                                leeway: .seconds(1)
+        )
+        timer.setEventHandler {
             // update UI
             self.displayLastDataPointTime()
         }
-        dispatch_resume(timer)
+        timer.resume()
         
         // sync
-        timerSync = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue)
-        dispatch_source_set_timer(timerSync, DISPATCH_TIME_NOW, Constants.DataSync.DataSyncPeriod * NSEC_PER_SEC, 1 * NSEC_PER_SEC) // every 10 seconds, with leeway of 1 second
-        dispatch_source_set_event_handler(timerSync) {
+        timerSync = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: queue) /*Migrator FIXME: Use DispatchSourceTimer to avoid the cast*/ as! DispatchSource
+       // timerSync.scheduleRepeating(start: DispatchTime.now(), interval: Constants.DataSync.DataSyncPeriod * NSEC_PER_SEC, leeway: 1 * NSEC_PER_SEC) // every 10 seconds, with leeway of 1 second
+        timerSync.scheduleRepeating(deadline: DispatchTime.now(),
+                                interval: .seconds(10),
+                                leeway: .seconds(1)
+        )
+        timerSync.setEventHandler {
             // sync with HAT
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 self.syncDataHelper.CheckNextBlockToSync()
             })
             
             
         }
-        dispatch_resume(timerSync)
+        timerSync.resume()
     }
     
     /**
@@ -493,12 +489,12 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     func stopTimer() {
         
         if timer != nil{
-            dispatch_source_cancel(timer)
+            timer.cancel()
             timer = nil
         }
         
         if timerSync != nil{
-            dispatch_source_cancel(timerSync)
+            timerSync.cancel()
             timerSync = nil
         }
         

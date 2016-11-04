@@ -24,13 +24,23 @@
 "error_label" = "Error";
 
 /* logon and register */
-"logon_label" = "Sign In";
+"logon_label" = "Login with HAT";
 "logout_label" = "Sign Out";
 "attempting_to_login" = "Checking privileges...";
 
+/* auth errors */
+"auth_error_general" = "Security token could not be processed. Please report the issue in the HAT forums.";
+"auth_error_invalid_token" = "Security token validation failed. Please try logging in again. If the problem persists report the issue in the HAT forums.";
+"auth_error_no_token_in_callback" = "No security token detected. Please report the issue in the HAT forums.";
+/* auth keychain */
+"auth_error_keychain_save" = "There was a problem saving the value in the Keychain. Please report the issue in the HAT forums.";
+"auth_error_keychain_get" = "There was a problem getting the value from the Keychain. Please report the issue in the HAT forums.";
 
 /* placeholders */
 "hat_domain_placeholder" = "Your personal HAT address";
+
+"login_screen_title" = "RumpelLite";
+"login_screen_subtitle" = "The hyperdata browser for your HAT data";
 
 /* map */
 "map_label" = "Map";

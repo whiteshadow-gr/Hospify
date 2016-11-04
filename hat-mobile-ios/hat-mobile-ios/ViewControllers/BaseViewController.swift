@@ -35,60 +35,7 @@ class BaseViewController: UIViewController {
     }
 
     
-    /**
-     Check the user preferences for accuracy setting
-     
-     - returns: <#return value description#>
-     */
-    func getUserPreferencesAccuracy() -> CLLocationAccuracy {
-        
-        let preferences = NSUserDefaults.standardUserDefaults()
-        let newAccuracy:CLLocationAccuracy = preferences.objectForKey(Constants.Preferences.MapLocationAccuracy) as? CLLocationAccuracy ?? kCLLocationAccuracyBest
-        
-        return newAccuracy
-    }
-    
-    /**
-     Check the user preferences for distance setting
-     
-     - returns: <#return value description#>
-     */
-    func getUserPreferencesDistance() -> CLLocationDistance {
-        
-        let preferences = NSUserDefaults.standardUserDefaults()
-        let newDistance:CLLocationDistance = preferences.objectForKey(Constants.Preferences.MapLocationDistance) as? CLLocationDistance ?? 5
-        
-        return newDistance
-        
-    }
-    
-    /**
-     Check the user preferences for deferred distance
-     
-     - returns: <#return value description#>
-     */
-    func getUserPreferencesDeferredDistance() -> CLLocationDistance {
-        
-        let preferences = NSUserDefaults.standardUserDefaults()
-        let newDistance:CLLocationDistance = preferences.objectForKey(Constants.Preferences.MapLocationDeferredDistance) as? CLLocationDistance ?? 10
-        
-        return newDistance
-        
-    }
-    
-    /**
-     Check the user preferences for accuracy setting
-     
-     - returns: <#return value description#>
-     */
-    func getUserPreferencesDeferredTimeout() -> NSTimeInterval {
-        
-        let preferences = NSUserDefaults.standardUserDefaults()
-        let newTime:NSTimeInterval = preferences.objectForKey(Constants.Preferences.MapLocationDeferredTimeout) as? Double ?? 10
-        
-        return newTime
-        
-    }
+
     
     /**
      Gets the last successful sync count from preferences
@@ -97,8 +44,8 @@ class BaseViewController: UIViewController {
      */
     func getSuccessfulSyncCount() -> Int {
         
-        let preferences = NSUserDefaults.standardUserDefaults()
-        let successfulSyncCount:Int = preferences.integerForKey(Constants.Preferences.SuccessfulSyncCount) ?? 0
+        let preferences = UserDefaults.standard
+        let successfulSyncCount:Int = preferences.integer(forKey: Constants.Preferences.SuccessfulSyncCount) // eturns an integer if the key existed, or 0 if not. 
         
         return successfulSyncCount
     }
@@ -108,10 +55,10 @@ class BaseViewController: UIViewController {
      
      - returns: The date of last successful sync. Optional
      */
-    func getLastSuccessfulSyncDate() -> NSDate! {
+    func getLastSuccessfulSyncDate() -> Date! {
         
-        let preferences = NSUserDefaults.standardUserDefaults()
-        if let successfulSyncDate:NSDate = preferences.objectForKey(Constants.Preferences.SuccessfulSyncDate) as? NSDate
+        let preferences = UserDefaults.standard
+        if let successfulSyncDate:Date = preferences.object(forKey: Constants.Preferences.SuccessfulSyncDate) as? Date
         {
             return successfulSyncDate
         }
@@ -126,11 +73,11 @@ class BaseViewController: UIViewController {
      - parameter title:   <#title description#>
      - parameter message: <#message description#>
      */
-    func presentUIAlertOK(title: String, message: String) -> Void {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .Alert)
+    func presentUIAlertOK(_ title: String, message: String) -> Void {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         // add the actions (buttons)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("ok_label", comment:  "ok"), style: UIAlertActionStyle.Default, handler: nil))
-        self.presentViewController(alert, animated: true, completion: nil)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("ok_label", comment:  "ok"), style: UIAlertActionStyle.default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
 
     }
     
@@ -140,7 +87,7 @@ class BaseViewController: UIViewController {
      
      - parameter notification: <#notification description#>
      */
-    @objc func didEnterBackgroundNotification(notification: NSNotification){
+    func didEnterBackgroundNotification(_ notification: Notification){
         //do stuff
         self.stopAnyTimers()
     }
@@ -150,7 +97,7 @@ class BaseViewController: UIViewController {
      
      - parameter notification: default notification
      */
-    @objc func didBecomeActiveNotification(notification: NSNotification){
+    func didBecomeActiveNotification(_ notification: Notification){
         //do stuff
         if !Helper.TheUserHATDomain().isEmpty {
             self.startAnyTimers()

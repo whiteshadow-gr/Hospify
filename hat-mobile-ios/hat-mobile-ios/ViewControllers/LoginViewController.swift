@@ -19,108 +19,97 @@
  */
 
 import UIKit
-import SwiftSpinner
 import SwiftyJSON
 import Alamofire
+import SafariServices
 
+import JWTDecode
+import SwiftyRSA
 
+// any Extensions required
+extension String {
+    
+    /**
+     String extension to convert from base64Url to base64
+    */
+    func fromBase64URLToBase64(s : String) -> String {
+        
+        var s = s;
+        if (s.characters.count % 4 == 2 ){
+            s = s + "=="
+        }else if (s.characters.count % 4 == 3 ){
+            s = s + "="
+        }
+        s = s.replacingOccurrences(of: "-", with: "+")
+        s = s.replacingOccurrences(of: "_", with: "/")
+        
+        return s
+    }
+    
+}
 
 class LoginViewController: BaseViewController {
     
     @IBOutlet weak var buttonLogon: UIButton!
     @IBOutlet weak var inputUserHATDomain: UITextField!
     @IBOutlet weak var labelAppVersion: UILabel!
+    @IBOutlet weak var labelTitle: UITextView!
+    @IBOutlet weak var labelSubTitle: UITextView!
+    @IBOutlet weak var ivLogo: UIImageView!
     
     typealias MarketAccessToken = String
-
+   
+    var safariVC: SFSafariViewController?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
         self.title = NSLocalizedString("logon_label", comment:  "logon title")
         
+        // screen title
+        labelTitle.text = NSLocalizedString("login_screen_title", comment:  "screen title")
+        // screen sub title
+        labelSubTitle.text = NSLocalizedString("login_screen_subtitle", comment:  "screen sub title")
+        
+        // label attributes
+        labelTitle.textColor = UIColor.white
+        labelSubTitle.textColor = UIColor.white
+        labelTitle.textAlignment = NSTextAlignment.center
+        labelSubTitle.textAlignment = NSTextAlignment.center
+        labelTitle.font = UIFont.boldSystemFont(ofSize: 20)
+        labelSubTitle.font = UIFont.boldSystemFont(ofSize: 12)
+        
         // input
         inputUserHATDomain.placeholder = NSLocalizedString("hat_domain_placeholder", comment:  "user HAT domain")
         
         // button
-        buttonLogon.setTitle(NSLocalizedString("logon_label", comment:  "username"), forState: UIControlState.Normal)
+        buttonLogon.setTitle(NSLocalizedString("logon_label", comment:  "username"), for: UIControlState())
+        buttonLogon.backgroundColor = Constants.Colours.AppBase
         
-        // TODO... .debug
         inputUserHATDomain.text = ""
         
         // app version
-        if let version = NSBundle.mainBundle().infoDictionary?["CFBundleShortVersionString"] as? String {
+        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
             self.labelAppVersion.text = "v" + version
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.hatLoginAuth), name: NSNotification.Name(rawValue: Constants.Auth.NotificationHandlerName), object: nil)
     }
     
     // logon button event
-    @IBAction func buttonLogonTouchUp(sender: AnyObject) {
+    @IBAction func buttonLogonTouchUp(_ sender: AnyObject) {
         
-        // trim values
+         // trim values
         let hatDomain = Helper.TrimString(inputUserHATDomain.text!)
         
         // username guard
-        guard let _userDomain = inputUserHATDomain.text where !hatDomain.isEmpty else {
+        guard let _userDomain = inputUserHATDomain.text , !hatDomain.isEmpty else {
             inputUserHATDomain.text = ""
             return
         }
         
-        
-        SwiftSpinner.useContainerView(self.view)
-        SwiftSpinner.show(NSLocalizedString("attempting_to_login", comment:  "login"))
-     
-        // parameters..
-        let parameters = ["": ""]
-        
-        // auth header
-        let headers:[String: String] = Helper.ConstructRequestHeaders(Helper.TheMarketAccessToken())
-        // construct url
-        let url = Helper.TheAppRegistrationWithHATURL(_userDomain)
-        
-        // make asynchronous call
-        NetworkHelper.AsynchronousRequest(url, method: Alamofire.Method.GET, encoding: Alamofire.ParameterEncoding.URLEncodedInURL, contentType: "application/json", parameters: parameters, headers: headers) { (r: Helper.ResultType) -> Bool in
-            
-            // the result from asynchronous call to login
-            SwiftSpinner.hide()
-            
-            switch r {
-            case .IsSuccess(let isSuccess, _, let result):
-                if isSuccess{
-                    
-                    // Note: as? ..i know it's a  JSON.. so cast
-                    if let theResult:JSON = result as JSON{
-                        //print("JSON res: \(theResult)")
-                        
-                        // belt and braces.. check we have a message in the returned JSON
-                        if theResult["message"].isExists()
-                        {
-                            // save user HAT domain
-                            let preferences = NSUserDefaults.standardUserDefaults()
-                            preferences.setObject(_userDomain, forKey: Constants.Preferences.UserHATDomain)
-                            
-                            // seque
-                            self.performSegueWithIdentifier("ShowMapsViewController", sender: self)
-                        }else{
-                            self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: "Message not found")
-                        }
-                        
-                    }
-                }else{
-                    self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: result.rawString()!)
-                }
-                
-                return true
-            case .Error(let error, let statusCode):
-                if let error:NSError = error as NSError{
-                    //print("error res: \(error)")
-                    let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                    self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: msg)
-                }
-                return false
-            }
-            
-        }
+        authoriseUser(hatDomain: _userDomain)
         
     }
     
@@ -130,7 +119,7 @@ class LoginViewController: BaseViewController {
         We have a seque in the storyboard, mainly for visual 
         We openSeque... after validation
     */
-    override func shouldPerformSegueWithIdentifier(identifier: String, sender: AnyObject!) -> Bool {
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any!) -> Bool {
         
         if identifier == "ShowMapsViewController" {
             return false
@@ -139,8 +128,173 @@ class LoginViewController: BaseViewController {
     }
     
     
+    func authoriseUser(hatDomain : String) {
+        
+        //TODO
+        //self.performSegue(withIdentifier: "ShowMapsViewController", sender: self)
+
+        
+       // e.g. https://iostesting.hubofallthings.net/hatlogin?name=MarketSquare&redirect=com.hubofallthings.rumpellocationtracker://doSomething
+        
+        // build up the hat domain auth url
+        let hatDomainURL =
+            "https://" + // https
+            hatDomain + // the user hat domain
+            "/hatlogin?name=" + // param
+            Constants.Auth.ServiceName + // the service name
+            "&redirect=" + // redirect param
+            Constants.Auth.URLScheme + // the url scheme for auth callback to app. We declare it in info.list
+            "://" +
+            Constants.Auth.LocalAuthHost// this is a ghost host. This can be anything
+        
+        let authURL = NSURL(string: hatDomainURL)
+        
+        // open in safari
+        safariVC = SFSafariViewController(url: authURL as! URL)
+        if let vc:SFSafariViewController = self.safariVC
+        {
+            self.present(vc, animated: true, completion: nil)
+        }        
+    }
     
+    /**
+     The notification func
+     
+     - parameter NSNotification:   notification
+     */
+    func hatLoginAuth(notification: NSNotification) {
+        // get the url form the auth callback
+        let url = notification.object as! NSURL
+        
+        // first of all, we close the safari vc
+        if let vc:SFSafariViewController = safariVC
+        {
+            vc.dismiss(animated: true, completion: nil)
+        }
+        
+        // get token out
+        if let token = Helper.GetQueryStringParameter(url: url.absoluteString, param: Constants.Auth.TokenParamName)
+        {
+            
+            // get the public key for this user. e.g. https://iostesting.hubofallthings.net/publickey
+            // make asynchronous call
+            // parameters..
+            let parameters = ["": ""]
+            // auth header
+            let headers = ["Accept": Constants.ContentType.Text, "Content-Type": Constants.ContentType.Text]
+            // HAT domain
+            let hatDomain = Helper.TrimString(inputUserHATDomain.text!)
+
+            if let url = Helper.TheUserHATDOmainPublicKeyURL(hatDomain)
+            {
+                //. application/json
+                NetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { (r: Helper.ResultTypeString) -> Void in
+                    
+                    switch r {
+                    case .isSuccess(let isSuccess, _, let result):
+                        if isSuccess{
+                            
+                            // decode the token and get the iss out 
+                            let jwt = try! decode(jwt: token)
+                            
+                            // guard for the issuer check, “iss” (Issuer)
+                            guard let HATDomainFromToken = jwt.issuer else {
+
+                                self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: NSLocalizedString("auth_error_general", comment:  "auth"))
+                                return
+                            
+                            }
+                                                        
+                            /*
+                             The token will consist of header.payload.signature
+                             To verify the token we use header.payload hashed with signature in base64 format
+                             The public PEM string is used to verify also
+                             */
+                            let tokenAttr : [String] = token.components(separatedBy: ".")
+                            
+                            // guard for the attr length. Should be 3 [header, payload, signature]
+                            guard tokenAttr.count == 3 else {
+                                
+                                self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: NSLocalizedString("auth_error_general", comment:  "auth"))
+                                return
+                            }
+                            
+                            // And then to access the individual parts of token
+                            let header : String = tokenAttr[0]
+                            let payload : String = tokenAttr[1]
+                            let signature : String = tokenAttr[2]
+                            
+                            // decode signature from baseUrl64 to base64
+                            let decodedSig = signature.fromBase64URLToBase64(s: signature)
+                            
+                            // data to be verified header.payload
+                            let headerAndPayload = header + "." + payload
+                            
+                            // SwiftyRSA.verifySignatureString
+                            let result: VerificationResult = SwiftyRSA.verifySignatureString(headerAndPayload, signature: decodedSig, publicKeyPEM: result, digestMethod: .SHA256)
+                            
+                            /*
+                                if successful ,we performSegue to the map view
+                                else, we display a message
+                            */
+                            if (result.isSuccessful)
+                            {
+                                //self.presentUIAlertOK("Success", message: "good")
+                                
+                                // save the hatdomain from the token to the device Keychain
+                                if(Helper.SetKeychainValue(key: Constants.Keychain.HATDomainKey, value: HATDomainFromToken))
+                                {
+                                    // seque
+                                    self.performSegue(withIdentifier: "ShowMapsViewController", sender: self)
+
+                                }else{
+                                    self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: NSLocalizedString("auth_error_keychain_save", comment:  "keychain"))
+                                }
+                                
+                                
+                            }else{
+                                self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: NSLocalizedString("auth_error_invalid_token", comment:  "auth"))
+                            }
+                            
+                        }else{
+                            // alamo fire http fail
+                            self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: result)
+                        }
+                        
+                    case .error(let error, let statusCode):
+                        let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                        self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: msg)
+                    }
+                }
+            }
+
+        }else{
+
+            // no token in url callback redirect
+            self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: NSLocalizedString("auth_error_no_token_in_callback", comment:  "auth"))
+        }
+        
+    }
     
+    /**
+ 
+     when in landscape mode, hide the logo to avoid it getting too small
+    **/
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: nil, completion: {
+            _ in
+            
+            let orientation: UIDeviceOrientation = UIDevice.current.orientation
+
+            if orientation.isLandscape {
+                self.ivLogo.isHidden = true
+            } else {
+                self.ivLogo.isHidden = false
+            }
+            
+        })
+    }
     
 }
 

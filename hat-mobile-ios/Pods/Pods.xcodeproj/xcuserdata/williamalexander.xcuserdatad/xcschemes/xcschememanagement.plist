@@ -14,7 +14,12 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>JLToast.xcscheme</key>
+		<key>JWTDecode.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>KeychainSwift.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -44,12 +49,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>SwiftSpinner.xcscheme</key>
+		<key>SwiftyJSON.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>SwiftyJSON.xcscheme</key>
+		<key>SwiftyRSA.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Toaster.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -57,12 +67,37 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>1141BE6F9DE947D9BB05E56C8FB48577</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>12C71A8491B595A4CF3992124DB31C8C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>14A783602A798BE7D4BABC621065C748</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>423C10F04A172BB11C7A3702F8F09B90</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>5CE5C89A8E8B8D6F6A8689F3E1BDB250</key>
+		<key>4C698C648EE4D43C6B8BE0BE1FE91737</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>56C5AF3AA0E6B0BD64DFCE0E44E62C75</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>71EA1B0F0B88C9ABFA3E6926D3772ECD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -72,17 +107,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7E6B45902D091755AB2DD763FAA6C1DD</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>892FE5BFDD0FD8B38E22D76135459FE4</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>ABBBED129FF65C960E582D0869414CA1</key>
+		<key>BA84679FD1EF21AB96D5621462C3A5E9</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -97,12 +122,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F3FF7910BFD53805BAC833B3F19DE6B0</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>F77602C49910A8CAE4708DB67A2BA244</key>
+		<key>F942BCF4E3A8961E4AC7ECA799B506A4</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -24,22 +24,17 @@ import CoreLocation
 class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate {
     
     var updateCountDelegate: UpdateCountDelegate? = nil
-    var deferringUpdates:Bool = false;
     
     /// Load the LocationManager
     lazy var locationManager: CLLocationManager! = {
         let locationManager = CLLocationManager()
-        locationManager.desiredAccuracy = self.getUserPreferencesAccuracy()
-        locationManager.distanceFilter = self.getUserPreferencesDistance()//ekCLDistanceFilterNone: all movements are reported... or move x metres e,g, 10.0f
+        locationManager.desiredAccuracy = Helper.GetUserPreferencesAccuracy()
+        locationManager.distanceFilter = Helper.GetUserPreferencesDistance()
         locationManager.delegate = self
-        if #available(iOS 9.0, *) {
-            locationManager.allowsBackgroundLocationUpdates = true
-        } else {
-            // Fallback on earlier versions
-        }
+        locationManager.allowsBackgroundLocationUpdates = true
         locationManager.requestAlwaysAuthorization()
         locationManager.pausesLocationUpdatesAutomatically = false
-        locationManager.activityType = CLActivityType.Other /* see https://developer.apple.com/reference/corelocation/clactivitytype */
+        locationManager.activityType = CLActivityType.other /* see https://developer.apple.com/reference/corelocation/clactivitytype */
         return locationManager
     }()
     
@@ -50,8 +45,9 @@ class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate 
         if let manager:CLLocationManager = locationManager
         {
             manager.startUpdatingLocation()
+            NSLog("BaseLocation startUpdatingLocation");
+            
         }
-        
     }
     
     /**
@@ -61,7 +57,7 @@ class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate 
      - parameter manager:   The CLLocation manager used
      - parameter locations: Array of locations
      */
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
     {
         // clear down error display
         self.clearErrorDisplay()
@@ -69,54 +65,33 @@ class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate 
         // get last location
         let latestLocation: CLLocation = locations[locations.count - 1]
         
-        // add data
-        let count = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
-        
-        //   while in foreground only
-        if UIApplication.sharedApplication().applicationState == .Active {
-            
-            if (self.updateCountDelegate != nil) {
-                self.updateCountDelegate?.onUpdateCount(count)
-            }
-        } else {
-            //NSLog("App is backgrounded. New count is %i", count)
-        }
-        
-        
-        /**
-         *  Only call one. Calling again will disable it
-         defer updates until a distance or period of time
-         */
-        if (!deferringUpdates)
+        // test that the horizontal accuracy does not indicate an invalid measurement
+        if (latestLocation.horizontalAccuracy < 0)
         {
-            // if we are deferring, the distanceFilter = kCLDistanceFilterNone
-            //locationManager.distanceFilter = kCLDistanceFilterNone
-            // get distance and time settings
-            let distance: CLLocationDistance = self.getUserPreferencesDeferredDistance()
-            let time:NSTimeInterval = self.getUserPreferencesDeferredTimeout()
+            return
+        }
+        // check we have a measurement that meets our requirements,
+        if (latestLocation.horizontalAccuracy <= locationManager.desiredAccuracy) {
+            // add data
+            let count = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
             
-            manager.allowDeferredLocationUpdatesUntilTraveled(distance, timeout: time)
-            
-            deferringUpdates = true;
-        }else{
-            //locationManager.distanceFilter = self.getUserPreferencesDeferredDistance()
+            //   while in foreground only
+            if UIApplication.shared.applicationState == .active {
+                
+                if (self.updateCountDelegate != nil) {
+                    self.updateCountDelegate?.onUpdateCount(count)
+                }
+            } else {
+                //NSLog("App is backgrounded. New count is %i", count)
+            }
         }
         
     }
     
-    //didFinishDeferredUpdatesWithError:
-    func locationManager(manager: CLLocationManager, didFinishDeferredUpdatesWithError error: NSError?) {
-        // Stop deferring updates
-        self.deferringUpdates = false
-        
-        //self.displayError("didFinishDeferredUpdatesWithError, " + (error?.localizedDescription)!)
-    }
-    
-    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
-        
-        self.displayError("didFailWithError, " + error.localizedDescription)
-        
-    }
+    /*func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
+     
+     
+     }*/
     
     /**
      Stop any location updates.e.g.logout
@@ -127,6 +102,8 @@ class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate 
         if let manager:CLLocationManager = self.locationManager
         {
             manager.stopUpdatingLocation()
+            NSLog("BaseLocation stopUpdatingLocation");
+            
         }
     }
     
@@ -134,12 +111,10 @@ class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate 
      Display any error to user
      Mainly for Dev
      
-     
-     
      - parameter description: <#description description#>
      */
     func displayError(description: String) -> Void {
-        if UIApplication.sharedApplication().applicationState == .Active {
+        if UIApplication.shared.applicationState == .active {
             
             if (self.updateCountDelegate != nil) {
                 self.updateCountDelegate?.onUpdateError(description)
@@ -154,7 +129,7 @@ class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate 
      
      */
     func clearErrorDisplay() -> Void {
-        if UIApplication.sharedApplication().applicationState == .Active {
+        if UIApplication.shared.applicationState == .active {
             
             if (self.updateCountDelegate != nil) {
                 self.updateCountDelegate?.onUpdateError("")
@@ -162,6 +137,32 @@ class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate 
         }
     }
     
+    
+    /**
+     When app entered background
+     
+     - parameter notification: <#notification description#>
+     */
+    override func didEnterBackgroundNotification(_ notification: Notification){
+        //super
+        super.didEnterBackgroundNotification(notification)
+        
+        // stop updating
+        //stopUpdating()
+        
+    }
+    
+    /**
+     When app becomes active
+     
+     - parameter notification: default notification
+     */
+    override func didBecomeActiveNotification(_ notification: Notification){
+        super.didBecomeActiveNotification(notification)
+        
+        // start normal location updates
+        beginLocationTracking();
+    }
     
     
     override func didReceiveMemoryWarning() {

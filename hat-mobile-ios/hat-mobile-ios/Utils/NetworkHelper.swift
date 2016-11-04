@@ -37,23 +37,23 @@ class NetworkHelper {
      - parameter completion:  <#completion description#>
      */
     class func AsynchronousRequest(
-            url: String,
-            method: Alamofire.Method,
-            encoding: Alamofire.ParameterEncoding,
+            _ url: String,
+            method: HTTPMethod,
+            encoding: ParameterEncoding,
             contentType: String,
             parameters: Dictionary<String, AnyObject>,
             headers: Dictionary<String, String>,
-            completion: (r: Helper.ResultType) -> Bool) -> Void {
+            completion: @escaping (_ r: Helper.ResultType) -> Void) -> Void {
         
-        let manager = Alamofire.Manager.sharedInstance
         
         // do a post
-        manager.request(
-            method, /* GET, POST, etc*/
+        Alamofire.request(
             url, /* request url */
-            headers: headers, /* request header */
+            method: method, /* GET, POST, etc*/
             parameters: parameters, /* parameters to POST*/
-            encoding: encoding) /* encoding type, JSON, URLEncoded, etc*/
+            encoding: encoding, /* encoding type, JSON, URLEncoded, etc*/
+            headers: headers /* request header */
+            )
             .validate(statusCode: 200..<300)
             .validate(contentType: [contentType])
             .responseJSON { response in
@@ -63,18 +63,73 @@ class NetworkHelper {
                 //print(response.result)   // result of response serialization
                 
                 switch response.result {
-                case .Success(_):
+                case .success(_):
                     
                     if let value = response.result.value {
                         let json = JSON(value)
-                        completion(r: Helper.ResultType.IsSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json))
+                        completion(Helper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json))
                     }else{
-                        completion(r: Helper.ResultType.IsSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                        completion(Helper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
                     }
                     
                     
-                case .Failure(let error):
-                    completion(r: Helper.ResultType.Error(error: error, statusCode: response.response?.statusCode))
+                case .failure(let error):
+                    completion(Helper.ResultType.error(error: error, statusCode: response.response?.statusCode))
+                }
+        }
+        
+    }
+    
+    
+    /**
+     Makes ansychronous network call
+     Closure for caller to handle
+     
+     - parameter url:         <#url description#>
+     - parameter method:      <#method description#>
+     - parameter encoding:    <#encoding description#>
+     - parameter contentType: <#contentType description#>
+     - parameter parameters:  <#parameters description#>
+     - parameter headers:     <#headers description#>
+     - parameter completion:  <#completion description#>
+     */
+    class func AsynchronousStringRequest(
+        _ url: String,
+        method: HTTPMethod,
+        encoding: ParameterEncoding,
+        contentType: String,
+        parameters: Dictionary<String, AnyObject>,
+        headers: Dictionary<String, String>,
+        completion: @escaping (_ r: Helper.ResultTypeString) -> Void) -> Void {
+        
+        // do a post
+        Alamofire.request(
+            url, /* request url */
+            method: method, /* GET, POST, etc*/
+            parameters: parameters, /* parameters to POST*/
+            encoding: encoding, /* encoding type, JSON, URLEncoded, etc*/
+            headers: headers /* request header */
+            )
+            .validate(statusCode: 200..<300)
+            .validate(contentType: [contentType])
+            .responseString { response in
+                //print(response.request)  // original URL request
+                //print(response.response) // URL response
+                //print(response.data)     // server data
+                //print(response.result)   // result of response serialization
+                
+                switch response.result {
+                case .success(_):
+                    
+                    if let value = response.result.value {
+                        completion(Helper.ResultTypeString.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: value))
+                    }else{
+                        completion(Helper.ResultTypeString.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                    }
+                    
+                    
+                case .failure(let error):
+                    completion(Helper.ResultTypeString.error(error: error, statusCode: response.response?.statusCode))
                 }
         }
         
@@ -95,40 +150,45 @@ class NetworkHelper {
      - parameter completion:         <#completion description#>
      */
     class func AsynchronousRequestData(
-        url: String,
-        method: Alamofire.Method,
-        encoding: Alamofire.ParameterEncoding,
+        _ url: String,
+        method: HTTPMethod,
+        encoding: ParameterEncoding,
         contentType: String,
         parameters: [AnyObject],
         headers: Dictionary<String, String>,
         userHATAccessToken: String,
-        completion: (r: Helper.ResultType) -> Bool) -> Void {
+        completion: @escaping (_ r: Helper.ResultType) -> Void) -> Void {
         
         
-        let manager = Alamofire.Manager.sharedInstance
-
         let nsURL = NSURL(string: url)
 
-        let request = NSMutableURLRequest(URL: nsURL!)
-        request.HTTPMethod = method.rawValue
+        let request = NSMutableURLRequest(url: nsURL! as URL)
+        request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = headers
-        request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(parameters, options: [])
+        request.httpBody = try! JSONSerialization.data(withJSONObject: parameters, options: [])
         
-        manager.request(request)
+        let url = URL(string: url)
+        var urlRequest = URLRequest(url: url!)
+        urlRequest.httpMethod = method.rawValue
+        urlRequest.allHTTPHeaderFields = headers
+        urlRequest.httpBody = try! JSONSerialization.data(withJSONObject: parameters, options: [])
+        
+        
+        Alamofire.request(urlRequest)
             .responseJSON { response in
                 switch response.result {
-                case .Success(_):
+                case .success(_):
                     
                     if let value = response.result.value {
                         let json = JSON(value)
-                        completion(r: Helper.ResultType.IsSuccess(isSuccess: true, statusCode: response.response!.statusCode, result: json))
+                        completion(Helper.ResultType.isSuccess(isSuccess: true, statusCode: response.response!.statusCode, result: json))
                     }else{
-                        completion(r: Helper.ResultType.IsSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                        completion(Helper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
                     }
                     
                     
-                case .Failure(let error):
-                    completion(r: Helper.ResultType.Error(error: error, statusCode: response.response?.statusCode))
+                case .failure(let error):
+                    completion(Helper.ResultType.error(error: error, statusCode: response.response?.statusCode))
                 }
         }
 

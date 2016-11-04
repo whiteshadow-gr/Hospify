@@ -22,6 +22,6 @@
  *  Delegate to update the item count
  */
 public protocol UpdateCountDelegate {
-    func onUpdateCount(count: Int)
-    func onUpdateError(error: String)
+    func onUpdateCount(_ count: Int)
+    func onUpdateError(_ error: String)
 }

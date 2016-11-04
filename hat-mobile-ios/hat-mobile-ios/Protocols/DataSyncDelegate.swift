@@ -22,5 +22,5 @@
  *  used to provide feddback while syncnig data
  */
 public protocol DataSyncDelegate {
-    func onDataSyncFeedback(isSuccess: Bool, message: String)
+    func onDataSyncFeedback(_ isSuccess: Bool, message: String)
 }

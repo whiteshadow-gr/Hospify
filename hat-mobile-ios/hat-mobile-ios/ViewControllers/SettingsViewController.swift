@@ -25,9 +25,10 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
 
     var mapSettingsDelegate: MapSettingsDelegate? = nil
 
-    let pickerAccuracyData = ["kCLLocationAccuracyKilometer","kCLLocationAccuracyBest","kCLLocationAccuracyHundredMeters","kCLLocationAccuracyNearestTenMeters","kCLLocationAccuracyThreeKilometers"]
+    // Picker initialiser code below needs to change if you re-order this array
+    let pickerAccuracyData = ["kCLLocationAccuracyHundredMeters","kCLLocationAccuracyKilometer","kCLLocationAccuracyThreeKilometers",
+                              "kCLLocationAccuracyNearestTenMeters"]
   
-    
     @IBOutlet weak var pickerAccuracy: UIPickerView!
     
     @IBOutlet weak var textFieldDistance: UITextField!
@@ -44,23 +45,18 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         pickerAccuracy.dataSource = self
         pickerAccuracy.delegate = self
         
-        textFieldDistance.text = String(Helper.GetUserPreferencesDistance())
-        textFieldDeferredDistance.text = String(Helper.GetUserPreferencesDeferredDistance())
-        textFieldDeferredTime.text = String(Helper.GetUserPreferencesDeferredTimeout())
-       
+        readAndDisplayCurrentDefaults()
         
         var selectedAccuracyIndex: Int = 1
         switch Helper.GetUserPreferencesAccuracy() {
         case kCLLocationAccuracyKilometer:
-            selectedAccuracyIndex = 0
-        case kCLLocationAccuracyBest:
             selectedAccuracyIndex = 1
         case kCLLocationAccuracyHundredMeters:
-            selectedAccuracyIndex = 2
+            selectedAccuracyIndex = 0
         case kCLLocationAccuracyNearestTenMeters:
             selectedAccuracyIndex = 3
         case kCLLocationAccuracyThreeKilometers:
-            selectedAccuracyIndex = 4
+            selectedAccuracyIndex = 2
         default:
             selectedAccuracyIndex = 1
         }
@@ -69,9 +65,43 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         
         //pickerAccuracy.select()
        
-
-        
+        let keyboardToolbar = UIToolbar()
+        keyboardToolbar.sizeToFit()
+        let flexBarButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace,
+                                            target: nil, action: nil)
+        let doneBarButton = UIBarButtonItem(barButtonSystemItem: .done,
+                                            target: view, action: #selector(UIView.endEditing(_:)))
+        keyboardToolbar.items = [flexBarButton, doneBarButton]
+        textFieldDistance.inputAccessoryView = keyboardToolbar
+        textFieldDeferredTime.inputAccessoryView = keyboardToolbar
+        textFieldDeferredDistance.inputAccessoryView = keyboardToolbar
     }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector:#selector(keyboardWillDisappear(notification:)),
+                                               name:Notification.Name.UIKeyboardDidHide,
+                                               object:nil)
+    }
+
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self,
+                                                  name:Notification.Name.UIKeyboardDidHide,
+                                                  object:nil)
+    }
+
+
+    func keyboardWillDisappear(notification: NSNotification){
+        // Do something here
+        storeValues()
+    }
+    
     
     func typeName(_ some: Any) -> String {
         return (some is Any.Type) ? "\(some)" : "\(type(of: (some) as AnyObject))"
@@ -94,12 +124,10 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
        
         let valueSelected:String = pickerAccuracyData[row]
-        var locationAccuracy:CLLocationAccuracy = kCLLocationAccuracyBest //default
+        var locationAccuracy:CLLocationAccuracy = kCLLocationAccuracyHundredMeters //default
         switch valueSelected {
         case "kCLLocationAccuracyKilometer":
             locationAccuracy = kCLLocationAccuracyKilometer
-        case "kCLLocationAccuracyBest":
-            locationAccuracy = kCLLocationAccuracyBest
         case "kCLLocationAccuracyHundredMeters":
             locationAccuracy = kCLLocationAccuracyHundredMeters
         case "kCLLocationAccuracyNearestTenMeters":
@@ -107,7 +135,7 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         case "kCLLocationAccuracyThreeKilometers":
             locationAccuracy = kCLLocationAccuracyThreeKilometers
         default:
-            locationAccuracy = kCLLocationAccuracyBest
+            locationAccuracy = kCLLocationAccuracyHundredMeters
         }
         
         
@@ -125,8 +153,6 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         switch valueSelected {
         case "kCLLocationAccuracyKilometer":
             titleData = NSLocalizedString("location_kCLLocationAccuracyKilometer", comment:  "")
-        case "kCLLocationAccuracyBest":
-            titleData = NSLocalizedString("location_kCLLocationAccuracyBest", comment:  "")
         case "kCLLocationAccuracyHundredMeters":
             titleData = NSLocalizedString("location_kCLLocationAccuracyHundredMeters", comment:  "")
         case "kCLLocationAccuracyNearestTenMeters":
@@ -134,7 +160,7 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         case "kCLLocationAccuracyThreeKilometers":
             titleData = NSLocalizedString("location_kCLLocationAccuracyThreeKilometers", comment:  "")
         default:
-            titleData = NSLocalizedString("location_kCLLocationAccuracyBest", comment:  "")
+            titleData = NSLocalizedString("location_kCLLocationAccuracyNearestTenMeters", comment:  "")
         }
         
         let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "Helvetica", size: 14.0)!,NSForegroundColorAttributeName:UIColor.black])
@@ -148,30 +174,7 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         if parent == nil {
             // the back button was pressed.
             if (self.mapSettingsDelegate != nil) {
-                
-                guard Double(textFieldDistance.text!) != nil else {
-                    return
-                }
-                
-                guard Double(textFieldDeferredDistance.text!) != nil else {
-                    return
-                }
-                
-                guard Double(textFieldDeferredTime.text!) != nil else {
-                    return
-                }
-
-                // save diatnae and time prefs
-                // distance
-                let preferences = UserDefaults.standard
-                // distance
-                preferences.set(Double(textFieldDistance.text!)!, forKey: Constants.Preferences.MapLocationDistance)
-                // deferred distance
-                preferences.set(Double(textFieldDeferredDistance.text!)!, forKey: Constants.Preferences.MapLocationDeferredDistance)
-                // time
-                preferences.set(Double(textFieldDeferredTime.text!)!, forKey: Constants.Preferences.MapLocationDeferredTimeout)
-                
-                self.mapSettingsDelegate?.onChanged()
+                storeValues()
             }
         }
     }
@@ -180,8 +183,53 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
-    
 
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        //textField.resignFirstResponder()
+        return true
+    }
+    
+    
+    func storeValues() {
+        
+        guard Double(textFieldDistance.text!) != nil else {
+            readAndDisplayCurrentDefaults()
+            return
+        }
+        
+        guard Double(textFieldDeferredDistance.text!) != nil else {
+            readAndDisplayCurrentDefaults()
+            return
+        }
+        
+        guard Double(textFieldDeferredTime.text!) != nil else {
+            readAndDisplayCurrentDefaults()
+            return
+        }
+        
+        // save distance and time prefs
+        // distance
+        let preferences = UserDefaults.standard
+        // distance
+        preferences.set(Double(textFieldDistance.text!)!, forKey: Constants.Preferences.MapLocationDistance)
+        // deferred distance
+        preferences.set(Double(textFieldDeferredDistance.text!)!, forKey: Constants.Preferences.MapLocationDeferredDistance)
+        // time
+        preferences.set(Double(textFieldDeferredTime.text!)!, forKey: Constants.Preferences.MapLocationDeferredTimeout)
+        
+        self.mapSettingsDelegate?.onChanged()
+        readAndDisplayCurrentDefaults()
+    }
+    
+    
+    func readAndDisplayCurrentDefaults() {
+        
+        textFieldDistance.text = String(Helper.GetUserPreferencesDistance())
+        textFieldDistance.setNeedsDisplay()
+        textFieldDeferredDistance.text = String(Helper.GetUserPreferencesDeferredDistance())
+        textFieldDeferredDistance.setNeedsDisplay()
+        textFieldDeferredTime.text = String(Helper.GetUserPreferencesDeferredTimeout())
+        textFieldDeferredTime.setNeedsDisplay()
+    }
 }

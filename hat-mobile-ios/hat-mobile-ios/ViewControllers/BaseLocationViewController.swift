@@ -70,6 +70,8 @@ class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate 
         {
             return
         }
+        
+        
         // check we have a measurement that meets our requirements,
         if (latestLocation.horizontalAccuracy <= locationManager.desiredAccuracy) {
             // add data

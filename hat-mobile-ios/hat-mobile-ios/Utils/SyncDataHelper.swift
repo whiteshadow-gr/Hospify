@@ -490,14 +490,31 @@ internal class SyncDataHelper {
                                 let recordsUpdated:Int = array.count
 
                                 // get lastUpdatedDate
-                                func getLastUpdatedDate(_ array: [JSON]) -> (String!) {
+                                func getLastUpdatedDate(_ array: [JSON]) -> (String?) {
+                                    // Find the latest date
+                                    var result:String? = nil
                                     for item in array {
                                         if let dateString = item["record"]["lastUpdated"].string {
-                                            return dateString
+                                            if let r = result {
+                                                // Is our latest date newer? Use it if so
+                                                let currentDate:NSDate? = Helper.getDateFromString(r) as NSDate?
+                                                let potentialDate:NSDate? = Helper.getDateFromString(dateString) as NSDate?
+
+                                                if let c:NSDate = currentDate {
+                                                    if let p:NSDate = potentialDate {
+                                                        if p.compare(c as Date) == ComparisonResult.orderedDescending {
+                                                            // Both dates are valid and our new one is later in time, so use it
+                                                            result = dateString
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+                                                result = dateString
+                                            }
                                         }
                                     }
-                                        
-                                    return nil
+
+                                    return result
 
                                 }
                                     

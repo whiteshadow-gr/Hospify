@@ -239,18 +239,7 @@ class LoginViewController: BaseViewController {
                             */
                             if (result.isSuccessful)
                             {
-                                //self.presentUIAlertOK("Success", message: "good")
-                                
-                                // save the hatdomain from the token to the device Keychain
-                                if(Helper.SetKeychainValue(key: Constants.Keychain.HATDomainKey, value: HATDomainFromToken))
-                                {
-                                    // seque
-                                    self.performSegue(withIdentifier: "ShowMapsViewController", sender: self)
-
-                                }else{
-                                    self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: NSLocalizedString("auth_error_keychain_save", comment:  "keychain"))
-                                }
-                                
+                                self.authoriseAppToWriteToCloud(hatDomain, HATDomainFromToken)
                                 
                             }else{
                                 self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: NSLocalizedString("auth_error_invalid_token", comment:  "auth"))
@@ -275,6 +264,56 @@ class LoginViewController: BaseViewController {
         }
         
     }
+    
+    
+    
+    func authoriseAppToWriteToCloud(_ userDomain:String,_ HATDomainFromToken:String) {
+        // parameters..
+        let parameters = ["": ""]
+        
+        // auth header
+        let headers:[String: String] = Helper.ConstructRequestHeaders(Helper.TheMarketAccessToken())
+        // construct url
+        let url = Helper.TheAppRegistrationWithHATURL(userDomain)
+        
+        
+        // make asynchronous call
+        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: "application/json", parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { (r: Helper.ResultType) -> Void in
+            
+            
+            switch r {
+            case .isSuccess(let isSuccess, _, let result):
+                if isSuccess{
+                    
+                    // belt and braces.. check we have a message in the returned JSON
+                    if result["message"].exists()
+                    {
+                        // save the hatdomain from the token to the device Keychain
+                        if(Helper.SetKeychainValue(key: Constants.Keychain.HATDomainKey, value: HATDomainFromToken))
+                        {
+                            self.performSegue(withIdentifier: "ShowMapsViewController", sender: self)
+                            
+                        }else{
+                            self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: NSLocalizedString("auth_error_keychain_save", comment:  "keychain"))
+                        }
+                        
+                    }else{
+                        self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: "Message not found")
+                    }
+                    
+                }else{
+                    self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: result.rawString()!)
+                }
+                
+            case .error(let error, let statusCode):
+                let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                self.presentUIAlertOK(NSLocalizedString("error_label", comment:  "error"), message: msg)
+            }
+            
+        }
+    }
+    
+    
     
     /**
  

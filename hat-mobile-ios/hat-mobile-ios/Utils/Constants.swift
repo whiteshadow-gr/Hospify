@@ -122,6 +122,10 @@ class Constants  {
      */
     struct Preferences {
 
+        // new type 1
+        static let UserNewDelta1 = "shared_user_new_delta_1"
+        static let UserNewDefaultAccuracy = "shared_user_new_default_accuracy"
+
         // map
         static let MapLocationAccuracy = "shared_map_location_accuracy"
         static let MapLocationDistance = "shared_map_location_distance"

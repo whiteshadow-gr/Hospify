@@ -519,6 +519,23 @@ class Helper
     class func GetUserPreferencesAccuracy() -> CLLocationAccuracy {
         
         let preferences = UserDefaults.standard
+
+        if preferences.object(forKey: Constants.Preferences.UserNewDefaultAccuracy) != nil {
+            // already done
+        }else{
+            // if none, best or 10m we go to 100m accuracy instead
+            let existingAccuracy:CLLocationAccuracy = preferences.object(forKey: Constants.Preferences.MapLocationAccuracy) as? CLLocationAccuracy ?? kCLLocationAccuracyHundredMeters
+            
+            if ((existingAccuracy == kCLLocationAccuracyBest) || (existingAccuracy == kCLLocationAccuracyNearestTenMeters))
+            {
+                preferences.set(kCLLocationAccuracyHundredMeters, forKey: Constants.Preferences.MapLocationAccuracy)
+            }
+            
+            // set user delta
+            preferences.set("UserNewDefaultAccuracy", forKey: Constants.Preferences.UserNewDefaultAccuracy)
+
+        }
+        
         let newAccuracy:CLLocationAccuracy = preferences.object(forKey: Constants.Preferences.MapLocationAccuracy) as? CLLocationAccuracy ?? kCLLocationAccuracyHundredMeters
         
         return newAccuracy
@@ -532,8 +549,16 @@ class Helper
      */
     class func GetUserPreferencesDistance() -> CLLocationDistance {
         
+        let minValue:CLLocationDistance = 100;
+        
         let preferences = UserDefaults.standard
-        let newDistance:CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDistance) as? CLLocationDistance ?? 100
+        var newDistance:CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDistance) as? CLLocationDistance ?? minValue
+        
+        // We will clip the lowest value up to a default, this can happen via a previous version of the app
+        if newDistance < minValue
+        {
+            newDistance = minValue
+        }
         
         return newDistance
         
@@ -546,9 +571,17 @@ class Helper
      */
     class func GetUserPreferencesDeferredDistance() -> CLLocationDistance {
         
+        let minValue:CLLocationDistance = 150;
+
         let preferences = UserDefaults.standard
-        let newDistance:CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDeferredDistance) as? CLLocationDistance ?? 150
+        var newDistance:CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDeferredDistance) as? CLLocationDistance ?? minValue
         
+        // We will clip the lowest value up to a default, this can happen via a previous version of the app
+        if newDistance < minValue
+        {
+            newDistance = minValue
+        }
+
         return newDistance
         
     }
@@ -560,11 +593,18 @@ class Helper
      */
     class func GetUserPreferencesDeferredTimeout() -> TimeInterval {
         
+        let minValue:TimeInterval = 180
+        
         let preferences = UserDefaults.standard
-        let newTime:TimeInterval = preferences.object(forKey: Constants.Preferences.MapLocationDeferredTimeout) as? Double ?? 180
+        var newTime:TimeInterval = preferences.object(forKey: Constants.Preferences.MapLocationDeferredTimeout) as? TimeInterval ?? minValue
+        
+        // We will clip the lowest value up to a default, this can happen via a previous version of the app
+        if newTime < minValue
+        {
+            newTime = minValue
+        }
         
         return newTime
-        
     }
 
     

@@ -216,8 +216,8 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
             let mapBoundsWidth = Double(self.mapView.bounds.size.width)
             let mapRectWidth:Double = self.mapView.visibleMapRect.size.width
             let scale:Double = mapBoundsWidth / mapRectWidth
-            let annotationArray = self.clusteringManager.clusteredAnnotationsWithinMapRect(self.mapView.visibleMapRect, withZoomScale:scale)
-            self.clusteringManager.displayAnnotations(annotationArray, onMapView:self.mapView)
+            let annotationArray = self.clusteringManager.clusteredAnnotations(withinMapRect: self.mapView.visibleMapRect, zoomScale: scale)
+            self.clusteringManager.display(annotations: annotationArray, onMapView: self.mapView)
         })
     }
     
@@ -234,7 +234,7 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         if annotation.isKind(of: FBAnnotationCluster.self) {
             reuseId = "Cluster"
             var clusterView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId)
-            clusterView = FBAnnotationClusterView(annotation: annotation, reuseIdentifier: reuseId, options: nil)
+            clusterView = FBAnnotationClusterView(annotation: annotation, reuseIdentifier: reuseId)
             return clusterView
         } else {
             reuseId = "Pin"
@@ -333,7 +333,8 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
                     annottationArray.append(pin)
                 }
                 // we must set annotations to replace old ones
-                self.clusteringManager.setAnnotations(annottationArray)
+                //self.clusteringManager.setAnnotations(annottationArray)
+                self.clusteringManager.add(annotations: annottationArray)
                 // force map changed to refresh the map and any pins
                 self.mapView(self.mapView, regionDidChangeAnimated: true)
                 

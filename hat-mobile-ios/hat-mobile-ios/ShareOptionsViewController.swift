@@ -18,7 +18,7 @@ class ShareOptionsViewController: UIViewController {
     // MARK: - Private variables
     
     /// The json file received from HAT
-    private var jsonReceivedFromHat: JSON = JSON(nilLiteral: ())
+    private var jsonReceivedFromHat: JSON = JSON.null
     /// An array of strings holding the selected social networks to share the note
     private var shareOnSocial: [String] = ["facebook"]
     /// A string passed from Notables view controller about the kind of the note
@@ -100,7 +100,7 @@ class ShareOptionsViewController: UIViewController {
     @IBAction func shareNowButton(_ sender: Any) {
         
         // start the procedure to upload the note to the hat
-        self.getUserToken(completion: self.checkNotableTableExists)
+        HatAccountService.getUserToken(completion: self.checkNotableTableExists)
     }
     
     /**
@@ -203,14 +203,19 @@ class ShareOptionsViewController: UIViewController {
      - parameter json: The json file as a Dictionary<String, Any>
      */
     func postNote(token: String, json: Dictionary<String, Any>) -> Void {
-                
+        
+        // create JSON file for posting with default values
         let hatDataStructure = JSONHelper.createJSONForPostingOnNotables(textToPost: self.messageTextField.text!, hatTableStructure: json)
+        // update JSON file with the values needed
         let hatData = self.updateJSONFile(file: hatDataStructure)
 
+        // create the headers
         let headers = Helper.ConstructRequestHeaders(token)
         
+        // make async request
         NetworkHelper.AsynchronousRequest("https://mariostsekis.hubofallthings.net/data/record/values", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: hatData, headers: headers, completion: { (r: Helper.ResultType) -> Void in
             
+            // handle result
             switch r {
                 
             case .isSuccess(let isSuccess, _, _):
@@ -225,101 +230,40 @@ class ShareOptionsViewController: UIViewController {
         })
     }
     
-    /**
-     <#Function Details#>
-     
-     - parameter token: The token returned from the hat
-     */
-    func createTable(token: String) -> Void {
-        
-        let parameters = JSONHelper.createNotablesTableJSON()
-        let headers = Helper.ConstructRequestHeaders(token)
-        
-        NetworkHelper.AsynchronousRequest("https://tablestest.hubofallthings.net/data/table", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: Helper.ResultType) -> Void in
-            
-            switch r {
-                
-            case .isSuccess(let isSuccess, _, _):
-                
-                if isSuccess {
-                }
-                
-            case .error(let error, _):
-                
-                print("error res: \(error)")
-            }
-        })
-    }
     
     /**
-     <#Function Details#>
+     Checks if notables table exists
      
-     - parameter <#Parameter#>: <#Parameter description#>
-     - returns: <#Returns#>
-     */
-    func getUserToken(completion: @escaping (_ token: String) -> Void) -> Void {
-        
-        let authTokenUrl = Helper.TheUsersAccessTokenURL()
-        let parameters = ["": ""]
-        let headers = ["username": "mariostsekis", "password": "K46-Gss-ECe-Rqr"]
-        
-        let successfulTokenNextStep = self.getUserTokenCompletionFunction(callback: completion)
-        
-        NetworkHelper.AsynchronousRequest(authTokenUrl, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion:successfulTokenNextStep)
-    }
-    
-    /**
-     <#Function Details#>
-     
-     - parameter <#Parameter#>: <#Parameter description#>
-     - returns: <#Returns#>
-     */
-    func getUserTokenCompletionFunction (callback: @escaping (String) -> Void) -> (_ r: Helper.ResultType) -> Void {
-        
-        return { (_ r: Helper.ResultType) -> Void in
-            
-            switch r {
-                
-            case .error( _, _):
-                
-                break
-            case .isSuccess(let isSuccess, _, let result):
-                
-                if isSuccess {
-                    
-                    let checkResult: String = "accessToken"
-                    
-                    if result[checkResult].exists() {
-                        
-                        callback(result[checkResult].stringValue)
-                        print(result[checkResult].stringValue)
-                    }
-                }
-            }
-        }
-    }
-    
-    /**
-     <#Function Details#>
-     
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter authToken: The auth token from hat
      */
     func checkNotableTableExists(authToken: String) -> Void {
         
+        // create the url
         let tableURL = Helper.TheUserHATCheckIfTableExistsURL(tableName: "notablesv1", sourceName: "rumpel")
+        
+        // create parameters and headers
         let parameters = ["": ""]
         let header = ["X-Auth-Token": authToken]
-        let passToken = self.checkNotablesTableExistsCompletionFunction(token: authToken)
         
+        let postNote: Void = self.postNote(token: authToken, json: JSON(self.jsonReceivedFromHat).dictionary!)
+        // get token of the hat
+//        let passToken = self.checkNotablesTableExistsCompletionFunction(token: authToken)
+        let passToken = self.checkNotablesTableExistsCompletionFunction(
+            postNote: postNote,
+            createTable: HatAccountService.createNotablesTable(token: authToken, callback: postNote),
+            token: authToken)
+        
+        
+        // make async request
         NetworkHelper.AsynchronousRequest(tableURL, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: header, completion:passToken)
     }
     
     /**
-     <#Function Details#>
+     Checks if notables table exists completion handler
      
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter token: A function variable of type, (String) -> (_ r: Helper.ResultType)
      */
-    func checkNotablesTableExistsCompletionFunction(token: String ) -> (_ r: Helper.ResultType) -> Void {
+    func checkNotablesTableExistsCompletionFunction(postNote: Void, createTable: Void , token: String) -> (_ r: Helper.ResultType) -> Void {
         
         return { (r: Helper.ResultType) -> Void in
             
@@ -335,12 +279,12 @@ class ShareOptionsViewController: UIViewController {
                     //table found
                     if statusCode == 200 {
                         
-                        self.postNote(token: token, json: result.dictionary!)
+                        postNote
                         //table not found
                     } else if statusCode == 404 {
                         
-                        self.createTable(token: token)
-                        self.postNote(token: token, json: result.dictionary!)
+                        createTable
+                        postNote
                     }
                 }
             }
@@ -354,13 +298,20 @@ class ShareOptionsViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        // set title in the navigation bar
         self.title = "Create Notable"
+        
+        // setup text field
         self.messageTextField.keyboardAppearance = .dark
         self.messageTextField.borderStyle = .none
         self.messageTextField.attributedPlaceholder =
             NSAttributedString(string: "What's on your mind?", attributes: [NSForegroundColorAttributeName : UIColor.lightGray])
+        
+        // create a button and add it to navigation bar
         let button = UIBarButtonItem(title: "Share", style: .done, target: self, action: #selector(shareNowButton))
         self.navigationItem.rightBarButtonItem = button
+        
+        // add keyboard handling to view
         self.addKeyboardHandling()
         self.hideKeyboardWhenTappedAround()
     }

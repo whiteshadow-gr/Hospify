@@ -41,7 +41,7 @@ class NetworkHelper {
             method: HTTPMethod,
             encoding: ParameterEncoding,
             contentType: String,
-            parameters: Dictionary<String, AnyObject>,
+            parameters: Dictionary<String, Any>,
             headers: Dictionary<String, String>,
             completion: @escaping (_ r: Helper.ResultType) -> Void) -> Void {
         
@@ -67,7 +67,9 @@ class NetworkHelper {
                     
                     if let value = response.result.value {
                         let json = JSON(value)
-                        completion(Helper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json))
+                        completion(
+                            Helper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json)
+                        )
                     }else{
                         completion(Helper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
                     }
@@ -98,7 +100,7 @@ class NetworkHelper {
         method: HTTPMethod,
         encoding: ParameterEncoding,
         contentType: String,
-        parameters: Dictionary<String, AnyObject>,
+        parameters: Dictionary<String, Any>,
         headers: Dictionary<String, String>,
         completion: @escaping (_ r: Helper.ResultTypeString) -> Void) -> Void {
         

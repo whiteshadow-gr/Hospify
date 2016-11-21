@@ -36,10 +36,10 @@ internal class SyncDataHelper {
      
      
      */
-    internal func CheckNextBlockToSync()
+    internal func CheckNextBlockToSync() -> Bool
     {
         var iCount:Int = 0
-
+        
         // predicate to check for nil sync field
         let predicate = NSPredicate(format: "lastSynced == %@")
         //Get the results. Results list is optional
@@ -67,10 +67,14 @@ internal class SyncDataHelper {
             // only sync if we have data
             if theBlockDataPoints.count > 0 {
                 self.SyncDataItems(theBlockDataPoints)
+                
+                return true
             }
             
-           
+            
         }
+        
+        return false
         
     }
     
@@ -121,7 +125,7 @@ internal class SyncDataHelper {
         //print(url)
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { (r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers) { (r: Helper.ResultType) -> Void in
             
             // the result from asynchronous call to login
             
@@ -194,7 +198,7 @@ internal class SyncDataHelper {
         //print(url)
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { (r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters , headers: headers) { (r: Helper.ResultType) -> Void in
             
             // the result from asynchronous call to login
             
@@ -354,7 +358,7 @@ internal class SyncDataHelper {
         //print(url)
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { (r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers) { (r: Helper.ResultType) -> Void in
             
             // the result from asynchronous call to login
             

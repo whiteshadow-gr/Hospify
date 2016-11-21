@@ -255,12 +255,31 @@ class Helper
         // https://${HAT_DOMAIN}/users/access_token?username=${HAT_USERNAME}&password=${HAT_PASSWORD}
         
         let url:Constants.UserHATAccessTokenURLAlias =
-                "http://" +
+                "https://" +
                     self.TheUserHATDomain() + /* hat domain for the user */
                     "/users/access_token?username=" +
                     self.TheHATUsername() +
                     "&password=" +
                     self.TheHATPassword()
+        
+        return url
+    }
+    
+    /**
+     Should be performed before each data post request as token lifetime is short.
+     
+     - returns: UserHATAccessTokenURLAlias
+     */
+    class func TheUsersAccessTokenURL() -> Constants.UserHATAccessTokenURLAlias
+    {
+        // sample format
+        // GET
+        // https://${HAT_DOMAIN}/users/access_token
+        
+        let url:Constants.UserHATAccessTokenURLAlias =
+            "https://" +
+                self.TheUserHATDomain() + /* hat domain for the user */
+                "/users/access_token"
         
         return url
     }
@@ -306,12 +325,50 @@ class Helper
         
         
         let url:String =
-            "http://" +
+            "https://" +
                 self.TheUserHATDomain() + /* hat domain for the user */
                 "/data/table?name=" +
                 Constants.HATDataSource().name +
                 "&source=" +
                 Constants.HATDataSource().source
+        
+        return url
+    }
+    
+    /**
+     Creates a table creation URL
+     
+     - returns: String
+     */
+    class func createTableURL() -> String
+    {
+        // sample format
+        // GET
+        // http://${DOMAIN}/data/table?name=${NAME}&source=${SOURCE}`
+        
+        
+        let url:String =
+            "https://" +
+                self.TheUserHATDomain() + /* hat domain for the user */
+                "/data/table"
+        
+        return url
+    }
+    
+    class func TheUserHATCheckIfTableExistsURL(tableName: String, sourceName: String) -> String
+    {
+        // sample format
+        // GET
+        // http://${DOMAIN}/data/table?name=${NAME}&source=${SOURCE}`
+        
+        
+        let url:String =
+            "https://" +
+                self.TheUserHATDomain() + /* hat domain for the user */
+                "/data/table?name=" +
+                tableName +
+                "&source=" +
+                sourceName
         
         return url
     }
@@ -333,7 +390,7 @@ class Helper
         // Headers: ‘X-Auth-Token’: ${HAT_ACCESS_TOKEN}
 
         let url:String =
-                "http://" +
+                "https://" +
                     self.TheUserHATDomain() + /* hat domain for the user */
                     "/data/table"
         
@@ -354,7 +411,7 @@ class Helper
         // Headers: ‘X-Auth-Token’: ${HAT_ACCESS_TOKEN}
         
         let url:String =
-            "http://" +
+            "https://" +
                 self.TheUserHATDomain() + /* hat domain for the user */
                 "/data/table/" +
                 String(fieldID)
@@ -370,7 +427,7 @@ class Helper
         // Headers: ‘X-Auth-Token’: ${HAT_ACCESS_TOKEN}
         
         let url:String =
-            "http://" +
+            "https://" +
                 self.TheUserHATDomain() + /* hat domain for the user */
                 "/data/record/values"
         
@@ -606,8 +663,5 @@ class Helper
         
         return newTime
     }
-
-    
-    
  
 }

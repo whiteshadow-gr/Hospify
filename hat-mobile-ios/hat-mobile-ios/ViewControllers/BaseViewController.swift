@@ -21,9 +21,12 @@
 import UIKit
 import MapKit
 
+// MARK: Class
+
 /// All Viewcontrollers ectend this class. Contain common functions
 class BaseViewController: UIViewController {
 
+    // MARK: - Get storyboard
     
     /**
      Get Main storyboard reference
@@ -31,12 +34,12 @@ class BaseViewController: UIViewController {
      - returns: UIStoryboard
      */
     func getMainStoryboard() -> UIStoryboard {
+        
         return UIStoryboard.init(name: "Main", bundle: nil)
     }
-
     
+    // MARK: - Sync functions
 
-    
     /**
      Gets the last successful sync count from preferences
      
@@ -44,8 +47,11 @@ class BaseViewController: UIViewController {
      */
     func getSuccessfulSyncCount() -> Int {
         
+        // get standard user defaults
         let preferences = UserDefaults.standard
-        let successfulSyncCount:Int = preferences.integer(forKey: Constants.Preferences.SuccessfulSyncCount) // eturns an integer if the key existed, or 0 if not. 
+        
+        // returns an integer if the key existed, or 0 if not.
+        let successfulSyncCount:Int = preferences.integer(forKey: Constants.Preferences.SuccessfulSyncCount)
         
         return successfulSyncCount
     }
@@ -57,72 +63,66 @@ class BaseViewController: UIViewController {
      */
     func getLastSuccessfulSyncDate() -> Date! {
         
+        // get standard user defaults
         let preferences = UserDefaults.standard
-        if let successfulSyncDate:Date = preferences.object(forKey: Constants.Preferences.SuccessfulSyncDate) as? Date
-        {
+        
+        // search for the particular key, if found return it
+        if let successfulSyncDate:Date = preferences.object(forKey: Constants.Preferences.SuccessfulSyncDate) as? Date {
+            
             return successfulSyncDate
         }
         
         return nil
     }
-
     
+    // MARK: - Create Alert function
+
     /**
      Presents a common UI alert dialog.
      
-     - parameter title:   <#title description#>
-     - parameter message: <#message description#>
+     - parameter title: The desired title for the Alert
+     - parameter message: The desired message for the Alert
      */
     func presentUIAlertOK(_ title: String, message: String) -> Void {
+        
+        // create the alert
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         // add the actions (buttons)
         alert.addAction(UIAlertAction(title: NSLocalizedString("ok_label", comment:  "ok"), style: UIAlertActionStyle.default, handler: nil))
+        // present the alert
         self.present(alert, animated: true, completion: nil)
-
     }
+    
+    // MARK: - Handle app state changes
     
     /**
      When app entered background
 
-     
-     - parameter notification: <#notification description#>
+     - parameter notification: The Notification object that calls this method
      */
-    func didEnterBackgroundNotification(_ notification: Notification){
+    func didEnterBackgroundNotification(_ notification: Notification) {
+        
         //do stuff
-        self.stopAnyTimers()
     }
 
     /**
      When app becomes active
      
-     - parameter notification: default notification
+     - parameter notification: The Notification object that calls this method
      */
-    func didBecomeActiveNotification(_ notification: Notification){
+    func didBecomeActiveNotification(_ notification: Notification) {
+        
         //do stuff
         if !Helper.TheUserHATDomain().isEmpty {
-            self.startAnyTimers()
+            
         }
     }
-
-    /**
-     Called from Observers when entering/leaving background
-
-     */
-    func stopAnyTimers() -> Void {
-        //
-    }
     
-    /**
-     Called from Observers when entering/leaving background
-     */
-    func startAnyTimers() -> Void {
-        //
-    }
+    // MARK: - Auto generated functions
     
     override func didReceiveMemoryWarning() {
+        
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-
 }

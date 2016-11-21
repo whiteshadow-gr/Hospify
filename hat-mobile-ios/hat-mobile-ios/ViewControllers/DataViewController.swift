@@ -21,19 +21,18 @@
 import UIKit
 import RealmSwift
 
-class DataViewController: BaseViewController {
+// MARK: Class
 
+/// The data points to upload or that has been uploaded view controller
+class DataViewController: BaseViewController {
+    
+    // MARK: - IBOutlet
+
+    /// An IBOutlet for handling the table view
     @IBOutlet weak var dataTableView: DataPointsTableView!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // view controller title
-        self.title = NSLocalizedString("data_label", comment:  "data title")
-        
-        
-    }
-
+    // MARK: - IBAction
+    
     /**
      Purge buton pressed event
      
@@ -41,21 +40,34 @@ class DataViewController: BaseViewController {
      */
     @IBAction func buttonPurge(_ sender: UIBarButtonItem) {
         
-        // show alert
+        // create alert
         let alert = UIAlertController(title: NSLocalizedString("purge_label", comment:  "purge"), message: NSLocalizedString("purge_message_label", comment:  "purge message"), preferredStyle: .alert)
-        // add the actions (buttons)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("no_label", comment:  "no"), style: UIAlertActionStyle.default, handler: nil))
-        // yes button with action
-        let yesButtonOnAlertAction = UIAlertAction(title: NSLocalizedString("yes_label", comment:  "yes"), style: .default)
-        { (action) -> Void in
-            // yes..
-            if (RealmHelper.Purge())
-            {
+        
+        // create actions
+        let yesButtonOnAlertAction = UIAlertAction(title: NSLocalizedString("yes_label", comment:  "yes"), style: .default) {
+            (action) -> Void in
+            
+            if (RealmHelper.Purge()) {
+                
                 self.dataTableView.reloadData()
             }
         }
-        // add and present
+        
+        // add the actions
         alert.addAction(yesButtonOnAlertAction)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("no_label", comment:  "no"), style: UIAlertActionStyle.default, handler: nil))
+        
+        // present view controller
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    // MARK: - View controller functions
+    
+    override func viewDidLoad() {
+        
+        super.viewDidLoad()
+        
+        // view controller title
+        self.title = NSLocalizedString("data_label", comment:  "data title")
     }
 }

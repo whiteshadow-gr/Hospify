@@ -18,26 +18,20 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
 import MapKit
 import FBAnnotationClusteringSwift
 import RealmSwift
 import Toaster
 import SwiftyJSON
 
-/*
-    The MapView to render the DataPoints
- 
- */
-class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCountDelegate, MapSettingsDelegate, DataSyncDelegate {
+/// The MapView to render the DataPoints
+class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCountDelegate, MapSettingsDelegate, DataSyncDelegate, UINavigationBarDelegate {
 
     @IBOutlet weak var labelMostRecentInformation: UILabel!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var buttonYesterday: UIButton!
     @IBOutlet weak var buttonToday: UIButton!
-    @IBOutlet weak var buttonData: UIBarButtonItem!
     @IBOutlet weak var buttonLastWeek: UIButton!
-    @IBOutlet weak var buttonLogout: UIBarButtonItem!
     @IBOutlet weak var labelErrors: UILabel!
     @IBOutlet weak var labelUserHATDomain: UILabel!
     @IBOutlet weak var labelLastSyncInformation: UILabel!
@@ -55,14 +49,12 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         super.viewDidLoad()
 
         // view controller title
-        self.title = NSLocalizedString("map_label", comment:  "map title")
+        super.title = "Maps"
 
         // UI asset labels
         buttonYesterday.setTitle(NSLocalizedString("yesterday_label", comment:  "yesterday"), for: UIControlState())
         buttonToday.setTitle(NSLocalizedString("today_label", comment:  "today"), for: UIControlState())
         buttonLastWeek.setTitle(NSLocalizedString("lastweek_label", comment:  "last week"), for: UIControlState())
-        buttonLogout.title = NSLocalizedString("logout_label", comment:  "out")
-        
 
         // hide back button
         self.navigationItem.setHidesBackButton(true, animated:false);
@@ -107,6 +99,13 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
             object: nil)
         
         
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(refreshUI),
+            name: NSNotification.Name.UIApplicationDidBecomeActive,
+            object: nil)
+        
+        
         // label click
         labelLastSyncInformation.isUserInteractionEnabled = true
         let labelLastSyncInformationTap = UITapGestureRecognizer(target: self, action: #selector(MapViewController.LastSyncLabelTap))
@@ -114,6 +113,10 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         
         buttonTodayTouchUp(UIBarButtonItem())
         
+    }
+    func refreshUI(){
+        
+        self.mapView(self.mapView, regionDidChangeAnimated: true)
     }
     
     func LastSyncLabelTap(_ sender: UITapGestureRecognizer) -> Void {
@@ -135,7 +138,7 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     func LongPressOnToday(_ sender: UILongPressGestureRecognizer) -> Void {
         
         if (sender.state == UIGestureRecognizerState.ended) {
-            self.syncDataHelper.CheckNextBlockToSync()
+           self.syncDataHelper.CheckNextBlockToSync()
         } else if (sender.state == UIGestureRecognizerState.began) {
             // do ended
         }
@@ -145,42 +148,6 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     /// Utility Queie var
     var GlobalMainQueue: DispatchQueue {
         return DispatchQueue.main
-    }
-   
-    /**
-     Logout procedure
-     
-     - parameter sender: <#sender description#>
-     */
-    @IBAction func buttonLogoutPressed(_ sender: UIBarButtonItem) {
-        
-        // show alert
-        let alert = UIAlertController(title: NSLocalizedString("logout_label", comment:  "logout"), message: NSLocalizedString("logout_message_label", comment:  "logout message"), preferredStyle: .alert)
-
-        // add the actions (buttons)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("no_label", comment:  "no"), style: UIAlertActionStyle.default, handler: nil))
-        // yes button with action
-        let yesButtonOnAlertAction = UIAlertAction(title: NSLocalizedString("yes_label", comment:  "yes"), style: .default)
-        { (action) -> Void in
-            // yes..
-            // stop location updating
-            self.stopUpdating()
-            
-            // any timers
-            self.stopAnyTimers()
-            
-            // clear the user hat domain in keychain
-            _ = Helper.ClearKeychainKey(key: Constants.Keychain.HATDomainKey)
-            
-            // reset the stack to avoid allowing back
-            let vc: LoginViewController = self.getMainStoryboard().instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
-            self.navigationController!.setViewControllers([vc], animated: false)
-            self.navigationController?.pushViewController(vc, animated: true)
-
-        }
-        // add and present
-        alert.addAction(yesButtonOnAlertAction)
-        self.present(alert, animated: true, completion: nil)
     }
     
     /**
@@ -477,8 +444,6 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
             DispatchQueue.main.async(execute: {
                 self.syncDataHelper.CheckNextBlockToSync()
             })
-            
-            
         }
         timerSync.resume()
     }
@@ -497,20 +462,15 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
             timerSync.cancel()
             timerSync = nil
         }
-        
-        
     }
     
-    override func stopAnyTimers() -> Void {
+    func stopAnyTimers() -> Void {
         //
         self.stopTimer()
     }
     
-    override func startAnyTimers() -> Void {
+    func startAnyTimers() -> Void {
         //
         self.startTimer()
     }
-    
-       
-
 }

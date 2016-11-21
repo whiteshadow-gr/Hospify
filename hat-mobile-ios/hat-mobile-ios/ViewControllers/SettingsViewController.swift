@@ -185,7 +185,7 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
     }
 
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    override func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         //textField.resignFirstResponder()
         return true
     }

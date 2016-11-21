@@ -21,12 +21,19 @@
 import UIKit
 import CoreLocation
 
+// MARK: Class
+
+/// The basic location controller
 class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate {
+    
+    // MARK: - Local Variables
     
     var updateCountDelegate: UpdateCountDelegate? = nil
     
-    /// Load the LocationManager
+    // Create and setup the LocationManager
+    /// the location manager for handling the location updates
     lazy var locationManager: CLLocationManager! = {
+        
         let locationManager = CLLocationManager()
         locationManager.desiredAccuracy = Helper.GetUserPreferencesAccuracy()
         locationManager.distanceFilter = Helper.GetUserPreferencesDistance()
@@ -35,18 +42,21 @@ class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate 
         locationManager.requestAlwaysAuthorization()
         locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.activityType = CLActivityType.other /* see https://developer.apple.com/reference/corelocation/clactivitytype */
+        
         return locationManager
     }()
+    
+    // MARK: - Location Functions
     
     /**
      Start tracking
      */
     func beginLocationTracking() -> Void {
-        if let manager:CLLocationManager = locationManager
-        {
+        
+        if let manager:CLLocationManager = locationManager {
+            
             manager.startUpdatingLocation()
             NSLog("BaseLocation startUpdatingLocation");
-            
         }
     }
     
@@ -54,122 +64,153 @@ class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate 
      The CLLocationManagerDelegate delegate
      Called when location update changes
      
-     - parameter manager:   The CLLocation manager used
+     - parameter manager: The CLLocation manager used
      - parameter locations: Array of locations
      */
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
-    {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
         // clear down error display
         self.clearErrorDisplay()
         
         // get last location
         let latestLocation: CLLocation = locations[locations.count - 1]
+        var dblocation: CLLocation? = nil
+        
+        if let dbLastPoint = RealmHelper.GetLastDataPoint() {
+            
+            dblocation = CLLocation(latitude: (dbLastPoint.lat), longitude: (dbLastPoint.lng))
+        }
         
         // test that the horizontal accuracy does not indicate an invalid measurement
-        if (latestLocation.horizontalAccuracy < 0)
-        {
+        if (latestLocation.horizontalAccuracy < 0) {
+            
             return
         }
-        
-        
         // check we have a measurement that meets our requirements,
         if (latestLocation.horizontalAccuracy <= locationManager.desiredAccuracy) {
-            // add data
-            let count = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
             
-            //   while in foreground only
-            if UIApplication.shared.applicationState == .active {
+            if (dblocation != nil) {
                 
-                if (self.updateCountDelegate != nil) {
-                    self.updateCountDelegate?.onUpdateCount(count)
+                //calculate distance from previous spot
+                let distance = latestLocation.distance(from: dblocation!)
+                if !(distance.isLess(than: 100)) {
+                    
+                    // add data
+                    let count = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
+                    
+                    //   while in foreground only
+                    if UIApplication.shared.applicationState == .active {
+                        
+                        if (self.updateCountDelegate != nil) {
+                            
+                            self.updateCountDelegate?.onUpdateCount(count)
+                        }
+                    } else {
+                        
+                        //NSLog("App is backgrounded. New count is %i", count)
+                    }
                 }
             } else {
-                //NSLog("App is backgrounded. New count is %i", count)
+                
+                // add data
+                let count = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
+                
+                //   while in foreground only
+                if UIApplication.shared.applicationState == .active {
+                    
+                    if (self.updateCountDelegate != nil) {
+                        
+                        self.updateCountDelegate?.onUpdateCount(count)
+                    }
+                } else {
+                    
+                    //NSLog("App is backgrounded. New count is %i", count)
+                }
             }
         }
-        
     }
     
-    /*func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
-     
-     
-     }*/
-    
     /**
-     Stop any location updates.e.g.logout
+     Stop any location updates, e.g. logout
      */
     func stopUpdating() -> Void {
         
         // location manager is an optinal
-        if let manager:CLLocationManager = self.locationManager
-        {
+        if let manager:CLLocationManager = self.locationManager {
+            
             manager.stopUpdatingLocation()
             NSLog("BaseLocation stopUpdatingLocation");
-            
         }
     }
+    
+    // MARK: - Error handling Functions
     
     /**
      Display any error to user
      Mainly for Dev
      
-     - parameter description: <#description description#>
+     - parameter description: The error description
      */
     func displayError(description: String) -> Void {
+        
         if UIApplication.shared.applicationState == .active {
             
             if (self.updateCountDelegate != nil) {
+                
                 self.updateCountDelegate?.onUpdateError(description)
             }
         }
-        
     }
     
     /**
      Clear any dispaly errors
      Mainly for dev
-     
      */
     func clearErrorDisplay() -> Void {
+        
         if UIApplication.shared.applicationState == .active {
             
             if (self.updateCountDelegate != nil) {
+                
                 self.updateCountDelegate?.onUpdateError("")
             }
         }
     }
     
+    // MARK: - Changing app state functions
     
     /**
-     When app entered background
+     Called when app entered background
      
-     - parameter notification: <#notification description#>
+     - parameter notification: The notiffication calling this function
      */
-    override func didEnterBackgroundNotification(_ notification: Notification){
+    override func didEnterBackgroundNotification(_ notification: Notification) {
+        
         //super
         super.didEnterBackgroundNotification(notification)
         
         // stop updating
         //stopUpdating()
-        
     }
     
     /**
-     When app becomes active
+     Called when app becomes active
      
-     - parameter notification: default notification
+     - parameter notification: The notiffication calling this function
      */
-    override func didBecomeActiveNotification(_ notification: Notification){
+    override func didBecomeActiveNotification(_ notification: Notification) {
+        
         super.didBecomeActiveNotification(notification)
         
         // start normal location updates
         beginLocationTracking();
     }
     
+    // MARK: - View Controller's functions
     
     override func didReceiveMemoryWarning() {
+        
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
 }

@@ -25,7 +25,8 @@ import CoreLocation
 class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
     
     var window: UIWindow?
-    var deferringUpdates:Bool = false;
+    var deferringUpdates:Bool = false
+    var lastPos: CLLocation = CLLocation(latitude: 0, longitude: 0)
     
     /// Load the LocationManager
     lazy var locationManager: CLLocationManager! = {
@@ -49,25 +50,63 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             return true
         }
         
+        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName : UIColor.white]
+        application.statusBarStyle = UIStatusBarStyle.lightContent
+
+        
+        // define the interval for background fetch interval
+        application.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
+        
         // register for user notifications
         let notificationSettings = UIUserNotificationSettings(types: [.alert, .sound], categories: nil)
         UIApplication.shared.registerUserNotificationSettings(notificationSettings)
         
         /* we already have a hat_domain, ie. can skip the login screen? */
         if !Helper.TheUserHATDomain().isEmpty {
+            
             /* Go to the map screen. */
             let nav: UINavigationController = window?.rootViewController as! UINavigationController
             let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
-            let vc: MapViewController = storyboard.instantiateViewController(withIdentifier: "MapViewController") as! MapViewController
-            nav.setViewControllers([vc], animated: false)
+            /*let vc: MapViewController = storyboard.instantiateViewController(withIdentifier: "MapViewController") as! MapViewController
+             nav.setViewControllers([vc], animated: false)*/
+            
+            let tabController = storyboard.instantiateViewController(withIdentifier: "tabBarControllerID") as! UITabBarController
+            nav.setViewControllers([tabController], animated: false)
         } else {
             /* Just fall through to go to the login screen as per the storyboard. */
         }
         
-        
         self.window?.tintColor = Constants.Colours.AppBase
         
         return true
+    }
+    
+    func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        
+        if (lastPos.horizontalAccuracy <= locationManager.desiredAccuracy) {
+            
+            let syncHelper = SyncDataHelper()
+            let result = syncHelper.CheckNextBlockToSync()
+            if result == true {
+                
+                // do things in the background fetch
+                UIApplication.shared.cancelAllLocalNotifications()
+                let notif = UILocalNotification()
+                let timeNow = NSDate()
+                notif.fireDate = timeNow as Date;
+                notif.alertBody = "Background fetch!"
+                notif.soundName = UILocalNotificationDefaultSoundName
+                var number = UIApplication.shared.applicationIconBadgeNumber;
+                number += 1
+                notif.applicationIconBadgeNumber = number;
+                UIApplication.shared.scheduleLocalNotification(notif)
+                completionHandler(.newData)
+            }
+            else {
+                
+                completionHandler(.noData)
+            }
+        }
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
@@ -97,8 +136,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         localNotification.soundName = UILocalNotificationDefaultSoundName
         
         UIApplication.shared.scheduleLocalNotification(localNotification)
-        
-        
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -117,7 +154,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             manager.stopUpdatingLocation()
             NSLog("Delegate stopUpdatingLocation");
         }
-        
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
@@ -141,7 +177,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         return true
     }
     
-    
     /**
      Check if we need to purge old data. 7 Days
      */
@@ -152,9 +187,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         // use _ to get rid of result is unused warnings
         _ = RealmHelper.Purge(predicate)
-        
     }
-    
     
     /**
      The CLLocationManagerDelegate delegate
@@ -166,19 +199,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
     {
         // get location
-        let latestLocation: CLLocation = locations[locations.count - 1]
+        lastPos = locations[locations.count - 1]
+        print("location")
         
         // test that the horizontal accuracy does not indicate an invalid measurement
-        if (latestLocation.horizontalAccuracy < 0)
+        if (lastPos.horizontalAccuracy < 0)
         {
             return
         }
         // check we have a measurement that meets our requirements,
-        if (latestLocation.horizontalAccuracy <= locationManager.desiredAccuracy) {
+        if (lastPos.horizontalAccuracy <= locationManager.desiredAccuracy) {
             let taskID = beginBackgroundUpdateTask()
             
             DispatchQueue.global().async {
-                _ = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
+                _ = RealmHelper.AddData(Double(self.lastPos.coordinate.latitude), longitude: Double(self.lastPos.coordinate.longitude), accuracy: Double(self.lastPos.horizontalAccuracy))
                 
                 self.endBackgroundUpdateTask(taskID: taskID)
             }
@@ -200,7 +234,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             deferringUpdates = true;
         }
-        
     }
     
     //didFinishDeferredUpdatesWithError:
@@ -208,7 +241,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // Stop deferring updates
         self.deferringUpdates = false
     }
-    
     
     // background task
     func beginBackgroundUpdateTask() -> UIBackgroundTaskIdentifier {
@@ -229,8 +261,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             manager.startUpdatingLocation()
             NSLog("Delegate startUpdatingLocation");
         }
-        
     }
-    
 }
-

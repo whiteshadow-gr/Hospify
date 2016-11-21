@@ -1,14 +1,25 @@
 PODS:
-  - Alamofire (4.0.1)
-  - FBAnnotationClusteringSwift (1.0.4)
+  - Alamofire (4.2.0)
+  - FBAnnotationClusteringSwift (2.0)
   - JWTDecode (2.0.0)
   - KeychainSwift (7.0.0)
-  - Realm (2.0.2):
-    - Realm/Headers (= 2.0.2)
-  - Realm/Headers (2.0.2)
-  - RealmSwift (2.0.2):
-    - Realm (= 2.0.2)
-  - SwiftyJSON (3.1.1)
+  - PromiseKit (4.0.5):
+    - PromiseKit/Foundation (= 4.0.5)
+    - PromiseKit/QuartzCore (= 4.0.5)
+    - PromiseKit/UIKit (= 4.0.5)
+  - PromiseKit/CorePromise (4.0.5)
+  - PromiseKit/Foundation (4.0.5):
+    - PromiseKit/CorePromise
+  - PromiseKit/QuartzCore (4.0.5):
+    - PromiseKit/CorePromise
+  - PromiseKit/UIKit (4.0.5):
+    - PromiseKit/CorePromise
+  - Realm (2.1.0):
+    - Realm/Headers (= 2.1.0)
+  - Realm/Headers (2.1.0)
+  - RealmSwift (2.1.0):
+    - Realm (= 2.1.0)
+  - SwiftyJSON (3.1.3)
   - SwiftyRSA (0.5.0)
   - Toaster (2.0.1)
 
@@ -17,6 +28,7 @@ DEPENDENCIES:
   - FBAnnotationClusteringSwift (from `https://github.com/ribl/FBAnnotationClusteringSwift/`, branch `master`)
   - JWTDecode
   - KeychainSwift
+  - PromiseKit
   - RealmSwift
   - SwiftyJSON
   - SwiftyRSA
@@ -29,20 +41,21 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   FBAnnotationClusteringSwift:
-    :commit: ce7e1c9b4e60f7f9cef38d8453736086dd85abf6
+    :commit: cc3b6524156f8e0d8653688423fba2fdf0944bc8
     :git: https://github.com/ribl/FBAnnotationClusteringSwift/
 
 SPEC CHECKSUMS:
-  Alamofire: 7682d43245de14874acd142ec137b144aa1dd335
-  FBAnnotationClusteringSwift: 7ef2c863c806942a1c03add72cde1e9c1872534d
+  Alamofire: aa2e09d871c9160ac53c90e83c68064a94e3dfbe
+  FBAnnotationClusteringSwift: 0698ddcee46d1c28f14336909b2b0af4906b213f
   JWTDecode: 178e47e5d28d3abcff778bacced8342858cd6cb5
   KeychainSwift: b6947435dd78cc442c64a84ae648dd0e871cf448
-  Realm: 0f5a194af0b7e6158b83db41b4ee1a00be7ddf1a
-  RealmSwift: 0eb5070d851cba7c66e841ca756d83609dc78bc8
-  SwiftyJSON: f0be2e604f83e8405a624e9f891898bf6ed4e019
+  PromiseKit: 593b5e24ded6cbb1ebc708bc2c3428a8a5632d91
+  Realm: bc829ad0ef3d4eea70c34cfcc3b1704d18d50df1
+  RealmSwift: a4d4abbf0088c337cab5b738054395842e4b3052
+  SwiftyJSON: 38a8ea2006779c0fc4c310cb2ee8195327740faf
   SwiftyRSA: e73c44402451ad74c603cc87f7cd8a6d6f418138
   Toaster: be65cd48e93a525b2a9cc4bd25a2bfc900e02d9f
 
-PODFILE CHECKSUM: 63211abac536f57917d625eea9990d811c019961
+PODFILE CHECKSUM: e93e7715a4d19b86cf9fc057ceb8b47a60187ac7
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.1.1

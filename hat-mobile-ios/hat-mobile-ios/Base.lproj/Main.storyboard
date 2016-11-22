@@ -793,7 +793,7 @@
                     <tabBarItem key="tabBarItem" title="Notables" image="tabNotes" selectedImage="tabNotes" id="aDB-8m-Qex"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
-                        <outlet property="shareOptionsView" destination="InD-IA-mYc" id="RcC-6T-tzv"/>
+                        <outlet property="createNewNoteView" destination="InD-IA-mYc" id="5rE-te-GVN"/>
                         <outlet property="tableView" destination="4FF-aX-V3g" id="dHg-Kh-b8N"/>
                         <segue destination="omu-es-gVw" kind="show" identifier="optionsSegue" id="sL8-LM-vXn"/>
                     </connections>
@@ -843,7 +843,7 @@
                                                 <rect key="frame" x="0.0" y="361" width="374" height="286"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share on" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xoR-3Y-5vW">
-                                                        <rect key="frame" x="9" y="211" width="73" height="21"/>
+                                                        <rect key="frame" x="9" y="211.5" width="73" height="20.5"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="73" id="iSB-80-bte"/>
                                                         </constraints>

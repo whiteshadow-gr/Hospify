@@ -11,13 +11,14 @@ import KeychainSwift
 import Alamofire
 
 class HatAccountService {
+    
     /**
      Get the Market Access Token for the iOS data plug
      
      - returns: HATUsername
      */
-    class func TheHATUsername() -> Constants.HATUsernameAlias
-    {
+    class func TheHATUsername() -> Constants.HATUsernameAlias {
+        
         return Constants.HATDataPlugCredentials.HAT_Username
     }
     
@@ -26,8 +27,8 @@ class HatAccountService {
      
      - returns: HATPassword
      */
-    class func TheHATPassword() -> Constants.HATPasswordAlias
-    {
+    class func TheHATPassword() -> Constants.HATPasswordAlias {
+        
         return Constants.HATDataPlugCredentials.HAT_Password
     }
     
@@ -36,13 +37,12 @@ class HatAccountService {
      
      - returns: UserHATDomainAlias
      */
-    class func TheUserHATDomain() -> Constants.UserHATDomainAlias
-    {
+    class func TheUserHATDomain() -> Constants.UserHATDomainAlias {
         
-//        if let hatDomain = GetKeychainValue(key: Constants.Keychain.HATDomainKey)
-//        {
-//            return hatDomain;
-//        }
+        if let hatDomain = Helper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
+            
+            return hatDomain;
+        }
         
         return ""
     }
@@ -52,28 +52,33 @@ class HatAccountService {
      
      - parameter token: The token returned from the hat
      */
-    class func createNotablesTable(token: String, callback: Void) -> Void {
+    class func createNotablesTable(token: String) -> (_ callback: Void) -> Void {
         
-        // create headers and parameters
-        let parameters = JSONHelper.createNotablesTableJSON()
-        let headers = Helper.ConstructRequestHeaders(token)
-        
-        // make async request
-        NetworkHelper.AsynchronousRequest("https://tablestest.hubofallthings.net/data/table", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: Helper.ResultType) -> Void in
+        return { (_ callback: Void) -> Void in
             
-            // handle result
-            switch r {
+            // create headers and parameters
+            let parameters = JSONHelper.createNotablesTableJSON()
+            let headers = Helper.ConstructRequestHeaders(token)
+            
+            // make async request
+            NetworkHelper.AsynchronousRequest("https://tablestest.hubofallthings.net/data/table", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: Helper.ResultType) -> Void in
                 
-            case .isSuccess(let isSuccess, _, _):
-                
-                if isSuccess {
+                // handle result
+                switch r {
+                    
+                case .isSuccess(let isSuccess, _, _):
+                    
+                    if isSuccess {
+                        
+                        callback
+                    }
+                    
+                case .error(let error, _):
+                    
+                    print("error res: \(error)")
                 }
-                
-            case .error(let error, _):
-                
-                print("error res: \(error)")
-            }
-        })
+            })
+        }
     }
     
     /**
@@ -123,6 +128,38 @@ class HatAccountService {
                         callback(result[checkResult].stringValue)
                         print(result[checkResult].stringValue)
                     }
+                }
+            }
+        }
+    }
+    
+    class func getNotes(token: String, tableID: String) {
+    
+        let userDomain = self.TheUserHATDomain()
+        
+        let url = "https://"+userDomain+"/data/table/"+tableID+"/values?pretty=true"
+            
+        // create parameters and headers
+        let parameters = ["": ""]
+        let headers = ["X-Auth-Token": token]
+        
+        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: self.completionFunction(token: token))
+    }
+    
+    class func completionFunction(token: String) -> (_ r: Helper.ResultType) -> Void {
+        
+        return { (r: Helper.ResultType) -> Void in
+            
+            switch r {
+                
+            case .error( _, _):
+                
+                break
+            case .isSuccess(let isSuccess, _, let result):
+                
+                if isSuccess {
+                    
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notesArray"), object: result.array!)
                 }
             }
         }

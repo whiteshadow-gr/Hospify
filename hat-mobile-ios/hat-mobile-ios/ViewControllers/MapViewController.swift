@@ -217,7 +217,9 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
             let mapRectWidth:Double = self.mapView.visibleMapRect.size.width
             let scale:Double = mapBoundsWidth / mapRectWidth
             let annotationArray = self.clusteringManager.clusteredAnnotations(withinMapRect: self.mapView.visibleMapRect, zoomScale: scale)
-            self.clusteringManager.display(annotations: annotationArray, onMapView: self.mapView)
+            DispatchQueue.main.sync(execute: {
+                self.clusteringManager.display(annotations: annotationArray, onMapView: self.mapView)
+            })
         })
     }
     

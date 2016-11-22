@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Alamofire
+import SwiftyJSON
 
 // MARK: UIViewController Extension
 
@@ -163,6 +165,16 @@ class NotablesViewController: UIViewController, UITabBarDelegate, UITableViewDat
         // add keyboard handling
         self.hideKeyboardWhenTappedAround()
         self.addKeyboardHandling()
+        
+        HatAccountService.getUserToken(completion: self.checkNotableTableExists)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.showReceivedNotes), name: NSNotification.Name(rawValue: "notesArray"), object: nil)
+    }
+    
+    func showReceivedNotes(notification: Notification) {
+        
+        let test = notification.object as! [JSON]
+        print(test)
     }
 
     override func didReceiveMemoryWarning() {
@@ -191,6 +203,73 @@ class NotablesViewController: UIViewController, UITabBarDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return 2;
+    }
+    
+    // MARK: - Network functions
+    
+    /**
+     Checks if notables table exists
+     
+     - parameter authToken: The auth token from hat
+     */
+    func checkNotableTableExists(authToken: String) -> Void {
+        
+        // create the url
+        let tableURL = Helper.TheUserHATCheckIfTableExistsURL(tableName: "notablesv1", sourceName: "rumpel")
+        
+        // create parameters and headers
+        let parameters = ["": ""]
+        let header = ["X-Auth-Token": authToken]
+        
+        let passToken = self.checkNotablesTableExistsCompletionFunction(
+            createTable: HatAccountService.createNotablesTable(token: authToken),
+            token: authToken)
+        
+        // make async request
+        NetworkHelper.AsynchronousRequest(
+            tableURL,
+            method: HTTPMethod.get,
+            encoding: Alamofire.URLEncoding.default,
+            contentType: Constants.ContentType.JSON,
+            parameters: parameters,
+            headers: header,
+            completion:passToken)
+    }
+    
+    /**
+     Checks if notables table exists completion handler
+     
+     - parameter token: A function variable of type, (String) -> (_ r: Helper.ResultType)
+     */
+    func checkNotablesTableExistsCompletionFunction(createTable: @escaping (_ callback: Void) -> Void , token: String) -> (_ r: Helper.ResultType) -> Void {
+        
+        return { (r: Helper.ResultType) -> Void in
+            
+            switch r {
+                
+            case .error( _, _): break
+                
+            case .isSuccess(let isSuccess, let statusCode, let result):
+                
+                if isSuccess {
+                    
+                    let tableID = result["fields"][0]["tableId"].number
+                    print(tableID!)
+                    //table found
+                    if statusCode == 200 {
+                        
+                        // get notes
+                        HatAccountService.getNotes(token: token, tableID: String(describing: tableID!))
+                    //table not found
+                    } else if statusCode == 404 {
+                        
+                        // create table
+                        //HatAccountService.createNotablesTable(token: token)
+                        // show no notes
+                    }
+                }
+            }
+        }
     }
     
     // MARK: - Navigation

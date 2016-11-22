@@ -178,6 +178,7 @@ class ShareOptionsViewController: UIViewController {
     func updateJSONFile(file: Dictionary<String, Any>) -> Dictionary<String, Any> {
         
         var jsonFile = JSON(file)
+        
         //update message
         jsonFile = JSONHelper.updateMessageOnJSON(file: jsonFile, message: self.messageTextField.text!)
         //update kind
@@ -230,7 +231,6 @@ class ShareOptionsViewController: UIViewController {
         })
     }
     
-    
     /**
      Checks if notables table exists
      
@@ -245,17 +245,19 @@ class ShareOptionsViewController: UIViewController {
         let parameters = ["": ""]
         let header = ["X-Auth-Token": authToken]
         
-        let postNote: Void = self.postNote(token: authToken, json: JSON(self.jsonReceivedFromHat).dictionary!)
-        // get token of the hat
-//        let passToken = self.checkNotablesTableExistsCompletionFunction(token: authToken)
         let passToken = self.checkNotablesTableExistsCompletionFunction(
-            postNote: postNote,
-            createTable: HatAccountService.createNotablesTable(token: authToken, callback: postNote),
+            createTable: HatAccountService.createNotablesTable(token: authToken),
             token: authToken)
         
-        
         // make async request
-        NetworkHelper.AsynchronousRequest(tableURL, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: header, completion:passToken)
+        NetworkHelper.AsynchronousRequest(
+            tableURL,
+            method: HTTPMethod.get,
+            encoding: Alamofire.URLEncoding.default,
+            contentType: Constants.ContentType.JSON,
+            parameters: parameters,
+            headers: header,
+            completion:passToken)
     }
     
     /**
@@ -263,7 +265,7 @@ class ShareOptionsViewController: UIViewController {
      
      - parameter token: A function variable of type, (String) -> (_ r: Helper.ResultType)
      */
-    func checkNotablesTableExistsCompletionFunction(postNote: Void, createTable: Void , token: String) -> (_ r: Helper.ResultType) -> Void {
+    func checkNotablesTableExistsCompletionFunction(createTable: @escaping (_ callback: Void) -> Void , token: String) -> (_ r: Helper.ResultType) -> Void {
         
         return { (r: Helper.ResultType) -> Void in
             
@@ -275,16 +277,16 @@ class ShareOptionsViewController: UIViewController {
                 
                 if isSuccess {
                     
-                    self.jsonReceivedFromHat = result
+                    let dictionary = result.dictionary!
                     //table found
                     if statusCode == 200 {
                         
-                        postNote
+                        self.postNote(token: token, json: dictionary)
                         //table not found
                     } else if statusCode == 404 {
                         
-                        createTable
-                        postNote
+                        createTable(self.postNote(token: token, json: dictionary))
+                        //postNote
                     }
                 }
             }

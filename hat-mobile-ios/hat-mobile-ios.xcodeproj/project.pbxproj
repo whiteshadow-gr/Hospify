@@ -15,6 +15,7 @@
 		6044B21B1DDB7138003A1263 /* HatAccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6044B21A1DDB7138003A1263 /* HatAccountService.swift */; };
 		606528D31DDA037400026EA6 /* JSONHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606528D21DDA037400026EA6 /* JSONHelper.swift */; };
 		60A727BD1DDF47ED008AF409 /* FormatterHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A727BC1DDF47EC008AF409 /* FormatterHelper.swift */; };
+		60E7539A1DE46202001C85E7 /* NotesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E753991DE46202001C85E7 /* NotesData.swift */; };
 		8DE435014968672CA444EAD5 /* Pods_hat_mobile_iosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB9788EB5E42BE7C49C3D5F0 /* Pods_hat_mobile_iosTests.framework */; };
 		A61D448C09AEF14D57C20E47 /* Pods_hat_mobile_iosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1099428E2FE7DE31C71CBC /* Pods_hat_mobile_iosUITests.framework */; };
 		B5138ACE1D1ECA2C00CD1530 /* NetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5138ACD1D1ECA2C00CD1530 /* NetworkHelper.swift */; };
@@ -74,6 +75,7 @@
 		6044B21A1DDB7138003A1263 /* HatAccountService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HatAccountService.swift; path = Services/HatAccountService.swift; sourceTree = "<group>"; };
 		606528D21DDA037400026EA6 /* JSONHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSONHelper.swift; path = Utils/JSONHelper.swift; sourceTree = "<group>"; };
 		60A727BC1DDF47EC008AF409 /* FormatterHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FormatterHelper.swift; path = Utils/FormatterHelper.swift; sourceTree = "<group>"; };
+		60E753991DE46202001C85E7 /* NotesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotesData.swift; path = Objects/NotesData.swift; sourceTree = "<group>"; };
 		61FEF86F98CFF7E17DC9A675 /* Pods-hat-mobile-iosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hat-mobile-iosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-hat-mobile-iosTests/Pods-hat-mobile-iosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7F169C21E522510FBB67AA4C /* Pods-hat-mobile-iosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hat-mobile-iosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-hat-mobile-iosTests/Pods-hat-mobile-iosTests.release.xcconfig"; sourceTree = "<group>"; };
 		8B1099428E2FE7DE31C71CBC /* Pods_hat_mobile_iosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_hat_mobile_iosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -290,6 +292,7 @@
 			isa = PBXGroup;
 			children = (
 				B59136871D19DC2700E9EDD0 /* DataPoint.swift */,
+				60E753991DE46202001C85E7 /* NotesData.swift */,
 				B56E2FA21D22D1C400546C7E /* JSONDataSourceRequestField.swift */,
 			);
 			name = Objects;
@@ -613,6 +616,7 @@
 				B56E2FAA1D23D9FF00546C7E /* SyncDataHelper.swift in Sources */,
 				B54EA61A1D19F5450018EE47 /* DataPointTableViewCell.swift in Sources */,
 				B5E97D981D1BF1D100CFD1C8 /* BaseLocationViewController.swift in Sources */,
+				60E7539A1DE46202001C85E7 /* NotesData.swift in Sources */,
 				B51CC9241D1D5749000C9E48 /* SettingsViewController.swift in Sources */,
 				6044B2181DDB3151003A1263 /* TabBarViewController.swift in Sources */,
 				B591368A1D19DE6C00E9EDD0 /* RealmHelper.swift in Sources */,

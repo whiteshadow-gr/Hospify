@@ -49,7 +49,7 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         super.viewDidLoad()
 
         // view controller title
-        super.title = "Maps"
+        super.title = "Location"
 
         // UI asset labels
         buttonYesterday.setTitle(NSLocalizedString("yesterday_label", comment:  "yesterday"), for: UIControlState())
@@ -138,7 +138,7 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     func LongPressOnToday(_ sender: UILongPressGestureRecognizer) -> Void {
         
         if (sender.state == UIGestureRecognizerState.ended) {
-           self.syncDataHelper.CheckNextBlockToSync()
+           _ = self.syncDataHelper.CheckNextBlockToSync()
         } else if (sender.state == UIGestureRecognizerState.began) {
             // do ended
         }
@@ -445,7 +445,7 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         timerSync.setEventHandler {
             // sync with HAT
             DispatchQueue.main.async(execute: {
-                self.syncDataHelper.CheckNextBlockToSync()
+                _ = self.syncDataHelper.CheckNextBlockToSync()
             })
         }
         timerSync.resume()

@@ -22,7 +22,9 @@ class ShareOptionsViewController: UIViewController {
     /// An array of strings holding the selected social networks to share the note
     private var shareOnSocial: [String] = ["facebook"]
     /// A string passed from Notables view controller about the kind of the note
-    private var kind: String = "note"
+    var kind: String = "note"
+    /// the received note to edit from notables view controller
+    var receivedNote: NotesData? = nil
     
     // MARK: - IBOutlets
     
@@ -38,6 +40,13 @@ class ShareOptionsViewController: UIViewController {
     @IBOutlet weak var publicLabel: UILabel!
     /// An IBOutlet for handling the public/private switch
     @IBOutlet weak var publicSwitch: UISwitch!
+    /// An IBOutlet for handling the cancel button
+    @IBOutlet weak var cancelButton: UIButton!
+    /// An IBOutlet for handling the delete button
+    @IBOutlet weak var deleteButton: UILabel!
+    /// An IBOutlet for handling the publish button
+    @IBOutlet weak var publishButton: UILabel!
+    @IBOutlet weak var actionsView: UIView!
     
     // MARK: - IBActions
 
@@ -63,12 +72,12 @@ class ShareOptionsViewController: UIViewController {
      
      - parameter sender: The object that called this function
      */
-    @IBAction func publicSwitchUpdate(_ sender: Any) {
+    @IBAction func publicSwitchStateChanged(_ sender: Any) {
         
         // based on the switch state change the label accordingly
         if publicSwitch.isOn {
             
-            self.publicLabel.text = "Public"
+            self.publicLabel.text = "Shared"
         } else {
             
             self.publicLabel.text = "Private"
@@ -100,7 +109,16 @@ class ShareOptionsViewController: UIViewController {
     @IBAction func shareNowButton(_ sender: Any) {
         
         // start the procedure to upload the note to the hat
-        HatAccountService.getUserToken(completion: self.checkNotableTableExists)
+        if receivedNote == nil {
+            
+            HatAccountService.getUserToken(completion: self.checkNotableTableExists)
+        } else {
+            
+            HatAccountService.getUserToken(completion: HatAccountService.deleteNote(id: (receivedNote?.id)!))
+            HatAccountService.getUserToken(completion: self.checkNotableTableExists)
+        }
+        
+        _ = super.navigationController?.popViewController(animated: true)
     }
     
     /**
@@ -310,18 +328,37 @@ class ShareOptionsViewController: UIViewController {
             NSAttributedString(string: "What's on your mind?", attributes: [NSForegroundColorAttributeName : UIColor.lightGray])
         
         // create a button and add it to navigation bar
-        let button = UIBarButtonItem(title: "Share", style: .done, target: self, action: #selector(shareNowButton))
+        let button = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(shareNowButton))
         self.navigationItem.rightBarButtonItem = button
         
         // add keyboard handling to view
         self.addKeyboardHandling()
         self.hideKeyboardWhenTappedAround()
+        
+        self.cancelButton.layer.borderWidth = 1
+        self.cancelButton.layer.borderColor = UIColor.white.cgColor
+        self.deleteButton.layer.borderWidth = 1
+        self.deleteButton.layer.borderColor = UIColor.white.cgColor
+        
+        // keep the green bar at the top
+        self.view.bringSubview(toFront: actionsView)
+        
+        if receivedNote != nil{
+            
+            self.setUpUIElementsFromReceivedNote(self.receivedNote!)
+        }
     }
 
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func setUpUIElementsFromReceivedNote(_ receivedNote: NotesData) {
+        
+        self.messageTextField.text = receivedNote.data.message
+        self.publicSwitch.setOn(receivedNote.data.shared, animated: false)
     }
 
     /*

@@ -143,10 +143,10 @@ class HatAccountService {
         let parameters = ["": ""]
         let headers = ["X-Auth-Token": token]
         
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: self.completionFunction(token: token))
+        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: self.completionGetNotesFunction(token: token))
     }
     
-    class func completionFunction(token: String) -> (_ r: Helper.ResultType) -> Void {
+    class func completionGetNotesFunction(token: String) -> (_ r: Helper.ResultType) -> Void {
         
         return { (r: Helper.ResultType) -> Void in
             
@@ -160,6 +160,41 @@ class HatAccountService {
                 if isSuccess {
                     
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notesArray"), object: result.array!)
+                }
+            }
+        }
+    }
+    
+    class func deleteNote(id: Int) -> (_ token: String) -> Void {
+    
+        return { (tkn: String) -> Void in
+        
+            let userDomain = self.TheUserHATDomain()
+            
+            let url = "https://"+userDomain+"/data/record/"+String(id)
+            
+            // create parameters and headers
+            let parameters = ["": ""]
+            let headers = ["X-Auth-Token": tkn]
+            
+            NetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: self.completionDeleteNotesFunction(token: tkn))
+        }
+    }
+    
+    class func completionDeleteNotesFunction(token: String) -> (_ r: Helper.ResultType) -> Void {
+        
+        return { (r: Helper.ResultType) -> Void in
+            
+            switch r {
+                
+            case .error( _, _):
+                
+                break
+            case .isSuccess(let isSuccess, _, let result):
+                
+                if isSuccess {
+                    
+                    print(result)
                 }
             }
         }

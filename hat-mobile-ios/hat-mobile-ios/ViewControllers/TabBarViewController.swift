@@ -48,12 +48,12 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         if viewController is MapViewController {
             
             // set title in navigation bar
-            self.navigationItem.title = "Maps"
+            self.navigationItem.title = "Location"
             
             // create buttons
             let button1 = UIBarButtonItem(title: "Settings", style: .plain, target: self, action: #selector(showSettingsViewController))
             let button2 = UIBarButtonItem(title: "Data", style: .plain, target: self, action: #selector(showDataViewController))
-            let button3 = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(logoutUser))
+            let button3 = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
 
             // add buttons to navigation bar
             self.navigationItem.leftBarButtonItems = [button1, button2]
@@ -79,7 +79,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         
         // create buttons
         let button1 = UIBarButtonItem(title: "Settings", style: .plain, target: self, action: #selector(showSettingsViewController))
-        let button2 = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(logoutUser))
+        let button2 = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
         
         // add buttons to navigation bar
         self.navigationItem.leftBarButtonItem = button1

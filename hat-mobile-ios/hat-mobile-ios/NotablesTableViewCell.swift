@@ -43,4 +43,64 @@ class NotablesTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    class func setUpCell(_ cell: NotablesTableViewCell, note: NotesData, indexPath: IndexPath) -> NotablesTableViewCell {
+        
+        let notablesData = note.data
+        let authorData = notablesData.authorData
+        _ = notablesData.locationData
+        _ = notablesData.photoData
+        
+        let date = FormatterHelper.formatDateStringToUsersDefinedDate(date: note.lastUpdated)
+
+        let textAttributes = [
+            NSForegroundColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
+            NSStrokeColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
+            NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 11)!,
+            NSStrokeWidthAttributeName: -1.0
+            ] as [String : Any]
+        
+//        let textAttributes2 = [
+//            NSForegroundColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
+//            NSStrokeColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
+//            NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 12)!,
+//            NSStrokeWidthAttributeName: -1.0
+//            ] as [String : Any]
+        
+        let string = "Posted "+date
+//        var lockChar: UniChar = 0
+        var shareString: String = ""
+        if !notablesData.shared {
+            
+//            lockChar = 0xE6D0
+            shareString = " Private Note"
+        }
+        
+        let partOne = NSAttributedString(string: string)
+        let partTwo = NSAttributedString(string: shareString, attributes: textAttributes)
+//        let partOneAndHalf = NSAttributedString(string: String(format: "%C", lockChar), attributes: textAttributes2)
+        let combination = NSMutableAttributedString()
+        
+        combination.append(partOne)
+        combination.append(partTwo)
+        
+        if authorData.photoURL != "" {
+            
+            //fetch image and assign it
+        }
+        
+        //cell.locationImageFont.font = UIFont(name: "SSGlyphish-Outlined", size: 15) //SS Glyphish
+        
+        // create this zebra like color based on the index of the cell
+        if (indexPath.row % 2 == 1) {
+            
+            cell.contentView.backgroundColor = UIColor.init(colorLiteralRed: 51/255, green: 74/255, blue: 79/255, alpha: 1)
+        }
+        
+        cell.postDataLabel.text = notablesData.message
+        cell.usernameLabel.text = authorData.phata
+        cell.postInfoLabel.attributedText = combination
+        
+        return cell
+    }
 }

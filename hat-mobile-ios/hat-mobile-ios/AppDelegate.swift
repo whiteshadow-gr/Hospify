@@ -30,6 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     /// Load the LocationManager
     lazy var locationManager: CLLocationManager! = {
+        
         let locationManager = CLLocationManager()
         locationManager.desiredAccuracy = Helper.GetUserPreferencesAccuracy()
         locationManager.distanceFilter = Helper.GetUserPreferencesDistance()
@@ -46,13 +47,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         // if app was closed by iOS (low mem, etc), then receives a location update, and respawns your app, letting it know it respawned due to a location service
         if launchOptions?[UIApplicationLaunchOptionsKey.location] != nil {
-            startUpdatingLocation()
+            
             return true
         }
+        startUpdatingLocation()
         
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName : UIColor.white]
         application.statusBarStyle = UIStatusBarStyle.lightContent
-
         
         // define the interval for background fetch interval
         application.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
@@ -67,9 +68,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             /* Go to the map screen. */
             let nav: UINavigationController = window?.rootViewController as! UINavigationController
             let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
-            /*let vc: MapViewController = storyboard.instantiateViewController(withIdentifier: "MapViewController") as! MapViewController
-             nav.setViewControllers([vc], animated: false)*/
-            
             let tabController = storyboard.instantiateViewController(withIdentifier: "tabBarControllerID") as! UITabBarController
             nav.setViewControllers([tabController], animated: false)
         } else {
@@ -85,26 +83,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         if (lastPos.horizontalAccuracy <= locationManager.desiredAccuracy) {
             
+            let taskID = beginBackgroundUpdateTask()
             let syncHelper = SyncDataHelper()
-            let result = syncHelper.CheckNextBlockToSync()
-            if result == true {
+
+            DispatchQueue.global().async {
                 
-                // do things in the background fetch
-                UIApplication.shared.cancelAllLocalNotifications()
-                let notif = UILocalNotification()
-                let timeNow = NSDate()
-                notif.fireDate = timeNow as Date;
-                notif.alertBody = "Background fetch!"
-                notif.soundName = UILocalNotificationDefaultSoundName
-                var number = UIApplication.shared.applicationIconBadgeNumber;
-                number += 1
-                notif.applicationIconBadgeNumber = number;
-                UIApplication.shared.scheduleLocalNotification(notif)
-                completionHandler(.newData)
-            }
-            else {
+                let result = syncHelper.CheckNextBlockToSync()
                 
-                completionHandler(.noData)
+                if result == true {
+                    
+                    // do things in the background fetch
+                    UIApplication.shared.cancelAllLocalNotifications()
+                    
+                    let notif = UILocalNotification()
+                    let timeNow = NSDate()
+                    notif.fireDate = timeNow as Date;
+                    notif.alertBody = "Background fetch!"
+                    notif.soundName = UILocalNotificationDefaultSoundName
+                    UIApplication.shared.scheduleLocalNotification(notif)
+                    completionHandler(.newData)
+                }
+                else {
+                    
+                    completionHandler(.noData)
+                }
+                self.endBackgroundUpdateTask(taskID: taskID)
             }
         }
     }
@@ -121,16 +124,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // cancel all notifications
         UIApplication.shared.cancelAllLocalNotifications()
         
+        // date
+        let timeInterval:TimeInterval = Helper.FutureTimeInterval.init(days: Double(3), timeType: Helper.TimeType.future).interval
+        let futureDate = Date().addingTimeInterval(timeInterval) // e.g. 3 days from now
         // add new
         let localNotification:UILocalNotification = UILocalNotification()
         localNotification.alertAction = NSLocalizedString("sync_reminder_title", comment:  "title")
         localNotification.alertBody = NSLocalizedString("sync_reminder_message", comment:  "message")
-        
-        // date
-        
-        let timeInterval:TimeInterval = Helper.FutureTimeInterval.init(days: Double(3), timeType: Helper.TimeType.future).interval
-        let futureDate = Date().addingTimeInterval(timeInterval) // e.g. 3 days from now
-        
         localNotification.fireDate = futureDate
         localNotification.timeZone = TimeZone.current
         localNotification.soundName = UILocalNotificationDefaultSoundName
@@ -149,9 +149,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         purgeUsingPredicate()
         
         // stopUpdatingLocation
-        if let manager:CLLocationManager = locationManager
-        {
-            manager.stopUpdatingLocation()
+        if let _:CLLocationManager = locationManager {
+            
+            //manager.stopUpdatingLocation()
             NSLog("Delegate stopUpdatingLocation");
         }
     }
@@ -166,14 +166,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
      */
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         
-        if let urlHost:String = url.host
-        {
+        if let urlHost:String = url.host {
+            
             if urlHost == Constants.Auth.LocalAuthHost {
+                
                 let notification = Notification.Name(Constants.Auth.NotificationHandlerName)
                 NotificationCenter.default.post(name: notification, object: url)
             }
         }
-        
         return true
     }
     
@@ -196,68 +196,105 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
      - parameter manager:   The CLLocation manager used
      - parameter locations: Array of locations
      */
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
-    {
-        // get location
-        lastPos = locations[locations.count - 1]
-        print("location")
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
+//        // get location
+//        lastPos = locations[locations.count - 1]
+//        print("location")
+//        
+//        // test that the horizontal accuracy does not indicate an invalid measurement
+//        if (lastPos.horizontalAccuracy < 0)
+//        {
+//            return
+//        }
+//        // check we have a measurement that meets our requirements,
+//        if (lastPos.horizontalAccuracy <= locationManager.desiredAccuracy) {
+//            let taskID = beginBackgroundUpdateTask()
+//            
+//            DispatchQueue.global().async {
+//                _ = RealmHelper.AddData(Double(self.lastPos.coordinate.latitude), longitude: Double(self.lastPos.coordinate.longitude), accuracy: Double(self.lastPos.horizontalAccuracy))
+//                
+//                self.endBackgroundUpdateTask(taskID: taskID)
+//            }
+//        }
+//        
+//        /**
+//         *  Only call one. Calling again will disable it
+//         defer updates until a distance or period of time
+//         */
+//        if (!deferringUpdates)
+//        {
+//            // if we are deferring, the distanceFilter = kCLDistanceFilterNone
+//            //locationManager.distanceFilter = kCLDistanceFilterNone
+//            // get distance and time settings
+//            let distance: CLLocationDistance = Helper.GetUserPreferencesDeferredDistance()
+//            let time:TimeInterval = Helper.GetUserPreferencesDeferredTimeout()
+//            
+//            manager.allowDeferredLocationUpdates(untilTraveled: distance, timeout: time)
+//            
+//            deferringUpdates = true;
+//        }
+        
+        //get last location
+        let latestLocation: CLLocation = locations[locations.count - 1]
+        var dblocation: CLLocation? = nil
+
+        if let dbLastPoint = RealmHelper.GetLastDataPoint() {
+
+            dblocation = CLLocation(latitude: (dbLastPoint.lat), longitude: (dbLastPoint.lng))
+        }
+
         // test that the horizontal accuracy does not indicate an invalid measurement
-        if (lastPos.horizontalAccuracy < 0)
-        {
+        if (latestLocation.horizontalAccuracy < 0) {
+
             return
         }
         // check we have a measurement that meets our requirements,
-        if (lastPos.horizontalAccuracy <= locationManager.desiredAccuracy) {
-            let taskID = beginBackgroundUpdateTask()
-            
-            DispatchQueue.global().async {
-                _ = RealmHelper.AddData(Double(self.lastPos.coordinate.latitude), longitude: Double(self.lastPos.coordinate.longitude), accuracy: Double(self.lastPos.horizontalAccuracy))
-                
-                self.endBackgroundUpdateTask(taskID: taskID)
+        if (latestLocation.horizontalAccuracy <= locationManager.desiredAccuracy) {
+
+            if (dblocation != nil) {
+
+                //calculate distance from previous spot
+                let distance = latestLocation.distance(from: dblocation!)
+                if !(distance.isLess(than: 100)) {
+
+                    // add data
+                    _ = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
+                }
+            } else {
+
+                // add data
+                _ = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
             }
-        }
-        
-        /**
-         *  Only call one. Calling again will disable it
-         defer updates until a distance or period of time
-         */
-        if (!deferringUpdates)
-        {
-            // if we are deferring, the distanceFilter = kCLDistanceFilterNone
-            //locationManager.distanceFilter = kCLDistanceFilterNone
-            // get distance and time settings
-            let distance: CLLocationDistance = Helper.GetUserPreferencesDeferredDistance()
-            let time:TimeInterval = Helper.GetUserPreferencesDeferredTimeout()
-            
-            manager.allowDeferredLocationUpdates(untilTraveled: distance, timeout: time)
-            
-            deferringUpdates = true;
         }
     }
     
     //didFinishDeferredUpdatesWithError:
     func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
+        
         // Stop deferring updates
         self.deferringUpdates = false
     }
     
     // background task
     func beginBackgroundUpdateTask() -> UIBackgroundTaskIdentifier {
+        
         return UIApplication.shared.beginBackgroundTask(expirationHandler: {})
     }
     
     func endBackgroundUpdateTask(taskID: UIBackgroundTaskIdentifier) {
+        
         UIApplication.shared.endBackgroundTask(taskID)
     }
     
     func startUpdatingLocation() -> Void {
+        
         /*
          If not authorised, we can ignore.
          Onve user us logged in and has accepted the authorization, this will always be true
          */
-        if let manager:CLLocationManager = locationManager
-        {
+        if let manager:CLLocationManager = locationManager {
+            
             manager.startUpdatingLocation()
             NSLog("Delegate startUpdatingLocation");
         }

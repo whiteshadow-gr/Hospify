@@ -70,64 +70,64 @@ class BaseLocationViewController: BaseViewController, CLLocationManagerDelegate 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         // clear down error display
-        self.clearErrorDisplay()
-        
-        // get last location
-        let latestLocation: CLLocation = locations[locations.count - 1]
-        var dblocation: CLLocation? = nil
-        
-        if let dbLastPoint = RealmHelper.GetLastDataPoint() {
-            
-            dblocation = CLLocation(latitude: (dbLastPoint.lat), longitude: (dbLastPoint.lng))
-        }
-        
-        // test that the horizontal accuracy does not indicate an invalid measurement
-        if (latestLocation.horizontalAccuracy < 0) {
-            
-            return
-        }
-        // check we have a measurement that meets our requirements,
-        if (latestLocation.horizontalAccuracy <= locationManager.desiredAccuracy) {
-            
-            if (dblocation != nil) {
-                
-                //calculate distance from previous spot
-                let distance = latestLocation.distance(from: dblocation!)
-                if !(distance.isLess(than: 100)) {
-                    
-                    // add data
-                    let count = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
-                    
-                    //   while in foreground only
-                    if UIApplication.shared.applicationState == .active {
-                        
-                        if (self.updateCountDelegate != nil) {
-                            
-                            self.updateCountDelegate?.onUpdateCount(count)
-                        }
-                    } else {
-                        
-                        //NSLog("App is backgrounded. New count is %i", count)
-                    }
-                }
-            } else {
-                
-                // add data
-                let count = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
-                
-                //   while in foreground only
-                if UIApplication.shared.applicationState == .active {
-                    
-                    if (self.updateCountDelegate != nil) {
-                        
-                        self.updateCountDelegate?.onUpdateCount(count)
-                    }
-                } else {
-                    
-                    //NSLog("App is backgrounded. New count is %i", count)
-                }
-            }
-        }
+//        self.clearErrorDisplay()
+//        
+//        // get last location
+//        let latestLocation: CLLocation = locations[locations.count - 1]
+//        var dblocation: CLLocation? = nil
+//        
+//        if let dbLastPoint = RealmHelper.GetLastDataPoint() {
+//            
+//            dblocation = CLLocation(latitude: (dbLastPoint.lat), longitude: (dbLastPoint.lng))
+//        }
+//        
+//        // test that the horizontal accuracy does not indicate an invalid measurement
+//        if (latestLocation.horizontalAccuracy < 0) {
+//            
+//            return
+//        }
+//        // check we have a measurement that meets our requirements,
+//        if (latestLocation.horizontalAccuracy <= locationManager.desiredAccuracy) {
+//            
+//            if (dblocation != nil) {
+//                
+//                //calculate distance from previous spot
+//                let distance = latestLocation.distance(from: dblocation!)
+//                if !(distance.isLess(than: 100)) {
+//                    
+//                    // add data
+//                    let count = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
+//                    
+//                    //   while in foreground only
+//                    if UIApplication.shared.applicationState == .active {
+//                        
+//                        if (self.updateCountDelegate != nil) {
+//                            
+//                            self.updateCountDelegate?.onUpdateCount(count)
+//                        }
+//                    } else {
+//                        
+//                        //NSLog("App is backgrounded. New count is %i", count)
+//                    }
+//                }
+//            } else {
+//                
+//                // add data
+//                let count = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
+//                
+//                //   while in foreground only
+//                if UIApplication.shared.applicationState == .active {
+//                    
+//                    if (self.updateCountDelegate != nil) {
+//                        
+//                        self.updateCountDelegate?.onUpdateCount(count)
+//                    }
+//                } else {
+//                    
+//                    //NSLog("App is backgrounded. New count is %i", count)
+//                }
+//            }
+//        }
     }
     
     /**

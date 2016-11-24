@@ -111,8 +111,13 @@ extension UIViewController {
 // MARK: - Notables ViewController
 
 /// The notables view controller
-class NotablesViewController: UIViewController, UITabBarDelegate, UITableViewDataSource, UITextFieldDelegate {
+class NotablesViewController: BaseLocationViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
+    // MARK: - Variables
+    
+    var notesArray: [NotesData] = []
+    var kind: String = ""
+
     // MARK: - IBOutlets
 
     /// An IBOutlet for handling the table view
@@ -129,6 +134,7 @@ class NotablesViewController: UIViewController, UITabBarDelegate, UITableViewDat
      */
     @IBAction func newNoteButton(_ sender: Any) {
         
+        kind = "note"
         self.performSegue(withIdentifier: "optionsSegue", sender: self)
     }
     
@@ -139,6 +145,7 @@ class NotablesViewController: UIViewController, UITabBarDelegate, UITableViewDat
      */
     @IBAction func newBlogButton(_ sender: Any) {
         
+        kind = "blog"
         self.performSegue(withIdentifier: "optionsSegue", sender: self)
     }
     
@@ -149,6 +156,7 @@ class NotablesViewController: UIViewController, UITabBarDelegate, UITableViewDat
      */
     @IBAction func newListButton(_ sender: Any) {
         
+        kind = "list"
         self.performSegue(withIdentifier: "optionsSegue", sender: self)
     }
     
@@ -162,25 +170,37 @@ class NotablesViewController: UIViewController, UITabBarDelegate, UITableViewDat
         // keep the green bar at the top
         self.view.bringSubview(toFront: createNewNoteView)
         
-        // add keyboard handling
-        self.hideKeyboardWhenTappedAround()
-        self.addKeyboardHandling()
-        
-        HatAccountService.getUserToken(completion: self.checkNotableTableExists)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(self.showReceivedNotes), name: NSNotification.Name(rawValue: "notesArray"), object: nil)
+        
+        // begin tracking
+        self.beginLocationTracking()
     }
     
-    func showReceivedNotes(notification: Notification) {
+    override func viewWillAppear(_ animated: Bool) {
         
-        let test = notification.object as! [JSON]
-        print(test)
+        super.viewWillAppear(true)
+        
+        HatAccountService.getUserToken(completion: self.checkNotableTableExists)
     }
 
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - Show Notes
+    
+    func showReceivedNotes(notification: Notification) {
+        
+        self.notesArray.removeAll()
+        let dictionary = notification.object as! [JSON]
+        for dict in dictionary {
+            
+            self.notesArray.append(NotesData.init(dict: dict.dictionary!))
+        }
+        
+        self.tableView.reloadData()
     }
 
     // MARK: - Table View Methods
@@ -190,19 +210,35 @@ class NotablesViewController: UIViewController, UITabBarDelegate, UITableViewDat
         // get cell from the reusable id
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellData") as! NotablesTableViewCell
         
-        // create this zebra like color based on the index of the cell
-        if (indexPath.row % 2 == 1) {
-            
-            cell.contentView.backgroundColor = UIColor.init(colorLiteralRed: 51/255, green: 74/255, blue: 79/255, alpha: 1)
-        }
-        
         // return cell
-        return cell
+        return NotablesTableViewCell.setUpCell(cell, note: notesArray[indexPath.row], indexPath: indexPath)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return 2;
+        return notesArray.count;
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        
+        if (editingStyle == UITableViewCellEditingStyle.delete) {
+            
+            print(self.notesArray[indexPath.row].id)
+            // delete data and row
+            HatAccountService.getUserToken(completion: HatAccountService.deleteNote(id: self.notesArray[indexPath.row].id))
+            self.notesArray.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     // MARK: - Network functions
@@ -264,7 +300,7 @@ class NotablesViewController: UIViewController, UITabBarDelegate, UITableViewDat
                     } else if statusCode == 404 {
                         
                         // create table
-                        //HatAccountService.createNotablesTable(token: token)
+                        _ = HatAccountService.createNotablesTable(token: token)
                         // show no notes
                     }
                 }
@@ -274,10 +310,24 @@ class NotablesViewController: UIViewController, UITabBarDelegate, UITableViewDat
     
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        // Get the new view controller using segue.destinationViewController.
-//        // Pass the selected object to the new view controller.
-//        
-//    }
+    //In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+        
+        if segue.destination is ShareOptionsViewController {
+            
+            let destinationVC = segue.destination as! ShareOptionsViewController
+
+            if segue.identifier == "editNoteSegue" {
+                
+                let test = self.tableView.indexPath(for: sender as! UITableViewCell)
+                destinationVC.receivedNote = self.notesArray[(test?.row)!]
+            } else {
+                
+                destinationVC.kind = self.kind
+            }
+        }
+    }
 }

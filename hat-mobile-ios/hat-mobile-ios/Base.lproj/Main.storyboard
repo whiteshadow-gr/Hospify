@@ -1124,6 +1124,7 @@
                         <outlet property="publicLabel" destination="YuO-Yh-nUb" id="2Wl-0S-PWX"/>
                         <outlet property="publicSwitch" destination="88C-AR-sDb" id="xJa-p3-Rx3"/>
                         <outlet property="publishButton" destination="mtQ-i1-IOE" id="6Is-pk-q9V"/>
+                        <outlet property="scrollView" destination="EdC-Wr-9Dm" id="h5d-lv-Ye6"/>
                         <outlet property="shareForLabel" destination="gSU-b7-2dM" id="EMn-9g-lB9"/>
                         <outlet property="shareImageLabel" destination="2Lu-8c-LCv" id="LAr-HW-xcb"/>
                         <outlet property="shareWithLabel" destination="BUb-XN-zUI" id="QoB-XO-sYm"/>

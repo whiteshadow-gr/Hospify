@@ -53,6 +53,7 @@ class ShareOptionsViewController: UIViewController {
     @IBOutlet weak var marketsquareButton: UIButton!
     /// An IBOutlet for handling the publish button
     @IBOutlet weak var publishButton: UIButton!
+    @IBOutlet weak var scrollView: UIScrollView!
     
     // MARK: - IBActions
     
@@ -418,6 +419,9 @@ class ShareOptionsViewController: UIViewController {
             
             self.receivedNote = NotesData()
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow2), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide2), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -425,8 +429,8 @@ class ShareOptionsViewController: UIViewController {
         super.viewWillAppear(animated)
         
         // add keyboard handling to view
-        self.addKeyboardHandling()
-        self.hideKeyboardWhenTappedAround()
+//        self.addKeyboardHandling()
+//        self.hideKeyboardWhenTappedAround()
     }
 
     override func didReceiveMemoryWarning() {
@@ -525,5 +529,28 @@ class ShareOptionsViewController: UIViewController {
     func navigationTitleTap() {
         
         
+    }
+    
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func keyboardWillShow2(notification:NSNotification){
+        
+        var userInfo = notification.userInfo!
+        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+        keyboardFrame = self.view.convert(keyboardFrame, from: nil)
+        
+        var contentInset:UIEdgeInsets = self.scrollView.contentInset
+        contentInset.bottom = keyboardFrame.size.height
+        self.scrollView.contentInset = contentInset
+    }
+    
+    func keyboardWillHide2(notification:NSNotification){
+        
+        let contentInset:UIEdgeInsets = UIEdgeInsets.zero
+        self.scrollView.contentInset = contentInset
     }
 }

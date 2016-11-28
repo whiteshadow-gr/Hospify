@@ -134,11 +134,12 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             helper.stopAnyTimers()
             
             // clear the user hat domain in keychain
-            _ = Helper.ClearKeychainKey(key: Constants.Keychain.HATDomainKey)
+            _ = Helper.ClearKeychainKey(key: "123")
             
             // reset the stack to avoid allowing back
-            let controller = LoginViewController()
-            _ = self.navigationController?.popToViewController(controller, animated: true)
+            let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+            let controller = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+            self.present(controller, animated: true, completion: nil)
         }
         
         // add actions to the alert
@@ -149,13 +150,14 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         self.present(alert, animated: true, completion: nil)
     }
     
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        
+        print("called")
     }
-    */
 }

@@ -139,6 +139,9 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow2), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide2), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
         // disable the navigation back button
         self.navigationItem.setHidesBackButton(true, animated:false)
         
@@ -210,8 +213,8 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         self.inputUserHATDomain.text = ""
         
         // add keyboard handling
-        self.addKeyboardHandling()
-        self.hideKeyboardWhenTappedAround()
+//        self.addKeyboardHandling()
+//        self.hideKeyboardWhenTappedAround()
     }
 
     /*
@@ -253,8 +256,6 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
      - parameter hatDomain: The phata address of the user
      */
     func authoriseUser(hatDomain: String) {
-
-       // e.g. https://iostesting.hubofallthings.net/hatlogin?name=MarketSquare&redirect=com.hubofallthings.rumpellocationtracker://doSomething
         
         // build up the hat domain auth url
         let hatDomainURL =
@@ -271,7 +272,7 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         
         // open the log in procedure in safari
         safariVC = SFSafariViewController(url: authURL as! URL)
-        if let vc:SFSafariViewController = self.safariVC {
+        if let vc: SFSafariViewController = self.safariVC {
             
             self.present(vc, animated: true, completion: nil)
         }        
@@ -304,88 +305,93 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         if let token = Helper.GetQueryStringParameter(url: url.absoluteString, param: Constants.Auth.TokenParamName) {
             
             // save token in keychain
+            let savedSuccesfully = Helper.SetKeychainValue(key: "UserToken", value: token)
             
-            _ = Helper.SetKeychainValue(key: "UserToken", value: token)
-            // get the public key for this user. e.g. https://iostesting.hubofallthings.net/publickey
-            // make asynchronous call
-            // parameters..
-            let parameters = ["": ""]
-            // auth header
-            let headers = ["Accept": Constants.ContentType.Text, "Content-Type": Constants.ContentType.Text]
-            // HAT domain
-            let hatDomain = Helper.TrimString(inputUserHATDomain.text!)
-
-            if let url = Helper.TheUserHATDOmainPublicKeyURL(hatDomain) {
+            if savedSuccesfully {
                 
-                //. application/json
-                NetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { (r: Helper.ResultTypeString) -> Void in
+                // make asynchronous call
+                // parameters..
+                let parameters = ["": ""]
+                // auth header
+                let headers = ["Accept": Constants.ContentType.Text, "Content-Type": Constants.ContentType.Text]
+                // HAT domain
+                let hatDomain = Helper.TrimString(inputUserHATDomain.text!)
+                
+                if let url = Helper.TheUserHATDOmainPublicKeyURL(hatDomain) {
                     
-                    switch r {
-                    case .isSuccess(let isSuccess, _, let result):
+                    //. application/json
+                    NetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { (r: Helper.ResultTypeString) -> Void in
                         
-                        if isSuccess {
+                        switch r {
+                        case .isSuccess(let isSuccess, _, let result):
                             
-                            // decode the token and get the iss out 
-                            let jwt = try! decode(jwt: token)
-                            
-                            
-                            // guard for the issuer check, “iss” (Issuer)
-                            guard let HATDomainFromToken = jwt.issuer else {
-
-                                self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_general", comment: "auth"))
-                                return
-                            }
-                                                        
-                            /*
-                             The token will consist of header.payload.signature
-                             To verify the token we use header.payload hashed with signature in base64 format
-                             The public PEM string is used to verify also
-                             */
-                            let tokenAttr: [String] = token.components(separatedBy: ".")
-                            
-                            // guard for the attr length. Should be 3 [header, payload, signature]
-                            guard tokenAttr.count == 3 else {
+                            if isSuccess {
                                 
-                                self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_general", comment: "auth"))
-                                return
-                            }
-                            
-                            // And then to access the individual parts of token
-                            let header : String = tokenAttr[0]
-                            let payload : String = tokenAttr[1]
-                            let signature : String = tokenAttr[2]
-                            
-                            // decode signature from baseUrl64 to base64
-                            let decodedSig = signature.fromBase64URLToBase64(s: signature)
-                            
-                            // data to be verified header.payload
-                            let headerAndPayload = header + "." + payload
-                            
-                            // SwiftyRSA.verifySignatureString
-                            let result: VerificationResult = SwiftyRSA.verifySignatureString(headerAndPayload, signature: decodedSig, publicKeyPEM: result, digestMethod: .SHA256)
-                            
-                            /*
-                                if successful ,we performSegue to the map view
-                                else, we display a message
-                            */
-                            if (result.isSuccessful) {
+                                // decode the token and get the iss out
+                                let jwt = try! decode(jwt: token)
                                 
-                                self.authoriseAppToWriteToCloud(hatDomain, HATDomainFromToken)
+                                
+                                // guard for the issuer check, “iss” (Issuer)
+                                guard let HATDomainFromToken = jwt.issuer else {
+                                    
+                                    self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_general", comment: "auth"))
+                                    return
+                                }
+                                
+                                /*
+                                 The token will consist of header.payload.signature
+                                 To verify the token we use header.payload hashed with signature in base64 format
+                                 The public PEM string is used to verify also
+                                 */
+                                let tokenAttr: [String] = token.components(separatedBy: ".")
+                                
+                                // guard for the attr length. Should be 3 [header, payload, signature]
+                                guard tokenAttr.count == 3 else {
+                                    
+                                    self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_general", comment: "auth"))
+                                    return
+                                }
+                                
+                                // And then to access the individual parts of token
+                                let header : String = tokenAttr[0]
+                                let payload : String = tokenAttr[1]
+                                let signature : String = tokenAttr[2]
+                                
+                                // decode signature from baseUrl64 to base64
+                                let decodedSig = signature.fromBase64URLToBase64(s: signature)
+                                
+                                // data to be verified header.payload
+                                let headerAndPayload = header + "." + payload
+                                
+                                // SwiftyRSA.verifySignatureString
+                                let result: VerificationResult = SwiftyRSA.verifySignatureString(headerAndPayload, signature: decodedSig, publicKeyPEM: result, digestMethod: .SHA256)
+                                
+                                /*
+                                 if successful ,we performSegue to the map view
+                                 else, we display a message
+                                 */
+                                if (result.isSuccessful) {
+                                    
+                                    self.authoriseAppToWriteToCloud(hatDomain, HATDomainFromToken)
+                                } else {
+                                    
+                                    self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_invalid_token", comment: "auth"))
+                                }
                             } else {
                                 
-                                self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_invalid_token", comment: "auth"))
+                                // alamo fire http fail
+                                self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: result)
                             }
-                        } else {
                             
-                            // alamo fire http fail
-                            self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: result)
+                        case .error(let error, let statusCode):
+                            
+                            let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                            self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: msg)
                         }
-                        
-                    case .error(let error, let statusCode):
-                        
-                        let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                        self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: msg)
                     }
+                } else {
+                    
+                    self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message:"Could not save in keychain")
                 }
             }
         } else {
@@ -450,5 +456,28 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
                 self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: msg)
             }
         }
+    }
+    
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func keyboardWillShow2(notification:NSNotification){
+        
+        var userInfo = notification.userInfo!
+        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+        keyboardFrame = self.view.convert(keyboardFrame, from: nil)
+        
+        var contentInset:UIEdgeInsets = self.scrollView.contentInset
+        contentInset.bottom = keyboardFrame.size.height
+        self.scrollView.contentInset = contentInset
+    }
+    
+    func keyboardWillHide2(notification:NSNotification){
+        
+        let contentInset:UIEdgeInsets = UIEdgeInsets.zero
+        self.scrollView.contentInset = contentInset
     }
 }

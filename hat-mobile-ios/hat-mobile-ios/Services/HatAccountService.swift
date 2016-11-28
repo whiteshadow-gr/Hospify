@@ -82,24 +82,19 @@ class HatAccountService {
     }
     
     /**
-     Gets user token from the hat
+     Gets user's token from keychain
      
-     - parameter completion: A function variable of type, @escaping (_ token: String) -> Void)
+     - returns: The token as a string
      */
-    class func getUserToken(completion: @escaping (_ token: String) -> Void) -> Void {
+    class func getUsersTokenFromKeychain() -> String {
         
-        // get auth token
-        let authTokenUrl = Helper.TheUsersAccessTokenURL()
+        // check if the token has been saved in the keychain and return it. Else return an empty string
+        if let token = Helper.GetKeychainValue(key: "UserToken") {
+            
+            return token
+        }
         
-        // create parameters and headers
-        let parameters = ["": ""]
-        let headers = ["username": "mariostsekis", "password": "K46-Gss-ECe-Rqr"]
-        
-        // create function variable to get the token
-        let successfulTokenNextStep = self.getUserTokenCompletionFunction(callback: completion)
-        
-        // make async request
-        NetworkHelper.AsynchronousRequest(authTokenUrl, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion:successfulTokenNextStep)
+        return ""
     }
     
     /**
@@ -109,7 +104,7 @@ class HatAccountService {
      */
     private class func getUserTokenCompletionFunction (callback: @escaping (String) -> Void) -> (_ r: Helper.ResultType) -> Void {
         
-        // return the token
+        // return the token if success
         return { (_ r: Helper.ResultType) -> Void in
             
             switch r {
@@ -133,21 +128,37 @@ class HatAccountService {
         }
     }
     
+    /**
+     Gets the notes of the user from the HAT
+     
+     - parameter token: The user's token
+     - parameter tableID: The table id of the notes
+     */
     class func getNotes(token: String, tableID: String) {
     
+        // get user's hat domain
         let userDomain = self.TheUserHATDomain()
         
+        // form the url
         let url = "https://"+userDomain+"/data/table/"+tableID+"/values?pretty=true"
             
         // create parameters and headers
-        let parameters = ["": ""]
+        let parameters = ["starttime": "0"]
         let headers = ["X-Auth-Token": token]
         
+        // make the request
         NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: self.completionGetNotesFunction(token: token))
     }
     
+    /**
+     The completion method of the get notes function
+     
+     - parameter token: The user's token as a string
+     - returns: (_ r: Helper.ResultType) -> Void
+     */
     class func completionGetNotesFunction(token: String) -> (_ r: Helper.ResultType) -> Void {
         
+        // post a notification if success with the array containing the notes
         return { (r: Helper.ResultType) -> Void in
             
             switch r {
@@ -165,22 +176,34 @@ class HatAccountService {
         }
     }
     
-    class func deleteNote(id: Int) -> (_ token: String) -> Void {
-    
-        return { (tkn: String) -> Void in
+    /**
+     Deletes a note from the hat
+     
+     - parameter id: the id of the note to delete
+     - parameter tkn: the user's token as a string
+     */
+    class func deleteNoteWithKeychain(id: Int, tkn: String) -> Void {
         
-            let userDomain = self.TheUserHATDomain()
-            
-            let url = "https://"+userDomain+"/data/record/"+String(id)
-            
-            // create parameters and headers
-            let parameters = ["": ""]
-            let headers = ["X-Auth-Token": tkn]
-            
-            NetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: self.completionDeleteNotesFunction(token: tkn))
-        }
+        // get user's domain
+        let userDomain = self.TheUserHATDomain()
+        
+        // form the url
+        let url = "https://"+userDomain+"/data/record/"+String(id)
+        
+        // create parameters and headers
+        let parameters = ["": ""]
+        let headers = ["X-Auth-Token": tkn]
+        
+        // make the request
+        NetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: self.completionDeleteNotesFunction(token: tkn))
     }
     
+    /**
+     Delete notes completion function
+     
+     - parameter token: The user's token as a string
+     - returns: (_ r: Helper.ResultType) -> Void
+     */
     class func completionDeleteNotesFunction(token: String) -> (_ r: Helper.ResultType) -> Void {
         
         return { (r: Helper.ResultType) -> Void in

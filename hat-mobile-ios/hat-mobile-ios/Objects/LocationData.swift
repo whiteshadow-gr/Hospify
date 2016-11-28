@@ -8,21 +8,35 @@
 
 import SwiftyJSON
 
-struct LocationData {
+// MARK: Struct
 
+/// A struct representing the location table received from JSON
+struct LocationData {
+    
+    // MARK: - Variables
+
+    /// the altitude the at time of creating the note. This value is optional
     var altitude: Double
+    /// the altitude accuracy at the time of creating the note. This value is optional
     var altitudeAccuracy: Double
-    //required
+    /// the latitude at the time of creating the note
     var latitude: Double
+    /// the heading at the time of creating the note. This value is optinal
     var heading: String
-    //required
+    /// is the location shared at the time of creating the note? This value is optional.
     var shared: Bool
-    //required
+    /// the accuracy at the time of creating the note
     var accuracy: Double
-    //required
+    /// the longitude at the time of creating the note
     var longitude: Double
+    /// the speed at the time of creating the note. This value is optional
     var speed: Double
     
+    // MARK: Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         altitude = 0
@@ -35,53 +49,77 @@ struct LocationData {
         speed = 0
     }
     
-    init(dict: Dictionary<String, Any>) {
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
+    init(dict: Dictionary<String, JSON>) {
         
-        let tempAltitude: JSON = dict["altitude"] as! JSON
-        let tempAltitudeAccuracy: JSON = dict["altitude_accuracy"] as! JSON
-        let tempLatitude: JSON = dict["latitude"] as! JSON
-        let tempHeading: JSON = dict["heading"] as! JSON
-        let tempShared: JSON = dict["shared"] as! JSON
-        let tempAccuracy: JSON = dict["accuracy"] as! JSON
-        let tempLongitude: JSON = dict["longitude"] as! JSON
-        let tempSpeed: JSON = dict["speed"] as! JSON
-        
+        // init values first
         altitude = 0
         altitudeAccuracy = 0
         latitude = 0
-        heading = tempHeading.string!
+        heading = ""
         shared = false
         accuracy = 0
         longitude = 0
         speed = 0
         
-        if tempAltitude.string! != "" {
+        // check for values and assign them if not empty
+        if let tempAltitude: JSON = dict["altitude"] {
             
-            altitude = Double(tempAltitude.stringValue)!
+            if tempAltitude.string! != "" {
+                
+                altitude = Double(tempAltitude.stringValue)!
+            }
         }
-        if tempAltitudeAccuracy.string! != "" {
+        
+        if let tempAltitudeAccuracy: JSON = dict["altitude_accuracy"] {
             
-            altitudeAccuracy = Double(tempAltitudeAccuracy.stringValue)!
+            if tempAltitudeAccuracy.string! != "" {
+                
+                altitudeAccuracy = Double(tempAltitudeAccuracy.stringValue)!
+            }
         }
-        if tempLatitude.string! != "" {
+        
+        if let tempLatitude: JSON = dict["latitude"] {
             
-            latitude = Double(tempLatitude.stringValue)!
+            if tempLatitude.string! != "" {
+                
+                latitude = Double(tempLatitude.stringValue)!
+            }
         }
-        if tempShared.string! != "" {
+        if let tempHeading: JSON = dict["heading"] {
             
-            shared = Bool(tempShared.stringValue)!
+            heading = tempHeading.string!
         }
-        if tempAccuracy.string! != "" {
+        
+        if let tempShared: JSON = dict["shared"]{
             
-            accuracy = Double(tempAccuracy.stringValue)!
+            if tempShared.string! != "" {
+                
+                shared = Bool(tempShared.stringValue)!
+            }
         }
-        if tempLongitude.string! != "" {
+        if let tempAccuracy: JSON = dict["accuracy"] {
             
-            longitude = Double(tempLongitude.stringValue)!
+            if tempAccuracy.string! != "" {
+                
+                accuracy = Double(tempAccuracy.stringValue)!
+            }
         }
-        if tempSpeed.string! != "" {
+        if let tempLongitude: JSON = dict["longitude"] {
             
-            speed = Double(tempSpeed.stringValue)!
+            if tempLongitude.string! != "" {
+                
+                longitude = Double(tempLongitude.stringValue)!
+            }
+        }
+        if let tempSpeed: JSON = dict["speed"]{
+    
+            if tempSpeed.string! != "" {
+                
+                speed = Double(tempSpeed.stringValue)!
+            }
         }
     }
 }

@@ -8,21 +8,39 @@
 
 import SwiftyJSON
 
-struct NotablesData {
+// MARK: Struct
 
+/// A struct representing the notables table received from JSON
+struct NotablesData {
+    
+    // MARK: - Variables
+    
+    /// the author data
     var authorData: AuthorData
+    /// creation date
     var createdTime: Date
+    /// if true this note is shared to facebook etc.
     var shared: Bool
-    //???
+    /// If shared, where is it shared? Coma seperated string (don't know if it's optional or not)
     var sharedOn: String
+    /// the photo data
     var photoData: PhotoData
+    /// the location data
     var locationData: LocationData
+    /// the actual message of the note
     var message: String
-    //??
+    /// the date until this note will be public (don't know if it's optional or not)
     var publicUntil: Date
+    /// the updated time of the note
     var updatedTime: Date
+    /// the kind of the note. 3 types available note, blog or list
     var kind: String
     
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         authorData = AuthorData.init()
@@ -37,45 +55,49 @@ struct NotablesData {
         kind = ""
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     init(dict: Dictionary<String, JSON>) {
 
+        // the tables are optional fields in the json so init them and check if they exist in our json
+        authorData = AuthorData.init()
+        photoData = PhotoData.init()
+        locationData = LocationData.init()
+        
         if let tempAuthorData: JSON = dict["authorv1"] {
             
              authorData = AuthorData.init(dict: tempAuthorData.dictionary!)
-        } else {
-            
-            authorData = AuthorData.init()
         }
         
         if let tempPhotoData: JSON = dict["photov1"] {
             
             photoData = PhotoData.init(dict: tempPhotoData.dictionaryObject! as! Dictionary<String, String>)
-        } else {
-            
-            photoData = PhotoData.init()
         }
         
         if let tempLocationData: JSON = dict["locationv1"] {
             
             locationData = LocationData.init(dict: tempLocationData.dictionary!)
-        } else {
-            
-            locationData = LocationData.init()
         }
         
-        let tempShared: JSON = dict["shared"]!
-        let tempSharedOn: JSON = dict["shared_on"]!
-        let tempMessage: JSON = dict["message"]!
-        let tempPublicUntil: JSON = dict["public_until"]!
-        let tempUpdatedTime: JSON = dict["updated_time"]!
-        let tempKind: JSON = dict["kind"]!
+        // init optional values to default values and then assign the value if found in JSON
+        sharedOn = ""
+        publicUntil = Date()
         
+        if let tempSharedOn = dict["shared_on"] {
+            
+            sharedOn = tempSharedOn.string!
+        }
+        if let tempPublicUntil = dict["public_until"] {
+            
+            publicUntil = FormatterHelper.formatStringToDate(string: tempPublicUntil.string!)
+        }
+        
+        // init values that are non optional
         createdTime = FormatterHelper.formatStringToDate(string: (dict["created_time"]!).string!)
-        shared = Bool(tempShared.string!)!
-        sharedOn = tempSharedOn.string!
-        message = tempMessage.string!
-        publicUntil = FormatterHelper.formatStringToDate(string: tempPublicUntil.string!)
-        updatedTime = FormatterHelper.formatStringToDate(string: tempUpdatedTime.string!)
-        kind = tempKind.string!
+        shared = Bool((dict["shared"]?.string!)!)!
+        message = (dict["message"]?.string!)!
+        updatedTime = FormatterHelper.formatStringToDate(string: (dict["updated_time"]?.string!)!)
+        kind = (dict["kind"]?.string!)!
     }
 }

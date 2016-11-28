@@ -28,11 +28,23 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         
         // create bar button in navigation bar
         self.createBarButtons()
+        
+//        for fontFamilyName in UIFont.familyNames {
+//            
+//            for fontName in UIFont.fontNames(forFamilyName: fontFamilyName){
+//                print("Family: %@    Font: %@", fontFamilyName, fontName)
+//            }
+//        }
 
         // set tint color, if translucent and the bar tint color of navigation bar
         self.navigationController?.navigationBar.tintColor = UIColor.white
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
+        
+        // change navigation bar title
+        self.navigationController?.navigationBar.titleTextAttributes =
+            [NSForegroundColorAttributeName: UIColor.white,
+             NSFontAttributeName: UIFont(name: "OpenSans-Bold", size: 21)!]
     }
 
     override func didReceiveMemoryWarning() {
@@ -125,7 +137,8 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             _ = Helper.ClearKeychainKey(key: Constants.Keychain.HATDomainKey)
             
             // reset the stack to avoid allowing back
-            _ = self.navigationController?.popViewController(animated: true)
+            let controller = LoginViewController()
+            _ = self.navigationController?.popToViewController(controller, animated: true)
         }
         
         // add actions to the alert

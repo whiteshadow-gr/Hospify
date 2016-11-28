@@ -8,15 +8,29 @@
 
 import SwiftyJSON
 
-struct AuthorData {
+// MARK: Struct
 
+/// A struct representing the author table received from JSON
+struct AuthorData {
+    
+    // MARK: - Variables
+    
+    /// the nickname of the author
     var nickName: String
+    /// the name of the author
     var name: String
+    /// the photo url of the author
     var photoURL: String
+    /// the id of the author
     var id: Int
-    // required
+    /// the phata of the author. Required
     var phata: String
     
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         nickName = ""
@@ -26,22 +40,41 @@ struct AuthorData {
         phata = ""
     }
     
-    init(dict: Dictionary<String, Any>) {
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
+    init(dict: Dictionary<String, JSON>) {
         
-        let tempNickName: JSON = dict["nick"] as! JSON
-        let tempname: JSON = dict["name"] as! JSON
-        let tempPhotoURL: JSON = dict["photo_url"] as! JSON
-        let tempID: JSON = dict["id"] as! JSON
-        let tempPhata: JSON = dict["phata"] as! JSON
-        
-        nickName = tempNickName.string!
-        name = tempname.string!
-        photoURL = tempPhotoURL.string!
+        // init optional JSON fields to default values
+        nickName = ""
+        name = ""
+        photoURL = ""
         id = -1
-        if tempID.stringValue != "" {
+        // this field will always have a value no need to use if let
+        phata = (dict["phata"]?.string!)!
+
+        // check optional fields for value, if found assign it to the correct variable
+        if let tempID = dict["id"] {
             
-            id = Int(tempID.stringValue)!
+            // check if string is "" as well
+            if tempID.stringValue != ""{
+                id = Int(tempID.stringValue)!
+            }
         }
-        phata = tempPhata.string!
+        
+        if let tempNickName: JSON = dict["nick"] {
+            
+            nickName = tempNickName.string!
+        }
+        
+        if let tempName: JSON = dict["name"] {
+            
+            name = tempName.string!
+        }
+        
+        if let tempPhotoURL: JSON = dict["photo_url"] {
+            
+            photoURL = tempPhotoURL.string!
+        }
     }
 }

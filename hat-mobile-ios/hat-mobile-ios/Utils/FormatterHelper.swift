@@ -8,9 +8,20 @@
 
 import UIKit
 
-class FormatterHelper: NSObject {
+// MARK: Struct
+
+/// A struct for everything that formats something
+struct FormatterHelper {
     
-    class func formatDateToISO(date: NSDate) -> String {
+    // MARK: - Date formaters
+    
+    /**
+     Formats a date to ISO 8601 format
+     
+     - parameter date: The date to format
+     - returns: String
+     */
+    static func formatDateToISO(date: Date) -> String {
         
         let dateFormatter = DateFormatter()
         let enUSPosixLocale = NSLocale(localeIdentifier: "en_US_POSIX")
@@ -20,34 +31,51 @@ class FormatterHelper: NSObject {
         return dateFormatter.string(from: NSDate() as Date)
     }
     
-    class func formatStringToDate(string: String) -> Date {
+    /**
+     Formats a string into a Date
+     
+     - parameter string: The string to format to a Date
+     - returns: Date
+     */
+    static func formatStringToDate(string: String) -> Date {
         
+        // check if the string to format is empty
         if string == "" {
             
-            // TODO: Return other date when sting is empty
+            // TODO: Return other date when string is empty
             return Date()
         }
+        
         let dateFormatter = DateFormatter()
         let enUSPosixLocale = NSLocale(localeIdentifier: "en_US_POSIX")
         dateFormatter.locale = enUSPosixLocale as Locale!
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         var date = dateFormatter.date(from: string)
+        
+        // if date is nil try a different format and reformat
         if date == nil {
             
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
             date = dateFormatter.date(from: string)
         }
+        
         return date!
     }
     
-    class func formatDateStringToUsersDefinedDate(date: Date) -> String {
+    /**
+     Formats a date to the user's defined date as a string
+     
+     - parameter date: The date to localize
+     - returns: String
+     */
+    static func formatDateStringToUsersDefinedDate(date: Date) -> String {
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
         
-        var test = dateFormatter.string(from: date)
-        test = test.replacingOccurrences(of: ",", with: " -")
-        return test
+        let dateString = dateFormatter.string(from: date)
+        
+        return dateString.replacingOccurrences(of: ",", with: " -")
     }
 }

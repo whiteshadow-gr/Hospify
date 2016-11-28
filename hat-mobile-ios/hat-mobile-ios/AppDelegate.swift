@@ -20,9 +20,14 @@
 
 import UIKit
 import CoreLocation
+import PromiseKit
+
+// MARK: Class
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
+    
+    // MARK: - Variables
     
     var window: UIWindow?
     var deferringUpdates:Bool = false
@@ -42,6 +47,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         return locationManager
     }()
     
+    // MARK: - App Delegate methods
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
@@ -52,8 +59,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }
         startUpdatingLocation()
         
-        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName : UIColor.white]
-        application.statusBarStyle = UIStatusBarStyle.lightContent
+        // change tab bar item font        
+        UITabBarItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "Open Sans Condensed", size: 11)!], for: UIControlState.normal)
+        
+        // change bar button item font
+        UIBarButtonItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans-Bold", size: 17)!], for: UIControlState.normal)
         
         // define the interval for background fetch interval
         application.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum)
@@ -85,30 +95,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             let taskID = beginBackgroundUpdateTask()
             let syncHelper = SyncDataHelper()
-
-            DispatchQueue.global().async {
+            if syncHelper.CheckNextBlockToSync() == true {
                 
-                let result = syncHelper.CheckNextBlockToSync()
+                // we probably need something like syncHelper.CheckNextBlockToSync(self.endBackgroundUpdateTask(taskID: taskID))
+                // do things in the background fetch
+                UIApplication.shared.cancelAllLocalNotifications()
                 
-                if result == true {
-                    
-                    // do things in the background fetch
-                    UIApplication.shared.cancelAllLocalNotifications()
-                    
-                    let notif = UILocalNotification()
-                    let timeNow = NSDate()
-                    notif.fireDate = timeNow as Date;
-                    notif.alertBody = "Background fetch!"
-                    notif.soundName = UILocalNotificationDefaultSoundName
-                    UIApplication.shared.scheduleLocalNotification(notif)
-                    completionHandler(.newData)
-                }
-                else {
-                    
-                    completionHandler(.noData)
-                }
-                self.endBackgroundUpdateTask(taskID: taskID)
+                let notif = UILocalNotification()
+                let timeNow = NSDate()
+                notif.fireDate = timeNow as Date;
+                notif.alertBody = "Background fetch!"
+                notif.soundName = UILocalNotificationDefaultSoundName
+                UIApplication.shared.scheduleLocalNotification(notif)
+                completionHandler(.newData)
+            } else {
+                
+                completionHandler(.noData)
             }
+            self.endBackgroundUpdateTask(taskID: taskID)
         }
     }
     
@@ -149,17 +153,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         purgeUsingPredicate()
         
         // stopUpdatingLocation
-        if let _:CLLocationManager = locationManager {
-            
-            //manager.stopUpdatingLocation()
-            NSLog("Delegate stopUpdatingLocation");
-        }
+//        if let _:CLLocationManager = locationManager {
+//            
+//            manager.stopUpdatingLocation()
+//            NSLog("Delegate stopUpdatingLocation");
+//        }
+        
+        
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         
     }
+    
+    // MARK: - oAuth handler function
     
     /*
      Callback handler oAuth
@@ -177,6 +185,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         return true
     }
     
+    // MARK: - Purge data
+    
     /**
      Check if we need to purge old data. 7 Days
      */
@@ -188,6 +198,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // use _ to get rid of result is unused warnings
         _ = RealmHelper.Purge(predicate)
     }
+    
+    // MARK: - Location Manager Delegate Functions
     
     /**
      The CLLocationManagerDelegate delegate
@@ -269,24 +281,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }
     }
     
-    //didFinishDeferredUpdatesWithError:
-    func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
-        
-        // Stop deferring updates
-        self.deferringUpdates = false
-    }
-    
-    // background task
-    func beginBackgroundUpdateTask() -> UIBackgroundTaskIdentifier {
-        
-        return UIApplication.shared.beginBackgroundTask(expirationHandler: {})
-    }
-    
-    func endBackgroundUpdateTask(taskID: UIBackgroundTaskIdentifier) {
-        
-        UIApplication.shared.endBackgroundTask(taskID)
-    }
-    
     func startUpdatingLocation() -> Void {
         
         /*
@@ -298,5 +292,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             manager.startUpdatingLocation()
             NSLog("Delegate startUpdatingLocation");
         }
+    }
+    
+    //didFinishDeferredUpdatesWithError:
+    func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
+        
+        // Stop deferring updates
+        self.deferringUpdates = false
+    }
+    
+    // MARK: - Background Task Functions
+    
+    // background task
+    func beginBackgroundUpdateTask() -> UIBackgroundTaskIdentifier {
+        
+        return UIApplication.shared.beginBackgroundTask(expirationHandler: {})
+    }
+    
+    func endBackgroundUpdateTask(taskID: UIBackgroundTaskIdentifier) {
+        
+        UIApplication.shared.endBackgroundTask(taskID)
     }
 }

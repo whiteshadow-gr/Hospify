@@ -8,7 +8,6 @@
 
 import UIKit
 import Alamofire
-import SwiftyJSON
 
 // MARK: Class
 
@@ -17,23 +16,17 @@ class ShareOptionsViewController: UIViewController {
     
     // MARK: - Private variables
     
-    /// The json file received from HAT
-    private var jsonReceivedFromHat: JSON = JSON.null
     /// An array of strings holding the selected social networks to share the note
-    private var shareOnSocial: [String] = ["facebook"]
+    private var shareOnSocial: [String] = []
     /// A string passed from Notables view controller about the kind of the note
     var kind: String = "note"
     /// the received note to edit from notables view controller
     var receivedNote: NotesData? = nil
+    /// a bool value to determine if the user is editing an existing value
+    var isEditingExistingNote: Bool = false
     
     // MARK: - IBOutlets
     
-    /// An IBOutlet for handling the facebook button
-    @IBOutlet weak var facebookButton: UIButton!
-    /// An IBOutlet for handling the rumpel button
-    @IBOutlet weak var rumpelButton: UIButton!
-    /// An IBOutlet for handling the twitter button
-    @IBOutlet weak var twitterButton: UIButton!
     /// An IBOutlet for handling the text field
     @IBOutlet weak var messageTextField: UITextField!
     /// An IBOutlet for handling the public/private label
@@ -43,28 +36,76 @@ class ShareOptionsViewController: UIViewController {
     /// An IBOutlet for handling the cancel button
     @IBOutlet weak var cancelButton: UIButton!
     /// An IBOutlet for handling the delete button
-    @IBOutlet weak var deleteButton: UILabel!
-    /// An IBOutlet for handling the publish button
-    @IBOutlet weak var publishButton: UILabel!
+    @IBOutlet weak var deleteButtonOutlet: UIButton!
+    /// An IBOutlet for handling the action view
     @IBOutlet weak var actionsView: UIView!
+    /// An IBOutlet for handling the public icon label
+    @IBOutlet weak var publicImageLabel: UILabel!
+    /// An IBOutlet for handling the share for... icon label
+    @IBOutlet weak var shareImageLabel: UILabel!
+    /// An IBOutlet for handling the share with label
+    @IBOutlet weak var shareWithLabel: UILabel!
+    /// An IBOutlet for handling the share for... label
+    @IBOutlet weak var shareForLabel: UILabel!
+    /// An IBOutlet for handling the facebook button
+    @IBOutlet weak var facebookButton: UIButton!
+    /// An IBOutlet for handling the marketsquare button
+    @IBOutlet weak var marketsquareButton: UIButton!
+    /// An IBOutlet for handling the publish button
+    @IBOutlet weak var publishButton: UIButton!
     
     // MARK: - IBActions
-
+    
     /**
-     This function is called when the user touches the rumpel image
+     This function is called when the user touches the cancel button
      
      - parameter sender: The object that called this function
      */
-    @IBAction func shareOnRumpel(_ sender: Any) {
+    @IBAction func cancelButton(_ sender: Any) {
         
-        // if alpha is equal to 1 that means it's active and the user wants to deactivate it so dim the icon
-        if self.rumpelButton.alpha == 1 {
+        _ = super.navigationController?.popViewController(animated: true)
+    }
+    
+    /**
+     This function is called when the user touches the share button
+     
+     - parameter sender: The object that called this function
+     */
+    @IBAction func shareButton(_ sender: Any) {
+        
+        // save text
+        receivedNote?.data.message = self.messageTextField.text!
+        // start the procedure to upload the note to the hat
+        let token = HatAccountService.getUsersTokenFromKeychain()
+        // if user is not editing an existing note, so it is a new note, check if table exists and post the note
+        if !isEditingExistingNote {
             
-            self.rumpelButton.alpha = 0.4
+            self.checkNotableTableExists(authToken: token)
+        // else the user is editing a note, delete the note first a post a new one
         } else {
             
-            self.rumpelButton.alpha = 1
+            HatAccountService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+            self.checkNotableTableExists(authToken: token)
         }
+        
+        _ = super.navigationController?.popViewController(animated: true)
+    }
+    
+    /**
+     This function is called when the user touches the delete button
+     
+     - parameter sender: The object that called this function
+     */
+    @IBAction func deleteButton(_ sender: Any) {
+        
+        // if not a previous note then nothing to delete
+        if isEditingExistingNote {
+            
+            let token = HatAccountService.getUsersTokenFromKeychain()
+            HatAccountService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+        }
+        
+        _ = super.navigationController?.popViewController(animated: true)
     }
     
     /**
@@ -77,27 +118,20 @@ class ShareOptionsViewController: UIViewController {
         // based on the switch state change the label accordingly
         if publicSwitch.isOn {
             
-            self.publicLabel.text = "Shared"
+            // update the ui accordingly
+            self.turnUIElementsOn()
+            self.turnImagesOn()
+            self.facebookButton.isUserInteractionEnabled = true
+            self.marketsquareButton.isUserInteractionEnabled = true
+            self.receivedNote?.data.shared = true
         } else {
             
-            self.publicLabel.text = "Private"
-        }
-    }
-    
-    /**
-     This function is called when the user touches the twitter image
-     
-     - parameter sender: The object that called this function
-     */
-    @IBAction func twitterButton(_ sender: Any) {
-        
-        // if alpha is equal to 1 that means it's active and the user wants to deactivate it so dim the icon
-        if self.twitterButton.alpha == 1 {
-            
-            self.twitterButton.alpha = 0.4
-        } else {
-            
-            self.twitterButton.alpha = 1
+            // update the ui accordingly
+            self.turnUIElementsOff()
+            self.turnImagesOff()
+            self.facebookButton.isUserInteractionEnabled = false
+            self.marketsquareButton.isUserInteractionEnabled = false
+            self.receivedNote?.data.shared = false
         }
     }
     
@@ -108,14 +142,19 @@ class ShareOptionsViewController: UIViewController {
      */
     @IBAction func shareNowButton(_ sender: Any) {
         
+        // save text
+        receivedNote?.data.message = self.messageTextField.text!
         // start the procedure to upload the note to the hat
-        if receivedNote == nil {
+        let token = HatAccountService.getUsersTokenFromKeychain()
+        // if user is note editing an existing note post as a new note
+        if !isEditingExistingNote {
             
-            HatAccountService.getUserToken(completion: self.checkNotableTableExists)
+            self.checkNotableTableExists(authToken: token)
+        // else delete the existing note a post a new one
         } else {
             
-            HatAccountService.getUserToken(completion: HatAccountService.deleteNote(id: (receivedNote?.id)!))
-            HatAccountService.getUserToken(completion: self.checkNotableTableExists)
+            HatAccountService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+            self.checkNotableTableExists(authToken: token)
         }
         
         _ = super.navigationController?.popViewController(animated: true)
@@ -128,15 +167,50 @@ class ShareOptionsViewController: UIViewController {
      */
     @IBAction func facebookButton(_ sender: Any) {
         
-        // if alpha is equal to 1 that means it's active and the user wants to deactivate it so dim the icon
-        if self.facebookButton.alpha == 1 {
+        // if button is enabled
+        if self.facebookButton.isUserInteractionEnabled {
             
-            self.facebookButton.alpha = 0.4
-            self.removeFromArray(string: "facebook")
-        } else {
+            // if button was selected deselect it and remove the button from the array
+            if self.facebookButton.alpha == 1{
+                
+                self.facebookButton.alpha = 0.4
+                self.removeFromArray(string: "facebook,")
+            // else select it and add it to the array
+            } else {
+                
+                self.facebookButton.alpha = 1
+                shareOnSocial.append("facebook,")
+            }
             
-            self.facebookButton.alpha = 1
-            self.shareOnSocial.append("facebook")
+            // construct string from the array and save it
+            self.receivedNote?.data.sharedOn = self.constructStringFromArray(array: self.shareOnSocial)
+        }
+    }
+    
+    /**
+     This function is called when the user touches the marketsquare image
+     
+     - parameter sender: The object that called this function
+     */
+    @IBAction func marketSquareButton(_ sender: Any) {
+        
+        // if button is enabled
+        if self.marketsquareButton.isUserInteractionEnabled {
+            
+            // if button was selected deselect it and remove the button from the array
+            if self.marketsquareButton.alpha == 1{
+                
+                self.marketsquareButton.alpha = 0.4
+                self.removeFromArray(string: "marketsquare,")
+            // else select it and add it to the array
+            } else {
+                
+                self.marketsquareButton.alpha = 1
+                shareOnSocial.append("marketsquare,")
+            }
+            
+            // construct string from the array and save it
+            self.receivedNote?.data.sharedOn = self.constructStringFromArray(array: self.shareOnSocial)
         }
     }
     
@@ -150,7 +224,7 @@ class ShareOptionsViewController: UIViewController {
     func removeFromArray(string: String) -> Void {
         
         // check in the array
-        for index in 0...self.shareOnSocial.count - 1 {
+        for index in 0...self.shareOnSocial.count {
             
             // if the given string exists
             if self.shareOnSocial[index] == string {
@@ -174,11 +248,15 @@ class ShareOptionsViewController: UIViewController {
         // init a string
         var stringToReturn: String = ""
         
-        // go through the array
-        for item in 0...array.count - 1 {
+        // check if array is empty
+        if array.count > 0 {
             
-            // add the string to the stringToReturn
-            stringToReturn += array[item]
+            // go through the array
+            for item in 0...array.count - 1 {
+                
+                // add the string to the stringToReturn
+                stringToReturn += array[item]
+            }
         }
         
         // return the string
@@ -186,34 +264,6 @@ class ShareOptionsViewController: UIViewController {
     }
     
     // MARK: - Network methods
-    
-    /**
-     Adds all the info about the note we want to add to the JSON file
-     
-     - parameter file: The JSON file in a Dictionary<String, Any>
-     - returns: Dictionary<String, Any>
-     */
-    func updateJSONFile(file: Dictionary<String, Any>) -> Dictionary<String, Any> {
-        
-        var jsonFile = JSON(file)
-        
-        //update message
-        jsonFile = JSONHelper.updateMessageOnJSON(file: jsonFile, message: self.messageTextField.text!)
-        //update kind
-        jsonFile = JSONHelper.updateKindOfNoteOnJSON(file: jsonFile, messageKind: self.kind)
-        //update created time
-        jsonFile = JSONHelper.updateCreatedOnDateOfNoteOnJSON(file: jsonFile)
-        //update updated time
-        jsonFile = JSONHelper.updateUpdatedOnDateOfNoteOnJSON(file: jsonFile)
-        //update public
-        jsonFile = JSONHelper.updateVisibilityOfNoteOnJSON(file: jsonFile, isShared: self.publicSwitch.isOn)
-        //update share on
-        jsonFile = JSONHelper.updateSharedOnDateOfNoteOnJSON(file: jsonFile, socialString: self.constructStringFromArray(array: self.shareOnSocial))
-        //update phata
-        jsonFile = JSONHelper.updatePhataOnDateOfNoteOnJSON(file: jsonFile, phata: Helper.TheUserHATDomain())
-        
-        return jsonFile.dictionaryObject!
-    }
     
     /**
      Posts the note to the hat
@@ -224,15 +274,17 @@ class ShareOptionsViewController: UIViewController {
     func postNote(token: String, json: Dictionary<String, Any>) -> Void {
         
         // create JSON file for posting with default values
-        let hatDataStructure = JSONHelper.createJSONForPostingOnNotables(textToPost: self.messageTextField.text!, hatTableStructure: json)
+        let hatDataStructure = JSONHelper.createJSONForPostingOnNotables(hatTableStructure: json)
         // update JSON file with the values needed
-        let hatData = self.updateJSONFile(file: hatDataStructure)
+        let hatData = JSONHelper.updateJSONFile(file: hatDataStructure, noteFile: self.receivedNote!)
 
         // create the headers
         let headers = Helper.ConstructRequestHeaders(token)
         
+        let domain = HatAccountService.TheUserHATDomain()
+        
         // make async request
-        NetworkHelper.AsynchronousRequest("https://mariostsekis.hubofallthings.net/data/record/values", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: hatData, headers: headers, completion: { (r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest("https://" + domain + "/data/record/values", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: hatData, headers: headers, completion: { (r: Helper.ResultType) -> Void in
             
             // handle result
             switch r {
@@ -318,8 +370,19 @@ class ShareOptionsViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
         // set title in the navigation bar
-        self.title = "Create Notable"
+        //let char: UniChar = 0x2B07;
+        let font = UIFont(name: "SSGlyphish-Outlined", size: 21)
+        let attributedString = NSMutableAttributedString(string: "\u{2B07}", attributes: [NSFontAttributeName: font!])
+        let combination = NSMutableAttributedString()
+        combination.append(NSAttributedString(string: self.kind.capitalized))
+        combination.append(attributedString)
+        super.navigationItem.title = combination.string
+        
+        // set image fonts
+        self.publicImageLabel.attributedText = NSAttributedString(string: "\u{1F512}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
+        self.shareImageLabel.attributedText = NSAttributedString(string: "\u{23F2}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
         
         // setup text field
         self.messageTextField.keyboardAppearance = .dark
@@ -331,22 +394,39 @@ class ShareOptionsViewController: UIViewController {
         let button = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(shareNowButton))
         self.navigationItem.rightBarButtonItem = button
         
-        // add keyboard handling to view
-        self.addKeyboardHandling()
-        self.hideKeyboardWhenTappedAround()
+        // add tap gesture to navigation bar title
+        let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(navigationTitleTap))
+        self.navigationController?.navigationBar.subviews[1].isUserInteractionEnabled = true
+        self.navigationController?.navigationBar.subviews[1].addGestureRecognizer(tapGesture)
         
-        self.cancelButton.layer.borderWidth = 1
-        self.cancelButton.layer.borderColor = UIColor.white.cgColor
-        self.deleteButton.layer.borderWidth = 1
-        self.deleteButton.layer.borderColor = UIColor.white.cgColor
+        // add borders to buttons
+        self.cancelButton.addBorderToButton(width: 1, color: .white)
+        self.deleteButtonOutlet.addBorderToButton(width: 1, color: .white)
+        
+        // change title in publish button
+        self.publishButton.setTitle("Publish " + self.kind.capitalized, for: .normal)
         
         // keep the green bar at the top
         self.view.bringSubview(toFront: actionsView)
         
-        if receivedNote != nil{
+        // if user is editing existing note set up the values accordingly
+        if isEditingExistingNote {
             
             self.setUpUIElementsFromReceivedNote(self.receivedNote!)
+        // else init a new value
+        } else {
+            
+            self.receivedNote = NotesData()
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        super.viewWillAppear(animated)
+        
+        // add keyboard handling to view
+        self.addKeyboardHandling()
+        self.hideKeyboardWhenTappedAround()
     }
 
     override func didReceiveMemoryWarning() {
@@ -355,19 +435,95 @@ class ShareOptionsViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    /**
+     Update the ui from the received note
+     */
     func setUpUIElementsFromReceivedNote(_ receivedNote: NotesData) {
         
+        // add message to the text field
         self.messageTextField.text = receivedNote.data.message
+        // set public switch state
         self.publicSwitch.setOn(receivedNote.data.shared, animated: false)
+        // if switch is on update the ui accordingly
+        if self.publicSwitch.isOn {
+            
+            self.shareOnSocial = receivedNote.data.sharedOn.stringToArray()
+            self.turnUIElementsOn()
+            self.turnImagesOn()
+        }
+    }
+    
+    /**
+     Turns on the ui elemets
+     */
+    func turnUIElementsOn() {
+        
+        // set teal color
+        let color = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
+        
+        // set the text of the public label
+        self.publicLabel.text = "Shared"
+        // set the colors of the labels
+        self.shareWithLabel.textColor = .black
+        self.shareForLabel.textColor = .black
+        // set image fonts
+        self.publicImageLabel.attributedText = NSAttributedString(string: "\u{1F513}", attributes: [NSForegroundColorAttributeName: color, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
+        self.shareImageLabel.attributedText = NSAttributedString(string: "\u{23F2}", attributes: [NSForegroundColorAttributeName: color, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
+    }
+    
+    /**
+     Turns off the ui elemets
+     */
+    func turnUIElementsOff() {
+        
+        // set the text of the public label
+        self.publicLabel.text = "Private"
+        // set the colors of the labels
+        self.shareWithLabel.textColor = .lightGray
+        self.shareForLabel.textColor = .lightGray
+        // set image fonts
+        self.publicImageLabel.attributedText = NSAttributedString(string: "\u{1F512}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
+        self.shareImageLabel.attributedText = NSAttributedString(string: "\u{23F2}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
+    }
+    
+    /**
+     Turns on the images
+     */
+    func turnImagesOn() {
+        
+        // check array for elements
+        for socialName in self.shareOnSocial {
+            
+            // if facebook then enable facebook button
+            if socialName == "facebook" {
+                
+                self.facebookButton.alpha = 1
+            }
+            // else enable marketsquare button
+            else if socialName == "marketsquare" {
+                
+                self.marketsquareButton.alpha = 1
+            }
+        }
+    }
+    
+    /**
+     Turns on the images
+     */
+    func turnImagesOff() {
+        
+        // empty the array
+        self.shareOnSocial.removeAll()
+        // deselect buttons
+        self.facebookButton.alpha = 0.4
+        self.marketsquareButton.alpha = 0.4
     }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    /**
+     A funtion executed on tap of the navigation title
+     */
+    func navigationTitleTap() {
+        
+        
     }
-    */
 }

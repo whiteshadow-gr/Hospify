@@ -9,6 +9,7 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
+import KeychainSwift
 
 // MARK: UIViewController Extension
 
@@ -40,8 +41,8 @@ extension UIViewController {
     func addKeyboardHandling() {
         
         // create 2 notification observers for listening to the keyboard
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name:NSNotification.Name.UIKeyboardWillShow, object: nil);
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name:NSNotification.Name.UIKeyboardWillHide, object: nil);
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name:.UIKeyboardWillShow, object: nil);
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name:.UIKeyboardWillHide, object: nil);
     }
     
     /**
@@ -51,37 +52,12 @@ extension UIViewController {
      */
     func keyboardWillShow(sender: NSNotification) {
         
-//        let userInfo:NSDictionary = sender.userInfo! as NSDictionary
-//        let keyboardFrame:NSValue = userInfo.value(forKey: UIKeyboardFrameEndUserInfoKey) as! NSValue
-//        let keyboardRectangle = keyboardFrame.cgRectValue
-//        let keyboardHeight = keyboardRectangle.height
-//        let tabBarController = UITabBarController()
-//        let tabBarHeight = tabBarController.tabBar.frame.size.height
-//        self.view.frame.origin.y -= keyboardHeight - tabBarHeight
-        
-        // get keyboard size
-        var info = sender.userInfo!
-        let keyboardSize = (info[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue.size
-        // create content insets
-        let contentInsets: UIEdgeInsets = UIEdgeInsetsMake(0.0, 0.0, keyboardSize!.height, 0.0)
-        
-        // init a scroll view
-        let scrollView = UIScrollView(frame: self.view.frame)
-        scrollView.isScrollEnabled = true
-        scrollView.contentInset = contentInsets
-        scrollView.scrollIndicatorInsets = contentInsets
-        
-        // create a rect in the screen
-        var aRect: CGRect = self.view.frame
-        aRect.size.height -= keyboardSize!.height
-        
-        // detect if the rect is behind the keyboard
-        let flag = CGRect.contains(aRect)
-        if flag(aRect) == true {
+        if let keyboardSize = (sender.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             
-            // move the scroll view up
-            let scrollPoint = CGPoint(x: 0.0, y: view.frame.origin.y - ((keyboardSize?.height)! - view.frame.size.height - 50));
-            scrollView.setContentOffset(scrollPoint, animated: true)
+            if self.view.frame.origin.y == ((self.navigationController?.navigationBar.frame.size.height)! + UIApplication.shared.statusBarFrame.height) {
+                
+                self.view.frame.origin.y -= keyboardSize.height
+            }
         }
     }
     
@@ -92,7 +68,13 @@ extension UIViewController {
      */
     func keyboardWillHide(sender: NSNotification) {
         
-        self.view.frame.origin.y = 0
+        if let keyboardSize = (sender.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            
+            if self.view.frame.origin.y != 0 {
+                
+                self.view.frame.origin.y += keyboardSize.height
+            }
+        }
     }
     
     /**
@@ -115,7 +97,9 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     
     // MARK: - Variables
     
+    /// an array of the notes to display
     var notesArray: [NotesData] = []
+    /// the kind of the note to create
     var kind: String = ""
 
     // MARK: - IBOutlets
@@ -124,6 +108,12 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     @IBOutlet weak var tableView: UITableView!
     /// An IBOutlet for handling the create new notes green view at the bottom of the screen
     @IBOutlet weak var createNewNoteView: UIView!
+    /// An IBOutlet for handling the create new note button
+    @IBOutlet weak var createNewNoteLabel: UILabel!
+    /// An IBOutlet for handling the create new list button
+    @IBOutlet weak var createNewListLabel: UILabel!
+    /// An IBOutlet for handling the create new blog button
+    @IBOutlet weak var createNewBlogLabel: UILabel!
     
     // MARK: - IBActions
     
@@ -172,6 +162,17 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.showReceivedNotes), name: NSNotification.Name(rawValue: "notesArray"), object: nil)
         
+        // add gesture recognizer in the labels
+        let newNoteTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newNoteButton(_:)))
+        self.createNewNoteLabel.addGestureRecognizer(newNoteTapGestureRecognizer)
+        self.createNewNoteLabel.isUserInteractionEnabled = true
+        let newListTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newListButton(_:)))
+        self.createNewListLabel.addGestureRecognizer(newListTapGestureRecognizer)
+        self.createNewListLabel.isUserInteractionEnabled = true
+        let newBlogTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newBlogButton(_:)))
+        self.createNewBlogLabel.addGestureRecognizer(newBlogTapGestureRecognizer)
+        self.createNewBlogLabel.isUserInteractionEnabled = true
+
         // begin tracking
         self.beginLocationTracking()
     }
@@ -180,7 +181,16 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         
         super.viewWillAppear(true)
         
-        HatAccountService.getUserToken(completion: self.checkNotableTableExists)
+        // get token and refresh view
+        let token = HatAccountService.getUsersTokenFromKeychain()
+        if token == "" {
+            
+            let loginPageView =  self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+            self.navigationController?.pushViewController(loginPageView, animated: true)
+        } else {
+            
+            self.checkNotableTableExists(authToken: token)
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -191,15 +201,24 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     
     // MARK: - Show Notes
     
+    /**
+     Shows the received notes
+     
+     - parameter notification: The notification object
+     */
     func showReceivedNotes(notification: Notification) {
         
+        // delete the notes array
         self.notesArray.removeAll()
+        // extract the dictionary from jdon
         let dictionary = notification.object as! [JSON]
+        // for each dictionary parse it and add it to the array
         for dict in dictionary {
             
             self.notesArray.append(NotesData.init(dict: dict.dictionary!))
         }
         
+        // reload table
         self.tableView.reloadData()
     }
 
@@ -211,16 +230,21 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellData") as! NotablesTableViewCell
         
         // return cell
-        return NotablesTableViewCell.setUpCell(cell, note: notesArray[indexPath.row], indexPath: indexPath)
+        let controller = NotablesTableViewCell()
+        controller.sharedOn = self.notesArray[indexPath.row].data.sharedOn.stringToArray()
+        
+        return controller.setUpCell(cell, note: notesArray[indexPath.row], indexPath: indexPath)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
+        // return number of notes
         return notesArray.count;
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         
+        // enable swipte to delete
         return true
     }
     
@@ -230,7 +254,8 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
             
             print(self.notesArray[indexPath.row].id)
             // delete data and row
-            HatAccountService.getUserToken(completion: HatAccountService.deleteNote(id: self.notesArray[indexPath.row].id))
+            let token = HatAccountService.getUsersTokenFromKeychain()
+            HatAccountService.deleteNoteWithKeychain(id: self.notesArray[indexPath.row].id, tkn: token)
             self.notesArray.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
@@ -238,6 +263,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        // deselect selected row
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -324,6 +350,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
                 
                 let test = self.tableView.indexPath(for: sender as! UITableViewCell)
                 destinationVC.receivedNote = self.notesArray[(test?.row)!]
+                destinationVC.isEditingExistingNote = true
             } else {
                 
                 destinationVC.kind = self.kind

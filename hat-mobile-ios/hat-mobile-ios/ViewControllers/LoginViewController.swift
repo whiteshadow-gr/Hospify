@@ -53,15 +53,39 @@ extension String {
         
         return s
     }
+    
+    /**
+     <#Function Details#>
+     
+     - returns: <#Returns#>
+     */
+    func stringToArray() -> [String] {
+        
+        let trimmedString = self.replacingOccurrences(of: " ", with: "")
+        var array = trimmedString.components(separatedBy: ",")
+        
+        if array.last == "" {
+            
+            array.removeLast()
+        }
+        
+        return array
+    }
 }
 
 // MARK: - Class
 
 /// The Login View Controller
-class LoginViewController: BaseViewController {
+class LoginViewController: BaseViewController, UITextFieldDelegate {
     
     // MARK: - IBOutlets
     
+    /// An IBOutlet for handling the useWithoutHATButton
+    @IBOutlet weak var useWithoutHATButton: UIButton!
+    /// An IBOutlet for handling the learnMoreButton
+    @IBOutlet weak var learnMoreButton: UIButton!
+    /// An IBOutlet for handling the getAHATButton
+    @IBOutlet weak var getAHATButton: UIButton!
     /// An IBOutlet for handling the buttonLogon
     @IBOutlet weak var buttonLogon: UIButton!
     /// An IBOutlet for handling the inputUserHATDomain
@@ -118,24 +142,42 @@ class LoginViewController: BaseViewController {
         // disable the navigation back button
         self.navigationItem.setHidesBackButton(true, animated:false)
         
+        // add borders to the buttons
+        self.getAHATButton.addBorderToButton(width: 1, color: .white)
+        self.learnMoreButton.addBorderToButton(width: 1, color: .white)
+        self.useWithoutHATButton.addBorderToButton(width: 1, color: .white)
+        
+        self.inputUserHATDomain.delegate = self
+        
         // set title
         self.title = NSLocalizedString("logon_label", comment:  "logon title")
         
-        // add keyboard handling
-        self.addKeyboardHandling()
-        self.hideKeyboardWhenTappedAround()
+        // format title label
+        let textAttributesTitle = [
+            NSForegroundColorAttributeName: UIColor.white,
+            NSStrokeColorAttributeName: UIColor.white,
+            NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!,
+            NSStrokeWidthAttributeName: -1.0
+            ] as [String : Any]
         
-        // screen title
-        labelTitle.text = NSLocalizedString("login_screen_title", comment:  "screen title")
-        labelTitle.textColor = UIColor.white
-        labelTitle.textAlignment = NSTextAlignment.center
-        labelTitle.font = UIFont.boldSystemFont(ofSize: 20)
-
-        // screen sub title
-        labelSubTitle.text = NSLocalizedString("login_screen_subtitle", comment:  "screen sub title")
-        labelSubTitle.textColor = UIColor.white
-        labelSubTitle.textAlignment = NSTextAlignment.center
-        labelSubTitle.font = UIFont.boldSystemFont(ofSize: 12)
+        let textAttributes = [
+            NSForegroundColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
+            NSStrokeColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
+            NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!,
+            NSStrokeWidthAttributeName: -1.0
+            ] as [String : Any]
+        
+        let partOne = NSAttributedString(string: "Rumpel ", attributes: textAttributesTitle)
+        let partTwo = NSAttributedString(string: "Lite", attributes: textAttributes)
+        let combination = NSMutableAttributedString()
+        
+        combination.append(partOne)
+        combination.append(partTwo)
+        self.labelTitle.attributedText = combination
+        self.labelTitle.textAlignment = .center
+        
+        // move placeholder inside by 5 points
+        self.inputUserHATDomain.layer.sublayerTransform = CATransform3DMakeTranslation(5, 0, 0)
         
         // input
         inputUserHATDomain.placeholder = NSLocalizedString("hat_domain_placeholder", comment:  "user HAT domain")
@@ -153,6 +195,23 @@ class LoginViewController: BaseViewController {
         
         // add notification observer for the login in
         NotificationCenter.default.addObserver(self, selector: #selector(self.hatLoginAuth), name: NSNotification.Name(rawValue: Constants.Auth.NotificationHandlerName), object: nil)
+        
+        // set tint color, if translucent and the bar tint color of navigation bar
+        self.navigationController?.navigationBar.tintColor = UIColor.white
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationController?.navigationBar.barTintColor = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        super.viewWillAppear(animated)
+        
+        // when the view appears clear the text field. The user might pressed sing out, this field must not contain the previous address
+        self.inputUserHATDomain.text = ""
+        
+        // add keyboard handling
+        self.addKeyboardHandling()
+        self.hideKeyboardWhenTappedAround()
     }
 
     /*
@@ -218,6 +277,13 @@ class LoginViewController: BaseViewController {
         }        
     }
     
+    override func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        self.buttonLogonTouchUp(self)
+        self.view.endEditing(true)
+        return false
+    }
+    
     /**
      The notification received from the login precedure.
      
@@ -237,6 +303,9 @@ class LoginViewController: BaseViewController {
         // get token out
         if let token = Helper.GetQueryStringParameter(url: url.absoluteString, param: Constants.Auth.TokenParamName) {
             
+            // save token in keychain
+            
+            _ = Helper.SetKeychainValue(key: "UserToken", value: token)
             // get the public key for this user. e.g. https://iostesting.hubofallthings.net/publickey
             // make asynchronous call
             // parameters..
@@ -258,6 +327,7 @@ class LoginViewController: BaseViewController {
                             
                             // decode the token and get the iss out 
                             let jwt = try! decode(jwt: token)
+                            
                             
                             // guard for the issuer check, “iss” (Issuer)
                             guard let HATDomainFromToken = jwt.issuer else {

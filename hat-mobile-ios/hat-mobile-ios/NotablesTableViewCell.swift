@@ -10,7 +10,12 @@ import UIKit
 
 // MARK: Class
 
-class NotablesTableViewCell: UITableViewCell {
+/// the notables table view cell class
+class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
+    
+    // MARK: - Variables
+    
+     var sharedOn: [String] = []
     
     // MARK: - IBOutlets
 
@@ -22,12 +27,8 @@ class NotablesTableViewCell: UITableViewCell {
     @IBOutlet weak var usernameLabel: UILabel!
     /// An IBOutlet for handling the profile image of the post
     @IBOutlet weak var profileImage: UIImageView!
-    /// An IBOutlet for handling the rumpel image of the post
-    @IBOutlet weak var rumpelImage: UIImageView!
-    /// An IBOutlet for handling the twitter image of the post
-    @IBOutlet weak var twitterImage: UIImageView!
-    /// An IBOutlet for handling the facebook imag of the post
-    @IBOutlet weak var facebookImage: UIImageView!
+    /// An IBOutlet for handling the collection view
+    @IBOutlet weak var collectionView: UICollectionView!
     
     // MARK: - Cell methods
     
@@ -44,63 +45,103 @@ class NotablesTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    class func setUpCell(_ cell: NotablesTableViewCell, note: NotesData, indexPath: IndexPath) -> NotablesTableViewCell {
+    // MARK: - Setup cell
+    
+    /**
+     Sets up the cell from the note
+     
+     - parameter cell: The cell to set up
+     - parameter note: The data to show on the cell
+     - parameter indexPath: The index path of the cell
+     - returns: NotablesTableViewCell
+     */
+    func setUpCell(_ cell: NotablesTableViewCell, note: NotesData, indexPath: IndexPath) -> NotablesTableViewCell {
         
+        // if the note is shared get the shared on string as well
+        if note.data.shared {
+            
+            cell.sharedOn = note.data.sharedOn.stringToArray()
+        }
+        
+        // get the notes data
         let notablesData = note.data
+        // get the author data
         let authorData = notablesData.authorData
-        _ = notablesData.locationData
-        _ = notablesData.photoData
-        
+        // get the last updated date
         let date = FormatterHelper.formatDateStringToUsersDefinedDate(date: note.lastUpdated)
 
+        // format the info label
         let textAttributes = [
             NSForegroundColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
             NSStrokeColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
-            NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 11)!,
+            NSFontAttributeName: UIFont(name: "Open Sans", size: 11)!,
             NSStrokeWidthAttributeName: -1.0
             ] as [String : Any]
         
-//        let textAttributes2 = [
-//            NSForegroundColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
-//            NSStrokeColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
-//            NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 12)!,
-//            NSStrokeWidthAttributeName: -1.0
-//            ] as [String : Any]
-        
         let string = "Posted "+date
-//        var lockChar: UniChar = 0
         var shareString: String = ""
         if !notablesData.shared {
             
-//            lockChar = 0xE6D0
             shareString = " Private Note"
         }
         
         let partOne = NSAttributedString(string: string)
         let partTwo = NSAttributedString(string: shareString, attributes: textAttributes)
-//        let partOneAndHalf = NSAttributedString(string: String(format: "%C", lockChar), attributes: textAttributes2)
         let combination = NSMutableAttributedString()
         
         combination.append(partOne)
         combination.append(partTwo)
         
+        // handle the image fetching
         if authorData.photoURL != "" {
             
             //fetch image and assign it
         }
-        
-        //cell.locationImageFont.font = UIFont(name: "SSGlyphish-Outlined", size: 15) //SS Glyphish
-        
+                
         // create this zebra like color based on the index of the cell
         if (indexPath.row % 2 == 1) {
             
             cell.contentView.backgroundColor = UIColor.init(colorLiteralRed: 51/255, green: 74/255, blue: 79/255, alpha: 1)
         }
         
+        // show the data in the cell's labels
         cell.postDataLabel.text = notablesData.message
         cell.usernameLabel.text = authorData.phata
         cell.postInfoLabel.attributedText = combination
         
+        // flip the view to appear from right to left
+        cell.collectionView.transform = CGAffineTransform(scaleX: -1, y: 1)
+        
+        // return the cell
+        return cell
+    }
+    
+    // MARK: - CollectionView datasource methods
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        // return the number of elements in the array
+        return self.sharedOn.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        // set up cell from the reuse identifier
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "socialCell", for: indexPath) as!SocialImageCollectionViewCell
+        
+        // update the image of the cell accordingly
+        if self.sharedOn[indexPath.row] == "facebook" {
+            
+            cell.socialImage.image = UIImage(named: "Facebook")
+        } else if self.sharedOn[indexPath.row] == "marketsquare" {
+            
+            cell.socialImage.image = UIImage(named: "Marketsquare")
+        }
+        
+        // flip the image to appear correctly
+        cell.socialImage.transform = CGAffineTransform(scaleX: -1, y: 1)
+        
+        //return the cell
         return cell
     }
 }

@@ -9,10 +9,21 @@
 import UIKit
 import SwiftyJSON
 
+// MARK: Struct
+
+/// A struct for working with JSON files. Either creating or updating an existing JSON file
 struct JSONHelper {
     
+    // MARK: - Create JSON files functions
+    
+    /**
+     Creates the notables JSON file
+     
+     - returns: Dictionary<String, Any>
+     */
     static func createNotablesTableJSON() -> Dictionary<String, Any> {
         
+        // create the author table fields
         let authorFieldsJSON: Array = [
             
             Dictionary.init(dictionaryLiteral: ("name","id")),
@@ -22,6 +33,7 @@ struct JSONHelper {
             Dictionary.init(dictionaryLiteral: ("name","photo_url"))
         ]
         
+        // create the author table
         let authorTableJSON: Dictionary = [
             
             "name": "authorv1",
@@ -29,6 +41,7 @@ struct JSONHelper {
             "fields": authorFieldsJSON
             ] as [String : Any]
         
+        // create the notes table
         let notesTable: Array = [
             
             Dictionary.init(dictionaryLiteral: ("name","message")),
@@ -41,6 +54,7 @@ struct JSONHelper {
             Dictionary.init(dictionaryLiteral: ("name","shared_on"))
         ]
         
+        // create the location table fields
         let locationFieldsJSON: Array = [
             
             Dictionary.init(dictionaryLiteral: ("name","latitude")),
@@ -54,6 +68,7 @@ struct JSONHelper {
             Dictionary.init(dictionaryLiteral: ("name","shared"))
         ]
         
+        // create the location table
         let locationJSON: Dictionary = [
             
             "name": "locationv1",
@@ -61,6 +76,7 @@ struct JSONHelper {
             "fields":locationFieldsJSON
             ] as [String : Any]
         
+        // create the photos table field
         let photosFieldsJSON: Array = [
             
             Dictionary.init(dictionaryLiteral: ("name","link")),
@@ -69,6 +85,7 @@ struct JSONHelper {
             Dictionary.init(dictionaryLiteral: ("name","shared"))
         ]
         
+        // create the photos table
         let photosJSON: Dictionary = [
             
             "name": "photov1",
@@ -76,6 +93,7 @@ struct JSONHelper {
             "fields":photosFieldsJSON
             ] as [String : Any]
         
+        // add the created tables in as subarrays
         let subTablesJSON: Array = [
             
             authorTableJSON,
@@ -83,6 +101,7 @@ struct JSONHelper {
             photosJSON
         ]
         
+        // create the final json file
         let JSON: Dictionary = [
             
             "name": "notablesv1",
@@ -91,59 +110,53 @@ struct JSONHelper {
             "subTables":subTablesJSON
             ] as [String : Any]
         
+        // return the json file
         return JSON
-    }    
-    
-//    class ApiDataRecord {
-//        var id: Int?
-//        var lastUpdated: NSDate
-//        var name: String
-//    }
-//    class ApiDataValue {
-//        var id: Int?
-//        var value: String
-//        var record: ApiDataRecord?
-//    }
-//    class ApiDataField {
-//        var id: Int
-//        var tableId: Int
-//        var name: String
-//        var values: [String]
-//    }
-//    class ApiDataTable {
-//        var id: Int
-//        var name: String
-//        var source: String
-//        var fields: [ApiDataField]?
-//        var subTables: [ApiDataTable]?
-//    }
+    }
 
-    static func createJSONForPostingOnNotables(textToPost: String, hatTableStructure: Dictionary<String, Any>) -> Dictionary<String, Any> {
+    /**
+     Creates the json file to update a note
+     
+     - parameter hatTableStructure: Dictionary<String, Any>
+     - returns: Dictionary<String, Any>
+     */
+    static func createJSONForPostingOnNotables(hatTableStructure: Dictionary<String, Any>) -> Dictionary<String, Any> {
         
+        // init array
         var valuesArray: [Dictionary<String, Any>] = []
         
-        let iso8601String = FormatterHelper.formatDateToISO(date: NSDate())
+        // format date in an iso format
+        let iso8601String = FormatterHelper.formatDateToISO(date: Date())
         
+        // the record json fields
         let recordDictionary: Dictionary = [
             
             "name": iso8601String,
             "lastUpdated":iso8601String
         ] as [String : Any]
         
+        // for each json file in hatTableStructure
         for tableProperty in hatTableStructure {
 
+            // check for the fields
             if tableProperty.key == "fields" {
+                
+                // save as a dict in JSON format
                 let tempDict = tableProperty.value as! JSON
+                // get the array from the dictionary
                 let tempArray = tempDict.array
                 
-                for dict in tempArray!{
+                // for each dictionary in the array
+                for dict in tempArray! {
                     
+                    // create the message fields
                     let messageFieldDictionary: Dictionary = [
                         
                         "id": dict.dictionary!["id"]!.number!,
                         "name":dict.dictionary!["name"]!.string!
                         ] as [String : Any]
                     
+                    // create the message table
                     let messageDictionary: Dictionary = [
                         
                         "field": messageFieldDictionary,
@@ -151,27 +164,34 @@ struct JSONHelper {
                         ] as [String : Any]
                     
                     valuesArray.append(messageDictionary)
-                    
                 }
                 
                 print("fields")
-            }else if tableProperty.key == "subTables"{
+            // find subtables
+            } else if tableProperty.key == "subTables" {
                 
+                // save as a dict in JSON format
                 let tempDict = tableProperty.value as! JSON
+                // get the array from the dictionary
                 let tempArray = tempDict.array
                 
-                for dict in tempArray!{
+                // for each dictionary in the array
+                for dict in tempArray! {
                    
+                    // get the table
                     let fieldsArray = dict["fields"].array!
                     
-                    for field in fieldsArray{
+                    // for each field in the tables
+                    for field in fieldsArray {
                         
+                        // create the message field
                         let messageFieldDictionary: Dictionary = [
                             
                             "id":field.dictionary!["id"]!.number!,
                             "name":field.dictionary!["name"]!.string!
                             ] as [String : Any]
                         
+                        // create the message table
                         let messageDictionary: Dictionary = [
                             
                             "field": messageFieldDictionary,
@@ -184,15 +204,27 @@ struct JSONHelper {
             }
         }
         
+        // add everything in a dictionary
         let arrayDictionary: Dictionary = [
             
             "record":recordDictionary,
             "values":valuesArray
             ] as [String : Any]
         
+        // return the dictionary
         return arrayDictionary
     }
     
+    // MARK: - Update JSON file functions
+    
+    /**
+     Updates the message of the note json file
+     
+     - parameter file: The json file to update
+     - parameter message: The message to add to the note
+
+     - returns: JSON
+     */
     static func updateMessageOnJSON(file: JSON, message: String) -> JSON {
         
         var jsonFile = file
@@ -200,45 +232,116 @@ struct JSONHelper {
         return jsonFile
     }
     
+    /**
+     Updates the visibility of the note json file
+     
+     - parameter file: The json file to update
+     - parameter isShared: the boolean value as a string indicating if the note is shared
+     
+     - returns: JSON
+     */
     static func updateVisibilityOfNoteOnJSON(file: JSON, isShared: Bool) -> JSON {
         
         var jsonFile = file
         jsonFile["values"][5]["value"] = JSON(String(isShared))
         return jsonFile
     }
-    
+    /**
+     Updates the kind of the note json file
+     
+     - parameter file: The json file to update
+     - parameter messageKind: the kind of the message. 3 kinds available, note, blog, list
+     
+     - returns: JSON
+     */
     static func updateKindOfNoteOnJSON(file: JSON, messageKind: String) -> JSON {
         
         var jsonFile = file
         jsonFile["values"][1]["value"] = JSON(messageKind)
         return jsonFile
     }
-    
-    static func updateCreatedOnDateOfNoteOnJSON(file: JSON) -> JSON {
+    /**
+     Updates the created date of the note json file
+     
+     - parameter file: The json file to update
+     - parameter date: The creation date
+     
+     - returns: JSON
+     */
+    static func updateCreatedOnDateOfNoteOnJSON(file: JSON, date: Date) -> JSON {
         
         var jsonFile = file
-        jsonFile["values"][2]["value"] = JSON(FormatterHelper.formatDateToISO(date: NSDate()))
+        jsonFile["values"][2]["value"] = JSON(FormatterHelper.formatDateToISO(date: date))
         return jsonFile
     }
-    
-    static func updateUpdatedOnDateOfNoteOnJSON(file: JSON) -> JSON {
+    /**
+     Updates the updated date of the note json file
+     
+     - parameter file: The json file to update
+     - parameter date: the updated date
+     
+     - returns: JSON
+     */
+    static func updateUpdatedOnDateOfNoteOnJSON(file: JSON, date: Date) -> JSON {
         
         var jsonFile = file
-        jsonFile["values"][3]["value"] = JSON(FormatterHelper.formatDateToISO(date: NSDate()))
+        jsonFile["values"][3]["value"] = JSON(FormatterHelper.formatDateToISO(date: date))
         return jsonFile
     }
-    
+    /**
+     Updates the social media that this note is shared in the json file
+     
+     - parameter file: The json file to update
+     - parameter socialString: Coma seperated string indicating the social media that this note will be shared into
+     
+     - returns: JSON
+     */
     static func updateSharedOnDateOfNoteOnJSON(file: JSON, socialString: String) -> JSON {
         
         var jsonFile = file
         jsonFile["values"][4]["value"] = JSON(socialString)
         return jsonFile
     }
-    
+    /**
+     Updates the phata of the note json file
+     
+     - parameter file: The json file to update
+     - parameter phata: The user's phata
+     
+     - returns: JSON
+     */
     static func updatePhataOnDateOfNoteOnJSON(file: JSON, phata: String) -> JSON {
         
         var jsonFile = file
         jsonFile["values"][22]["value"] = JSON(phata)
         return jsonFile
+    }
+    
+    /**
+     Adds all the info about the note we want to add to the JSON file
+     
+     - parameter file: The JSON file in a Dictionary<String, Any>
+     - returns: Dictionary<String, Any>
+     */
+    static func updateJSONFile(file: Dictionary<String, Any>, noteFile: NotesData) -> Dictionary<String, Any> {
+        
+        var jsonFile = JSON(file)
+        
+        //update message
+        jsonFile = JSONHelper.updateMessageOnJSON(file: jsonFile, message: noteFile.data.message)
+        //update kind
+        jsonFile = JSONHelper.updateKindOfNoteOnJSON(file: jsonFile, messageKind: noteFile.data.kind)
+        //update created time
+        jsonFile = JSONHelper.updateCreatedOnDateOfNoteOnJSON(file: jsonFile, date: noteFile.data.createdTime)
+        //update updated time
+        jsonFile = JSONHelper.updateUpdatedOnDateOfNoteOnJSON(file: jsonFile, date: noteFile.lastUpdated)
+        //update public
+        jsonFile = JSONHelper.updateVisibilityOfNoteOnJSON(file: jsonFile, isShared: noteFile.data.shared)
+        //update share on
+        jsonFile = JSONHelper.updateSharedOnDateOfNoteOnJSON(file: jsonFile, socialString: noteFile.data.sharedOn)
+        //update phata
+        jsonFile = JSONHelper.updatePhataOnDateOfNoteOnJSON(file: jsonFile, phata: Helper.TheUserHATDomain())
+        
+        return jsonFile.dictionaryObject!
     }
 }

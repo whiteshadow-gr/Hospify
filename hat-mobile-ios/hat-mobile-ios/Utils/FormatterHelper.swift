@@ -24,8 +24,7 @@ struct FormatterHelper {
     static func formatDateToISO(date: Date) -> String {
         
         let dateFormatter = DateFormatter()
-        let enUSPosixLocale = NSLocale(localeIdentifier: "en_US_POSIX")
-        dateFormatter.locale = enUSPosixLocale as Locale!
+        dateFormatter.timeZone = TimeZone(abbreviation: "GMT")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
         
         return dateFormatter.string(from: NSDate() as Date)
@@ -47,8 +46,8 @@ struct FormatterHelper {
         }
         
         let dateFormatter = DateFormatter()
-        let enUSPosixLocale = NSLocale(localeIdentifier: "en_US_POSIX")
-        dateFormatter.locale = enUSPosixLocale as Locale!
+        //dateFormatter.locale = Locale.current
+        dateFormatter.timeZone = TimeZone(abbreviation: "GMT")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         var date = dateFormatter.date(from: string)
         

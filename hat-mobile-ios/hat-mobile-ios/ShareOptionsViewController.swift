@@ -76,6 +76,12 @@ class ShareOptionsViewController: UIViewController {
         
         // save text
         receivedNote?.data.message = self.messageTextField.text!
+        
+        if !(receivedNote!.data.shared) {
+            
+            receivedNote?.data.sharedOn = ""
+        }
+        
         // start the procedure to upload the note to the hat
         let token = HatAccountService.getUsersTokenFromKeychain()
         // if user is not editing an existing note, so it is a new note, check if table exists and post the note
@@ -279,6 +285,23 @@ class ShareOptionsViewController: UIViewController {
         // update JSON file with the values needed
         let hatData = JSONHelper.updateJSONFile(file: hatDataStructure, noteFile: self.receivedNote!)
 
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: hatData, options: .prettyPrinted)
+            // here "jsonData" is the dictionary encoded in JSON data
+            
+            let decoded = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            // here "decoded" is of type `Any`, decoded from JSON data
+            
+            // you can now cast it with the right type
+            if let dictFromJSON = decoded as? [String:Any] {
+                // use dictFromJSON
+                
+                print(dictFromJSON)
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+        //print(jsonData)
         // create the headers
         let headers = Helper.ConstructRequestHeaders(token)
         
@@ -392,8 +415,8 @@ class ShareOptionsViewController: UIViewController {
             NSAttributedString(string: "What's on your mind?", attributes: [NSForegroundColorAttributeName : UIColor.lightGray])
         
         // create a button and add it to navigation bar
-        let button = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(shareNowButton))
-        self.navigationItem.rightBarButtonItem = button
+//        let button = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(shareNowButton))
+//        self.navigationItem.rightBarButtonItem = button
         
         // add tap gesture to navigation bar title
         let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(navigationTitleTap))
@@ -420,6 +443,8 @@ class ShareOptionsViewController: UIViewController {
             self.receivedNote = NotesData()
         }
         
+        self.receivedNote?.data.kind = self.kind
+        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow2), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide2), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
     }
@@ -430,7 +455,7 @@ class ShareOptionsViewController: UIViewController {
         
         // add keyboard handling to view
 //        self.addKeyboardHandling()
-//        self.hideKeyboardWhenTappedAround()
+        self.hideKeyboardWhenTappedAround()
     }
 
     override func didReceiveMemoryWarning() {
@@ -438,6 +463,8 @@ class ShareOptionsViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    // MARK: - Setup UI functins
     
     /**
      Update the ui from the received note
@@ -531,7 +558,9 @@ class ShareOptionsViewController: UIViewController {
         
     }
     
-    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+    // MARK: - Keyboard handling
+    
+    override func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         textField.resignFirstResponder()
         return true
@@ -543,14 +572,21 @@ class ShareOptionsViewController: UIViewController {
         var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
         keyboardFrame = self.view.convert(keyboardFrame, from: nil)
         
-        var contentInset:UIEdgeInsets = self.scrollView.contentInset
-        contentInset.bottom = keyboardFrame.size.height
-        self.scrollView.contentInset = contentInset
+        self.scrollView.contentInset.bottom = keyboardFrame.size.height
+        
+        let desiredOffset = CGPoint(x: 0, y: self.scrollView.contentInset.top)
+        self.scrollView.setContentOffset(desiredOffset, animated: true)
+        self.scrollView.scrollRectToVisible(self.messageTextField.frame, animated: true)
+        self.actionsView.frame.origin.y -= keyboardFrame.size.height
     }
     
     func keyboardWillHide2(notification:NSNotification){
         
         let contentInset:UIEdgeInsets = UIEdgeInsets.zero
         self.scrollView.contentInset = contentInset
+        var userInfo = notification.userInfo!
+        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+        keyboardFrame = self.view.convert(keyboardFrame, from: nil)
+        self.actionsView.frame.origin.y += keyboardFrame.size.height
     }
 }

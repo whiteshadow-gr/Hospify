@@ -61,6 +61,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         if note.data.shared {
             
             cell.sharedOn = note.data.sharedOn.stringToArray()
+            self.sharedOn = cell.sharedOn
         }
         
         // get the notes data

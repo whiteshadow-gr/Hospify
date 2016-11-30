@@ -36,7 +36,7 @@ struct AuthorData {
         nickName = ""
         name = ""
         photoURL = ""
-        id = -1
+        id = 0
         phata = ""
     }
     

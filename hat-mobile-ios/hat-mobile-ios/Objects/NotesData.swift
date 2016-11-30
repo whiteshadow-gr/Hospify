@@ -12,7 +12,7 @@ import SwiftyJSON
 
 /// A struct representing the outer notes JSON format
 struct NotesData {
-
+    
     // MARK: - Variables
     
     /// the note id

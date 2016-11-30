@@ -64,6 +64,7 @@ struct NotablesData {
         authorData = AuthorData.init()
         photoData = PhotoData.init()
         locationData = LocationData.init()
+        shared = false
         
         if let tempAuthorData: JSON = dict["authorv1"] {
             
@@ -95,7 +96,13 @@ struct NotablesData {
         
         // init values that are non optional
         createdTime = FormatterHelper.formatStringToDate(string: (dict["created_time"]!).string!)
-        shared = Bool((dict["shared"]?.string!)!)!
+        if dict["shared"]!.string == "" {
+            
+            shared = false
+        } else {
+            
+            shared = Bool((dict["shared"]?.string!)!)!
+        }
         message = (dict["message"]?.string!)!
         updatedTime = FormatterHelper.formatStringToDate(string: (dict["updated_time"]?.string!)!)
         kind = (dict["kind"]?.string!)!

@@ -152,7 +152,7 @@ struct JSONHelper {
                     // create the message fields
                     let messageFieldDictionary: Dictionary = [
                         
-                        "id": dict.dictionary!["id"]!.number!,
+                        "id": Int(dict.dictionary!["id"]!.number!),
                         "name":dict.dictionary!["name"]!.string!
                         ] as [String : Any]
                     
@@ -187,7 +187,7 @@ struct JSONHelper {
                         // create the message field
                         let messageFieldDictionary: Dictionary = [
                             
-                            "id":field.dictionary!["id"]!.number!,
+                            "id":Int(field.dictionary!["id"]!.number!),
                             "name":field.dictionary!["name"]!.string!
                             ] as [String : Any]
                         
@@ -310,7 +310,7 @@ struct JSONHelper {
      
      - returns: JSON
      */
-    static func updatePhataOnDateOfNoteOnJSON(file: JSON, phata: String) -> JSON {
+    static func updatePhataOfNoteOnJSON(file: JSON, phata: String) -> JSON {
         
         var jsonFile = file
         jsonFile["values"][22]["value"] = JSON(phata)
@@ -340,7 +340,7 @@ struct JSONHelper {
         //update share on
         jsonFile = JSONHelper.updateSharedOnDateOfNoteOnJSON(file: jsonFile, socialString: noteFile.data.sharedOn)
         //update phata
-        jsonFile = JSONHelper.updatePhataOnDateOfNoteOnJSON(file: jsonFile, phata: Helper.TheUserHATDomain())
+        jsonFile = JSONHelper.updatePhataOfNoteOnJSON(file: jsonFile, phata: Helper.TheUserHATDomain())
         
         return jsonFile.dictionaryObject!
     }

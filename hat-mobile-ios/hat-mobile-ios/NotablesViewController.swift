@@ -101,6 +101,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     var notesArray: [NotesData] = []
     /// the kind of the note to create
     var kind: String = ""
+    var cells: [NotablesTableViewCell] = []
 
     // MARK: - IBOutlets
 
@@ -160,6 +161,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         // keep the green bar at the top
         self.view.bringSubview(toFront: createNewNoteView)
         
+        // register for a notificaation to get the notes to the table
         NotificationCenter.default.addObserver(self, selector: #selector(self.showReceivedNotes), name: NSNotification.Name(rawValue: "notesArray"), object: nil)
         
         // add gesture recognizer in the labels
@@ -227,13 +229,22 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         // get cell from the reusable id
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cellData") as! NotablesTableViewCell
-        
-        // return cell
         let controller = NotablesTableViewCell()
-        controller.sharedOn = self.notesArray[indexPath.row].data.sharedOn.stringToArray()
-        
-        return controller.setUpCell(cell, note: notesArray[indexPath.row], indexPath: indexPath)
+
+        if cells.count == indexPath.row {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cellData") as? NotablesTableViewCell
+            cells.append(controller.setUpCell(cell!, note: notesArray[indexPath.row], indexPath: indexPath))
+            return cell!
+        }
+        else {
+            
+          return controller.setUpCell(cells[indexPath.row], note: notesArray[indexPath.row], indexPath: indexPath)
+        }
+        //return cells[indexPath.row]
+
+        // return cell
+        //return cell!//controller.setUpCell(cell!, note: notesArray[indexPath.row], indexPath: indexPath)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

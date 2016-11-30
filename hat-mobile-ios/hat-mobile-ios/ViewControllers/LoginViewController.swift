@@ -214,7 +214,7 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         
         // add keyboard handling
 //        self.addKeyboardHandling()
-//        self.hideKeyboardWhenTappedAround()
+       self.hideKeyboardWhenTappedAround()
     }
 
     /*

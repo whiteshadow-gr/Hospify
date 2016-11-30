@@ -138,8 +138,11 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             
             // reset the stack to avoid allowing back
             let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
-            let controller = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
-            self.present(controller, animated: true, completion: nil)
+            let loginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+            super.navigationController?.title = ""
+            let navigation = super.navigationController
+            _ = super.navigationController?.popToRootViewController(animated: false)
+            navigation?.pushViewController(loginViewController, animated: false)
         }
         
         // add actions to the alert

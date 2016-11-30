@@ -937,11 +937,6 @@
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" placeholder="What's on your mind?" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gae-xE-cTn">
-                                        <rect key="frame" x="6" y="8" width="308" height="305"/>
-                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="17"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z4z-aX-X5S">
                                         <rect key="frame" x="8" y="328" width="22" height="22"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -1057,9 +1052,17 @@
                                             <action selector="publicSwitchStateChanged:" destination="omu-es-gVw" eventType="valueChanged" id="bc1-i7-bN5"/>
                                         </connections>
                                     </switch>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="3Mu-iE-hWN">
+                                        <rect key="frame" x="8" y="8" width="304" height="307"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="20"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="omu-es-gVw" id="LR6-2M-KOn"/>
+                                        </connections>
+                                    </textView>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="gae-xE-cTn" firstAttribute="leading" secondItem="EdC-Wr-9Dm" secondAttribute="leading" constant="6" id="2Da-Cq-SkZ"/>
                                     <constraint firstItem="gSU-b7-2dM" firstAttribute="leading" secondItem="2Lu-8c-LCv" secondAttribute="trailing" constant="6" id="4pY-Lj-xqA"/>
                                     <constraint firstAttribute="bottom" secondItem="0Iq-6W-fdV" secondAttribute="bottom" constant="8" id="69Q-A1-KGP"/>
                                     <constraint firstAttribute="trailing" secondItem="boZ-yn-qNe" secondAttribute="trailing" constant="8" id="73e-jN-98N"/>
@@ -1076,20 +1079,21 @@
                                     <constraint firstAttribute="bottom" secondItem="boZ-yn-qNe" secondAttribute="bottom" constant="8" id="OFr-xg-Z11"/>
                                     <constraint firstAttribute="bottom" secondItem="Dkv-cU-SPj" secondAttribute="bottom" constant="8" id="OsW-Oa-gQ6"/>
                                     <constraint firstAttribute="bottom" secondItem="Q6g-rd-MTd" secondAttribute="bottom" constant="8" id="PLA-KT-hAF"/>
+                                    <constraint firstAttribute="trailing" secondItem="3Mu-iE-hWN" secondAttribute="trailing" constant="8" id="PNN-3b-mQ7"/>
+                                    <constraint firstItem="3Mu-iE-hWN" firstAttribute="leading" secondItem="EdC-Wr-9Dm" secondAttribute="leading" constant="8" id="RNo-kP-nqK"/>
                                     <constraint firstItem="YuO-Yh-nUb" firstAttribute="leading" secondItem="Z4z-aX-X5S" secondAttribute="trailing" constant="6" id="S8H-Eq-2H6"/>
-                                    <constraint firstItem="gae-xE-cTn" firstAttribute="centerY" secondItem="EdC-Wr-9Dm" secondAttribute="centerY" constant="-70.5" id="T9c-Rf-1Ig"/>
                                     <constraint firstItem="lLI-Gn-IVU" firstAttribute="leading" secondItem="bkz-Q7-lKt" secondAttribute="trailing" constant="8" id="TM9-3v-6d9"/>
                                     <constraint firstAttribute="bottom" secondItem="lLI-Gn-IVU" secondAttribute="bottom" constant="8" id="TZZ-Jl-XvH"/>
                                     <constraint firstAttribute="bottom" secondItem="bkz-Q7-lKt" secondAttribute="bottom" constant="8" id="VC1-rM-COs"/>
                                     <constraint firstItem="Q6g-rd-MTd" firstAttribute="leading" secondItem="Dkv-cU-SPj" secondAttribute="trailing" constant="8" id="XTS-2Q-Uv6"/>
                                     <constraint firstItem="Z4z-aX-X5S" firstAttribute="leading" secondItem="2Lu-8c-LCv" secondAttribute="leading" id="Y2t-jh-Nld"/>
                                     <constraint firstItem="Z4z-aX-X5S" firstAttribute="bottom" secondItem="YuO-Yh-nUb" secondAttribute="bottom" id="YUT-ds-4qh"/>
-                                    <constraint firstItem="gae-xE-cTn" firstAttribute="top" secondItem="EdC-Wr-9Dm" secondAttribute="top" constant="8" id="bTv-Qd-qCi"/>
+                                    <constraint firstItem="3Mu-iE-hWN" firstAttribute="centerX" secondItem="EdC-Wr-9Dm" secondAttribute="centerX" id="ZMh-6o-SKl"/>
                                     <constraint firstItem="0Iq-6W-fdV" firstAttribute="leading" secondItem="Q6g-rd-MTd" secondAttribute="trailing" constant="8" id="bXC-q5-BEt"/>
-                                    <constraint firstItem="gae-xE-cTn" firstAttribute="centerX" secondItem="EdC-Wr-9Dm" secondAttribute="centerX" id="i3f-Tx-qqM"/>
-                                    <constraint firstItem="88C-AR-sDb" firstAttribute="top" secondItem="gae-xE-cTn" secondAttribute="bottom" constant="10" id="qRj-Gl-DsB"/>
+                                    <constraint firstItem="88C-AR-sDb" firstAttribute="top" secondItem="3Mu-iE-hWN" secondAttribute="bottom" constant="8" id="d5z-Hy-YoZ"/>
+                                    <constraint firstItem="3Mu-iE-hWN" firstAttribute="centerY" secondItem="EdC-Wr-9Dm" secondAttribute="centerY" constant="-69.5" id="flj-Qf-Flj"/>
                                     <constraint firstItem="Z4z-aX-X5S" firstAttribute="centerY" secondItem="88C-AR-sDb" secondAttribute="centerY" id="s0X-na-l8K"/>
-                                    <constraint firstAttribute="trailing" secondItem="gae-xE-cTn" secondAttribute="trailing" constant="6" id="tob-Co-2lu"/>
+                                    <constraint firstItem="3Mu-iE-hWN" firstAttribute="top" secondItem="EdC-Wr-9Dm" secondAttribute="top" constant="8" id="w8q-th-Rka"/>
                                     <constraint firstItem="GgX-U2-x7E" firstAttribute="top" secondItem="BUb-XN-zUI" secondAttribute="bottom" constant="8" id="x3J-wY-9dS"/>
                                     <constraint firstItem="BUb-XN-zUI" firstAttribute="top" secondItem="2Lu-8c-LCv" secondAttribute="bottom" constant="7" id="yHb-2S-nBQ"/>
                                     <constraint firstAttribute="bottom" secondItem="GgX-U2-x7E" secondAttribute="bottom" constant="8" id="zGZ-Ds-7ci"/>
@@ -1119,7 +1123,6 @@
                         <outlet property="deleteButtonOutlet" destination="i0v-mf-vfR" id="2rC-kQ-8p9"/>
                         <outlet property="facebookButton" destination="bkz-Q7-lKt" id="vLw-zY-sdK"/>
                         <outlet property="marketsquareButton" destination="lLI-Gn-IVU" id="0C7-Gi-lmk"/>
-                        <outlet property="messageTextField" destination="gae-xE-cTn" id="qwJ-Dj-azC"/>
                         <outlet property="publicImageLabel" destination="Z4z-aX-X5S" id="JM9-z7-LMW"/>
                         <outlet property="publicLabel" destination="YuO-Yh-nUb" id="2Wl-0S-PWX"/>
                         <outlet property="publicSwitch" destination="88C-AR-sDb" id="xJa-p3-Rx3"/>
@@ -1128,6 +1131,7 @@
                         <outlet property="shareForLabel" destination="gSU-b7-2dM" id="EMn-9g-lB9"/>
                         <outlet property="shareImageLabel" destination="2Lu-8c-LCv" id="LAr-HW-xcb"/>
                         <outlet property="shareWithLabel" destination="BUb-XN-zUI" id="QoB-XO-sYm"/>
+                        <outlet property="textView" destination="3Mu-iE-hWN" id="DcE-Qy-4LM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EVz-p4-fF8" userLabel="First Responder" sceneMemberID="firstResponder"/>

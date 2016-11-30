@@ -12,7 +12,7 @@ import Alamofire
 // MARK: Class
 
 /// The share options view controller
-class ShareOptionsViewController: UIViewController {
+class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     
     // MARK: - Private variables
     
@@ -54,6 +54,7 @@ class ShareOptionsViewController: UIViewController {
     /// An IBOutlet for handling the publish button
     @IBOutlet weak var publishButton: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var textView: UITextView!
     
     // MARK: - IBActions
     
@@ -75,7 +76,7 @@ class ShareOptionsViewController: UIViewController {
     @IBAction func shareButton(_ sender: Any) {
         
         // save text
-        receivedNote?.data.message = self.messageTextField.text!
+        receivedNote?.data.message = self.textView.text!
         
         if !(receivedNote!.data.shared) {
             
@@ -150,7 +151,7 @@ class ShareOptionsViewController: UIViewController {
     @IBAction func shareNowButton(_ sender: Any) {
         
         // save text
-        receivedNote?.data.message = self.messageTextField.text!
+        receivedNote?.data.message = self.textView.text!
         // start the procedure to upload the note to the hat
         let token = HatAccountService.getUsersTokenFromKeychain()
         // if user is note editing an existing note post as a new note
@@ -398,10 +399,7 @@ class ShareOptionsViewController: UIViewController {
         self.shareImageLabel.attributedText = NSAttributedString(string: "\u{23F2}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
         
         // setup text field
-        self.messageTextField.keyboardAppearance = .dark
-        self.messageTextField.borderStyle = .none
-        self.messageTextField.attributedPlaceholder =
-            NSAttributedString(string: "What's on your mind?", attributes: [NSForegroundColorAttributeName : UIColor.lightGray])
+        self.textView.keyboardAppearance = .dark
         
         // create a button and add it to navigation bar
 //        let button = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(shareNowButton))
@@ -445,6 +443,12 @@ class ShareOptionsViewController: UIViewController {
         // add keyboard handling to view
 //        self.addKeyboardHandling()
         self.hideKeyboardWhenTappedAround()
+        
+        if (textView.text == "") {
+            
+            self.textView.textColor = .lightGray
+            self.textView.text = "What's on your mind?"
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -461,7 +465,7 @@ class ShareOptionsViewController: UIViewController {
     func setUpUIElementsFromReceivedNote(_ receivedNote: NotesData) {
         
         // add message to the text field
-        self.messageTextField.text = receivedNote.data.message
+        self.textView.text = receivedNote.data.message
         // set public switch state
         self.publicSwitch.setOn(receivedNote.data.shared, animated: false)
         // if switch is on update the ui accordingly
@@ -575,7 +579,7 @@ class ShareOptionsViewController: UIViewController {
         
         let desiredOffset = CGPoint(x: 0, y: self.scrollView.contentInset.top)
         self.scrollView.setContentOffset(desiredOffset, animated: true)
-        self.scrollView.scrollRectToVisible(self.messageTextField.frame, animated: true)
+        self.scrollView.scrollRectToVisible(self.textView.frame, animated: true)
         self.actionsView.frame.origin.y -= keyboardFrame.size.height
     }
     
@@ -587,5 +591,20 @@ class ShareOptionsViewController: UIViewController {
         var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
         keyboardFrame = self.view.convert(keyboardFrame, from: nil)
         self.actionsView.frame.origin.y += keyboardFrame.size.height
+    }
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        
+        textView.attributedText = nil
+        textView.textColor = .black
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        
+        if textView.text == "" {
+            
+            self.textView.textColor = .lightGray
+            self.textView.text = "What's on your mind?"
+        }
     }
 }

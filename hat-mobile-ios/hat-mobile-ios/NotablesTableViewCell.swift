@@ -57,11 +57,13 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
      */
     func setUpCell(_ cell: NotablesTableViewCell, note: NotesData, indexPath: IndexPath) -> NotablesTableViewCell {
         
+        var test = self.initCellToNil(cell: cell)
+        
         // if the note is shared get the shared on string as well
         if note.data.shared {
             
-            cell.sharedOn = note.data.sharedOn.stringToArray()
-            self.sharedOn = cell.sharedOn
+            test.sharedOn = note.data.sharedOn.stringToArray()
+            self.sharedOn = test.sharedOn
         }
         
         // get the notes data
@@ -92,29 +94,23 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         
         combination.append(partOne)
         combination.append(partTwo)
-        
-        // handle the image fetching
-        if authorData.photoURL != "" {
-            
-            //fetch image and assign it
-        }
                 
         // create this zebra like color based on the index of the cell
         if (indexPath.row % 2 == 1) {
             
-            cell.contentView.backgroundColor = UIColor.init(colorLiteralRed: 51/255, green: 74/255, blue: 79/255, alpha: 1)
+            test.contentView.backgroundColor = UIColor.init(colorLiteralRed: 51/255, green: 74/255, blue: 79/255, alpha: 1)
         }
         
         // show the data in the cell's labels
-        cell.postDataLabel.text = notablesData.message
-        cell.usernameLabel.text = authorData.phata
-        cell.postInfoLabel.attributedText = combination
+        test.postDataLabel.text = notablesData.message
+        test.usernameLabel.text = authorData.phata
+        test.postInfoLabel.attributedText = combination
         
         // flip the view to appear from right to left
-        cell.collectionView.transform = CGAffineTransform(scaleX: -1, y: 1)
+        test.collectionView.transform = CGAffineTransform(scaleX: -1, y: 1)
         
         // return the cell
-        return cell
+        return test
     }
     
     // MARK: - CollectionView datasource methods
@@ -143,6 +139,19 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         cell.socialImage.transform = CGAffineTransform(scaleX: -1, y: 1)
         
         //return the cell
+        return cell
+    }
+    
+    func initCellToNil(cell: NotablesTableViewCell) -> NotablesTableViewCell {
+        
+        cell.postDataLabel.text = ""
+        cell.usernameLabel.text = ""
+        cell.postInfoLabel.text = ""
+        cell.sharedOn.removeAll()
+        self.sharedOn.removeAll()
+        cell.collectionView.reloadData()
+        cell.contentView.backgroundColor = UIColor.init(colorLiteralRed: 29/255, green: 49/255, blue: 53/255, alpha: 1)
+
         return cell
     }
 }

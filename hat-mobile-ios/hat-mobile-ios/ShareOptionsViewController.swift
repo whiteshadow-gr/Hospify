@@ -181,12 +181,12 @@ class ShareOptionsViewController: UIViewController {
             if self.facebookButton.alpha == 1{
                 
                 self.facebookButton.alpha = 0.4
-                self.removeFromArray(string: "facebook,")
+                self.removeFromArray(string: "facebook")
             // else select it and add it to the array
             } else {
                 
                 self.facebookButton.alpha = 1
-                shareOnSocial.append("facebook,")
+                shareOnSocial.append("facebook")
             }
             
             // construct string from the array and save it
@@ -208,12 +208,12 @@ class ShareOptionsViewController: UIViewController {
             if self.marketsquareButton.alpha == 1{
                 
                 self.marketsquareButton.alpha = 0.4
-                self.removeFromArray(string: "marketsquare,")
+                self.removeFromArray(string: "marketsquare")
             // else select it and add it to the array
             } else {
                 
                 self.marketsquareButton.alpha = 1
-                shareOnSocial.append("marketsquare,")
+                self.shareOnSocial.append("marketsquare")
             }
             
             // construct string from the array and save it
@@ -231,15 +231,21 @@ class ShareOptionsViewController: UIViewController {
     func removeFromArray(string: String) -> Void {
         
         // check in the array
-        for index in 0...self.shareOnSocial.count {
+        var found = false
+        var index = 0
+        
+        repeat {
             
-            // if the given string exists
             if self.shareOnSocial[index] == string {
                 
                 // remove the string
                 self.shareOnSocial.remove(at: index)
+                found = true
+            } else {
+                
+                index += 1
             }
-        }
+        } while found == false
     }
     
     // MARK: - Construct string
@@ -262,7 +268,7 @@ class ShareOptionsViewController: UIViewController {
             for item in 0...array.count - 1 {
                 
                 // add the string to the stringToReturn
-                stringToReturn += array[item]
+                stringToReturn = stringToReturn.appending(array[item] + ",")
             }
         }
         
@@ -284,24 +290,7 @@ class ShareOptionsViewController: UIViewController {
         let hatDataStructure = JSONHelper.createJSONForPostingOnNotables(hatTableStructure: json)
         // update JSON file with the values needed
         let hatData = JSONHelper.updateJSONFile(file: hatDataStructure, noteFile: self.receivedNote!)
-
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: hatData, options: .prettyPrinted)
-            // here "jsonData" is the dictionary encoded in JSON data
-            
-            let decoded = try JSONSerialization.jsonObject(with: jsonData, options: [])
-            // here "decoded" is of type `Any`, decoded from JSON data
-            
-            // you can now cast it with the right type
-            if let dictFromJSON = decoded as? [String:Any] {
-                // use dictFromJSON
-                
-                print(dictFromJSON)
-            }
-        } catch {
-            print(error.localizedDescription)
-        }
-        //print(jsonData)
+        
         // create the headers
         let headers = Helper.ConstructRequestHeaders(token)
         
@@ -497,6 +486,11 @@ class ShareOptionsViewController: UIViewController {
         // set the colors of the labels
         self.shareWithLabel.textColor = .black
         self.shareForLabel.textColor = .black
+        
+        // enable social images
+        self.facebookButton.isUserInteractionEnabled = true
+        self.marketsquareButton.isUserInteractionEnabled = true
+        
         // set image fonts
         self.publicImageLabel.attributedText = NSAttributedString(string: "\u{1F513}", attributes: [NSForegroundColorAttributeName: color, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
         self.shareImageLabel.attributedText = NSAttributedString(string: "\u{23F2}", attributes: [NSForegroundColorAttributeName: color, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
@@ -512,6 +506,11 @@ class ShareOptionsViewController: UIViewController {
         // set the colors of the labels
         self.shareWithLabel.textColor = .lightGray
         self.shareForLabel.textColor = .lightGray
+        
+        // disable social images
+        self.facebookButton.isUserInteractionEnabled = false
+        self.marketsquareButton.isUserInteractionEnabled = false
+        
         // set image fonts
         self.publicImageLabel.attributedText = NSAttributedString(string: "\u{1F512}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
         self.shareImageLabel.attributedText = NSAttributedString(string: "\u{23F2}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
@@ -530,8 +529,8 @@ class ShareOptionsViewController: UIViewController {
                 
                 self.facebookButton.alpha = 1
             }
-            // else enable marketsquare button
-            else if socialName == "marketsquare" {
+            //  enable marketsquare button
+            if socialName == "marketsquare" {
                 
                 self.marketsquareButton.alpha = 1
             }

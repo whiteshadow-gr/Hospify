@@ -230,21 +230,13 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         
         // get cell from the reusable id
         let controller = NotablesTableViewCell()
-
-        if cells.count == indexPath.row {
-            
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cellData") as? NotablesTableViewCell
-            cells.append(controller.setUpCell(cell!, note: notesArray[indexPath.row], indexPath: indexPath))
-            return cell!
-        }
-        else {
-            
-          return controller.setUpCell(cells[indexPath.row], note: notesArray[indexPath.row], indexPath: indexPath)
-        }
-        //return cells[indexPath.row]
-
-        // return cell
-        //return cell!//controller.setUpCell(cell!, note: notesArray[indexPath.row], indexPath: indexPath)
+        
+        var test = tableView.dequeueReusableCell(withIdentifier: "cellData", for: indexPath) as? NotablesTableViewCell
+        var cell = tableView.dequeueReusableCell(withIdentifier: "cellData") as? NotablesTableViewCell
+        test = controller.setUpCell(test!, note: notesArray[indexPath.row], indexPath: indexPath)
+        
+        cells.append(test!)
+        return test!
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

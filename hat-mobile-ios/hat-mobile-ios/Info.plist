@@ -30,7 +30,21 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.5.33</string>
+	<string>1.5.35</string>
+	<key>Fabric</key>
+	<dict>
+		<key>APIKey</key>
+		<string>4398fa4a59c4ae9f4c3465ae15d65aa0bdd7810a</string>
+		<key>Kits</key>
+		<array>
+			<dict>
+				<key>KitInfo</key>
+				<dict/>
+				<key>KitName</key>
+				<string>Crashlytics</string>
+			</dict>
+		</array>
+	</dict>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>

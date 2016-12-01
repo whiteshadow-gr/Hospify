@@ -24,6 +24,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     var receivedNote: NotesData? = nil
     /// a bool value to determine if the user is editing an existing value
     var isEditingExistingNote: Bool = false
+    var isKeyboardVisible: Bool = false
     
     // MARK: - IBOutlets
     
@@ -580,23 +581,35 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         let desiredOffset = CGPoint(x: 0, y: self.scrollView.contentInset.top)
         self.scrollView.setContentOffset(desiredOffset, animated: true)
         self.scrollView.scrollRectToVisible(self.textView.frame, animated: true)
-        self.actionsView.frame.origin.y -= keyboardFrame.size.height
+        print(self.actionsView.frame.origin.y)
+        self.actionsView.frame.origin.y = self.view.frame.height - keyboardFrame.size.height - self.actionsView.frame.size.height
+        print(self.actionsView.frame.origin.y)
+        self.isKeyboardVisible = true
+
     }
     
     func keyboardWillHide2(notification:NSNotification){
         
-        let contentInset:UIEdgeInsets = UIEdgeInsets.zero
-        self.scrollView.contentInset = contentInset
         var userInfo = notification.userInfo!
         var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
         keyboardFrame = self.view.convert(keyboardFrame, from: nil)
-        self.actionsView.frame.origin.y += keyboardFrame.size.height
+        
+        let contentInset:UIEdgeInsets = UIEdgeInsets.zero
+        self.scrollView.contentInset = contentInset
+        print(self.actionsView.frame.origin.y)
+        self.actionsView.frame.origin.y = self.view.frame.height - self.actionsView.frame.height
+        print(self.actionsView.frame.origin.y)
+        self.isKeyboardVisible = false
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         
-        textView.attributedText = nil
-        textView.textColor = .black
+        if textView.text == "What's on your mind?" {
+            
+            textView.attributedText = nil
+            textView.textColor = .black
+        }
+        
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {

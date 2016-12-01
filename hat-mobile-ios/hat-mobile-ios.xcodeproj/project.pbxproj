@@ -392,6 +392,7 @@
 				B564E9631D19717900EDB8F1 /* Resources */,
 				137990E4DC59D87FE0052804 /* [CP] Embed Pods Frameworks */,
 				EE1D28BCEE841B83E0230854 /* [CP] Copy Pods Resources */,
+				6076A5971DEFACA700D83D42 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -607,6 +608,19 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-hat-mobile-iosUITests/Pods-hat-mobile-iosUITests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		6076A5971DEFACA700D83D42 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Fabric/run\" 4398fa4a59c4ae9f4c3465ae15d65aa0bdd7810a 2c7e49e6d9a87b931db2642312ca7b43b36eaee03e5ace21b6a3a9785d2c02c3";
 		};
 		75B43952A19AB14B33198456 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

@@ -547,11 +547,10 @@ class Helper
      
      - returns: String
      */
-    class func GetKeychainValue(key: String) -> String! {
+    class func GetKeychainValue(key: String) -> String? {
         
         let keychain = KeychainSwift()
         return keychain.get(key)
-        
     }
     
     /**

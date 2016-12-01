@@ -133,9 +133,6 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             // stop any timers
             helper.stopAnyTimers()
             
-            // clear the user hat domain in keychain
-            _ = Helper.ClearKeychainKey(key: "123")
-            
             // reset the stack to avoid allowing back
             let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
             let loginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController

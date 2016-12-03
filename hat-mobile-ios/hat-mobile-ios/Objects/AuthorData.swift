@@ -49,32 +49,41 @@ struct AuthorData {
         nickName = ""
         name = ""
         photoURL = ""
-        id = -1
+        id = 0
+        phata = ""
+        
         // this field will always have a value no need to use if let
-        phata = (dict["phata"]?.string!)!
+        if let tempPHATA = dict["phata"]?.string {
+            
+            phata = tempPHATA
+        }
 
         // check optional fields for value, if found assign it to the correct variable
-        if let tempID = dict["id"] {
+        if let tempID = dict["id"]?.stringValue {
             
             // check if string is "" as well
-            if tempID.stringValue != ""{
-                id = Int(tempID.stringValue)!
+            if tempID != ""{
+                
+                if let intTempID = Int(tempID) {
+                    
+                    id = intTempID
+                }
             }
         }
         
-        if let tempNickName: JSON = dict["nick"] {
+        if let tempNickName = dict["nick"]?.string {
             
-            nickName = tempNickName.string!
+            nickName = tempNickName
         }
         
-        if let tempName: JSON = dict["name"] {
+        if let tempName = dict["name"]?.string {
             
-            name = tempName.string!
+            name = tempName
         }
         
-        if let tempPhotoURL: JSON = dict["photo_url"] {
+        if let tempPhotoURL = dict["photo_url"]?.string {
             
-            photoURL = tempPhotoURL.string!
+            photoURL = tempPhotoURL
         }
     }
 }

@@ -28,13 +28,6 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         
         // create bar button in navigation bar
         self.createBarButtons()
-        
-//        for fontFamilyName in UIFont.familyNames {
-//            
-//            for fontName in UIFont.fontNames(forFamilyName: fontFamilyName){
-//                print("Family: %@    Font: %@", fontFamilyName, fontName)
-//            }
-//        }
 
         // set tint color, if translucent and the bar tint color of navigation bar
         self.navigationController?.navigationBar.tintColor = UIColor.white
@@ -150,14 +143,12 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         self.present(alert, animated: true, completion: nil)
     }
     
-    
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-        
-        print("called")
-    }
+//    // In a storyboard-based application, you will often want to do a little preparation before navigation
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        // Get the new view controller using segue.destinationViewController.
+//        // Pass the selected object to the new view controller.
+//        
+//    }
 }

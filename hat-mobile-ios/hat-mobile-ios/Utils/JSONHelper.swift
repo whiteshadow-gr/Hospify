@@ -228,7 +228,15 @@ struct JSONHelper {
     static func updateMessageOnJSON(file: JSON, message: String) -> JSON {
         
         var jsonFile = file
-        jsonFile["values"][0]["value"] = JSON(message)
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["name"] == "message" {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(message)
+            }
+        }
+        
         return jsonFile
     }
     
@@ -243,7 +251,15 @@ struct JSONHelper {
     static func updateVisibilityOfNoteOnJSON(file: JSON, isShared: Bool) -> JSON {
         
         var jsonFile = file
-        jsonFile["values"][5]["value"] = JSON(String(isShared))
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["name"] == "shared" {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(String(isShared))
+            }
+        }
+        
         return jsonFile
     }
     /**
@@ -257,7 +273,15 @@ struct JSONHelper {
     static func updateKindOfNoteOnJSON(file: JSON, messageKind: String) -> JSON {
         
         var jsonFile = file
-        jsonFile["values"][1]["value"] = JSON(messageKind)
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["name"] == "kind" {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(messageKind)
+            }
+        }
+        
         return jsonFile
     }
     /**
@@ -271,7 +295,15 @@ struct JSONHelper {
     static func updateCreatedOnDateOfNoteOnJSON(file: JSON, date: Date) -> JSON {
         
         var jsonFile = file
-        jsonFile["values"][2]["value"] = JSON(FormatterHelper.formatDateToISO(date: date))
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["name"] == "created_time" {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(FormatterHelper.formatDateToISO(date: date))
+            }
+        }
+        
         return jsonFile
     }
     /**
@@ -285,7 +317,15 @@ struct JSONHelper {
     static func updateUpdatedOnDateOfNoteOnJSON(file: JSON, date: Date) -> JSON {
         
         var jsonFile = file
-        jsonFile["values"][3]["value"] = JSON(FormatterHelper.formatDateToISO(date: date))
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["name"] == "updated_time" {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(FormatterHelper.formatDateToISO(date: date))
+            }
+        }
+        
         return jsonFile
     }
     /**
@@ -299,7 +339,15 @@ struct JSONHelper {
     static func updateSharedOnDateOfNoteOnJSON(file: JSON, socialString: String) -> JSON {
         
         var jsonFile = file
-        jsonFile["values"][4]["value"] = JSON(socialString)
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["name"] == "shared_on" {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(socialString)
+            }
+        }
+        
         return jsonFile
     }
     /**
@@ -313,7 +361,15 @@ struct JSONHelper {
     static func updatePhataOfNoteOnJSON(file: JSON, phata: String) -> JSON {
         
         var jsonFile = file
-        jsonFile["values"][22]["value"] = JSON(phata)
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["name"] == "phata" {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(phata)
+            }
+        }
+        
         return jsonFile
     }
     

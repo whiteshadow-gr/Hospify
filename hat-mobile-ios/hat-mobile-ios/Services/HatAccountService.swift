@@ -41,7 +41,7 @@ class HatAccountService {
         
         if let hatDomain = Helper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
             
-            return hatDomain;
+            return hatDomain
         }
         
         return ""
@@ -170,7 +170,13 @@ class HatAccountService {
                 
                 if isSuccess {
                     
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notesArray"), object: result.array!)
+                    if let array = result.array {
+                        
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notesArray"), object: array)
+                    } else {
+                        
+                        // TODO: Show alert
+                    }
                 }
             }
         }

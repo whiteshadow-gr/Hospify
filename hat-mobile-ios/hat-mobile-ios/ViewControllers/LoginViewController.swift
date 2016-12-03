@@ -24,6 +24,7 @@ import Alamofire
 import SafariServices
 import JWTDecode
 import SwiftyRSA
+import KeychainSwift
 
 // MARK: String extension
 
@@ -55,9 +56,9 @@ extension String {
     }
     
     /**
-     <#Function Details#>
+     Transforms a comma seperated string into an array
      
-     - returns: <#Returns#>
+     - returns: [String]
      */
     func stringToArray() -> [String] {
         
@@ -128,8 +129,29 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
             return
         }
         
-        // authorise user
-        authoriseUser(hatDomain: _userDomain)
+        var array = hatDomain.components(separatedBy: ".")
+        array.remove(at: 0)
+        
+        var domain = ""
+        for section in array {
+            
+            domain += section + "."
+        }
+        
+        if domain.characters.count > 1 {
+            
+            domain = String(domain.characters.dropLast())
+        }
+        
+        if self.verifyDomain(domain) {
+            
+            // authorise user
+            authoriseUser(hatDomain: _userDomain)
+        } else {
+            
+            //show alert
+            self.presentUIAlertOK("Wrong domain!", message: "Please check your personal hat address again")
+        }
     }
     
     // MARK: - View Controller functions
@@ -330,7 +352,6 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
                                 // decode the token and get the iss out
                                 let jwt = try! decode(jwt: token)
                                 
-                                
                                 // guard for the issuer check, “iss” (Issuer)
                                 guard let HATDomainFromToken = jwt.issuer else {
                                     
@@ -389,10 +410,10 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
                             self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: msg)
                         }
                     }
-                } else {
-                    
-                    self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message:"Could not save in keychain")
                 }
+            } else {
+                
+                self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message:"Could not save in keychain")
             }
         } else {
 
@@ -479,5 +500,15 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         
         let contentInset:UIEdgeInsets = UIEdgeInsets.zero
         self.scrollView.contentInset = contentInset
+    }
+    
+    func verifyDomain(_ domain: String) -> Bool {
+        
+        if domain == "hubofallthings.net" || domain == "warwickhat.net"{
+            
+            return true
+        }
+        
+        return false
     }
 }

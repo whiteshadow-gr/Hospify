@@ -124,6 +124,10 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
      */
     @IBAction func publicSwitchStateChanged(_ sender: Any) {
         
+        if self.textView.isFirstResponder {
+            
+            self.textView.resignFirstResponder()
+        }
         // based on the switch state change the label accordingly
         if publicSwitch.isOn {
             

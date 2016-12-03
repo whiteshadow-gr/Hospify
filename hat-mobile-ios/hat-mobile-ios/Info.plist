@@ -30,7 +30,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.5.35</string>
+	<string>1.5.40</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -53,11 +53,6 @@
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>hat</key>
-			<string></string>
-		</dict>
 	</dict>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Optional for better GPS tracking</string>

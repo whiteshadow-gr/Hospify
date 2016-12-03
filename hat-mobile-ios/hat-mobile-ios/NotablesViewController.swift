@@ -10,6 +10,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 import KeychainSwift
+import Crashlytics
 
 // MARK: UIViewController Extension
 
@@ -176,19 +177,19 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         self.createNewBlogLabel.isUserInteractionEnabled = true
 
         // begin tracking
-        self.beginLocationTracking()
+        //self.beginLocationTracking()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
-        super.viewWillAppear(true)
+        super.viewWillAppear(animated)
         
         // get token and refresh view
         let token = HatAccountService.getUsersTokenFromKeychain()
         if token == "" {
             
             let loginPageView =  self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
-            self.navigationController?.pushViewController(loginPageView, animated: true)
+            self.navigationController?.pushViewController(loginPageView, animated: animated)
         } else {
             
             self.checkNotableTableExists(authToken: token)
@@ -318,12 +319,15 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
                 if isSuccess {
                     
                     let tableID = result["fields"][0]["tableId"].number
-                    print(tableID!)
+                    
                     //table found
                     if statusCode == 200 {
                         
                         // get notes
-                        HatAccountService.getNotes(token: token, tableID: String(describing: tableID!))
+                        if tableID != nil {
+                            
+                            HatAccountService.getNotes(token: token, tableID: String(describing: tableID!))
+                        }
                     //table not found
                     } else if statusCode == 404 {
                         
@@ -350,8 +354,8 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
 
             if segue.identifier == "editNoteSegue" {
                 
-                let test = self.tableView.indexPath(for: sender as! UITableViewCell)
-                destinationVC.receivedNote = self.notesArray[(test?.row)!]
+                let cellIndexPath = self.tableView.indexPath(for: sender as! UITableViewCell)
+                destinationVC.receivedNote = self.notesArray[(cellIndexPath?.row)!]
                 destinationVC.isEditingExistingNote = true
             } else {
                 

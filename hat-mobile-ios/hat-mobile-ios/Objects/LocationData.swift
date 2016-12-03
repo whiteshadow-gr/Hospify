@@ -65,60 +65,81 @@ struct LocationData {
         speed = 0
         
         // check for values and assign them if not empty
-        if let tempAltitude: JSON = dict["altitude"] {
+        if let tempAltitude = dict["altitude"]?.string {
             
-            if tempAltitude.string! != "" {
+            if tempAltitude != "" {
                 
-                altitude = Double(tempAltitude.stringValue)!
+                if let doubleNumberAltitute = Double(tempAltitude) {
+                    
+                    altitude = doubleNumberAltitute
+                }
             }
         }
         
-        if let tempAltitudeAccuracy: JSON = dict["altitude_accuracy"] {
+        if let tempAltitudeAccuracy = dict["altitude_accuracy"]?.string {
             
-            if tempAltitudeAccuracy.string! != "" {
+            if tempAltitudeAccuracy != "" {
                 
-                altitudeAccuracy = Double(tempAltitudeAccuracy.stringValue)!
+                if let doubleNumberAltitudeAccuracy = Double(tempAltitudeAccuracy) {
+                    
+                    altitudeAccuracy = doubleNumberAltitudeAccuracy
+                }
             }
         }
         
-        if let tempLatitude: JSON = dict["latitude"] {
+        if let tempLatitude = dict["latitude"]?.string {
             
-            if tempLatitude.string! != "" {
+            if tempLatitude != "" {
                 
-                latitude = Double(tempLatitude.stringValue)!
+                if let doubleNumberLatitude = Double(tempLatitude) {
+                    
+                    latitude = doubleNumberLatitude
+                }
             }
         }
-        if let tempHeading: JSON = dict["heading"] {
+        if let tempHeading = dict["heading"]?.string {
             
-            heading = tempHeading.string!
+            heading = tempHeading
         }
         
-        if let tempShared: JSON = dict["shared"]{
+        if let tempShared = dict["shared"]?.string {
             
-            if tempShared.string! != "" {
+            if tempShared != "" {
                 
-                shared = Bool(tempShared.stringValue)!
+                if let boolShared = Bool(tempShared) {
+                    
+                    shared = boolShared
+                }
             }
         }
-        if let tempAccuracy: JSON = dict["accuracy"] {
+        if let tempAccuracy = dict["accuracy"]?.string {
             
-            if tempAccuracy.string! != "" {
+            if tempAccuracy != "" {
                 
-                accuracy = Double(tempAccuracy.stringValue)!
+                if let doubleNumberAccuracy = Double(tempAccuracy) {
+                    
+                    accuracy = doubleNumberAccuracy
+                }
             }
         }
-        if let tempLongitude: JSON = dict["longitude"] {
+        if let tempLongitude = dict["longitude"]?.string {
             
-            if tempLongitude.string! != "" {
+            if tempLongitude != "" {
                 
-                longitude = Double(tempLongitude.stringValue)!
+                if let doubleNumberLongitude = Double(tempLongitude) {
+                    
+                    longitude = doubleNumberLongitude
+                }
             }
         }
-        if let tempSpeed: JSON = dict["speed"]{
+        if let tempSpeed = dict["speed"]?.string {
     
-            if tempSpeed.string! != "" {
+            if tempSpeed != "" {
                 
-                speed = Double(tempSpeed.stringValue)!
+                if let doubleNumberSpeed = Double(tempSpeed) {
+                    
+                    speed = doubleNumberSpeed
+                }
             }
         }
     }

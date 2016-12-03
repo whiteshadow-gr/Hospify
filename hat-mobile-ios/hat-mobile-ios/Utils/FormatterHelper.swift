@@ -46,8 +46,8 @@ struct FormatterHelper {
         }
         
         let dateFormatter = DateFormatter()
-        //dateFormatter.locale = Locale.current
-        dateFormatter.timeZone = TimeZone(abbreviation: "GMT")
+        dateFormatter.locale = Locale.current
+        //dateFormatter.timeZone = TimeZone(abbreviation: "GMT")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         var date = dateFormatter.date(from: string)
         
@@ -56,6 +56,11 @@ struct FormatterHelper {
             
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
             date = dateFormatter.date(from: string)
+        }
+        
+        if date == nil {
+            
+            return Date()
         }
         
         return date!

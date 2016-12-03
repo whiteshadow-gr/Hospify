@@ -85,10 +85,16 @@ class BaseViewController: UIViewController {
      */
     func presentUIAlertOK(_ title: String, message: String) -> Void {
         
+        //change font
+        let attrTitleString = NSAttributedString(string: title, attributes: [NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!])
+        let attrMessageString = NSAttributedString(string: message, attributes: [NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!])
+        
         // create the alert
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let alert = UIAlertController(title: attrTitleString.string, message: attrMessageString.string, preferredStyle: .alert)
+        
         // add the actions (buttons)
         alert.addAction(UIAlertAction(title: NSLocalizedString("ok_label", comment:  "ok"), style: UIAlertActionStyle.default, handler: nil))
+        
         // present the alert
         self.present(alert, animated: true, completion: nil)
     }

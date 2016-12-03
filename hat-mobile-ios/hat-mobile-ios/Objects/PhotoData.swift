@@ -41,9 +41,9 @@ struct PhotoData {
     init(dict: Dictionary<String, String>) {
         
         shared = false
-        link = dict["link"]!
-        source = dict["source"]!
-        caption = dict["caption"]!
+        link = ""
+        source = ""
+        caption = ""
         
         // check if shared exists and if is empty
         if let tempShared = dict["shared"] {
@@ -52,6 +52,21 @@ struct PhotoData {
                 
                 shared = true
             }
+        }
+        
+        if let tempLink = dict["link"] {
+            
+            link = tempLink
+        }
+        
+        if let tempSource = dict["source"] {
+            
+            source = tempSource
+        }
+        
+        if let tempCaption = dict["caption"] {
+            
+            caption = tempCaption
         }
     }
 }

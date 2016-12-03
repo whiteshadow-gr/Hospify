@@ -64,47 +64,71 @@ struct NotablesData {
         authorData = AuthorData.init()
         photoData = PhotoData.init()
         locationData = LocationData.init()
+        sharedOn = ""
+        publicUntil = Date()
+        createdTime = Date()
         shared = false
+        sharedOn = ""
+        message = ""
+        updatedTime = Date()
+        kind = ""
         
-        if let tempAuthorData: JSON = dict["authorv1"] {
+        if let tempAuthorData = dict["authorv1"]?.dictionary {
             
-             authorData = AuthorData.init(dict: tempAuthorData.dictionary!)
+             authorData = AuthorData.init(dict: tempAuthorData)
         }
         
-        if let tempPhotoData: JSON = dict["photov1"] {
+        if let tempPhotoData = dict["photov1"]?.dictionaryObject {
             
-            photoData = PhotoData.init(dict: tempPhotoData.dictionaryObject! as! Dictionary<String, String>)
+            photoData = PhotoData.init(dict: tempPhotoData as! Dictionary<String, String>)
         }
         
-        if let tempLocationData: JSON = dict["locationv1"] {
+        if let tempLocationData = dict["locationv1"]?.dictionary {
             
-            locationData = LocationData.init(dict: tempLocationData.dictionary!)
+            locationData = LocationData.init(dict: tempLocationData)
         }
         
         // init optional values to default values and then assign the value if found in JSON
         sharedOn = ""
         publicUntil = Date()
         
-        if let tempSharedOn = dict["shared_on"] {
+        if let tempSharedOn = dict["shared_on"]?.string {
             
-            sharedOn = tempSharedOn.string!
-        }
-        if let tempPublicUntil = dict["public_until"] {
-            
-            publicUntil = FormatterHelper.formatStringToDate(string: tempPublicUntil.string!)
+            sharedOn = tempSharedOn
         }
         
-        // init values that are non optional
-        createdTime = FormatterHelper.formatStringToDate(string: (dict["created_time"]!).string!)
-        if dict["shared"]!.string == "" {
+        if let tempPublicUntil = dict["public_until"]?.string {
             
-            shared = false
-        } else {
-            
-            shared = Bool((dict["shared"]?.string!)!)!
+            publicUntil = FormatterHelper.formatStringToDate(string: tempPublicUntil)
         }
-        message = (dict["message"]?.string!)!
-        updatedTime = FormatterHelper.formatStringToDate(string: (dict["updated_time"]?.string!)!)
-        kind = (dict["kind"]?.string!)!
+        
+        if let tempCreatedTime = dict["created_time"]?.string {
+            
+            createdTime = FormatterHelper.formatStringToDate(string: tempCreatedTime)
+        }
+
+        if let tempDict = dict["shared"]?.string {
+            
+            if tempDict == "" {
+                
+                shared = false
+            } else {
+                
+                if let boolShared = Bool(tempDict) {
+                    
+                    shared = boolShared
+                }
+            }
+        }
+        
+        if let tempMessage = dict["message"]?.string {
+            
+            message = tempMessage
+        }
+        
+        if let tempKind = dict["kind"]?.string {
+            
+            kind = tempKind
+        }
     }
 }

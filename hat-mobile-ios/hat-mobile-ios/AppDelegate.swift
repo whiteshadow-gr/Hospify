@@ -75,7 +75,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 topWindow.rootViewController = UIViewController()
                 topWindow.windowLevel = UIWindowLevelAlert + 1
                 let confirmAlert = UIAlertController.init(title: "Keychain Cleared", message: "No crash hopefully", preferredStyle: .alert)
-                //confirmAlert.addAction(UIAlertAction.in)
                 confirmAlert.addAction(UIAlertAction.init(title: "Ok", style: .cancel, handler: {(action: UIAlertAction) -> Void in
                     // continue your work
                     // important to hide the window after work completed.

@@ -262,6 +262,7 @@ struct JSONHelper {
         
         return jsonFile
     }
+    
     /**
      Updates the kind of the note json file
      
@@ -284,28 +285,7 @@ struct JSONHelper {
         
         return jsonFile
     }
-    /**
-     Updates the created date of the note json file
-     
-     - parameter file: The json file to update
-     - parameter date: The creation date
-     
-     - returns: JSON
-     */
-    static func updateCreatedOnDateOfNoteOnJSON(file: JSON, date: Date) -> JSON {
-        
-        var jsonFile = file
-        
-        for itemNumber in 0...jsonFile["values"].count {
-            
-            if jsonFile["values"][itemNumber]["field"]["name"] == "created_time" {
-                
-                jsonFile["values"][itemNumber]["value"] = JSON(FormatterHelper.formatDateToISO(date: date))
-            }
-        }
-        
-        return jsonFile
-    }
+
     /**
      Updates the updated date of the note json file
      
@@ -328,6 +308,7 @@ struct JSONHelper {
         
         return jsonFile
     }
+    
     /**
      Updates the social media that this note is shared in the json file
      
@@ -350,6 +331,7 @@ struct JSONHelper {
         
         return jsonFile
     }
+    
     /**
      Updates the phata of the note json file
      
@@ -387,8 +369,6 @@ struct JSONHelper {
         jsonFile = JSONHelper.updateMessageOnJSON(file: jsonFile, message: noteFile.data.message)
         //update kind
         jsonFile = JSONHelper.updateKindOfNoteOnJSON(file: jsonFile, messageKind: noteFile.data.kind)
-        //update created time
-        jsonFile = JSONHelper.updateCreatedOnDateOfNoteOnJSON(file: jsonFile, date: noteFile.data.createdTime)
         //update updated time
         jsonFile = JSONHelper.updateUpdatedOnDateOfNoteOnJSON(file: jsonFile, date: noteFile.lastUpdated)
         //update public

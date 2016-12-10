@@ -56,7 +56,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var publishButton: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var textView: UITextView!
-    
+    @IBOutlet weak var textViewAspectRationConstraint: NSLayoutConstraint!
     // MARK: - IBActions
     
     /**
@@ -311,6 +311,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             case .isSuccess(let isSuccess, _, _):
                 
                 if isSuccess {
+                    
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
                 }
                 
             case .error(let error, _):
@@ -356,7 +358,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
      */
     func checkNotablesTableExistsCompletionFunction(createTable: @escaping (_ callback: Void) -> Void , token: String) -> (_ r: Helper.ResultType) -> Void {
         
-        return { (r: Helper.ResultType) -> Void in
+        return { [weak self](r: Helper.ResultType) -> Void in
             
             switch r {
                 
@@ -366,15 +368,16 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 
                 if isSuccess {
                     
+                    guard let weakSelf = self else { return }
                     let dictionary = result.dictionary!
                     //table found
                     if statusCode == 200 {
                         
-                        self.postNote(token: token, json: dictionary)
+                        weakSelf.postNote(token: token, json: dictionary)
                         //table not found
                     } else if statusCode == 404 {
                         
-                        createTable(self.postNote(token: token, json: dictionary))
+                        createTable(weakSelf.postNote(token: token, json: dictionary))
                         //postNote
                     }
                 }
@@ -433,6 +436,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         } else {
             
             self.receivedNote = NotesData()
+            self.deleteButtonOutlet.isHidden = true
         }
         
         self.receivedNote?.data.kind = self.kind
@@ -584,12 +588,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         
         let desiredOffset = CGPoint(x: 0, y: self.scrollView.contentInset.top)
         self.scrollView.setContentOffset(desiredOffset, animated: true)
-        self.scrollView.scrollRectToVisible(self.textView.frame, animated: true)
-        print(self.actionsView.frame.origin.y)
         self.actionsView.frame.origin.y = self.view.frame.height - keyboardFrame.size.height - self.actionsView.frame.size.height
-        print(self.actionsView.frame.origin.y)
         self.isKeyboardVisible = true
-
     }
     
     func keyboardWillHide2(notification:NSNotification){
@@ -600,11 +600,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         
         let contentInset:UIEdgeInsets = UIEdgeInsets.zero
         self.scrollView.contentInset = contentInset
-        print(self.actionsView.frame.origin.y)
         self.actionsView.frame.origin.y = self.view.frame.height - self.actionsView.frame.height
-        print(self.actionsView.frame.origin.y)
         self.isKeyboardVisible = false
     }
+    
+    // MARK: - TextView Delegate methods
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         
@@ -613,7 +613,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             textView.attributedText = nil
             textView.textColor = .black
         }
-        
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
@@ -623,5 +622,20 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             self.textView.textColor = .lightGray
             self.textView.text = "What's on your mind?"
         }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        
+        super.viewDidLayoutSubviews()
+        
+        let contentSize = self.textView.sizeThatFits(self.textView.bounds.size)
+        var frame = self.textView.frame
+        frame.size.height = contentSize.height
+        self.textView.frame = frame
+        
+        textViewAspectRationConstraint = NSLayoutConstraint(item: self.textView, attribute: .height, relatedBy: .equal, toItem: self.textView, attribute: .width, multiplier: textView.bounds.height/textView.bounds.width, constant: 1)
+        self.textView.addConstraint(textViewAspectRationConstraint!)
+        self.view.layoutSubviews()
+        self.scrollView.setNeedsLayout()
     }
 }

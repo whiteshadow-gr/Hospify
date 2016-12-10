@@ -154,6 +154,26 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         }
     }
     
+    /**
+     An action executed when the get a hat button is pressed
+     
+     - parameter sender: The object that calls this method
+     */
+    @IBAction func getAHatButton(_ sender: Any) {
+        
+        UIApplication.shared.openURL(URL(string: "https://hatters.hubofallthings.com")!)
+    }
+    
+    /**
+     An action executed when the learn more button is pressed
+     
+     - parameter sender: The object that calls this method
+     */
+    @IBAction func learnMoreButton(_ sender: Any) {
+        
+        
+    }
+    
     // MARK: - View Controller functions
     
     override func viewDidLoad() {
@@ -254,22 +274,6 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         return true
     }
     
-    /**
-     when in landscape mode, hide the logo to avoid it getting too small
-     **/
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        
-        super.viewWillTransition(to: size, with: coordinator)
-        
-        // hide logo, for some crazy reason !
-        coordinator.animate(alongsideTransition: nil, completion: {
-            
-            _ in
-            
-            //self.ivLogo.isHidden = UIDevice.current.orientation.isLandscape
-        })
-    }
-    
     // MARK: - Authorisation functions
     
     /**
@@ -342,8 +346,10 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
                 if let url = Helper.TheUserHATDOmainPublicKeyURL(hatDomain) {
                     
                     //. application/json
-                    NetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { (r: Helper.ResultTypeString) -> Void in
+                    NetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { [weak self](r: Helper.ResultTypeString) -> Void in
                         
+                        guard let weakSelf = self else { return }
+
                         switch r {
                         case .isSuccess(let isSuccess, _, let result):
                             
@@ -355,7 +361,7 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
                                 // guard for the issuer check, “iss” (Issuer)
                                 guard let HATDomainFromToken = jwt.issuer else {
                                     
-                                    self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_general", comment: "auth"))
+                                    weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_general", comment: "auth"))
                                     return
                                 }
                                 
@@ -369,7 +375,7 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
                                 // guard for the attr length. Should be 3 [header, payload, signature]
                                 guard tokenAttr.count == 3 else {
                                     
-                                    self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_general", comment: "auth"))
+                                    weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_general", comment: "auth"))
                                     return
                                 }
                                 
@@ -393,21 +399,21 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
                                  */
                                 if (result.isSuccessful) {
                                     
-                                    self.authoriseAppToWriteToCloud(hatDomain, HATDomainFromToken)
+                                    weakSelf.authoriseAppToWriteToCloud(hatDomain, HATDomainFromToken)
                                 } else {
                                     
-                                    self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_invalid_token", comment: "auth"))
+                                    weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_invalid_token", comment: "auth"))
                                 }
                             } else {
                                 
                                 // alamo fire http fail
-                                self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: result)
+                                weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: result)
                             }
                             
                         case .error(let error, let statusCode):
                             
                             let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                            self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: msg)
+                            weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: msg)
                         }
                     }
                 }
@@ -439,8 +445,9 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         let url = Helper.TheAppRegistrationWithHATURL(userDomain)
         
         // make asynchronous call
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: "application/json", parameters: parameters, headers: headers) { (r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: "application/json", parameters: parameters, headers: headers) { [weak self](r: Helper.ResultType) -> Void in
             
+            guard let weakSelf = self else { return }
             switch r {
             case .isSuccess(let isSuccess, _, let result):
                 
@@ -452,29 +459,29 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
                         // save the hatdomain from the token to the device Keychain
                         if(Helper.SetKeychainValue(key: Constants.Keychain.HATDomainKey, value: HATDomainFromToken)) {
                             
-                            self.performSegue(withIdentifier: "ShowTabBarController", sender: self)
+                            weakSelf.performSegue(withIdentifier: "ShowTabBarController", sender: self)
                          
                         // else show error in the saving in keychain
                         } else {
                             
-                            self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_keychain_save", comment: "keychain"))
+                            weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_keychain_save", comment: "keychain"))
                         }
                     // No message field in JSON file
                     } else {
                         
-                        self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: "Message not found")
+                        weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: "Message not found")
                     }
                 // general error
                 } else {
                     
-                    self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: result.rawString()!)
+                    weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: result.rawString()!)
                 }
                 
             case .error(let error, let statusCode):
                 
                 //show error
                 let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: msg)
+                weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: msg)
             }
         }
     }

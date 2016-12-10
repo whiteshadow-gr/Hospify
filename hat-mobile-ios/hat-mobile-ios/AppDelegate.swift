@@ -20,10 +20,8 @@
 
 import UIKit
 import CoreLocation
-import PromiseKit
 import Fabric
 import Crashlytics
-
 
 // MARK: Class
 
@@ -63,28 +61,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             //return true
         }
         startUpdatingLocation()
-        
-        _ = RealmHelper.Purge()
-        let cleanKeychain = Helper.ClearKeychainKey(key: Constants.Keychain.HATDomainKey)
-        if cleanKeychain {
-            
-            let removeToken = Helper.ClearKeychainKey(key: "UserToken")
-            if removeToken {
-                
-                let topWindow: UIWindow = UIWindow(frame: UIScreen.main.bounds)
-                topWindow.rootViewController = UIViewController()
-                topWindow.windowLevel = UIWindowLevelAlert + 1
-                let confirmAlert = UIAlertController.init(title: "Keychain Cleared", message: "No crash hopefully", preferredStyle: .alert)
-                confirmAlert.addAction(UIAlertAction.init(title: "Ok", style: .cancel, handler: {(action: UIAlertAction) -> Void in
-                    // continue your work
-                    // important to hide the window after work completed.
-                    // this also keeps a reference to the window until the action is invoked.
-                    topWindow.isHidden = true
-                }))
-                topWindow.makeKeyAndVisible()
-                topWindow.rootViewController?.present(confirmAlert, animated: true, completion: { _ in })
-            }
-        }
         
         // change tab bar item font        
         UITabBarItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "Open Sans Condensed", size: 11)!], for: UIControlState.normal)
@@ -126,14 +102,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 
                 // we probably need something like syncHelper.CheckNextBlockToSync(self.endBackgroundUpdateTask(taskID: taskID))
                 // do things in the background fetch
-                UIApplication.shared.cancelAllLocalNotifications()
-                
-                let notif = UILocalNotification()
-                let timeNow = NSDate()
-                notif.fireDate = timeNow as Date;
-                notif.alertBody = "Background fetch!"
-                notif.soundName = UILocalNotificationDefaultSoundName
-                UIApplication.shared.scheduleLocalNotification(notif)
                 completionHandler(.newData)
             } else {
                 

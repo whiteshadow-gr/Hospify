@@ -164,6 +164,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         
         // register for a notificaation to get the notes to the table
         NotificationCenter.default.addObserver(self, selector: #selector(self.showReceivedNotes), name: NSNotification.Name(rawValue: "notesArray"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: "refreshTable"), object: nil)
         
         // add gesture recognizer in the labels
         let newNoteTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newNoteButton(_:)))
@@ -184,16 +185,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         
         super.viewWillAppear(animated)
         
-        // get token and refresh view
-        let token = HatAccountService.getUsersTokenFromKeychain()
-        if token == "" {
-            
-            let loginPageView =  self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
-            self.navigationController?.pushViewController(loginPageView, animated: animated)
-        } else {
-            
-            self.checkNotableTableExists(authToken: token)
-        }
+        self.connectToServerToGetNotes()
     }
 
     override func didReceiveMemoryWarning() {
@@ -220,6 +212,23 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
             
             self.notesArray.append(NotesData.init(dict: dict.dictionary!))
         }
+        
+        // reload table
+        self.tableView.reloadData()
+    }
+    
+    /**
+     Refreshes the table per new data request
+     
+     - parameter notification: The notification object
+     */
+    func refreshData(notification: Notification) {
+        
+        // delete the notes array
+        self.notesArray.removeAll()
+        
+        // get notes
+        self.connectToServerToGetNotes()
         
         // reload table
         self.tableView.reloadData()
@@ -337,6 +346,20 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
                     }
                 }
             }
+        }
+    }
+    
+    func connectToServerToGetNotes() {
+        
+        // get token and refresh view
+        let token = HatAccountService.getUsersTokenFromKeychain()
+        if token == "" {
+            
+            let loginPageView =  self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+            self.navigationController?.pushViewController(loginPageView, animated: false)
+        } else {
+            
+            self.checkNotableTableExists(authToken: token)
         }
     }
     

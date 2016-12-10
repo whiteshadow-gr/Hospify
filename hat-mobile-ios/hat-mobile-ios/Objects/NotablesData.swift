@@ -104,6 +104,7 @@ struct NotablesData {
         
         if let tempCreatedTime = dict["created_time"]?.string {
             
+            //if tempCreatedTime !
             createdTime = FormatterHelper.formatStringToDate(string: tempCreatedTime)
         }
 

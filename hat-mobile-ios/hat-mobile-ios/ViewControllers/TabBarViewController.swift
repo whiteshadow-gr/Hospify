@@ -133,6 +133,16 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             let navigation = super.navigationController
             _ = super.navigationController?.popToRootViewController(animated: false)
             navigation?.pushViewController(loginViewController, animated: false)
+            
+            // delete keys from keychain
+            let clearUserToken = Helper.ClearKeychainKey(key: "UserToken")
+            let clearUserDomain = Helper.ClearKeychainKey(key: "user_hat_domain")
+            
+            if (!clearUserToken || !clearUserDomain) {
+                
+                // show alert that the log out was not completed for some reason
+                // MARK: TODO
+            }
         }
         
         // add actions to the alert

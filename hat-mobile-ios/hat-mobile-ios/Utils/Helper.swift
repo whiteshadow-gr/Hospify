@@ -541,7 +541,7 @@ class Helper
     }
     
     /**
-     Set a value in the keychain
+     Get a value from keychain
      
      - parameter String: the key
      
@@ -554,7 +554,7 @@ class Helper
     }
     
     /**
-     Set a value in the keychain
+     Clear a value from keychain
      
      - parameter String: the key
      

@@ -23,7 +23,6 @@ import RealmSwift
 
 /// Extends UITAbleView. Manage the rendering of DataPoints
 class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
-
     
     var dataResults : Results<DataPoint>!
     let basicCellIdentifier = "DataPointTableViewCell"
@@ -54,9 +53,11 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
      Part of UITableViewDataSource.
      */
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         var cell : DataPointTableViewCell? = tableView.dequeueReusableCell(withIdentifier: basicCellIdentifier) as! DataPointTableViewCell?
         
         if (cell == nil) {
+            
             cell = DataPointTableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: basicCellIdentifier)
         }
         
@@ -69,9 +70,11 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
         
         // last sync date
         if let lastSynced:Date = dataPoint.lastSynced as Date? {
+            
             cell!.labelSyncDate.text = "Synced " + Helper.getDateString(lastSynced)
             cell!.labelSyncDate.textColor = Constants.Colours.AppBase
-        }else{
+        } else {
+            
             cell?.labelSyncDate.text = NSLocalizedString("not_synced_label", comment:  "")
             cell!.labelSyncDate.textColor = UIColor.red
         }
@@ -79,15 +82,13 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
         return cell!
     }
     
-    
     // MARK: UITableViewDelegate
     
     /**
      Part of UITableViewDelegate.
      */
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         // do nothing
     }
-    
-    
 }

@@ -34,6 +34,7 @@ class RealmHelper {
      - returns: The default Realm object
      */
     class func GetRealm() -> Realm {
+        
         // Get the default Realm
         let realm:Realm = try! Realm()
         
@@ -48,8 +49,7 @@ class RealmHelper {
      
      - returns: current item count
      */
-    class func AddData(_ latitude: Latitude, longitude: Longitude, accuracy: Accuracy) -> Int
-    {
+    class func AddData(_ latitude: Latitude, longitude: Longitude, accuracy: Accuracy) -> Int {
 
         // Get the default Realm
         let realm = self.GetRealm()
@@ -78,16 +78,17 @@ class RealmHelper {
      - parameter dataPoints:  Array of DataPoints
      - parameter lastUpdated: Date of last sync
      */
-    class func UpdateData(_ dataPoints: [DataPoint], lastUpdated: Date) -> Void
-    {
+    class func UpdateData(_ dataPoints: [DataPoint], lastUpdated: Date) -> Void {
         
         // Get the default Realm
         let realm = self.GetRealm()
         
         // iterate and update
         try! realm.write {
+            
             // iterate over ResultSet and update
             for dataPoint:DataPoint in dataPoints {
+                
                 dataPoint.lastSynced = lastUpdated
             }
         }
@@ -98,28 +99,28 @@ class RealmHelper {
      
      - returns: always true if sucessful
      */
-    class func Purge() -> Bool
-    {
+    class func Purge() -> Bool {
         
         let realm:Realm = self.GetRealm()
         try! realm.write {
+            
             realm.deleteAll()
         }
         
         return true
     }
     
-    
     /**
      Purge all data for a predicate
      
      - returns: always true if sucessful
      */
-    class func Purge(_ predicate: NSPredicate) -> Bool
-    {
+    class func Purge(_ predicate: NSPredicate) -> Bool {
+        
         let realm:Realm = self.GetRealm()
         let list:Results<DataPoint> = realm.objects(DataPoint.self).filter(predicate)
         try! realm.write {
+            
             realm.delete(list)
         }
         return true
@@ -132,8 +133,8 @@ class RealmHelper {
      
      - returns: list of datapoints
      */
-    class func GetResults(_ predicate: NSPredicate) -> Results<DataPoint>?
-    {
+    class func GetResults(_ predicate: NSPredicate) -> Results<DataPoint>? {
+        
         let realm:Realm = self.GetRealm()
         let sortProperties = [SortDescriptor(property: "dateAdded", ascending: true)]
         return realm.objects(DataPoint.self).filter(predicate).sorted(by: sortProperties)
@@ -144,12 +145,9 @@ class RealmHelper {
      
      - returns: <#return value description#>
      */
-    class func GetLastDataPoint() -> DataPoint!
-    {
+    class func GetLastDataPoint() -> DataPoint! {
+        
         let realm:Realm = self.GetRealm()
         return realm.objects(DataPoint.self).last
     }
-    
-    
-    
 }

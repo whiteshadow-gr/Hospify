@@ -24,6 +24,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     var receivedNote: NotesData? = nil
     /// a bool value to determine if the user is editing an existing value
     var isEditingExistingNote: Bool = false
+    /// a flag to define if the keyboard is visible
     var isKeyboardVisible: Bool = false
     
     // MARK: - IBOutlets
@@ -54,9 +55,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var marketsquareButton: UIButton!
     /// An IBOutlet for handling the publish button
     @IBOutlet weak var publishButton: UIButton!
+    /// An IBOutlet for handling the scroll view
     @IBOutlet weak var scrollView: UIScrollView!
+    /// An IBOutlet for handling the UITextView
     @IBOutlet weak var textView: UITextView!
+    /// An IBOutlet for handling the textViewAspectRationConstraint NSLayoutConstraint
     @IBOutlet weak var textViewAspectRationConstraint: NSLayoutConstraint!
+    
     // MARK: - IBActions
     
     /**
@@ -93,7 +98,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         // else the user is editing a note, delete the note first a post a new one
         } else {
             
-            HatAccountService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+            NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
             self.checkNotableTableExists(authToken: token)
         }
         
@@ -111,7 +116,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         if isEditingExistingNote {
             
             let token = HatAccountService.getUsersTokenFromKeychain()
-            HatAccountService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+            NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
         }
         
         _ = super.navigationController?.popViewController(animated: true)
@@ -166,7 +171,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         // else delete the existing note a post a new one
         } else {
             
-            HatAccountService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+            NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
             self.checkNotableTableExists(authToken: token)
         }
         
@@ -312,6 +317,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 
                 if isSuccess {
                     
+                    // reload table
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
                 }
                 
@@ -337,7 +343,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         let header = ["X-Auth-Token": authToken]
         
         let passToken = self.checkNotablesTableExistsCompletionFunction(
-            createTable: HatAccountService.createNotablesTable(token: authToken),
+            createTable: HatAccountService.createHatTable(token: authToken, notablesTableStructure: JSONHelper.createNotablesTableJSON()),
             token: authToken)
         
         // make async request
@@ -378,7 +384,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                     } else if statusCode == 404 {
                         
                         createTable(weakSelf.postNote(token: token, json: dictionary))
-                        //postNote
                     }
                 }
             }
@@ -471,7 +476,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     /**
      Update the ui from the received note
      */
-    func setUpUIElementsFromReceivedNote(_ receivedNote: NotesData) {
+    private func setUpUIElementsFromReceivedNote(_ receivedNote: NotesData) {
         
         // add message to the text field
         self.textView.text = receivedNote.data.message
@@ -489,7 +494,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     /**
      Turns on the ui elemets
      */
-    func turnUIElementsOn() {
+    private func turnUIElementsOn() {
         
         // set teal color
         let color = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
@@ -512,7 +517,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     /**
      Turns off the ui elemets
      */
-    func turnUIElementsOff() {
+    private func turnUIElementsOff() {
         
         // set the text of the public label
         self.publicLabel.text = "Private"
@@ -532,7 +537,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     /**
      Turns on the images
      */
-    func turnImagesOn() {
+    private func turnImagesOn() {
         
         // check array for elements
         for socialName in self.shareOnSocial {
@@ -553,7 +558,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     /**
      Turns on the images
      */
-    func turnImagesOff() {
+    private func turnImagesOff() {
         
         // empty the array
         self.shareOnSocial.removeAll()

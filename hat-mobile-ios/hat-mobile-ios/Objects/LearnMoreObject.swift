@@ -8,13 +8,27 @@
 
 import UIKit
 
-struct LearnMoreObject {
+// MARK: Struct
 
+/// LearnMoreObject used in learn more button in the login screen
+struct LearnMoreObject {
+    
+    // MARK: - Variables
+
+    /// The title of the page
     var title: String
+    /// The main body of the page
     var info: String
+    /// The button title if any
     var buttonTitle: String
+    /// The image
     var image: UIImage
     
+    // MARK: - Inits
+    
+    /**
+     Inits with default values
+     */
     init() {
         
         title = ""
@@ -23,6 +37,11 @@ struct LearnMoreObject {
         image = UIImage(named: "Profile")!
     }
     
+    /**
+     Inits with a page number to load predefined values
+     
+     - parameter pageNumber: The number of the page to create
+     */
     init(pageNumber: Int) {
         
         title = ""
@@ -33,28 +52,28 @@ struct LearnMoreObject {
         if pageNumber == 0 {
             
             title = "The HAT is your own data store"
-            info = "your words, information, photos, music; everything on the Internet that is personal to you, is your data. Claim your data, safely use and share it on demand, everywhere you go. Have control and privacy"
+            info = "your words, information, photos, music; everything on the Internet that is personal to you, is your data.\n\nClaim your data, safely use and share it on demand, everywhere you go. \n\nHave control and privacy"
             buttonTitle = "What you can do with your HAT"
             image = UIImage(named: "Data store")!
         } else if pageNumber == 1 {
             
             title = "The HAT belongs to you, the individual"
-            info = "You choose yout HAT provider. Your provider has no right to access your data unless you give them permission"
+            info = "You choose yout HAT provider. \n\nYour provider has no right to access your data unless you give them permission"
             image = UIImage(named: "Individual")!
         } else if pageNumber == 2 {
             
             title = "The HAT is secure"
-            info = "A state-of-the-art container technology for a data store on demand. Synchronise with organizations instead of having so many sets of your data out there"
+            info = "A state-of-the-art container technology for a data store on demand. \n\nSynchronise with organizations instead of having so many sets of your data out there"
             image = UIImage(named: "Secure")!
         } else if pageNumber == 3 {
             
             title = "The HAT is portable"
-            info = "You can move your HAT to a provider you like (or even bring it to your own server at home)"
+            info = "You can move your HAT to a provider you like\n\n(or even bring it to your own server at home)"
             image = UIImage(named: "Portable")!
         } else if pageNumber == 4 {
             
             title = "The HAT changes the future of the Internet"
-            info = "Your data and words can become your history and memory for health, well being and personalized products. Your HAT can be a personal data assistant with a wiki-me!"
+            info = "Your data and words can become your history and memory for health, well being and personalized products. \n\nYour HAT can be a personal data assistant with a wiki-me!"
             image = UIImage(named: "Future")!
         } else if pageNumber == 5 {
             
@@ -69,7 +88,7 @@ struct LearnMoreObject {
         } else if pageNumber == 10 {
             
             title = "Stuff your HAT!"
-            info = "Claim data from Internet companies and make it useful to YOU. With just a few key presses. (We think it's like printing money)"
+            info = "Claim data from Internet companies and make it useful to YOU. \n\nWith just a few key presses. (We think it's like printing money)"
             image = UIImage(named: "Stuff your HAT")!
         } else if pageNumber == 11 {
             
@@ -79,7 +98,7 @@ struct LearnMoreObject {
         } else if pageNumber == 12 {
             
             title = "Monetise"
-            info = "Use your data to het discounts and vouchers. Reuse your data again and again."
+            info = "Use your data to het discounts and vouchers. \n\nReuse your data again and again."
             image = UIImage(named: "Monetize")!
         } else if pageNumber == 13 {
             

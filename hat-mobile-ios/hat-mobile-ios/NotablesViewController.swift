@@ -12,85 +12,6 @@ import SwiftyJSON
 import KeychainSwift
 import Crashlytics
 
-// MARK: UIViewController Extension
-
-/// UIViewController extension
-extension UIViewController {
-    
-    /**
-     Hides keyboard when tap anywhere in the screen except keyboard
-     */
-    func hideKeyboardWhenTappedAround() {
-        
-        // create tap gesture
-        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
-        // add gesture to view
-        view.addGestureRecognizer(tap)
-    }
-    
-    /**
-     Hides keyboard
-     */
-    func dismissKeyboard() {
-        
-        view.endEditing(true)
-    }
-    
-    /**
-     Adds keyboard handling to UIViewControllers via the common and standard Notifications
-     */
-    func addKeyboardHandling() {
-        
-        // create 2 notification observers for listening to the keyboard
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name:.UIKeyboardWillShow, object: nil);
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name:.UIKeyboardWillHide, object: nil);
-    }
-    
-    /**
-     Function executed before the keyboard is shown to the user
-     
-     - parameter sender: The object that called this method
-     */
-    func keyboardWillShow(sender: NSNotification) {
-        
-        if let keyboardSize = (sender.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            
-            if self.view.frame.origin.y == ((self.navigationController?.navigationBar.frame.size.height)! + UIApplication.shared.statusBarFrame.height) {
-                
-                self.view.frame.origin.y -= keyboardSize.height
-            }
-        }
-    }
-    
-    /**
-     Function executed before the keyboard hides from the user
-     
-     - parameter sender: The object that called this method
-     */
-    func keyboardWillHide(sender: NSNotification) {
-        
-        if let keyboardSize = (sender.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            
-            if self.view.frame.origin.y != 0 {
-                
-                self.view.frame.origin.y += keyboardSize.height
-            }
-        }
-    }
-    
-    /**
-     Function executed when the return key is pressed in order to hide the keyboard
-     
-     - parameter textField: The textfield that confronts to this function
-     - returns: Bool
-     */
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
-        self.view.endEditing(true)
-        return false
-    }
-}
-
 // MARK: - Notables ViewController
 
 /// The notables view controller
@@ -102,6 +23,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     var notesArray: [NotesData] = []
     /// the kind of the note to create
     var kind: String = ""
+    /// the cells of the table
     var cells: [NotablesTableViewCell] = []
 
     // MARK: - IBOutlets
@@ -170,9 +92,11 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         let newNoteTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newNoteButton(_:)))
         self.createNewNoteLabel.addGestureRecognizer(newNoteTapGestureRecognizer)
         self.createNewNoteLabel.isUserInteractionEnabled = true
+        
         let newListTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newListButton(_:)))
         self.createNewListLabel.addGestureRecognizer(newListTapGestureRecognizer)
         self.createNewListLabel.isUserInteractionEnabled = true
+        
         let newBlogTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newBlogButton(_:)))
         self.createNewBlogLabel.addGestureRecognizer(newBlogTapGestureRecognizer)
         self.createNewBlogLabel.isUserInteractionEnabled = true
@@ -185,6 +109,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         
         super.viewWillAppear(animated)
         
+        // connect to the server
         self.connectToServerToGetNotes()
     }
 
@@ -267,7 +192,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
             print(self.notesArray[indexPath.row].id)
             // delete data and row
             let token = HatAccountService.getUsersTokenFromKeychain()
-            HatAccountService.deleteNoteWithKeychain(id: self.notesArray[indexPath.row].id, tkn: token)
+            NotablesService.deleteNoteWithKeychain(id: self.notesArray[indexPath.row].id, tkn: token)
             self.notesArray.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
@@ -282,73 +207,8 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     // MARK: - Network functions
     
     /**
-     Checks if notables table exists
-     
-     - parameter authToken: The auth token from hat
+     Connects to the server to get the notes
      */
-    func checkNotableTableExists(authToken: String) -> Void {
-        
-        // create the url
-        let tableURL = Helper.TheUserHATCheckIfTableExistsURL(tableName: "notablesv1", sourceName: "rumpel")
-        
-        // create parameters and headers
-        let parameters = ["": ""]
-        let header = ["X-Auth-Token": authToken]
-        
-        let passToken = self.checkNotablesTableExistsCompletionFunction(
-            createTable: HatAccountService.createNotablesTable(token: authToken),
-            token: authToken)
-        
-        // make async request
-        NetworkHelper.AsynchronousRequest(
-            tableURL,
-            method: HTTPMethod.get,
-            encoding: Alamofire.URLEncoding.default,
-            contentType: Constants.ContentType.JSON,
-            parameters: parameters,
-            headers: header,
-            completion:passToken)
-    }
-    
-    /**
-     Checks if notables table exists completion handler
-     
-     - parameter token: A function variable of type, (String) -> (_ r: Helper.ResultType)
-     */
-    func checkNotablesTableExistsCompletionFunction(createTable: @escaping (_ callback: Void) -> Void , token: String) -> (_ r: Helper.ResultType) -> Void {
-        
-        return { (r: Helper.ResultType) -> Void in
-            
-            switch r {
-                
-            case .error( _, _): break
-                
-            case .isSuccess(let isSuccess, let statusCode, let result):
-                
-                if isSuccess {
-                    
-                    let tableID = result["fields"][0]["tableId"].number
-                    
-                    //table found
-                    if statusCode == 200 {
-                        
-                        // get notes
-                        if tableID != nil {
-                            
-                            HatAccountService.getNotes(token: token, tableID: String(describing: tableID!))
-                        }
-                    //table not found
-                    } else if statusCode == 404 {
-                        
-                        // create table
-                        _ = HatAccountService.createNotablesTable(token: token)
-                        // show no notes
-                    }
-                }
-            }
-        }
-    }
-    
     func connectToServerToGetNotes() {
         
         // get token and refresh view
@@ -359,8 +219,13 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
             self.navigationController?.pushViewController(loginPageView, animated: false)
         } else {
             
-            self.checkNotableTableExists(authToken: token)
+            NotablesService.fetchNotables(authToken: token, success: self.showNotables)
         }
+    }
+    
+    func showNotables (array: [JSON]) {
+        
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notesArray"), object: array)
     }
     
     // MARK: - Navigation

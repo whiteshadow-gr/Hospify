@@ -15,7 +15,8 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     
     // MARK: - Variables
     
-     var sharedOn: [String] = []
+    /// an array to hold the social networks that this note is shared on
+    var sharedOn: [String] = []
     
     // MARK: - IBOutlets
 
@@ -142,7 +143,15 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         return cell
     }
     
-    func initCellToNil(cell: NotablesTableViewCell) -> NotablesTableViewCell {
+    // MARK: - Init Cell
+    
+    /**
+     Initialises a cell to the default values
+     
+     - parameter cell: The cell to init to the default values
+     - returns: NotablesTableViewCell with default values
+     */
+    private func initCellToNil(cell: NotablesTableViewCell) -> NotablesTableViewCell {
         
         cell.postDataLabel.text = ""
         cell.usernameLabel.text = ""

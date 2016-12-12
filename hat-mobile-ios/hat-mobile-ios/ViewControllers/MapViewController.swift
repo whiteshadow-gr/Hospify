@@ -44,8 +44,8 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     var timePeriodSelectedEnum: Helper.TimePeriodSelected = Helper.TimePeriodSelected.none
     var lastErrorMessage:String = ""
     
-    
     override func viewDidLoad() {
+        
         super.viewDidLoad()
 
         // view controller title
@@ -73,13 +73,11 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         
         // sync feedback delegate
         self.syncDataHelper.dataSyncDelegate = self
-        
     
         self.startAnyTimers()
         
         // cancel all notifications
         UIApplication.shared.cancelAllLocalNotifications()
-
 
         let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.LongPressOnToday)) //Long function will call when user long press on button.
         buttonToday.addGestureRecognizer(longGesture)
@@ -91,20 +89,17 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
             name: NSNotification.Name.UIApplicationDidEnterBackground,
             object: nil)
         
-        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didBecomeActiveNotification),
             name: NSNotification.Name.UIApplicationDidBecomeActive,
             object: nil)
         
-        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(refreshUI),
             name: NSNotification.Name.UIApplicationDidBecomeActive,
             object: nil)
-        
         
         // label click
         labelLastSyncInformation.isUserInteractionEnabled = true
@@ -114,7 +109,8 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         buttonTodayTouchUp(UIBarButtonItem())
         
     }
-    func refreshUI(){
+    
+    func refreshUI() {
         
         self.mapView(self.mapView, regionDidChangeAnimated: true)
     }
@@ -122,12 +118,12 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     func LastSyncLabelTap(_ sender: UITapGestureRecognizer) -> Void {
         
         if !lastErrorMessage.isEmpty {
+            
             let alert = UIAlertController(title: "Last Message", message: lastErrorMessage, preferredStyle: .alert)
             // add the actions (buttons)
             alert.addAction(UIAlertAction(title: NSLocalizedString("ok_label", comment:  "ok"), style: UIAlertActionStyle.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
-        
     }
     
     /**
@@ -138,15 +134,17 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     func LongPressOnToday(_ sender: UILongPressGestureRecognizer) -> Void {
         
         if (sender.state == UIGestureRecognizerState.ended) {
+            
            _ = self.syncDataHelper.CheckNextBlockToSync()
         } else if (sender.state == UIGestureRecognizerState.began) {
+            
             // do ended
         }
     }
-        
     
     /// Utility Queie var
     var GlobalMainQueue: DispatchQueue {
+        
         return DispatchQueue.main
     }
     
@@ -163,7 +161,6 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         let lastWeek = Date().addingTimeInterval(Helper.FutureTimeInterval.init(days: Double(7), timeType: Helper.TimeType.past).interval)
         let predicate = NSPredicate(format: "dateAdded >= %@", lastWeek as CVarArg)
         self.fetchAndClusterPoints(predicate)
-
     }
     
     /**
@@ -196,10 +193,10 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         let yesteday = startOfToday.addingTimeInterval(Helper.FutureTimeInterval.init(days: Double(1), timeType: Helper.TimeType.past).interval) // remove 24hrs
         let predicate = NSPredicate(format: "dateAdded >= %@ and dateAdded <= %@", yesteday as CVarArg, startOfToday as CVarArg)
         self.fetchAndClusterPoints(predicate)
-
     }
     
     override func didReceiveMemoryWarning() {
+        
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
@@ -211,7 +208,8 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      - parameter mapView:  the mapview
      - parameter animated: animated
      */
-    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool){
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        
         OperationQueue().addOperation({
             let mapBoundsWidth = Double(self.mapView.bounds.size.width)
             let mapRectWidth:Double = self.mapView.visibleMapRect.size.width
@@ -232,13 +230,16 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      - returns: <#return value description#>
      */
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        
         var reuseId = ""
         if annotation.isKind(of: FBAnnotationCluster.self) {
+            
             reuseId = "Cluster"
             var clusterView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId)
             clusterView = FBAnnotationClusterView(annotation: annotation, reuseIdentifier: reuseId)
             return clusterView
         } else {
+            
             reuseId = "Pin"
             var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
@@ -246,7 +247,6 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
             return pinView
         }
     }
-
     
     /**
      UpdateCountDelegate method
@@ -257,7 +257,6 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         
         displayLastDataPointTime()
         
-        
         // only update if today
         if self.timePeriodSelectedEnum == Helper.TimePeriodSelected.today {
             // refresh map UI too on changed
@@ -267,11 +266,10 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
                 self.buttonToday.sendActions(for: .touchUpInside)
             })
         }
-        
     }
     
-
     func onUpdateError(_ error: String) {
+        
         // used for debug only
         //self.labelErrors.text = error
     }
@@ -279,8 +277,8 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     /**
      MapSettingsDelegate
      */
-    func onChanged()
-    {
+    func onChanged() {
+        
         // restart LocationManager and apply changes
         
         //Location
@@ -296,19 +294,18 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     /**
      DataSyncDelegate
      */
-    func onDataSyncFeedback(_ isSuccess: Bool, message: String)
-    {
+    func onDataSyncFeedback(_ isSuccess: Bool, message: String) {
         
         if !isSuccess {
+            
             lastErrorMessage = message;
             labelLastSyncInformation.textColor = UIColor.red;
-        }else{
+        } else {
+            
             lastErrorMessage = "";
             labelLastSyncInformation.textColor = UIColor.white;
         }
-
     }
-
     
     /**
      Fetches and adds the annotations to the map view/
@@ -317,8 +314,7 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      
      - parameter predicate: <#predicate description#>
      */
-    func fetchAndClusterPoints(_ predicate: NSPredicate) -> Void
-    {
+    func fetchAndClusterPoints(_ predicate: NSPredicate) -> Void {
         
         concurrentDataPointQueue.async(flags: .barrier, execute: { // 1
             
@@ -326,10 +322,11 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
             //var datePointCount:Int = 0;
             
             //Get the results. Results list is optional
-            if let results:Results<DataPoint> = RealmHelper.GetResults(predicate)
-            {
+            if let results:Results<DataPoint> = RealmHelper.GetResults(predicate) {
+                
                 //datePointCount = results.count;
                 for dataPoint:DataPoint in results {
+                    
                     let pin = FBAnnotation()
                     pin.coordinate = CLLocationCoordinate2D(latitude: dataPoint.lat, longitude: dataPoint.lng)
                     annottationArray.append(pin)
@@ -341,34 +338,36 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
                 self.mapView(self.mapView, regionDidChangeAnimated: true)
                 
                 DispatchQueue.main.async(execute: {
+                    
                     //self.mapView.showAnnotations(annottationArray, animated: true)
-                    if(annottationArray.count > 0){
+                    if(annottationArray.count > 0) {
+                        
                         self.fitMapViewToAnnotaionList(annottationArray)
                     }
                 })
-
             }
-            
+    
             (self.GlobalMainQueue).async { // 3
-                
-
             }
-        }) 
-
+        })
     }
     
     func fitMapViewToAnnotaionList(_ annotations: [FBAnnotation]) -> Void {
+        
         let mapEdgePadding = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         var zoomRect:MKMapRect = MKMapRectNull
         
         for index in 0..<annotations.count {
+            
             let annotation = annotations[index]
             let aPoint:MKMapPoint = MKMapPointForCoordinate(annotation.coordinate)
             let rect:MKMapRect = MKMapRectMake(aPoint.x, aPoint.y, 0.1, 0.1)
             
             if MKMapRectIsNull(zoomRect) {
+                
                 zoomRect = rect
             } else {
+                
                 zoomRect = MKMapRectUnion(zoomRect, rect)
             }
         }
@@ -377,7 +376,9 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any!) {
+        
         if (segue.identifier == "SettingsSequeID") {
+            
             // pass data to next view
             let settingsVC = segue.destination as! SettingsViewController
             
@@ -390,22 +391,20 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      */
     func displayLastDataPointTime() -> Void {
         
-        if let dataPoint:DataPoint = RealmHelper.GetLastDataPoint()
-        {
+        if let dataPoint:DataPoint = RealmHelper.GetLastDataPoint() {
+            
             // update on ui thread
             let addedOn:Date = dataPoint.dateAdded as Date
             DispatchQueue.main.async(execute: {
+                
                     self.labelMostRecentInformation.text = NSLocalizedString("information_label", comment:  "info") + " " + Helper.TimeAgoSinceDate(addedOn)
                     })
-                        
-
         }
         
         // sync date
         // last sync date
         DispatchQueue.main.async(execute: {
-            if let dateSynced:Date = self.getLastSuccessfulSyncDate() as Date?
-            {
+            if let dateSynced:Date = self.getLastSuccessfulSyncDate() as Date? {
 
                 self.labelLastSyncInformation.text = NSLocalizedString("information_synced_label", comment:  "info") + " " +
                     Helper.TimeAgoSinceDate(dateSynced) +
@@ -421,6 +420,7 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      Times for syncing data with HAT and timer to update UI to reflect any changes
      */
     func startTimer() {
+        
         let queue = DispatchQueue(label: "com.hat.app.timer", attributes: [])
         
         // user info
@@ -456,23 +456,27 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
      */
     func stopTimer() {
         
-        if timer != nil{
+        if timer != nil {
+            
             timer.cancel()
             timer = nil
         }
         
-        if timerSync != nil{
+        if timerSync != nil {
+            
             timerSync.cancel()
             timerSync = nil
         }
     }
     
     func stopAnyTimers() -> Void {
+        
         //
         self.stopTimer()
     }
     
     func startAnyTimers() -> Void {
+        
         //
         self.startTimer()
     }

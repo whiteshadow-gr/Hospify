@@ -26,54 +26,6 @@ import JWTDecode
 import SwiftyRSA
 import KeychainSwift
 
-// MARK: String extension
-
-// any Extensions required
-extension String {
-    
-    /**
-     String extension to convert from base64Url to base64
-     
-     parameter s: The string to be converted
-     
-     returns: A Base64 String
-    */
-    func fromBase64URLToBase64(s: String) -> String {
-        
-        var s = s;
-        if (s.characters.count % 4 == 2 ) {
-            
-            s = s + "=="
-        }else if (s.characters.count % 4 == 3 ) {
-            
-            s = s + "="
-        }
-        
-        s = s.replacingOccurrences(of: "-", with: "+")
-        s = s.replacingOccurrences(of: "_", with: "/")
-        
-        return s
-    }
-    
-    /**
-     Transforms a comma seperated string into an array
-     
-     - returns: [String]
-     */
-    func stringToArray() -> [String] {
-        
-        let trimmedString = self.replacingOccurrences(of: " ", with: "")
-        var array = trimmedString.components(separatedBy: ",")
-        
-        if array.last == "" {
-            
-            array.removeLast()
-        }
-        
-        return array
-    }
-}
-
 // MARK: - Class
 
 /// The Login View Controller
@@ -129,20 +81,25 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
             return
         }
         
+        // split text field text by .
         var array = hatDomain.components(separatedBy: ".")
+        // remove the first string
         array.remove(at: 0)
         
+        // form one string
         var domain = ""
         for section in array {
             
             domain += section + "."
         }
         
+        // chack if we are out of bounds and drop last leter
         if domain.characters.count > 1 {
             
             domain = String(domain.characters.dropLast())
         }
         
+        // verify if the domain is what we want
         if self.verifyDomain(domain) {
             
             // authorise user
@@ -181,9 +138,8 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow2), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide2), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
-        
+        // add keyboard handling
+        self.addKeyboardHandling()
         // disable the navigation back button
         self.navigationItem.setHidesBackButton(true, animated:false)
         
@@ -480,7 +436,7 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
             case .error(let error, let statusCode):
                 
                 //show error
-                let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                let msg: String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
                 weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: msg)
             }
         }
@@ -492,24 +448,25 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         return true
     }
     
-    func keyboardWillShow2(notification:NSNotification){
+    override func keyboardWillHide(sender: NSNotification) {
         
-        var userInfo = notification.userInfo!
-        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
-        keyboardFrame = self.view.convert(keyboardFrame, from: nil)
-        
-        var contentInset:UIEdgeInsets = self.scrollView.contentInset
-        contentInset.bottom = keyboardFrame.size.height
-        self.scrollView.contentInset = contentInset
+        self.hideKeyboardInScrollView(scrollView)
     }
     
-    func keyboardWillHide2(notification:NSNotification){
+    override func keyboardWillShow(sender: NSNotification) {
         
-        let contentInset:UIEdgeInsets = UIEdgeInsets.zero
-        self.scrollView.contentInset = contentInset
+        self.showKeyboardInView(self.view, scrollView: self.scrollView, sender: sender)
     }
     
-    func verifyDomain(_ domain: String) -> Bool {
+    // MARK: - Verify domain
+    
+    /**
+     Verify the domain if it's what we expect
+     
+     - parameter domain: The formated doamain
+     - returns: Bool, true if the domain matches what we expect and false otherwise
+     */
+    private func verifyDomain(_ domain: String) -> Bool {
         
         if domain == "hubofallthings.net" || domain == "warwickhat.net"{
             

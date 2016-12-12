@@ -21,11 +21,10 @@
 import Foundation
 
 /// The request field structure
-class JSONDataSourceRequestField
-{
+class JSONDataSourceRequestField {
+    
     var id: Int = 0
     var name: String = ""
     
     var fieldEnum: Constants.RequestFields = Constants.RequestFields.Latitude // give default for now
-    
 }

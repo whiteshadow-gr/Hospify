@@ -99,6 +99,28 @@ class BaseViewController: UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
+    /**
+     Presents a common UI alert dialog.
+     
+     - parameter title: The desired title for the Alert
+     - parameter message: The desired message for the Alert
+     */
+    func presentUIAlertError() -> Void {
+        
+        //change font
+        let attrTitleString = NSAttributedString(string: "Error", attributes: [NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!])
+        let attrMessageString = NSAttributedString(string: "Something went wrong", attributes: [NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!])
+        
+        // create the alert
+        let alert = UIAlertController(title: attrTitleString.string, message: attrMessageString.string, preferredStyle: .alert)
+        
+        // add the actions (buttons)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("ok_label", comment:  "ok"), style: UIAlertActionStyle.default, handler: nil))
+        
+        // present the alert
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     // MARK: - Handle app state changes
     
     /**

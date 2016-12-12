@@ -22,13 +22,11 @@ import Foundation
 import RealmSwift
 
 /// The DataPoint object representation
-class DataPoint : Object
-{
+class DataPoint : Object {
+    
     dynamic var lat: Double = 0
     dynamic var lng: Double = 0
     dynamic var accuracy: Double = 0
     dynamic var dateAdded: Date = Date()
     dynamic var lastSynced: Date? = nil // optional..can be nil
-
-
 }

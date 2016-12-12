@@ -30,7 +30,6 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
                               "kCLLocationAccuracyNearestTenMeters"]
   
     @IBOutlet weak var pickerAccuracy: UIPickerView!
-    
     @IBOutlet weak var textFieldDistance: UITextField!
     @IBOutlet weak var textFieldDeferredTime: UITextField!
     @IBOutlet weak var textFieldDeferredDistance: UITextField!
@@ -77,8 +76,8 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         textFieldDeferredDistance.inputAccessoryView = keyboardToolbar
     }
     
-    
     override func viewWillAppear(_ animated: Bool) {
+        
         super.viewWillAppear(animated)
         
         NotificationCenter.default.addObserver(self,
@@ -86,9 +85,9 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
                                                name:Notification.Name.UIKeyboardDidHide,
                                                object:nil)
     }
-
     
     override func viewWillDisappear(_ animated: Bool) {
+        
         super.viewWillDisappear(animated)
         
         NotificationCenter.default.removeObserver(self,
@@ -96,28 +95,31 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
                                                   object:nil)
     }
 
-
-    func keyboardWillDisappear(notification: NSNotification){
+    func keyboardWillDisappear(notification: NSNotification) {
+        
         // Do something here
         storeValues()
     }
     
-    
     func typeName(_ some: Any) -> String {
+        
         return (some is Any.Type) ? "\(some)" : "\(type(of: (some) as AnyObject))"
     }
 
     //MARK: - Delegates and data sources
     //MARK: Data Sources
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        
         return 1
     }
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        
         return pickerAccuracyData.count
     }
     
     //MARK: Delegates
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        
         return pickerAccuracyData[row]
     }
     
@@ -138,13 +140,12 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
             locationAccuracy = kCLLocationAccuracyHundredMeters
         }
         
-        
         let preferences = UserDefaults.standard
         preferences.set(locationAccuracy, forKey: Constants.Preferences.MapLocationAccuracy)
-
     }
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+        
         let pickerLabel = UILabel()
         var titleData:String = pickerAccuracyData[row]
         
@@ -170,40 +171,46 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
     }
     
     override func willMove(toParentViewController parent: UIViewController?) {
+        
         super.willMove(toParentViewController: parent)
         if parent == nil {
+            
             // the back button was pressed.
             if (self.mapSettingsDelegate != nil) {
+                
                 storeValues()
             }
         }
     }
     
     override func didReceiveMemoryWarning() {
+        
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
     
     override func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
         //textField.resignFirstResponder()
         return true
     }
     
-    
     func storeValues() {
         
         guard Double(textFieldDistance.text!) != nil else {
+            
             readAndDisplayCurrentDefaults()
             return
         }
         
         guard Double(textFieldDeferredDistance.text!) != nil else {
+            
             readAndDisplayCurrentDefaults()
             return
         }
         
         guard Double(textFieldDeferredTime.text!) != nil else {
+            
             readAndDisplayCurrentDefaults()
             return
         }
@@ -221,7 +228,6 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         self.mapSettingsDelegate?.onChanged()
         readAndDisplayCurrentDefaults()
     }
-    
     
     func readAndDisplayCurrentDefaults() {
         

@@ -37,6 +37,7 @@ class NetworkHelper {
      - parameter completion:  <#completion description#>
      */
     class func AsynchronousRequest(
+        
             _ url: String,
             method: HTTPMethod,
             encoding: ParameterEncoding,
@@ -44,7 +45,6 @@ class NetworkHelper {
             parameters: Dictionary<String, Any>,
             headers: Dictionary<String, String>,
             completion: @escaping (_ r: Helper.ResultType) -> Void) -> Void {
-        
         
         // do a post
         Alamofire.request(
@@ -66,22 +66,22 @@ class NetworkHelper {
                 case .success(_):
                     
                     if let value = response.result.value {
+                        
                         let json = JSON(value)
                         completion(
                             Helper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json)
                         )
-                    }else{
+                    } else {
+                        
                         completion(Helper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
                     }
                     
-                    
                 case .failure(let error):
+                    
                     completion(Helper.ResultType.error(error: error, statusCode: response.response?.statusCode))
                 }
         }
-        
     }
-    
     
     /**
      Makes ansychronous network call
@@ -96,6 +96,7 @@ class NetworkHelper {
      - parameter completion:  <#completion description#>
      */
     class func AsynchronousStringRequest(
+        
         _ url: String,
         method: HTTPMethod,
         encoding: ParameterEncoding,
@@ -124,23 +125,22 @@ class NetworkHelper {
                 case .success(_):
                     
                     if let value = response.result.value {
+                        
                         completion(Helper.ResultTypeString.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: value))
-                    }else{
+                    } else {
+                        
                         completion(Helper.ResultTypeString.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
                     }
-                    
-                    
                 case .failure(let error):
+                    
                     completion(Helper.ResultTypeString.error(error: error, statusCode: response.response?.statusCode))
                 }
         }
-        
     }
     
     /**
      used to POST data TO HAT
      Closure for caller to handle
-
      
      - parameter url:                <#url description#>
      - parameter method:             <#method description#>
@@ -152,6 +152,7 @@ class NetworkHelper {
      - parameter completion:         <#completion description#>
      */
     class func AsynchronousRequestData(
+        
         _ url: String,
         method: HTTPMethod,
         encoding: ParameterEncoding,
@@ -160,7 +161,6 @@ class NetworkHelper {
         headers: Dictionary<String, String>,
         userHATAccessToken: String,
         completion: @escaping (_ r: Helper.ResultType) -> Void) -> Void {
-        
         
         let nsURL = NSURL(string: url)
 
@@ -175,26 +175,24 @@ class NetworkHelper {
         urlRequest.allHTTPHeaderFields = headers
         urlRequest.httpBody = try! JSONSerialization.data(withJSONObject: parameters, options: [])
         
-        
         Alamofire.request(urlRequest)
             .responseJSON { response in
                 switch response.result {
                 case .success(_):
                     
                     if let value = response.result.value {
+                        
                         let json = JSON(value)
                         completion(Helper.ResultType.isSuccess(isSuccess: true, statusCode: response.response!.statusCode, result: json))
-                    }else{
+                    } else {
+                        
                         completion(Helper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
                     }
                     
-                    
                 case .failure(let error):
+                    
                     completion(Helper.ResultType.error(error: error, statusCode: response.response?.statusCode))
                 }
         }
-
     }
-
-    
 }

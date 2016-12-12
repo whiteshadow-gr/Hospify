@@ -22,5 +22,6 @@
  *  When data in settings has changed
  */
 public protocol MapSettingsDelegate {
+    
     func onChanged()
 }

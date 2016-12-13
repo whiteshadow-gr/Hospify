@@ -310,10 +310,10 @@ struct JSONHelper {
     }
     
     /**
-     Updates the updated date of the note json file
+     Updates the created date of the note json file if needed
      
      - parameter file: The json file to update
-     - parameter date: the updated date
+     - parameter date: the created date
      
      - returns: JSON
      */
@@ -352,6 +352,35 @@ struct JSONHelper {
             if jsonFile["values"][itemNumber]["field"]["name"] == "shared_on" {
                 
                 jsonFile["values"][itemNumber]["value"] = JSON(socialString)
+            }
+        }
+        
+        return jsonFile
+    }
+    
+    /**
+     Updates the public until date of the note json file
+     
+     - parameter file: The json file to update
+     - parameter parameter date: the shared for duration date
+     
+     - returns: JSON
+     */
+    static func updateSharedForDurationOfNoteOnJSON(file: JSON, date: Date) -> JSON {
+        
+        var jsonFile = file
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["name"] == "public_until" {
+                
+                if date > Date() {
+                    
+                    jsonFile["values"][itemNumber]["value"] = JSON(FormatterHelper.formatDateToISO(date: date))
+                } else {
+                    
+                    jsonFile["values"][itemNumber]["value"] = ""
+                }
             }
         }
         
@@ -398,7 +427,9 @@ struct JSONHelper {
         //update updated time
         jsonFile = JSONHelper.updateUpdatedOnDateOfNoteOnJSON(file: jsonFile, date: noteFile.lastUpdated)
         //update created time
-        jsonFile = JSONHelper.updateCreatedOnDateOfNoteOnJSON(file: jsonFile, date: noteFile.lastUpdated)
+        jsonFile = JSONHelper.updateCreatedOnDateOfNoteOnJSON(file: jsonFile, date: noteFile.data.createdTime)
+        //update share duration time
+        jsonFile = JSONHelper.updateSharedForDurationOfNoteOnJSON(file: jsonFile, date: noteFile.data.publicUntil)
         //update public
         jsonFile = JSONHelper.updateVisibilityOfNoteOnJSON(file: jsonFile, isShared: noteFile.data.shared)
         //update share on

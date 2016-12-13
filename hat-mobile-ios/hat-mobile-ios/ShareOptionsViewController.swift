@@ -61,19 +61,50 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var textView: UITextView!
     /// An IBOutlet for handling the shareForView
     @IBOutlet weak var shareForView: UIView!
+    /// An IBOutlet for handling the durationSharedLabel
+    @IBOutlet weak var durationSharedForLabel: UILabel!
     /// An IBOutlet for handling the textViewAspectRationConstraint NSLayoutConstraint
     @IBOutlet weak var textViewAspectRationConstraint: NSLayoutConstraint!
     
     // MARK: - IBActions
     
-    /**
-     <#Function Details#>
-     
-     - parameter <#Parameter#>: <#Parameter description#>
-     */
-    @IBAction func shareForAction(_ sender: Any) {
+    @IBAction func shareForDurationAction(_ sender: Any) {
         
+        let alertController = UIAlertController(title: "Share for...", message: "Select the duration you want this note to be shared for", preferredStyle: .actionSheet)
         
+        let oneDayAction = UIAlertAction(title: "1 day", style: .default, handler: { (action) -> Void in
+            
+            self.durationSharedForLabel.text = "1 day"
+            self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.day, value:1, to: Date())!
+        })
+        
+        let sevenDaysAction = UIAlertAction(title: "7 days", style: .default, handler: { (action) -> Void in
+            
+            self.durationSharedForLabel.text = "7 days"
+            self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.day, value:7, to: Date())!
+        })
+        
+        let fourteenDaysAction = UIAlertAction(title: "14 days", style: .default, handler: { (action) -> Void in
+            
+            self.durationSharedForLabel.text = "14 days"
+            self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.day, value:14, to: Date())!
+        })
+        
+        let oneMonthAction = UIAlertAction(title: "1 month", style: .default, handler: { (action) -> Void in
+           
+            self.durationSharedForLabel.text = "1 month"
+            self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.month, value:1, to: Date())!
+        })
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(oneDayAction)
+        alertController.addAction(sevenDaysAction)
+        alertController.addAction(fourteenDaysAction)
+        alertController.addAction(oneMonthAction)
+        alertController.addAction(cancelButton)
+        
+        self.navigationController!.present(alertController, animated: true, completion: nil)
     }
     
     /**
@@ -162,6 +193,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             self.facebookButton.isUserInteractionEnabled = false
             self.marketsquareButton.isUserInteractionEnabled = false
             self.receivedNote?.data.shared = false
+            self.durationSharedForLabel.text = "Forever"
         }
     }
     
@@ -331,6 +363,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                     
                     // reload table
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
+                    HatAccountService.triggerHatUpdate()
                 }
                 
             case .error(let error, _):
@@ -396,7 +429,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                     } else if statusCode == 404 {
                         
                         createTable(weakSelf.postNote(token: token, json: dictionary))
-                    }
+                    }                    
                 }
             }
         }
@@ -411,7 +444,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         // Do any additional setup after loading the view.
         
         // set title in the navigation bar
-        //let char: UniChar = 0x2B07;
         let font = UIFont(name: "SSGlyphish-Outlined", size: 21)
         let attributedString = NSMutableAttributedString(string: "\u{2B07}", attributes: [NSFontAttributeName: font!])
         let combination = NSMutableAttributedString()
@@ -426,14 +458,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         // setup text field
         self.textView.keyboardAppearance = .dark
         
-        // create a button and add it to navigation bar
-//        let button = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(shareNowButton))
-//        self.navigationItem.rightBarButtonItem = button
-        
         // add tap gesture to navigation bar title
         let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(navigationTitleTap))
         self.navigationController?.navigationBar.subviews[1].isUserInteractionEnabled = true
         self.navigationController?.navigationBar.subviews[1].addGestureRecognizer(tapGesture)
+        
+        // add gesture recognizer to share For view
+        let tapGestureToShareForAction = UITapGestureRecognizer(target: self, action:  #selector (self.shareForDurationAction(_:)))
+        self.shareForView.addGestureRecognizer(tapGestureToShareForAction)
         
         // add borders to buttons
         self.cancelButton.addBorderToButton(width: 1, color: .white)
@@ -466,8 +498,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         
         super.viewWillAppear(animated)
         
-        // add keyboard handling to view
-//        self.addKeyboardHandling()
         self.hideKeyboardWhenTappedAround()
         
         if (textView.text == "") {
@@ -508,6 +538,12 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
      */
     private func turnUIElementsOn() {
         
+        // enable share for view
+        self.shareForView.isUserInteractionEnabled = true
+        
+        // show the duration shared label
+        self.durationSharedForLabel.isHidden = false
+        
         // set teal color
         let color = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
         
@@ -530,6 +566,12 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
      Turns off the ui elemets
      */
     private func turnUIElementsOff() {
+        
+        // disable share for view
+        self.shareForView.isUserInteractionEnabled = false
+        
+        // hide the duration shared label
+        self.durationSharedForLabel.isHidden = true
         
         // set the text of the public label
         self.publicLabel.text = "Private"

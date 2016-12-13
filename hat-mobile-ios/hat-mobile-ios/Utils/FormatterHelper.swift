@@ -27,7 +27,7 @@ struct FormatterHelper {
         dateFormatter.timeZone = TimeZone(abbreviation: "GMT")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
         
-        return dateFormatter.string(from: NSDate() as Date)
+        return dateFormatter.string(from: date as Date)
     }
     
     /**

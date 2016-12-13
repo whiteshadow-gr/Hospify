@@ -10,7 +10,12 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
+// MARK: Class
+
+/// A class about the methods concerning the Notables service
 class NotablesService: NSObject {
+    
+    // MARK: - Get Notes
     
     /**
      Checks if notables table exists
@@ -35,16 +40,22 @@ class NotablesService: NSObject {
      - parameter tableID: The table id of the notes
      */
     private class func getNotes (token: String, success: @escaping (_ array: [JSON]) -> Void) -> (_ tableID: NSNumber) -> Void {
+        
         return { (tableID: NSNumber) -> Void in
         
             HatAccountService.getHatTableValues(token: token, tableID: tableID, successCallback: success, errorCallback: showNotablesFetchError)
         }
     }
     
+    /**
+     Shows alert that the notes couldn't be fetched
+     */
     class func showNotablesFetchError() {
         
         // alert magic
     }
+    
+    // MARK: - Delete notes
     
     /**
      Deletes a note from the hat

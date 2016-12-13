@@ -53,12 +53,11 @@ struct LearnMoreObject {
             
             title = "The HAT is your own data store"
             info = "your words, information, photos, music; everything on the Internet that is personal to you, is your data.\n\nClaim your data, safely use and share it on demand, everywhere you go. \n\nHave control and privacy"
-            buttonTitle = "What you can do with your HAT"
             image = UIImage(named: "Data store")!
         } else if pageNumber == 1 {
             
             title = "The HAT belongs to you, the individual"
-            info = "You choose yout HAT provider. \n\nYour provider has no right to access your data unless you give them permission"
+            info = "You choose your HAT provider. \n\nYour provider has no right to access your data unless you give them permission"
             image = UIImage(named: "Individual")!
         } else if pageNumber == 2 {
             
@@ -85,6 +84,8 @@ struct LearnMoreObject {
             title = "The HAT stands for the Hub-of-All-Things"
             info = "Because we think YOU should be at the hub of all things"
             image = UIImage(named: "Stands for")!
+            buttonTitle = "What you can do with your HAT"
+
         } else if pageNumber == 10 {
             
             title = "Stuff your HAT!"
@@ -98,12 +99,12 @@ struct LearnMoreObject {
         } else if pageNumber == 12 {
             
             title = "Monetise"
-            info = "Use your data to het discounts and vouchers. \n\nReuse your data again and again."
+            info = "Use your data to have discounts and vouchers. \n\nReuse your data again and again."
             image = UIImage(named: "Monetize")!
         } else if pageNumber == 13 {
             
             title = "Personalise"
-            info = "With your PHATA(personal HAT address) a 'PO Box' for your HAT e.g. https://yourHATname.hubofallthings.net"
+            info = "With your PHATA (personal HAT address) a 'PO Box' for your HAT e.g. https://yourHATname.hubofallthings.net"
             image = UIImage(named: "Personalize")!
         } else if pageNumber == 14 {
             

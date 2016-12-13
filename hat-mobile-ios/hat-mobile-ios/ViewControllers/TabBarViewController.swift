@@ -83,12 +83,10 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         self.navigationItem.title = "Notables"
         
         // create buttons
-        let button1 = UIBarButtonItem(title: "Settings", style: .plain, target: self, action: #selector(showSettingsViewController))
-        let button2 = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
+        let button = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
         
         // add buttons to navigation bar
-        self.navigationItem.leftBarButtonItem = button1
-        self.navigationItem.rightBarButtonItem = button2
+        self.navigationItem.rightBarButtonItem = button
     }
     
     /**

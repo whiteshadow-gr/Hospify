@@ -59,10 +59,22 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var scrollView: UIScrollView!
     /// An IBOutlet for handling the UITextView
     @IBOutlet weak var textView: UITextView!
+    /// An IBOutlet for handling the shareForView
+    @IBOutlet weak var shareForView: UIView!
     /// An IBOutlet for handling the textViewAspectRationConstraint NSLayoutConstraint
     @IBOutlet weak var textViewAspectRationConstraint: NSLayoutConstraint!
     
     // MARK: - IBActions
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     */
+    @IBAction func shareForAction(_ sender: Any) {
+        
+        
+    }
     
     /**
      This function is called when the user touches the cancel button

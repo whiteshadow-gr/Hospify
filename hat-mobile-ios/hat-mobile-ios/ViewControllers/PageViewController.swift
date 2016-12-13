@@ -109,7 +109,7 @@ class PageViewController: UIViewController {
         titleLabel.text = pageObject.title
         
         // if we are in the first page show the button, else hide it
-        if (itemIndex == 0) {
+        if (pageObject.buttonTitle != "") {
             
             moreButton.setTitle(pageObject.buttonTitle, for: .normal)
             moreButton.addBorderToButton(width: 1, color: .white)

@@ -12,6 +12,8 @@ import UIKit
 
 extension UIViewController {
     
+    // MARK: - Keyboard methods
+    
     /**
      Hides keyboard when tap anywhere in the screen except keyboard
      */
@@ -73,12 +75,24 @@ extension UIViewController {
         }
     }
     
+    /**
+     Hides the keyboard and restores the scrollView to its original place
+     
+     - parameter scrollView: The UIScrollView object to handle
+     */
     func hideKeyboardInScrollView(_ scrollView: UIScrollView) {
         
         let contentInset:UIEdgeInsets = UIEdgeInsets.zero
         scrollView.contentInset = contentInset
     }
     
+    /**
+     Shows the keyboard and lifts the view and scrollView accordingly
+     
+     - parameter view: The UIView object to handle
+     - parameter scrollView: The UIScrollView object to handle
+     - parameter sender: The object that called this method
+     */
     func showKeyboardInView(_ view: UIView, scrollView: UIScrollView, sender: NSNotification) {
         
         var userInfo = sender.userInfo!
@@ -90,6 +104,8 @@ extension UIViewController {
         scrollView.contentInset = contentInset
     }
     
+    // MARK: - Textfield methods
+    
     /**
      Function executed when the return key is pressed in order to hide the keyboard
      
@@ -100,5 +116,28 @@ extension UIViewController {
         
         self.view.endEditing(true)
         return false
+    }
+    
+    func createClassicAlertWith(alertMessage: String, alertTitle: String, cancelTitle: String, proceedTitle: String, proceedCompletion: @escaping () -> Void, cancelCompletion: @escaping () -> Void) {
+        
+        //change font
+        let attrTitleString = NSAttributedString(string: alertTitle, attributes: [NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!])
+        let attrMessageString = NSAttributedString(string: alertMessage, attributes: [NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!])
+        
+        // create the alert
+        let alert = UIAlertController(title: attrTitleString.string, message: attrMessageString.string, preferredStyle: .alert)
+        
+        // add the actions (buttons)
+        alert.addAction(UIAlertAction(title: proceedTitle, style: .default, handler: { (action: UIAlertAction) in
+            
+            proceedCompletion()
+        }))
+        alert.addAction(UIAlertAction(title: cancelTitle, style: .cancel, handler: { (action: UIAlertAction) in
+            
+            cancelCompletion()
+        }))
+        
+        // present the alert
+        self.present(alert, animated: true, completion: nil)
     }
 }

@@ -18,7 +18,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import Foundation
 import RealmSwift
 
 /// Static Realm Helper methods

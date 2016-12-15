@@ -10,7 +10,6 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 import KeychainSwift
-import Crashlytics
 
 // MARK: - Notables ViewController
 
@@ -102,7 +101,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         self.createNewBlogLabel.isUserInteractionEnabled = true
 
         // begin tracking
-        //self.beginLocationTracking()
+        //self.beginLocationTracking()        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -238,16 +237,16 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         
         if segue.destination is ShareOptionsViewController {
             
-            let destinationVC = segue.destination as! ShareOptionsViewController
+            weak var destinationVC = segue.destination as? ShareOptionsViewController
 
             if segue.identifier == "editNoteSegue" {
                 
                 let cellIndexPath = self.tableView.indexPath(for: sender as! UITableViewCell)
-                destinationVC.receivedNote = self.notesArray[(cellIndexPath?.row)!]
-                destinationVC.isEditingExistingNote = true
+                destinationVC?.receivedNote = self.notesArray[(cellIndexPath?.row)!]
+                destinationVC?.isEditingExistingNote = true
             } else {
                 
-                destinationVC.kind = self.kind
+                destinationVC?.kind = self.kind
             }
         }
     }

@@ -6,7 +6,6 @@
 //  Copyright © 2016 Green Custard Ltd. All rights reserved.
 //
 
-import UIKit
 import Alamofire
 import SwiftyJSON
 

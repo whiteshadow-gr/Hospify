@@ -21,8 +21,6 @@
 import MapKit
 import FBAnnotationClusteringSwift
 import RealmSwift
-import Toaster
-import SwiftyJSON
 
 /// The MapView to render the DataPoints
 class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCountDelegate, MapSettingsDelegate, DataSyncDelegate, UINavigationBarDelegate {
@@ -107,7 +105,6 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
         labelLastSyncInformation.addGestureRecognizer(labelLastSyncInformationTap)
         
         buttonTodayTouchUp(UIBarButtonItem())
-        
     }
     
     func refreshUI() {
@@ -332,7 +329,7 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
                     annottationArray.append(pin)
                 }
                 // we must set annotations to replace old ones
-                //self.clusteringManager.setAnnotations(annottationArray)
+                self.clusteringManager.removeAll()
                 self.clusteringManager.add(annotations: annottationArray)
                 // force map changed to refresh the map and any pins
                 self.mapView(self.mapView, regionDidChangeAnimated: true)
@@ -397,13 +394,14 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
             let addedOn:Date = dataPoint.dateAdded as Date
             DispatchQueue.main.async(execute: {
                 
-                    self.labelMostRecentInformation.text = NSLocalizedString("information_label", comment:  "info") + " " + Helper.TimeAgoSinceDate(addedOn)
-                    })
+                self.labelMostRecentInformation.text = NSLocalizedString("information_label", comment:  "info") + " " + Helper.TimeAgoSinceDate(addedOn)
+            })
         }
         
         // sync date
         // last sync date
         DispatchQueue.main.async(execute: {
+            
             if let dateSynced:Date = self.getLastSuccessfulSyncDate() as Date? {
 
                 self.labelLastSyncInformation.text = NSLocalizedString("information_synced_label", comment:  "info") + " " +
@@ -411,7 +409,6 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
                     " (" +
                     String(self.getSuccessfulSyncCount()) +
                     " points)"
-                
             }
         })
     }
@@ -443,8 +440,10 @@ class MapViewController: BaseLocationViewController, MKMapViewDelegate, UpdateCo
                                 leeway: .seconds(1)
         )
         timerSync.setEventHandler {
+            
             // sync with HAT
             DispatchQueue.main.async(execute: {
+                
                 _ = self.syncDataHelper.CheckNextBlockToSync()
             })
         }

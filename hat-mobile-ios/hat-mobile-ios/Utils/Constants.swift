@@ -18,7 +18,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import Foundation
 import SwiftyJSON
 
 class Constants  {

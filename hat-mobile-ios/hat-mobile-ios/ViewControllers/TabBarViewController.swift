@@ -21,6 +21,11 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
 
         // Do any additional setup after loading the view.
         
+        // disable left navigation button
+        self.navigationItem.leftBarButtonItems = nil
+        // hide back button
+        self.navigationItem.hidesBackButton = true
+        
         // change tint color, the color of the selected icon in tab bar
         self.tabBar.tintColor = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
         // set delete to self in order to receive the calls from tab bar controller
@@ -77,8 +82,9 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
      */
     func createBarButtons() {
         
-        // disable left navigation button
+        // remove buttons on the left of the navigation bar
         self.navigationItem.leftBarButtonItems = nil
+        
         // change title in navigation bar
         self.navigationItem.title = "Notables"
         
@@ -150,13 +156,4 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         // present alert
         self.present(alert, animated: true, completion: nil)
     }
-    
-    // MARK: - Navigation
-
-//    // In a storyboard-based application, you will often want to do a little preparation before navigation
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        // Get the new view controller using segue.destinationViewController.
-//        // Pass the selected object to the new view controller.
-//        
-//    }
 }

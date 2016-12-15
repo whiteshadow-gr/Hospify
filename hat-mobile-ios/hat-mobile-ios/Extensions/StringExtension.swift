@@ -10,6 +10,8 @@
 
 extension String {
     
+    // MARK: - Convert from base64URL to base64
+    
     /**
      String extension to convert from base64Url to base64
      
@@ -33,6 +35,8 @@ extension String {
         
         return s
     }
+    
+    // MARK: - Split a comma separated string to an Array of String
     
     /**
      Transforms a comma seperated string into an array

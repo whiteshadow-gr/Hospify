@@ -22,15 +22,15 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     var kind: String = "note"
     /// the received note to edit from notables view controller
     var receivedNote: NotesData? = nil
+    /// the cached received note to edit from notables view controller
+    private var cachedIsNoteShared: Bool = false
     /// a bool value to determine if the user is editing an existing value
     var isEditingExistingNote: Bool = false
     /// a flag to define if the keyboard is visible
-    var isKeyboardVisible: Bool = false
+    private var isKeyboardVisible: Bool = false
     
     // MARK: - IBOutlets
     
-    /// An IBOutlet for handling the text field
-    @IBOutlet weak var messageTextField: UITextField!
     /// An IBOutlet for handling the public/private label
     @IBOutlet weak var publicLabel: UILabel!
     /// An IBOutlet for handling the public/private switch
@@ -114,7 +114,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
      */
     @IBAction func cancelButton(_ sender: Any) {
         
-        _ = super.navigationController?.popViewController(animated: true)
+        _ = self.navigationController?.popViewController(animated: true)
     }
     
     /**
@@ -124,28 +124,61 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
      */
     @IBAction func shareButton(_ sender: Any) {
         
-        // save text
-        receivedNote?.data.message = self.textView.text!
-        
-        if !(receivedNote!.data.shared) {
-            
-            receivedNote?.data.sharedOn = ""
-        }
-        
         // start the procedure to upload the note to the hat
         let token = HatAccountService.getUsersTokenFromKeychain()
-        // if user is not editing an existing note, so it is a new note, check if table exists and post the note
-        if !isEditingExistingNote {
+        // if user is note editing an existing note post as a new note
+        
+        if (self.receivedNote?.data.shared)! && ((self.receivedNote?.data.sharedOn)! == "") {
             
-            self.checkNotableTableExists(authToken: token)
-        // else the user is editing a note, delete the note first a post a new one
-        } else {
-            
-            NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
-            self.checkNotableTableExists(authToken: token)
+            self.receivedNote?.data.shared = false
         }
         
-        _ = super.navigationController?.popViewController(animated: true)
+        // not editing note
+        if !isEditingExistingNote {
+            
+            func proceedCompletion() {
+                
+                // save text
+                self.receivedNote?.data.message = self.textView.text!
+                
+                self.checkNotableTableExists(authToken: token)
+                
+                _ = self.navigationController?.popViewController(animated: true)
+            }
+            
+            if (receivedNote?.data.shared)! {
+                
+                self.createClassicAlertWith(alertMessage: "You are about to share your post. Tip: to remove a note from the external site, edit the note and make it private.", alertTitle: "Attention", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+            } else {
+                
+                proceedCompletion()
+            }
+        // else delete the existing note and post a new one
+        } else {
+            
+            func proceedCompletion() {
+                
+                // save text
+                receivedNote?.data.message = self.textView.text!
+                
+                NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+                self.checkNotableTableExists(authToken: token)
+                
+                _ = self.navigationController?.popViewController(animated: true)
+            }
+            
+            if cachedIsNoteShared && (receivedNote?.data.message != self.textView.text!) {
+                
+                self.createClassicAlertWith(alertMessage: "Your post would not be edited at the destination.", alertTitle: "Attention", cancelTitle: "Cancel", proceedTitle: "OK", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+
+            } else if (receivedNote?.data.shared)! {
+                
+                self.createClassicAlertWith(alertMessage: "You are about to share your post. Tip: to remove a note from the external site, edit the note and make it private.", alertTitle: "Attention", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+            } else {
+                
+                proceedCompletion()
+            }
+        }
     }
     
     /**
@@ -158,11 +191,22 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         // if not a previous note then nothing to delete
         if isEditingExistingNote {
             
-            let token = HatAccountService.getUsersTokenFromKeychain()
-            NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+            func proceedCompletion() {
+                
+                let token = HatAccountService.getUsersTokenFromKeychain()
+                NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+                
+                _ = self.navigationController?.popViewController(animated: true)
+            }
+            
+            if cachedIsNoteShared {
+                
+                self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. To remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "Attention", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+            } else {
+                
+                proceedCompletion()
+            }
         }
-        
-        _ = super.navigationController?.popViewController(animated: true)
     }
     
     /**
@@ -172,54 +216,47 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
      */
     @IBAction func publicSwitchStateChanged(_ sender: Any) {
         
+        // hide keyboard if active
         if self.textView.isFirstResponder {
             
             self.textView.resignFirstResponder()
         }
-        // based on the switch state change the label accordingly
-        if publicSwitch.isOn {
-            
-            // update the ui accordingly
-            self.turnUIElementsOn()
-            self.turnImagesOn()
-            self.facebookButton.isUserInteractionEnabled = true
-            self.marketsquareButton.isUserInteractionEnabled = true
-            self.receivedNote?.data.shared = true
-        } else {
-            
-            // update the ui accordingly
-            self.turnUIElementsOff()
-            self.turnImagesOff()
-            self.facebookButton.isUserInteractionEnabled = false
-            self.marketsquareButton.isUserInteractionEnabled = false
-            self.receivedNote?.data.shared = false
-            self.durationSharedForLabel.text = "Forever"
-        }
-    }
-    
-    /**
-     This function is called when the user touches the share now button
-     
-     - parameter sender: The object that called this function
-     */
-    @IBAction func shareNowButton(_ sender: Any) {
         
-        // save text
-        receivedNote?.data.message = self.textView.text!
-        // start the procedure to upload the note to the hat
-        let token = HatAccountService.getUsersTokenFromKeychain()
-        // if user is note editing an existing note post as a new note
-        if !isEditingExistingNote {
+        func proceedCompletion() {
             
-            self.checkNotableTableExists(authToken: token)
-        // else delete the existing note a post a new one
-        } else {
-            
-            NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
-            self.checkNotableTableExists(authToken: token)
+            // based on the switch state change the label accordingly
+            if self.publicSwitch.isOn {
+                
+                // update the ui accordingly
+                self.turnUIElementsOn()
+                self.turnImagesOn()
+                self.facebookButton.isUserInteractionEnabled = true
+                self.marketsquareButton.isUserInteractionEnabled = true
+                self.receivedNote?.data.shared = true
+            } else {
+                
+                // update the ui accordingly
+                self.turnUIElementsOff()
+                self.turnImagesOff()
+                self.facebookButton.isUserInteractionEnabled = false
+                self.marketsquareButton.isUserInteractionEnabled = false
+                self.receivedNote?.data.shared = false
+                self.durationSharedForLabel.text = "Forever"
+            }
         }
         
-        _ = super.navigationController?.popViewController(animated: true)
+        func cancelCompletion() {
+            
+            self.publicSwitch.isOn = true
+        }
+        
+        if cachedIsNoteShared && !self.publicSwitch.isOn {
+            
+            self.createClassicAlertWith(alertMessage: "This will remove your post at the shared destinations. (Warning: any comments at the destinations would also be deleted.", alertTitle: "Attention", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: cancelCompletion)
+        } else {
+            
+            proceedCompletion()
+        }
     }
     
     /**
@@ -449,7 +486,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         let combination = NSMutableAttributedString()
         combination.append(NSAttributedString(string: self.kind.capitalized))
         combination.append(attributedString)
-        super.navigationItem.title = combination.string
+        self.navigationItem.title = combination.string
         
         // set image fonts
         self.publicImageLabel.attributedText = NSAttributedString(string: "\u{1F512}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
@@ -467,12 +504,17 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         let tapGestureToShareForAction = UITapGestureRecognizer(target: self, action:  #selector (self.shareForDurationAction(_:)))
         self.shareForView.addGestureRecognizer(tapGestureToShareForAction)
         
+        // add gesture recognizer to text view
+        let tapGestureTextView = UITapGestureRecognizer(target: self, action:  #selector (self.enableEditingTextView))
+        self.textView.addGestureRecognizer(tapGestureTextView)
+        
         // add borders to buttons
         self.cancelButton.addBorderToButton(width: 1, color: .white)
         self.deleteButtonOutlet.addBorderToButton(width: 1, color: .white)
         
         // change title in publish button
-        self.publishButton.setTitle("Publish " + self.kind.capitalized, for: .normal)
+        self.publishButton.titleLabel?.minimumScaleFactor = 0.5
+        self.publishButton.titleLabel?.adjustsFontSizeToFitWidth = true
         
         // keep the green bar at the top
         self.view.bringSubview(toFront: actionsView)
@@ -481,6 +523,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         if isEditingExistingNote {
             
             self.setUpUIElementsFromReceivedNote(self.receivedNote!)
+            self.cachedIsNoteShared = (self.receivedNote?.data.shared)!
+            if (self.receivedNote?.data.shared)! {
+                
+                self.publishButton.setTitle("Save as shared", for: .normal)
+            }
         // else init a new value
         } else {
             
@@ -560,6 +607,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         // set image fonts
         self.publicImageLabel.attributedText = NSAttributedString(string: "\u{1F513}", attributes: [NSForegroundColorAttributeName: color, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
         self.shareImageLabel.attributedText = NSAttributedString(string: "\u{23F2}", attributes: [NSForegroundColorAttributeName: color, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
+        
+        if self.isEditingExistingNote {
+            
+            self.publishButton.setTitle("Save as shared", for: .normal)
+        } else {
+            
+            self.publishButton.setTitle("Share " + self.kind.capitalized, for: .normal)
+        }
     }
     
     /**
@@ -586,6 +641,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         // set image fonts
         self.publicImageLabel.attributedText = NSAttributedString(string: "\u{1F512}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
         self.shareImageLabel.attributedText = NSAttributedString(string: "\u{23F2}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
+        
+        self.publishButton.setTitle("Save privately", for: .normal)
     }
     
     /**
@@ -681,6 +738,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             self.textView.textColor = .lightGray
             self.textView.text = "What's on your mind?"
         }
+        
+        self.textView.isEditable = false
     }
     
     override func viewDidLayoutSubviews() {
@@ -696,5 +755,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         self.textView.addConstraint(textViewAspectRationConstraint!)
         self.view.layoutSubviews()
         self.scrollView.setNeedsLayout()
+    }
+    
+    func enableEditingTextView() {
+        
+        self.textView.isEditable = true
+        
+        textViewDidBeginEditing(self.textView)
+        self.textView.becomeFirstResponder()
     }
 }

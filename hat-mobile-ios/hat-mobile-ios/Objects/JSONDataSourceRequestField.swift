@@ -18,8 +18,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-import Foundation
-
 /// The request field structure
 class JSONDataSourceRequestField {
     

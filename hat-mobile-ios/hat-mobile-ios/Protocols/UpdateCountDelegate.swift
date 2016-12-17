@@ -18,10 +18,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+// MARK: Protocol
+
 /**
  *  Delegate to update the item count
  */
 public protocol UpdateCountDelegate {
+    
+    // MARK: - Protocol's functions
     
     func onUpdateCount(_ count: Int)
     func onUpdateError(_ error: String)

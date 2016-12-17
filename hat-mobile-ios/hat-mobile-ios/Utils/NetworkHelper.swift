@@ -78,9 +78,14 @@ class NetworkHelper {
                     
                 case .failure(let error):
                     
+                    if error.localizedDescription == "The Internet connection appears to be offline." {
+                        
+                        NotificationCenter.default.post(name: NSNotification.Name("NoInternet"), object: nil)
+                    }
                     completion(Helper.ResultType.error(error: error, statusCode: response.response?.statusCode))
                 }
         }
+        
     }
     
     /**

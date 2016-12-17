@@ -1,10 +1,22 @@
-//
-//  ShareOptionsViewController.swift
-//  hat-mobile-ios
-//
-//  Created by Marios-Andreas Tsekis on 8/11/16.
-//  Copyright © 2016 Green Custard Ltd. All rights reserved.
-//
+/** Copyright (C) 2016 HAT Data Exchange Ltd
+ * SPDX-License-Identifier: AGPL-3.0
+ *
+ * This file is part of the Hub of All Things project (HAT).
+ *
+ * RumpelLite is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation, version 3 of
+ * the License.
+ *
+ * RumpelLite is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General
+ * Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 
 import UIKit
 import Alamofire
@@ -124,13 +136,31 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
      */
     @IBAction func shareButton(_ sender: Any) {
         
+        // hide keyboard
+        self.textView.resignFirstResponder()
+        
+        let previousButtonTitle = self.publishButton.titleLabel?.text
+        
+        // change button title to saving
+        self.publishButton.setTitle("Saving....", for: .normal)
+        self.publishButton.isUserInteractionEnabled = false
+        self.publishButton.alpha = 0.5
+        
         // start the procedure to upload the note to the hat
         let token = HatAccountService.getUsersTokenFromKeychain()
         // if user is note editing an existing note post as a new note
         
+        func defaultCancelAction() {
+            
+            self.publishButton.setTitle(previousButtonTitle, for: .normal)
+            self.publishButton.isUserInteractionEnabled = true
+            self.publishButton.alpha = 1
+        }
+        
         if (self.receivedNote?.data.shared)! && ((self.receivedNote?.data.sharedOn)! == "") {
             
-            self.receivedNote?.data.shared = false
+            self.createClassicOKAlertWith(alertMessage: "Please select at least one shared destination", alertTitle: "", okTitle: "OK", proceedCompletion: {() -> Void in defaultCancelAction()})
+            return
         }
         
         // not editing note
@@ -142,13 +172,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 self.receivedNote?.data.message = self.textView.text!
                 
                 self.checkNotableTableExists(authToken: token)
-                
-                _ = self.navigationController?.popViewController(animated: true)
             }
             
             if (receivedNote?.data.shared)! {
                 
-                self.createClassicAlertWith(alertMessage: "You are about to share your post. Tip: to remove a note from the external site, edit the note and make it private.", alertTitle: "Attention", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+                self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in defaultCancelAction()})
             } else {
                 
                 proceedCompletion()
@@ -163,17 +191,15 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 
                 NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
                 self.checkNotableTableExists(authToken: token)
-                
-                _ = self.navigationController?.popViewController(animated: true)
             }
             
             if cachedIsNoteShared && (receivedNote?.data.message != self.textView.text!) {
                 
-                self.createClassicAlertWith(alertMessage: "Your post would not be edited at the destination.", alertTitle: "Attention", cancelTitle: "Cancel", proceedTitle: "OK", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+                self.createClassicAlertWith(alertMessage: "Your post would not be edited at the destination.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "OK", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in defaultCancelAction()})
 
             } else if (receivedNote?.data.shared)! {
                 
-                self.createClassicAlertWith(alertMessage: "You are about to share your post. Tip: to remove a note from the external site, edit the note and make it private.", alertTitle: "Attention", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+                self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in defaultCancelAction()})
             } else {
                 
                 proceedCompletion()
@@ -201,7 +227,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             
             if cachedIsNoteShared {
                 
-                self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. To remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "Attention", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+                self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
             } else {
                 
                 proceedCompletion()
@@ -252,7 +278,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         
         if cachedIsNoteShared && !self.publicSwitch.isOn {
             
-            self.createClassicAlertWith(alertMessage: "This will remove your post at the shared destinations. (Warning: any comments at the destinations would also be deleted.", alertTitle: "Attention", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: cancelCompletion)
+            self.createClassicAlertWith(alertMessage: "This will remove your post at the shared destinations. \n\nWarning: any comments at the destinations would also be deleted.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: cancelCompletion)
         } else {
             
             proceedCompletion()
@@ -401,6 +427,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                     // reload table
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
                     HatAccountService.triggerHatUpdate()
+                    _ = self.navigationController?.popViewController(animated: true)
                 }
                 
             case .error(let error, _):
@@ -450,14 +477,27 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             
             switch r {
                 
-            case .error( _, _): break
+            case .error( _, _):
+                
+                guard let weakSelf = self else { return }
+                
+                // show error posting
+                weakSelf.createClassicOKAlertWith(alertMessage: "Please try again", alertTitle: "Error saving note", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                // change button title to saving
+                weakSelf.publishButton.setTitle("Save", for: .normal)
+                weakSelf.publishButton.isUserInteractionEnabled = true
+                weakSelf.publishButton.alpha = 1.0
                 
             case .isSuccess(let isSuccess, let statusCode, let result):
                 
                 if isSuccess {
                     
                     guard let weakSelf = self else { return }
-                    let dictionary = result.dictionary!
+                    
+                    guard let dictionary = result.dictionary else {
+                        
+                       break
+                    }
                     //table found
                     if statusCode == 200 {
                         
@@ -526,7 +566,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             self.cachedIsNoteShared = (self.receivedNote?.data.shared)!
             if (self.receivedNote?.data.shared)! {
                 
-                self.publishButton.setTitle("Save as shared", for: .normal)
+                self.publishButton.setTitle("Save", for: .normal)
             }
         // else init a new value
         } else {
@@ -610,10 +650,10 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         
         if self.isEditingExistingNote {
             
-            self.publishButton.setTitle("Save as shared", for: .normal)
+            self.publishButton.setTitle("Save", for: .normal)
         } else {
             
-            self.publishButton.setTitle("Share " + self.kind.capitalized, for: .normal)
+            self.publishButton.setTitle("Share", for: .normal)
         }
     }
     
@@ -642,7 +682,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         self.publicImageLabel.attributedText = NSAttributedString(string: "\u{1F512}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
         self.shareImageLabel.attributedText = NSAttributedString(string: "\u{23F2}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
         
-        self.publishButton.setTitle("Save privately", for: .normal)
+        self.publishButton.setTitle("Save", for: .normal)
     }
     
     /**

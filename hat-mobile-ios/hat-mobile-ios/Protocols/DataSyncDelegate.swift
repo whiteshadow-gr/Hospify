@@ -18,10 +18,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+// MARK: Protocol
+
 /**
  *  used to provide feddback while syncnig data
  */
 public protocol DataSyncDelegate {
+    
+    // MARK: - Protocol's functions
     
     func onDataSyncFeedback(_ isSuccess: Bool, message: String)
 }

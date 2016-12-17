@@ -18,10 +18,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+// MARK: Protocol
+
 /**
  *  When data in settings has changed
  */
 public protocol MapSettingsDelegate {
+    
+    // MARK: - Protocol's functions
     
     func onChanged()
 }

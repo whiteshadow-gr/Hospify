@@ -1,10 +1,22 @@
-//
-//  ViewControllerExtension.swift
-//  hat-mobile-ios
-//
-//  Created by Marios-Andreas Tsekis on 12/12/16.
-//  Copyright © 2016 Green Custard Ltd. All rights reserved.
-//
+/** Copyright (C) 2016 HAT Data Exchange Ltd
+ * SPDX-License-Identifier: AGPL-3.0
+ *
+ * This file is part of the Hub of All Things project (HAT).
+ *
+ * RumpelLite is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation, version 3 of
+ * the License.
+ *
+ * RumpelLite is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General
+ * Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 
 import UIKit
 
@@ -135,6 +147,25 @@ extension UIViewController {
         alert.addAction(UIAlertAction(title: cancelTitle, style: .cancel, handler: { (action: UIAlertAction) in
             
             cancelCompletion()
+        }))
+        
+        // present the alert
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func createClassicOKAlertWith(alertMessage: String, alertTitle: String, okTitle: String, proceedCompletion: @escaping () -> Void) {
+        
+        //change font
+        let attrTitleString = NSAttributedString(string: alertTitle, attributes: [NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!])
+        let attrMessageString = NSAttributedString(string: alertMessage, attributes: [NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!])
+        
+        // create the alert
+        let alert = UIAlertController(title: attrTitleString.string, message: attrMessageString.string, preferredStyle: .alert)
+        
+        // add the actions (buttons)
+        alert.addAction(UIAlertAction(title: okTitle, style: .default, handler: { (action: UIAlertAction) in
+            
+            proceedCompletion()
         }))
         
         // present the alert

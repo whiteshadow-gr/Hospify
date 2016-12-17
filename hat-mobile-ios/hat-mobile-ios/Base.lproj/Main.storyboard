@@ -1154,7 +1154,7 @@
                                             <constraint firstAttribute="width" constant="95" id="Qh4-Cx-ZRz"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" name="OpenSans-Bold" family="Open Sans" pointSize="13"/>
-                                        <state key="normal" title="Save privately">
+                                        <state key="normal" title="Save">
                                             <color key="titleColor" red="0.0" green="0.58628696199999997" blue="0.53447610140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
                                         <connections>

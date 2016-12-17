@@ -20,12 +20,21 @@
 
 import RealmSwift
 
+// MARK: Class
+
 /// The DataPoint object representation
 class DataPoint : Object {
     
+    // MARK: - Variables
+    
+    /// The latitude of the point
     dynamic var lat: Double = 0
+    /// The longitude of the point
     dynamic var lng: Double = 0
+    /// The accuracy of the point
     dynamic var accuracy: Double = 0
+    /// The added point date of the point
     dynamic var dateAdded: Date = Date()
+    /// The last sync date of the point
     dynamic var lastSynced: Date? = nil // optional..can be nil
 }

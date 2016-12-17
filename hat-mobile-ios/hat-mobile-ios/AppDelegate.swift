@@ -205,43 +205,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
      */
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-//        // get location
-//        lastPos = locations[locations.count - 1]
-//        print("location")
-//        
-//        // test that the horizontal accuracy does not indicate an invalid measurement
-//        if (lastPos.horizontalAccuracy < 0)
-//        {
-//            return
-//        }
-//        // check we have a measurement that meets our requirements,
-//        if (lastPos.horizontalAccuracy <= locationManager.desiredAccuracy) {
-//            let taskID = beginBackgroundUpdateTask()
-//            
-//            DispatchQueue.global().async {
-//                _ = RealmHelper.AddData(Double(self.lastPos.coordinate.latitude), longitude: Double(self.lastPos.coordinate.longitude), accuracy: Double(self.lastPos.horizontalAccuracy))
-//                
-//                self.endBackgroundUpdateTask(taskID: taskID)
-//            }
-//        }
-//        
-//        /**
-//         *  Only call one. Calling again will disable it
-//         defer updates until a distance or period of time
-//         */
-//        if (!deferringUpdates)
-//        {
-//            // if we are deferring, the distanceFilter = kCLDistanceFilterNone
-//            //locationManager.distanceFilter = kCLDistanceFilterNone
-//            // get distance and time settings
-//            let distance: CLLocationDistance = Helper.GetUserPreferencesDeferredDistance()
-//            let time:TimeInterval = Helper.GetUserPreferencesDeferredTimeout()
-//            
-//            manager.allowDeferredLocationUpdates(untilTraveled: distance, timeout: time)
-//            
-//            deferringUpdates = true;
-//        }
-        
         //get last location
         let latestLocation: CLLocation = locations[locations.count - 1]
         var dblocation: CLLocation? = nil

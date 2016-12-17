@@ -1,10 +1,22 @@
-//
-//  HatAccountService.swift
-//  hat-mobile-ios
-//
-//  Created by Marios-Andreas Tsekis on 15/11/16.
-//  Copyright © 2016 Green Custard Ltd. All rights reserved.
-//
+/** Copyright (C) 2016 HAT Data Exchange Ltd
+ * SPDX-License-Identifier: AGPL-3.0
+ *
+ * This file is part of the Hub of All Things project (HAT).
+ *
+ * RumpelLite is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation, version 3 of
+ * the License.
+ *
+ * RumpelLite is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General
+ * Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 
 import KeychainSwift
 import Alamofire
@@ -156,7 +168,7 @@ class HatAccountService {
             // create headers and parameters
             //let parameters = JSONHelper.createNotablesTableJSON()
             let headers = Helper.ConstructRequestHeaders(token)
-            let url = HatAccountService.TheUserHATDomain() + "/data/table"
+            let url = "https://" + HatAccountService.TheUserHATDomain() + "/data/table"
             
             // make async request
             NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: notablesTableStructure, headers: headers, completion: { (r: Helper.ResultType) -> Void in
@@ -209,8 +221,16 @@ class HatAccountService {
                 
                 switch r {
                     
-                case .error( _, _): break
+                case .error(let error, let statusCode):
                     
+                    if statusCode == 404 {
+                        
+                        errorCallback()
+                    }
+                    if error.localizedDescription == "The Internet connection appears to be offline." {
+                        
+                        // TODO: Show error
+                    }
                 case .isSuccess(let isSuccess, let statusCode, let result):
                     
                     if isSuccess {

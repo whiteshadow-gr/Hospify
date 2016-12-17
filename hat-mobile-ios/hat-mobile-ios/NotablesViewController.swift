@@ -1,20 +1,33 @@
-//
-//  NotablesViewController.swift
-//  hat-mobile-ios
-//
-//  Created by Marios-Andreas Tsekis on 8/11/16.
-//  Copyright © 2016 Green Custard Ltd. All rights reserved.
-//
+/** Copyright (C) 2016 HAT Data Exchange Ltd
+ * SPDX-License-Identifier: AGPL-3.0
+ *
+ * This file is part of the Hub of All Things project (HAT).
+ *
+ * RumpelLite is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation, version 3 of
+ * the License.
+ *
+ * RumpelLite is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ * the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General
+ * Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 
 import UIKit
 import Alamofire
 import SwiftyJSON
 import KeychainSwift
+import SafariServices
 
 // MARK: - Notables ViewController
 
 /// The notables view controller
-class NotablesViewController: BaseLocationViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
+class NotablesViewController: BaseLocationViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
     
     // MARK: - Variables
     
@@ -24,6 +37,10 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     var kind: String = ""
     /// the cells of the table
     var cells: [NotablesTableViewCell] = []
+    /// The safari view controller variable to hold reference for later use
+    var safariDelegate: SFSafariViewController? = nil
+    /// A message to display behind the table view if something is wrong
+    var emptyTableLabel: UILabel = UILabel()
 
     // MARK: - IBOutlets
 
@@ -83,9 +100,11 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         // keep the green bar at the top
         self.view.bringSubview(toFront: createNewNoteView)
         
-        // register for a notificaation to get the notes to the table
+        // register observers for a notifications
         NotificationCenter.default.addObserver(self, selector: #selector(self.showReceivedNotes), name: NSNotification.Name(rawValue: "notesArray"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: "refreshTable"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.openSafari), name: NSNotification.Name(rawValue: "safari"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.hideTable), name: NSNotification.Name(rawValue: "NoInternet"), object: nil)
         
         // add gesture recognizer in the labels
         let newNoteTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newNoteButton(_:)))
@@ -99,17 +118,25 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         let newBlogTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newBlogButton(_:)))
         self.createNewBlogLabel.addGestureRecognizer(newBlogTapGestureRecognizer)
         self.createNewBlogLabel.isUserInteractionEnabled = true
-
-        // begin tracking
-        //self.beginLocationTracking()        
+        
+        // connect to the server
+        self.connectToServerToGetNotes()
+        let boolResult = { (bool: String) -> Void in
+            
+            if bool == "true" {
+                
+                // refresh
+            }
+        }
+        
+        DataPlugsService.ensureDataPlugReady(succesfulCallBack: boolResult, failCallBack: self.clearErrorDisplay)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
         
-        // connect to the server
-        self.connectToServerToGetNotes()
+        self.refreshData(notification: Notification(name: Notification.Name("refreshTable")))
     }
 
     override func didReceiveMemoryWarning() {
@@ -137,8 +164,18 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
             self.notesArray.append(NotesData.init(dict: dict.dictionary!))
         }
         
-        // reload table
-        self.tableView.reloadData()
+        // if no data show message
+        if notesArray.count == 0 {
+            
+            self.showEmptyTableLabelWith(message: "No notables. Please create your first Note!")
+        // else setup UI
+        } else {
+            
+            self.tableView.isHidden = false
+            self.emptyTableLabel.removeFromSuperview()
+            // reload table
+            self.tableView.reloadData()
+        }
     }
     
     /**
@@ -157,6 +194,16 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         // reload table
         self.tableView.reloadData()
     }
+    
+    /**
+     Shows notables fetched from HAT
+     
+     - parameter array: The fetched notables
+     */
+    func showNotables(array: [JSON]) {
+        
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notesArray"), object: array)
+    }
 
     // MARK: - Table View Methods
     
@@ -165,10 +212,14 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         // get cell from the reusable id
         let controller = NotablesTableViewCell()
         
+        // setup cell
         var cell = tableView.dequeueReusableCell(withIdentifier: "cellData", for: indexPath) as? NotablesTableViewCell
         cell = controller.setUpCell(cell!, note: notesArray[indexPath.row], indexPath: indexPath)
         
+        // add cell to array
         cells.append(cell!)
+        
+        // return cell
         return cell!
     }
     
@@ -188,12 +239,23 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         
         if (editingStyle == UITableViewCellEditingStyle.delete) {
             
-            print(self.notesArray[indexPath.row].id)
-            // delete data and row
-            let token = HatAccountService.getUsersTokenFromKeychain()
-            NotablesService.deleteNoteWithKeychain(id: self.notesArray[indexPath.row].id, tkn: token)
-            self.notesArray.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
+            func proceedCompletion() {
+                
+                // delete data from hat and remove from table
+                let token = HatAccountService.getUsersTokenFromKeychain()
+                NotablesService.deleteNoteWithKeychain(id: self.notesArray[indexPath.row].id, tkn: token)
+                self.notesArray.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+            }
+            
+            // if it is shared show message else delete the row
+            if self.notesArray[indexPath.row].data.shared {
+                
+                self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+            } else {
+                
+                proceedCompletion()
+            }
         }
     }
     
@@ -222,11 +284,6 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         }
     }
     
-    func showNotables (array: [JSON]) {
-        
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notesArray"), object: array)
-    }
-    
     // MARK: - Navigation
 
     //In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -249,5 +306,61 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
                 destinationVC?.kind = self.kind
             }
         }
+    }
+    
+    // MARK: - Safari View Controller delegate
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        
+        controller.dismiss(animated: true, completion: nil)
+    }
+    
+    /**
+     Opens safari view controller to authorize facebook
+     */
+    func openSafari() -> Void {
+        
+        let userDomain = HatAccountService.TheUserHATDomain()
+        let link = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=https://social-plug.hubofallthings.com/hat/authenticate"
+        
+        guard let urlLink = URL(string: link) else {
+            
+            return
+        }
+        // open the log in procedure in safari
+        self.safariDelegate = SFSafariViewController(url: urlLink)
+        safariDelegate?.delegate = self
+        
+        // present safari view controller
+        self.present(self.safariDelegate!, animated: true, completion: nil)
+    }
+    
+    // MARK: - Hide table
+    
+    /**
+     Hides table
+     */
+    func hideTable() {
+        
+        self.showEmptyTableLabelWith(message: "No Internet connection. Please connect and retry.")
+    }
+    
+    /**
+     Hides table and shows a label with the predifined label
+     
+     - parameter message: The message to show on the label
+     */
+    func showEmptyTableLabelWith(message: String) {
+        
+        self.emptyTableLabel = UILabel(frame: CGRect(x: self.view.center.x - 150, y: self.view.center.y - 100, width: 300, height: 80))
+        self.emptyTableLabel.text = message
+        self.emptyTableLabel.textAlignment = .center
+        self.emptyTableLabel.textColor = .white
+        self.emptyTableLabel.numberOfLines = 0
+        
+        self.view.backgroundColor = UIColor.init(colorLiteralRed: 29/255, green: 49/255, blue: 53/255, alpha: 1)
+        self.tableView.isHidden = true
+        
+        self.view.addSubview(self.emptyTableLabel)
     }
 }

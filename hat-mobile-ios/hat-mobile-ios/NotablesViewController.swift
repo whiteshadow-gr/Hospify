@@ -297,7 +297,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
             self.navigationController?.pushViewController(loginPageView, animated: false)
         } else {
             
-            self.showEmptyTableLabelWith(message: "Accessing HAT...")
+            self.showEmptyTableLabelWith(message: "Accessing your HAT...")
             NotablesService.fetchNotables(authToken: token, success: self.showNotables)
         }
     }

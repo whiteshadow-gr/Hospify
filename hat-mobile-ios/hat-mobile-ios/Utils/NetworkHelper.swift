@@ -80,7 +80,10 @@ class NetworkHelper {
                     
                     if error.localizedDescription == "The Internet connection appears to be offline." {
                         
-                        NotificationCenter.default.post(name: NSNotification.Name("NoInternet"), object: nil)
+                        NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "The Internet connection appears to be offline.")
+                    } else if response.response?.statusCode == 401 {
+                        
+                         NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "Unauthorized. Please sign out and try again.")
                     }
                     completion(Helper.ResultType.error(error: error, statusCode: response.response?.statusCode))
                 }

@@ -124,10 +124,9 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         self.view.bringSubview(toFront: createNewNoteView)
         
         // register observers for a notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(self.showReceivedNotes), name: NSNotification.Name(rawValue: "notesArray"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: "refreshTable"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.openSafari), name: NSNotification.Name(rawValue: "safari"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.hideTable), name: NSNotification.Name(rawValue: "NoInternet"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.hideTable), name: NSNotification.Name(rawValue: "NetworkMessage"), object: nil)
         
         // add gesture recognizer in the labels
         let newNoteTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newNoteButton(_:)))
@@ -159,7 +158,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         
         super.viewWillAppear(animated)
         
-        self.refreshData(notification: Notification(name: Notification.Name("refreshTable")))
+        self.connectToServerToGetNotes()
     }
 
     override func didReceiveMemoryWarning() {
@@ -175,16 +174,20 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
      
      - parameter notification: The notification object
      */
-    func showReceivedNotes(notification: Notification) {
+    func showReceivedNotesFrom(array: [JSON]) {
         
         // delete the notes array
         self.notesArray.removeAll()
-        // extract the dictionary from jdon
-        let dictionary = notification.object as! [JSON]
+
         // for each dictionary parse it and add it to the array
-        for dict in dictionary {
+        for dict in array {
             
             self.notesArray.append(NotesData.init(dict: dict.dictionary!))
+        }
+        
+        if self.notesArray.count == 0 {
+            
+            self.showEmptyTableLabelWith(message: "No notables. Please create your first notable!")
         }
         
         // update UI
@@ -204,9 +207,6 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         // get notes
         self.connectToServerToGetNotes()
         
-        // update UI
-        self.updateUI()
-        
         // reload table
         self.tableView.reloadData()
     }
@@ -218,7 +218,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
      */
     func showNotables(array: [JSON]) {
         
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notesArray"), object: array)
+        self.showReceivedNotesFrom(array: array)
     }
 
     // MARK: - Table View Methods
@@ -297,8 +297,8 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
             self.navigationController?.pushViewController(loginPageView, animated: false)
         } else {
             
+            self.showEmptyTableLabelWith(message: "Accessing HAT...")
             NotablesService.fetchNotables(authToken: token, success: self.showNotables)
-            self.updateUI()
         }
     }
     
@@ -358,9 +358,14 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     /**
      Hides table
      */
-    func hideTable() {
+    func hideTable(_ notif: Notification) {
         
-        self.showEmptyTableLabelWith(message: "No Internet connection. Please retry")
+        guard let message = notif.object as? String else {
+            
+            self.showEmptyTableLabelWith(message: "There was an unknown error, please try again later.")
+            return
+        }
+        self.showEmptyTableLabelWith(message: message)
     }
     
     /**
@@ -370,19 +375,22 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
      */
     func showEmptyTableLabelWith(message: String) {
         
-        self.eptyTableInfoLabel.isHidden = false
+        var stringMessage = message
         
-        self.eptyTableInfoLabel.text = message
-        
-        self.tableView.isHidden = true
-        
-        if message == "No Internet connection. Please retry" {
+        if stringMessage == "The Internet connection appears to be offline." {
             
             self.retryConnectingButton.isHidden = false
+            stringMessage = "No Internet connection. Please retry"
         } else {
             
             self.retryConnectingButton.isHidden = true
         }
+        
+        self.eptyTableInfoLabel.isHidden = false
+        
+        self.eptyTableInfoLabel.text = stringMessage
+        
+        self.tableView.isHidden = true
     }
     
     /**
@@ -390,17 +398,19 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
      */
     func updateUI() {
         
-        // if no data show message
-        if notesArray.count == 0 {
-            
-            self.showEmptyTableLabelWith(message: "No notables. Please create your first Note!")
-        // else setup UI
-        } else {
+        if notesArray.count > 0 {
             
             self.eptyTableInfoLabel.isHidden = true
+
             self.tableView.isHidden = false
+            
             // reload table
             self.tableView.reloadData()
+        } else {
+            
+            self.eptyTableInfoLabel.isHidden = false
+            
+            self.tableView.isHidden = true
         }
     }
 }

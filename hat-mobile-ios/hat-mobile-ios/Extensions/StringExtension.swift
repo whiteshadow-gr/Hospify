@@ -37,7 +37,7 @@ extension String {
         if (s.characters.count % 4 == 2 ) {
             
             s = s + "=="
-        }else if (s.characters.count % 4 == 3 ) {
+        } else if (s.characters.count % 4 == 3 ) {
             
             s = s + "="
         }

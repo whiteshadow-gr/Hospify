@@ -42,9 +42,6 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         self.tabBar.tintColor = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
         // set delete to self in order to receive the calls from tab bar controller
         self.delegate = self
-        
-        // create bar button in navigation bar
-        self.createBarButtons()
 
         // set tint color, if translucent and the bar tint color of navigation bar
         self.navigationController?.navigationBar.tintColor = UIColor.white
@@ -55,6 +52,14 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         self.navigationController?.navigationBar.titleTextAttributes =
             [NSForegroundColorAttributeName: UIColor.white,
              NSFontAttributeName: UIFont(name: "OpenSans-Bold", size: 21)!]
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        super.viewWillAppear(animated)
+        
+        // create bar button in navigation bar
+        self.createBarButtonsFor(viewController: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -69,21 +74,11 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         
         if viewController is MapViewController {
             
-            // set title in navigation bar
-            self.navigationItem.title = "Location"
-            
-            // create buttons
-            let button1 = UIBarButtonItem(title: "Settings", style: .plain, target: self, action: #selector(showSettingsViewController))
-            let button2 = UIBarButtonItem(title: "Data", style: .plain, target: self, action: #selector(showDataViewController))
-            let button3 = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
-
-            // add buttons to navigation bar
-            self.navigationItem.leftBarButtonItems = [button1, button2]
-            self.navigationItem.rightBarButtonItem = button3
+            self.createBarButtonsFor(viewController: viewController)
         } else {
             
             // create buttons
-            self.createBarButtons()
+            self.createBarButtonsFor(viewController: nil)
         }
     }
     
@@ -92,19 +87,36 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
     /**
      Create default buttons in navigation bar
      */
-    func createBarButtons() {
+    func createBarButtonsFor(viewController: UIViewController?) {
         
-        // remove buttons on the left of the navigation bar
+        // remove buttons on the left and right of the navigation bar
         self.navigationItem.leftBarButtonItems = nil
+        self.navigationItem.rightBarButtonItems = nil
         
-        // change title in navigation bar
-        self.navigationItem.title = "Notables"
-        
-        // create buttons
-        let button = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
-        
-        // add buttons to navigation bar
-        self.navigationItem.rightBarButtonItem = button
+        if viewController is MapViewController {
+            
+            // set title in navigation bar
+            self.navigationItem.title = "Location"
+            
+            // create buttons
+            let button1 = UIBarButtonItem(title: "Settings", style: .plain, target: self, action: #selector(showSettingsViewController))
+            let button2 = UIBarButtonItem(title: "Data", style: .plain, target: self, action: #selector(showDataViewController))
+            let button3 = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
+            
+            // add buttons to navigation bar
+            self.navigationItem.leftBarButtonItems = [button1, button2]
+            self.navigationItem.rightBarButtonItem = button3
+        } else {
+            
+            // change title in navigation bar
+            self.navigationItem.title = "Notables"
+            
+            // create buttons
+            let button = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
+            
+            // add buttons to navigation bar
+            self.navigationItem.rightBarButtonItem = button
+        }
     }
     
     /**

@@ -130,6 +130,13 @@ extension UIViewController {
         return false
     }
     
+    // MARK: - Custom Alerts
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     */
     func createClassicAlertWith(alertMessage: String, alertTitle: String, cancelTitle: String, proceedTitle: String, proceedCompletion: @escaping () -> Void, cancelCompletion: @escaping () -> Void) {
         
         //change font
@@ -153,6 +160,11 @@ extension UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     */
     func createClassicOKAlertWith(alertMessage: String, alertTitle: String, okTitle: String, proceedCompletion: @escaping () -> Void) {
         
         //change font

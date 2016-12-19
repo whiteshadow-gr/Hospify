@@ -85,28 +85,6 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         let authorData = notablesData.authorData
         // get the last updated date
         let date = FormatterHelper.formatDateStringToUsersDefinedDate(date: note.lastUpdated)
-
-        // format the info label
-        let textAttributes = [
-            NSForegroundColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
-            NSStrokeColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
-            NSFontAttributeName: UIFont(name: "Open Sans", size: 11)!,
-            NSStrokeWidthAttributeName: -1.0
-            ] as [String : Any]
-        
-        let string = "Posted "+date
-        var shareString: String = ""
-        if !notablesData.shared {
-            
-            shareString = " Private Note"
-        }
-        
-        let partOne = NSAttributedString(string: string)
-        let partTwo = NSAttributedString(string: shareString, attributes: textAttributes)
-        let combination = NSMutableAttributedString()
-        
-        combination.append(partOne)
-        combination.append(partTwo)
                 
         // create this zebra like color based on the index of the cell
         if (indexPath.row % 2 == 1) {
@@ -117,7 +95,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         // show the data in the cell's labels
         newCell.postDataLabel.text = notablesData.message
         newCell.usernameLabel.text = authorData.phata
-        newCell.postInfoLabel.attributedText = combination
+        newCell.postInfoLabel.attributedText = self.formatInfoLabel(date: date, shared: notablesData.shared)
         
         // flip the view to appear from right to left
         newCell.collectionView.transform = CGAffineTransform(scaleX: -1, y: 1)
@@ -168,11 +146,51 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         cell.postDataLabel.text = ""
         cell.usernameLabel.text = ""
         cell.postInfoLabel.text = ""
+        
         cell.sharedOn.removeAll()
         self.sharedOn.removeAll()
+        
         cell.collectionView.reloadData()
+        
         cell.contentView.backgroundColor = UIColor.init(colorLiteralRed: 29/255, green: 49/255, blue: 53/255, alpha: 1)
 
         return cell
+    }
+    
+    // MARK: - Format Cell
+    
+    /**
+     Formats the info label to date + Private if it's private. Also those two fields have different font color.
+     
+     - parameter date: The date to add to the string
+     - parameter shared: A bool value defining if the note is shared
+     - returns: An NSAttributesString with 2 different colors
+     */
+    private func formatInfoLabel(date: String, shared: Bool) -> NSAttributedString {
+        
+        // format the info label
+        let textAttributes = [
+            NSForegroundColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
+            NSStrokeColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
+            NSFontAttributeName: UIFont(name: "Open Sans", size: 11)!,
+            NSStrokeWidthAttributeName: -1.0
+            ] as [String : Any]
+        
+        let string = "Posted " + date
+        var shareString: String = ""
+        
+        if !shared {
+            
+            shareString = " Private Note"
+        }
+        
+        let partOne = NSAttributedString(string: string)
+        let partTwo = NSAttributedString(string: shareString, attributes: textAttributes)
+        let combination = NSMutableAttributedString()
+        
+        combination.append(partOne)
+        combination.append(partTwo)
+        
+        return combination
     }
 }

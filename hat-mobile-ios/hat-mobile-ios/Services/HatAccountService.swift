@@ -279,25 +279,25 @@ class HatAccountService {
     
     // make the request
     NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers,
-                                      completion: //completionGetNotesFunction
+                                      completion:
                                         { (r: Helper.ResultType) -> Void in
                                             
                                             switch r {
                                                 
                                             case .error( _, _):
                                                 
-                                                break
+                                                errorCallback()
                                             case .isSuccess(let isSuccess, _, let result):
                                                 
                                                 if isSuccess {
                                                     
-                                                    if let array = result.array {
-                                                        
-                                                        successCallback(array)
-                                                    } else {
+                                                    guard let array = result.array else {
                                                         
                                                         errorCallback()
+                                                        return
                                                     }
+                                                    
+                                                    successCallback(array)
                                                 }
                                             }
                                         }

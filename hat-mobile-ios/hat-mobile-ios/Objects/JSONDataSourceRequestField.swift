@@ -21,7 +21,7 @@
 // MARK: Struct
 
 /// The request field structure
-struct JSONDataSourceRequestField {
+class JSONDataSourceRequestField {
     
     // MARK: - Variables
     

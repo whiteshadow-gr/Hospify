@@ -40,7 +40,6 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     /// The safari view controller variable to hold reference for later use
     var safariDelegate: SFSafariViewController? = nil
     /// A message to display behind the table view if something is wrong
-    var emptyTableLabel: UILabel = UILabel()
 
     // MARK: - IBOutlets
 
@@ -54,8 +53,32 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     @IBOutlet weak var createNewListLabel: UILabel!
     /// An IBOutlet for handling the create new blog button
     @IBOutlet weak var createNewBlogLabel: UILabel!
-    
+    /// An IBOutlet for handling the info label when table view is empty or an error has occured
+    @IBOutlet weak var eptyTableInfoLabel: UILabel!
+    /// An IBOutlet for handling the retry connecting button when an error has occured
+    @IBOutlet weak var retryConnectingButton: UIButton!
+
     // MARK: - IBActions
+    
+    /**
+     Try to reconnect to get notes
+     
+     - parameter sender: The object that calls this function
+     */
+    @IBAction func refreshTableButtonAction(_ sender: Any) {
+        
+        self.retryConnectingButton.isHidden = true
+        self.connectToServerToGetNotes()
+        let boolResult = { (bool: String) -> Void in
+            
+            if bool == "true" {
+                
+                // refresh
+            }
+        }
+        
+        DataPlugsService.ensureDataPlugReady(succesfulCallBack: boolResult, failCallBack: self.clearErrorDisplay)
+    }
     
     /**
      Go to New note and create a note
@@ -164,18 +187,8 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
             self.notesArray.append(NotesData.init(dict: dict.dictionary!))
         }
         
-        // if no data show message
-        if notesArray.count == 0 {
-            
-            self.showEmptyTableLabelWith(message: "No notables. Please create your first Note!")
-        // else setup UI
-        } else {
-            
-            self.tableView.isHidden = false
-            self.emptyTableLabel.removeFromSuperview()
-            // reload table
-            self.tableView.reloadData()
-        }
+        // update UI
+        self.updateUI()
     }
     
     /**
@@ -190,6 +203,9 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         
         // get notes
         self.connectToServerToGetNotes()
+        
+        // update UI
+        self.updateUI()
         
         // reload table
         self.tableView.reloadData()
@@ -246,6 +262,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
                 NotablesService.deleteNoteWithKeychain(id: self.notesArray[indexPath.row].id, tkn: token)
                 self.notesArray.remove(at: indexPath.row)
                 tableView.deleteRows(at: [indexPath], with: .fade)
+                self.updateUI()
             }
             
             // if it is shared show message else delete the row
@@ -281,6 +298,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         } else {
             
             NotablesService.fetchNotables(authToken: token, success: self.showNotables)
+            self.updateUI()
         }
     }
     
@@ -335,14 +353,14 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         self.present(self.safariDelegate!, animated: true, completion: nil)
     }
     
-    // MARK: - Hide table
+    // MARK: - Update UI
     
     /**
      Hides table
      */
     func hideTable() {
         
-        self.showEmptyTableLabelWith(message: "No Internet connection. Please connect and retry.")
+        self.showEmptyTableLabelWith(message: "No Internet connection. Please retry")
     }
     
     /**
@@ -352,15 +370,37 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
      */
     func showEmptyTableLabelWith(message: String) {
         
-        self.emptyTableLabel = UILabel(frame: CGRect(x: self.view.center.x - 150, y: self.view.center.y - 100, width: 300, height: 80))
-        self.emptyTableLabel.text = message
-        self.emptyTableLabel.textAlignment = .center
-        self.emptyTableLabel.textColor = .white
-        self.emptyTableLabel.numberOfLines = 0
+        self.eptyTableInfoLabel.isHidden = false
         
-        self.view.backgroundColor = UIColor.init(colorLiteralRed: 29/255, green: 49/255, blue: 53/255, alpha: 1)
+        self.eptyTableInfoLabel.text = message
+        
         self.tableView.isHidden = true
         
-        self.view.addSubview(self.emptyTableLabel)
+        if message == "No Internet connection. Please retry" {
+            
+            self.retryConnectingButton.isHidden = false
+        } else {
+            
+            self.retryConnectingButton.isHidden = true
+        }
+    }
+    
+    /**
+     Updates the UI elements according the messages received from the HAT
+     */
+    func updateUI() {
+        
+        // if no data show message
+        if notesArray.count == 0 {
+            
+            self.showEmptyTableLabelWith(message: "No notables. Please create your first Note!")
+        // else setup UI
+        } else {
+            
+            self.eptyTableInfoLabel.isHidden = true
+            self.tableView.isHidden = false
+            // reload table
+            self.tableView.reloadData()
+        }
     }
 }

@@ -165,7 +165,7 @@ class Constants  {
 
             // iterate over our RequestFields enum
             for field in RequestFields.allValues{
-                var f: JSONDataSourceRequestField = JSONDataSourceRequestField()
+                let f: JSONDataSourceRequestField = JSONDataSourceRequestField()
                 f.name = field.rawValue
                 f.fieldEnum = field
                 fields.append(f)

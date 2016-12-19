@@ -369,7 +369,7 @@ internal class SyncDataHelper {
                         // we have the field info back. Ge the field id from the json for eacvh field in our request
                         
                         let theHATSource:Constants.HATDataSource = Constants.HATDataSource()
-                        for var requsetField:JSONDataSourceRequestField in theHATSource.fields {
+                        for requsetField:JSONDataSourceRequestField in theHATSource.fields {
                             
                             let fieldsArray:Array = result["fields"].arrayValue
                             for arrayItem in fieldsArray {

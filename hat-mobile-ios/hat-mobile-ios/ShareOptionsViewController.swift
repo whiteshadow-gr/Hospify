@@ -88,24 +88,28 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             
             self.durationSharedForLabel.text = "1 day"
             self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.day, value:1, to: Date())!
+            self.shareForLabel.text = "Share for..."
         })
         
         let sevenDaysAction = UIAlertAction(title: "7 days", style: .default, handler: { (action) -> Void in
             
             self.durationSharedForLabel.text = "7 days"
             self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.day, value:7, to: Date())!
+            self.shareForLabel.text = "Share for..."
         })
         
         let fourteenDaysAction = UIAlertAction(title: "14 days", style: .default, handler: { (action) -> Void in
             
             self.durationSharedForLabel.text = "14 days"
             self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.day, value:14, to: Date())!
+            self.shareForLabel.text = "Share for..."
         })
         
         let oneMonthAction = UIAlertAction(title: "1 month", style: .default, handler: { (action) -> Void in
            
             self.durationSharedForLabel.text = "1 month"
             self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.month, value:1, to: Date())!
+            self.shareForLabel.text = "Share for..."
         })
         
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -115,6 +119,12 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         alertController.addAction(fourteenDaysAction)
         alertController.addAction(oneMonthAction)
         alertController.addAction(cancelButton)
+        
+        if UI_USER_INTERFACE_IDIOM() == .pad {
+            
+            alertController.popoverPresentationController?.sourceRect = self.durationSharedForLabel.frame
+            alertController.popoverPresentationController?.sourceView = self.shareForView;
+        }
         
         self.navigationController!.present(alertController, animated: true, completion: nil)
     }
@@ -568,6 +578,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 
                 self.publishButton.setTitle("Save", for: .normal)
             }
+            if let unwrappedDate = self.receivedNote?.data.publicUntil {
+                
+                if unwrappedDate.compare(self.receivedNote!.data.updatedTime) == .orderedDescending && self.receivedNote!.data.shared {
+                    
+                    self.durationSharedForLabel.text = FormatterHelper.formatDateStringToUsersDefinedDate(date: unwrappedDate, dateStyle: .short, timeStyle: .none)
+                    self.shareForLabel.text = "Shared until"
+                }
+            }
         // else init a new value
         } else {
             
@@ -670,6 +688,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         
         // set the text of the public label
         self.publicLabel.text = "Private"
+        self.shareForLabel.text = "Share for..."
         // set the colors of the labels
         self.shareWithLabel.textColor = .lightGray
         self.shareForLabel.textColor = .lightGray

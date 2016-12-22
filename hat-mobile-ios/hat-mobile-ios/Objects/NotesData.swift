@@ -54,10 +54,7 @@ struct NotesData {
      */
     init(dict: Dictionary<String, JSON>) {
 
-        id = 0
-        name = ""
-        lastUpdated = Date()
-        data = NotablesData.init()
+        self.init()
         
         if let tempID = dict["id"]?.int {
             
@@ -69,7 +66,7 @@ struct NotesData {
         }
         if let tempLastUpdated = dict["lastUpdated"]?.string {
             
-            lastUpdated = FormatterHelper.formatStringToDate(string: tempLastUpdated)
+            lastUpdated = FormatterHelper.formatStringToDate(string: tempLastUpdated)!
         }
         if let tempData = dict["data"]?["notablesv1"].dictionary {
             

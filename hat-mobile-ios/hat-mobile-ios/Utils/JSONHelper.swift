@@ -377,7 +377,7 @@ struct JSONHelper {
      
      - returns: JSON
      */
-    static func updateSharedForDurationOfNoteOnJSON(file: JSON, date: Date) -> JSON {
+    static func updateSharedForDurationOfNoteOnJSON(file: JSON, date: Date?) -> JSON {
         
         var jsonFile = file
         
@@ -385,12 +385,14 @@ struct JSONHelper {
             
             if jsonFile["values"][itemNumber]["field"]["name"] == "public_until" {
                 
-                if date > Date() {
+                jsonFile["values"][itemNumber]["value"] = ""
+
+                if let unwrappedDate = date {
                     
-                    jsonFile["values"][itemNumber]["value"] = JSON(FormatterHelper.formatDateToISO(date: date))
-                } else {
-                    
-                    jsonFile["values"][itemNumber]["value"] = ""
+                    if unwrappedDate > Date() {
+                        
+                        jsonFile["values"][itemNumber]["value"] = JSON(FormatterHelper.formatDateToISO(date: unwrappedDate))
+                    }
                 }
             }
         }

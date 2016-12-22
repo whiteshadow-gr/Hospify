@@ -48,13 +48,13 @@ struct FormatterHelper {
      - parameter string: The string to format to a Date
      - returns: Date
      */
-    static func formatStringToDate(string: String) -> Date {
+    static func formatStringToDate(string: String) -> Date? {
         
         // check if the string to format is empty
         if string == "" {
             
             // TODO: Return other date when string is empty
-            return Date()
+            return nil
         }
         
         let dateFormatter = DateFormatter()
@@ -70,12 +70,7 @@ struct FormatterHelper {
             date = dateFormatter.date(from: string)
         }
         
-        if date == nil {
-            
-            return Date()
-        }
-        
-        return date!
+        return date
     }
     
     /**
@@ -84,11 +79,11 @@ struct FormatterHelper {
      - parameter date: The date to localize
      - returns: String
      */
-    static func formatDateStringToUsersDefinedDate(date: Date) -> String {
+    static func formatDateStringToUsersDefinedDate(date: Date, dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeStyle = .short
+        dateFormatter.dateStyle = dateStyle
+        dateFormatter.timeStyle = timeStyle
         
         let dateString = dateFormatter.string(from: date)
         

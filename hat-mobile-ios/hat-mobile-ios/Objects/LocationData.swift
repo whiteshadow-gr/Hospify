@@ -67,14 +67,7 @@ struct LocationData {
     init(dict: Dictionary<String, JSON>) {
         
         // init values first
-        altitude = 0
-        altitudeAccuracy = 0
-        latitude = 0
-        heading = ""
-        shared = false
-        accuracy = 0
-        longitude = 0
-        speed = 0
+        self.init()
         
         // check for values and assign them if not empty
         if let tempAltitude = dict["altitude"]?.string {

@@ -59,7 +59,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         super.viewWillAppear(animated)
         
         // create bar button in navigation bar
-        self.createBarButtonsFor(viewController: nil)
+        self.createBarButtonsFor(viewController: self.selectedViewController)
     }
 
     override func didReceiveMemoryWarning() {
@@ -72,14 +72,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
     
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         
-        if viewController is MapViewController {
-            
-            self.createBarButtonsFor(viewController: viewController)
-        } else {
-            
-            // create buttons
-            self.createBarButtonsFor(viewController: nil)
-        }
+        self.createBarButtonsFor(viewController: self.selectedViewController)
     }
     
     // MARK: - Buttons functions

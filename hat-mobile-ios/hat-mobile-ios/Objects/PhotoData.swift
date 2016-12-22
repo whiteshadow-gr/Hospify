@@ -52,10 +52,7 @@ struct PhotoData {
      */
     init(dict: Dictionary<String, String>) {
         
-        shared = false
-        link = ""
-        source = ""
-        caption = ""
+        self.init()
         
         // check if shared exists and if is empty
         if let tempShared = dict["shared"] {

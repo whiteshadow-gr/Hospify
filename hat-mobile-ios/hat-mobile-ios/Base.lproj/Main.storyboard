@@ -649,7 +649,7 @@
                                         <rect key="frame" x="0.0" y="28" width="288" height="93"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LdH-ds-X5d" id="LQv-MZ-c2s">
-                                            <rect key="frame" x="0.0" y="0.0" width="288" height="92"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="288" height="92.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="date added" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bdm-HJ-FXz">
@@ -889,7 +889,7 @@
                                         <rect key="frame" x="0.0" y="28" width="320" height="139"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TjC-3X-AF5" id="nFU-b5-3He">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="138"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="138.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile" translatesAutoresizingMaskIntoConstraints="NO" id="Yq4-hO-i78">
@@ -946,7 +946,7 @@
                                                     </collectionViewFlowLayout>
                                                     <cells>
                                                         <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="center" reuseIdentifier="socialCell" id="8Km-R0-gpQ" customClass="SocialImageCollectionViewCell" customModule="hat_mobile_ios" customModuleProvider="target">
-                                                            <rect key="frame" x="0.0" y="3" width="22" height="22"/>
+                                                            <rect key="frame" x="0.0" y="2.5" width="22" height="22"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                                                 <rect key="frame" x="0.0" y="0.0" width="22" height="22"/>
@@ -1341,20 +1341,20 @@
                                         <rect key="frame" x="36" y="240" width="276" height="24"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share for..." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gSU-b7-2dM">
-                                                <rect key="frame" x="0.0" y="0.0" width="87" height="24"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="122" height="24"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="24" id="SV3-fJ-3Zx"/>
-                                                    <constraint firstAttribute="width" constant="87" id="uNo-od-iuV"/>
+                                                    <constraint firstAttribute="width" constant="122" id="uNo-od-iuV"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="17"/>
                                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Forever" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jcx-4x-fUx">
-                                                <rect key="frame" x="199" y="2" width="77" height="21"/>
+                                                <rect key="frame" x="130" y="2" width="146" height="21"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="21" id="6rD-gg-8iU"/>
-                                                    <constraint firstAttribute="width" constant="77" id="Ziy-tX-wes"/>
+                                                    <constraint firstAttribute="width" constant="146" id="Ziy-tX-wes"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="17"/>
                                                 <color key="textColor" red="0.0" green="0.58628696199999997" blue="0.53447610140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

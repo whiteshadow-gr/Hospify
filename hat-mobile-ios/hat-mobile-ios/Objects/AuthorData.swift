@@ -58,11 +58,7 @@ struct AuthorData {
     init(dict: Dictionary<String, JSON>) {
         
         // init optional JSON fields to default values
-        nickName = ""
-        name = ""
-        photoURL = ""
-        id = 0
-        phata = ""
+        self.init()
         
         // this field will always have a value no need to use if let
         if let tempPHATA = dict["phata"]?.string {

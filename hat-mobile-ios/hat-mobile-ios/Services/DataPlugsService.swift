@@ -322,7 +322,7 @@ class DataPlugsService: NSObject {
                         }
                         
                         // topController should now be your topmost view controller
-                        topController.createClassicOKAlertWith(alertMessage: "Success", alertTitle: "", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                        topController.createClassicOKAlertWith(alertMessage: "Data debits and social data plugs are enabled", alertTitle: "Success", okTitle: "OK", proceedCompletion: {() -> Void in return})
                     // else another scenario data debit not being enabled
                     }
                 }

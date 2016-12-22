@@ -84,7 +84,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         // get the author data
         let authorData = notablesData.authorData
         // get the last updated date
-        let date = FormatterHelper.formatDateStringToUsersDefinedDate(date: note.lastUpdated)
+        let date = FormatterHelper.formatDateStringToUsersDefinedDate(date: note.data.createdTime, dateStyle: .short, timeStyle: .short)
                 
         // create this zebra like color based on the index of the cell
         if (indexPath.row % 2 == 1) {
@@ -95,7 +95,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         // show the data in the cell's labels
         newCell.postDataLabel.text = notablesData.message
         newCell.usernameLabel.text = authorData.phata
-        newCell.postInfoLabel.attributedText = self.formatInfoLabel(date: date, shared: notablesData.shared)
+        newCell.postInfoLabel.attributedText = self.formatInfoLabel(date: date, shared: notablesData.shared, publicUntil:  note.data.publicUntil)
         
         // flip the view to appear from right to left
         newCell.collectionView.transform = CGAffineTransform(scaleX: -1, y: 1)
@@ -166,7 +166,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
      - parameter shared: A bool value defining if the note is shared
      - returns: An NSAttributesString with 2 different colors
      */
-    private func formatInfoLabel(date: String, shared: Bool) -> NSAttributedString {
+    private func formatInfoLabel(date: String, shared: Bool, publicUntil: Date?) -> NSAttributedString {
         
         // format the info label
         let textAttributes = [
@@ -182,7 +182,18 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         if !shared {
             
             shareString = " Private Note"
+        } else {
+            
+           shareString = " Shared" 
         }
+        
+        if let unwrappedDate = publicUntil {
+            
+            if shared && (Date().compare(unwrappedDate) == .orderedAscending) {
+                
+                shareString = " Expired"
+            }
+        } 
         
         let partOne = NSAttributedString(string: string)
         let partTwo = NSAttributedString(string: shareString, attributes: textAttributes)

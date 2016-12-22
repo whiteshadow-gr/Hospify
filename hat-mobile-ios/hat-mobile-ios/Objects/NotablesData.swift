@@ -42,7 +42,7 @@ struct NotablesData {
     /// the actual message of the note
     var message: String
     /// the date until this note will be public (don't know if it's optional or not)
-    var publicUntil: Date
+    var publicUntil: Date?
     /// the updated time of the note
     var updatedTime: Date
     /// the kind of the note. 3 types available note, blog or list
@@ -62,7 +62,7 @@ struct NotablesData {
         photoData = PhotoData.init()
         locationData = LocationData.init()
         message = ""
-        publicUntil = Date()
+        publicUntil = nil
         updatedTime = Date()
         kind = ""
     }
@@ -73,17 +73,7 @@ struct NotablesData {
     init(dict: Dictionary<String, JSON>) {
 
         // the tables are optional fields in the json so init them and check if they exist in our json
-        authorData = AuthorData.init()
-        photoData = PhotoData.init()
-        locationData = LocationData.init()
-        sharedOn = ""
-        publicUntil = Date()
-        createdTime = Date()
-        shared = false
-        sharedOn = ""
-        message = ""
-        updatedTime = Date()
-        kind = ""
+        self.init()
         
         if let tempAuthorData = dict["authorv1"]?.dictionary {
             
@@ -102,7 +92,7 @@ struct NotablesData {
         
         // init optional values to default values and then assign the value if found in JSON
         sharedOn = ""
-        publicUntil = Date()
+        publicUntil = nil
         
         if let tempSharedOn = dict["shared_on"]?.string {
             
@@ -117,7 +107,7 @@ struct NotablesData {
         if let tempCreatedTime = dict["created_time"]?.string {
             
             //if tempCreatedTime !
-            createdTime = FormatterHelper.formatStringToDate(string: tempCreatedTime)
+            createdTime = FormatterHelper.formatStringToDate(string: tempCreatedTime)!
         }
 
         if let tempDict = dict["shared"]?.string {

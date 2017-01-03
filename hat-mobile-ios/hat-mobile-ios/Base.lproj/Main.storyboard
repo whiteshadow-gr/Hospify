@@ -900,13 +900,56 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="onboardingTile" id="Aip-Zx-DFQ">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="onboardingTile" id="Aip-Zx-DFQ" customClass="OnboardingTileCollectionViewCell" customModule="hat_mobile_ios" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Original HAT Trial" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9HF-LN-Ywp">
+                                                    <rect key="frame" x="8" y="64" width="144" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="21" id="RM3-FR-v4Q"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="15"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="45 of 100 remaining" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GnN-qq-yd7">
+                                                    <rect key="frame" x="8" y="131" width="144" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="21" id="bOz-Tp-KHz"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" name="OpenSans-Bold" family="Open Sans" pointSize="10"/>
+                                                    <color key="textColor" red="0.0" green="0.58628696199999997" blue="0.53447610140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="HAT App Logo" translatesAutoresizingMaskIntoConstraints="NO" id="Zbc-Ba-hVG">
+                                                    <rect key="frame" x="8" y="8" width="144" height="45"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" secondItem="Zbc-Ba-hVG" secondAttribute="height" multiplier="16:5" id="XbF-C2-WzF"/>
+                                                    </constraints>
+                                                </imageView>
+                                            </subviews>
                                         </view>
+                                        <color key="backgroundColor" red="0.95675891637802124" green="0.95692259073257446" blue="0.95674854516983032" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="9HF-LN-Ywp" firstAttribute="trailing" secondItem="Aip-Zx-DFQ" secondAttribute="trailingMargin" id="5co-xa-2bG"/>
+                                            <constraint firstItem="GnN-qq-yd7" firstAttribute="leading" secondItem="Aip-Zx-DFQ" secondAttribute="leadingMargin" id="Az4-kZ-ytM"/>
+                                            <constraint firstItem="9HF-LN-Ywp" firstAttribute="leading" secondItem="Aip-Zx-DFQ" secondAttribute="leadingMargin" id="BDd-a6-aas"/>
+                                            <constraint firstItem="GnN-qq-yd7" firstAttribute="trailing" secondItem="Aip-Zx-DFQ" secondAttribute="trailingMargin" id="DrQ-dI-gfK"/>
+                                            <constraint firstItem="Zbc-Ba-hVG" firstAttribute="top" secondItem="Aip-Zx-DFQ" secondAttribute="topMargin" id="OFP-ra-DdC"/>
+                                            <constraint firstItem="Zbc-Ba-hVG" firstAttribute="leading" secondItem="Aip-Zx-DFQ" secondAttribute="leadingMargin" id="YMi-WO-Wwg"/>
+                                            <constraint firstItem="9HF-LN-Ywp" firstAttribute="top" secondItem="Zbc-Ba-hVG" secondAttribute="bottom" constant="11" id="aGS-Ie-s1J"/>
+                                            <constraint firstItem="Zbc-Ba-hVG" firstAttribute="trailing" secondItem="Aip-Zx-DFQ" secondAttribute="trailingMargin" id="gym-KI-L8w"/>
+                                            <constraint firstItem="GnN-qq-yd7" firstAttribute="bottom" secondItem="Aip-Zx-DFQ" secondAttribute="bottomMargin" id="mwc-v7-jdx"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="hatProviderImage" destination="Zbc-Ba-hVG" id="g2U-vy-tVp"/>
+                                            <outlet property="infoLabel" destination="GnN-qq-yd7" id="pua-L7-s3s"/>
+                                            <outlet property="titleLabel" destination="9HF-LN-Ywp" id="1dG-w0-Mcb"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
@@ -965,6 +1008,202 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Eh8-hA-C3b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1535.625" y="1065.8450704225352"/>
+        </scene>
+        <!--GetAHAT Info View Controller-->
+        <scene sceneID="xYv-XN-NFj">
+            <objects>
+                <viewController storyboardIdentifier="HATProviderInfo" id="9Sr-Ka-vcX" customClass="GetAHATInfoViewController" customModule="hat_mobile_ios" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="CTU-Nq-T0s"/>
+                        <viewControllerLayoutGuide type="bottom" id="9Hp-gZ-ip9"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="IwJ-mc-Rdr">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EFY-5I-IeJ">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="HAT App Logo" translatesAutoresizingMaskIntoConstraints="NO" id="t4u-tL-86f">
+                                        <rect key="frame" x="40" y="8" width="240" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="end-TY-cPb"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Original HAT Trial" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NYS-st-8cE">
+                                        <rect key="frame" x="8" y="56" width="304" height="21"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="21" id="2CQ-7z-ur8"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="OpenSans-CondensedLight" family="Open Sans" pointSize="18"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Features" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U7H-UZ-v39">
+                                        <rect key="frame" x="8" y="323" width="304" height="21"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="21" id="52V-Xa-4UQ"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="OpenSans-CondensedLight" family="Open Sans" pointSize="17"/>
+                                        <color key="textColor" red="0.0" green="0.58628696199999997" blue="0.53447610140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HATDeX HATs have a suffix of  yourHATname.hubofallthings.net" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NsV-4g-Moa">
+                                        <rect key="frame" x="8" y="85" width="304" height="47"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="47" id="Cvc-Pt-I3h"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="OpenSans-Bold" family="Open Sans" pointSize="15"/>
+                                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gdj-qa-RTn">
+                                        <rect key="frame" x="8" y="178" width="304" height="137"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="137" id="yj3-IT-BZx"/>
+                                        </constraints>
+                                        <string key="text">Try HATs for a month for free! The HAT system does not allow anonymous users. You must be a real person and you will need to verify your identity through a debit/credit card. Your card will not be charged</string>
+                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="13"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rHV-v4-tSR">
+                                        <rect key="frame" x="8" y="140" width="304" height="30"/>
+                                        <color key="backgroundColor" red="0.0" green="0.58628696199999997" blue="0.53447610140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="30" id="oBF-mf-7lP"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="15"/>
+                                        <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <state key="normal" title="SIGN ME UP FREE">
+                                            <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="signUpAction:" destination="9Sr-Ka-vcX" eventType="touchUpInside" id="ux2-CC-OGI"/>
+                                            <segue destination="Nob-lf-9Ix" kind="show" id="5mm-Bd-09p"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W7W-Pd-Oao">
+                                        <rect key="frame" x="287" y="8" width="25" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="25" id="AGv-Lz-WHo"/>
+                                            <constraint firstAttribute="width" constant="25" id="Am2-uN-ByO"/>
+                                        </constraints>
+                                        <state key="normal" image="Cancel"/>
+                                        <connections>
+                                            <action selector="cancelButtonAction:" destination="9Sr-Ka-vcX" eventType="touchUpInside" id="9hN-dc-OVI"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZLz-fi-nLw">
+                                        <rect key="frame" x="8" y="352" width="304" height="137"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="137" id="t1T-Wg-FQV"/>
+                                        </constraints>
+                                        <string key="text">Try HATs for a month for free! The HAT system does not allow anonymous users. You must be a real person and you will need to verify your identity through a debit/credit card. Your card will not be charged</string>
+                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="13"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="ZLz-fi-nLw" secondAttribute="bottom" constant="79" id="4MD-S4-j7f"/>
+                                    <constraint firstItem="ZLz-fi-nLw" firstAttribute="centerX" secondItem="EFY-5I-IeJ" secondAttribute="centerX" id="52L-wj-Ci7"/>
+                                    <constraint firstItem="rHV-v4-tSR" firstAttribute="leading" secondItem="EFY-5I-IeJ" secondAttribute="leading" constant="8" id="6ke-yo-3gc"/>
+                                    <constraint firstItem="NYS-st-8cE" firstAttribute="leading" secondItem="EFY-5I-IeJ" secondAttribute="leading" constant="8" id="6o7-c3-OdB"/>
+                                    <constraint firstItem="U7H-UZ-v39" firstAttribute="leading" secondItem="EFY-5I-IeJ" secondAttribute="leading" constant="8" id="7Sk-Xz-XYV"/>
+                                    <constraint firstItem="W7W-Pd-Oao" firstAttribute="leading" secondItem="t4u-tL-86f" secondAttribute="trailing" constant="7" id="7qt-re-QRf"/>
+                                    <constraint firstAttribute="trailing" secondItem="NYS-st-8cE" secondAttribute="trailing" constant="8" id="86q-PM-xrk"/>
+                                    <constraint firstItem="NsV-4g-Moa" firstAttribute="top" secondItem="NYS-st-8cE" secondAttribute="bottom" constant="8" id="CTK-d2-PfG"/>
+                                    <constraint firstAttribute="trailing" secondItem="NsV-4g-Moa" secondAttribute="trailing" constant="8" id="DQK-Yr-x0u"/>
+                                    <constraint firstAttribute="trailing" secondItem="W7W-Pd-Oao" secondAttribute="trailing" constant="8" id="Df1-KF-Lnd"/>
+                                    <constraint firstAttribute="trailing" secondItem="Gdj-qa-RTn" secondAttribute="trailing" constant="8" id="Ebi-GM-ZYo"/>
+                                    <constraint firstItem="NsV-4g-Moa" firstAttribute="centerX" secondItem="EFY-5I-IeJ" secondAttribute="centerX" id="FVr-Xy-gmq"/>
+                                    <constraint firstAttribute="trailing" secondItem="ZLz-fi-nLw" secondAttribute="trailing" constant="8" id="JsR-36-goU"/>
+                                    <constraint firstItem="rHV-v4-tSR" firstAttribute="centerX" secondItem="EFY-5I-IeJ" secondAttribute="centerX" id="Ksf-Cu-63p"/>
+                                    <constraint firstItem="U7H-UZ-v39" firstAttribute="top" secondItem="Gdj-qa-RTn" secondAttribute="bottom" constant="8" id="LR2-EA-Jzy"/>
+                                    <constraint firstItem="NsV-4g-Moa" firstAttribute="leading" secondItem="EFY-5I-IeJ" secondAttribute="leading" constant="8" id="M2d-du-uvV"/>
+                                    <constraint firstItem="t4u-tL-86f" firstAttribute="top" secondItem="EFY-5I-IeJ" secondAttribute="top" constant="8" id="S9T-9Y-o3s"/>
+                                    <constraint firstItem="Gdj-qa-RTn" firstAttribute="leading" secondItem="EFY-5I-IeJ" secondAttribute="leading" constant="8" id="SBh-md-W3G"/>
+                                    <constraint firstItem="ZLz-fi-nLw" firstAttribute="top" secondItem="U7H-UZ-v39" secondAttribute="bottom" constant="8" id="Ufx-4k-yTz"/>
+                                    <constraint firstAttribute="trailing" secondItem="U7H-UZ-v39" secondAttribute="trailing" constant="8" id="V1Z-94-1qJ"/>
+                                    <constraint firstItem="Gdj-qa-RTn" firstAttribute="centerX" secondItem="EFY-5I-IeJ" secondAttribute="centerX" id="ahR-js-0Vt"/>
+                                    <constraint firstItem="NYS-st-8cE" firstAttribute="top" secondItem="t4u-tL-86f" secondAttribute="bottom" constant="8" symbolic="YES" id="atU-6i-t4m"/>
+                                    <constraint firstItem="NYS-st-8cE" firstAttribute="centerX" secondItem="EFY-5I-IeJ" secondAttribute="centerX" id="bGd-UQ-hvO"/>
+                                    <constraint firstItem="rHV-v4-tSR" firstAttribute="top" secondItem="NsV-4g-Moa" secondAttribute="bottom" constant="8" id="bay-iZ-Nbc"/>
+                                    <constraint firstItem="t4u-tL-86f" firstAttribute="leading" secondItem="EFY-5I-IeJ" secondAttribute="leading" constant="40" id="ge5-Qd-Nmk"/>
+                                    <constraint firstItem="U7H-UZ-v39" firstAttribute="centerX" secondItem="EFY-5I-IeJ" secondAttribute="centerX" id="leZ-Kd-LOo"/>
+                                    <constraint firstItem="ZLz-fi-nLw" firstAttribute="leading" secondItem="EFY-5I-IeJ" secondAttribute="leading" constant="8" id="lyi-W7-hnV"/>
+                                    <constraint firstItem="Gdj-qa-RTn" firstAttribute="top" secondItem="rHV-v4-tSR" secondAttribute="bottom" constant="8" id="o3H-Pz-sCN"/>
+                                    <constraint firstItem="t4u-tL-86f" firstAttribute="centerX" secondItem="EFY-5I-IeJ" secondAttribute="centerX" id="rnZ-pc-6x6"/>
+                                    <constraint firstItem="W7W-Pd-Oao" firstAttribute="top" secondItem="EFY-5I-IeJ" secondAttribute="top" constant="8" id="vO5-es-7LP"/>
+                                    <constraint firstAttribute="trailing" secondItem="rHV-v4-tSR" secondAttribute="trailing" constant="8" id="xJc-Nj-Ttn"/>
+                                </constraints>
+                            </scrollView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="EFY-5I-IeJ" firstAttribute="centerX" secondItem="IwJ-mc-Rdr" secondAttribute="centerX" id="27f-q1-JGF"/>
+                            <constraint firstItem="EFY-5I-IeJ" firstAttribute="centerY" secondItem="IwJ-mc-Rdr" secondAttribute="centerY" id="4y4-Hv-MXx"/>
+                            <constraint firstItem="EFY-5I-IeJ" firstAttribute="leading" secondItem="IwJ-mc-Rdr" secondAttribute="leading" id="8lS-Vi-izN"/>
+                            <constraint firstAttribute="trailing" secondItem="EFY-5I-IeJ" secondAttribute="trailing" id="8nr-V2-bS7"/>
+                            <constraint firstItem="9Hp-gZ-ip9" firstAttribute="top" secondItem="EFY-5I-IeJ" secondAttribute="bottom" id="QRP-jE-LHh"/>
+                            <constraint firstItem="EFY-5I-IeJ" firstAttribute="top" secondItem="IwJ-mc-Rdr" secondAttribute="top" id="qaV-MC-XGY"/>
+                        </constraints>
+                    </view>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <connections>
+                        <outlet property="cancelButton" destination="W7W-Pd-Oao" id="4kW-v3-Kf6"/>
+                        <outlet property="hatProviderDetailedInfo" destination="Gdj-qa-RTn" id="URm-Dd-PdF"/>
+                        <outlet property="hatProviderFeaturesLabel" destination="U7H-UZ-v39" id="7N8-Q1-eS7"/>
+                        <outlet property="hatProviderFeaturesListLabel" destination="ZLz-fi-nLw" id="cq8-Tq-MM9"/>
+                        <outlet property="hatProviderImage" destination="t4u-tL-86f" id="0UG-br-NW1"/>
+                        <outlet property="hatProviderInfo" destination="NsV-4g-Moa" id="USl-zV-qLw"/>
+                        <outlet property="hatProviderTitle" destination="NYS-st-8cE" id="bjA-Nr-wIZ"/>
+                        <outlet property="signUpButton" destination="rHV-v4-tSR" id="nAn-ff-KtY"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qvu-z5-5Rg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2173.125" y="1773.5915492957747"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="aOq-ot-2G6">
+            <objects>
+                <viewController id="Nob-lf-9Ix" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="roI-LA-crc"/>
+                        <viewControllerLayoutGuide type="bottom" id="Gah-KA-gN3"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="r33-rc-qbb">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wU5-Ar-xkN">
+                                <rect key="frame" x="0.0" y="145" width="320" height="423"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="ArrowBar" translatesAutoresizingMaskIntoConstraints="NO" id="c5e-MN-NXT">
+                                <rect key="frame" x="0.0" y="64" width="320" height="100"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="HAT App Logo" translatesAutoresizingMaskIntoConstraints="NO" id="mK2-xt-xcP">
+                                <rect key="frame" x="88" y="72" width="145" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Original HAT Sign-up" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Vg-3t-XWI">
+                                <rect key="frame" x="16" y="110" width="288" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="15"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DKa-3a-Orw" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1425" y="1773.5915492957747"/>
         </scene>
         <!--Notables-->
         <scene sceneID="fXN-3h-Pjq">

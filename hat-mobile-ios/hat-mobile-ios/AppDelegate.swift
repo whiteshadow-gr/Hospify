@@ -1,27 +1,20 @@
-/** Copyright (C) 2016 HAT Data Exchange Ltd
- * SPDX-License-Identifier: AGPL-3.0
+/**
+ * Copyright (C) 2017 HAT Data Exchange Ltd
+ *
+ * SPDX-License-Identifier: MPL2
  *
  * This file is part of the Hub of All Things project (HAT).
  *
- * RumpelLite is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License
- * as published by the Free Software Foundation, version 3 of
- * the License.
- *
- * RumpelLite is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General
- * Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
 import UIKit
 import CoreLocation
 import Fabric
 import Crashlytics
+import Stripe
 
 // MARK: Class
 
@@ -54,6 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // Override point for customization after application launch.
         
         Fabric.with([Crashlytics.self])
+        STPPaymentConfiguration.shared().publishableKey = "pk_test_RSXoNEBWTexMQhgr9a9nC77m"
 
         // if app was closed by iOS (low mem, etc), then receives a location update, and respawns your app, letting it know it respawned due to a location service
         if launchOptions?[UIApplicationLaunchOptionsKey.location] != nil {

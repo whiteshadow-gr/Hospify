@@ -40,6 +40,8 @@
 		604D68E01DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604D68DF1DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift */; };
 		606435DB1E1B196F001A5D14 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606435DA1E1B196F001A5D14 /* DateExtension.swift */; };
 		606528D31DDA037400026EA6 /* JSONHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606528D21DDA037400026EA6 /* JSONHelper.swift */; };
+		607C107B1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C107A1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift */; };
+		607C107D1E1BCC7D001D1E8E /* GetAHATInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C107C1E1BCC7D001D1E8E /* GetAHATInfoViewController.swift */; };
 		608EAAA61DFEA7ED00234C60 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608EAAA51DFEA7ED00234C60 /* StringExtension.swift */; };
 		608EAAA81DFEA8AD00234C60 /* ViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608EAAA71DFEA8AD00234C60 /* ViewControllerExtension.swift */; };
 		608EAAAA1DFED0F300234C60 /* NotablesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608EAAA91DFED0F300234C60 /* NotablesService.swift */; };
@@ -131,6 +133,8 @@
 		604D68DF1DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATCapabilitiesViewController.swift; path = ViewControllers/HATCapabilitiesViewController.swift; sourceTree = "<group>"; };
 		606435DA1E1B196F001A5D14 /* DateExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DateExtension.swift; path = Extensions/DateExtension.swift; sourceTree = "<group>"; };
 		606528D21DDA037400026EA6 /* JSONHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSONHelper.swift; path = Utils/JSONHelper.swift; sourceTree = "<group>"; };
+		607C107A1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OnboardingTileCollectionViewCell.swift; path = Cells/OnboardingTileCollectionViewCell.swift; sourceTree = "<group>"; };
+		607C107C1E1BCC7D001D1E8E /* GetAHATInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GetAHATInfoViewController.swift; path = ViewControllers/GetAHATInfoViewController.swift; sourceTree = "<group>"; };
 		608EAAA51DFEA7ED00234C60 /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StringExtension.swift; path = Extensions/StringExtension.swift; sourceTree = "<group>"; };
 		608EAAA71DFEA8AD00234C60 /* ViewControllerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ViewControllerExtension.swift; path = Extensions/ViewControllerExtension.swift; sourceTree = "<group>"; };
 		608EAAA91DFED0F300234C60 /* NotablesService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotablesService.swift; path = Services/NotablesService.swift; sourceTree = "<group>"; };
@@ -261,6 +265,7 @@
 			children = (
 				6041B20F1DD4AC190018CC31 /* NotablesTableViewCell.swift */,
 				603D3A721DE879E600C973D8 /* SocialImageCollectionViewCell.swift */,
+				607C107A1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -367,6 +372,7 @@
 				B51CC9231D1D5749000C9E48 /* SettingsViewController.swift */,
 				B51CC9271D1D7895000C9E48 /* LoginViewController.swift */,
 				60236C741E1BA2A6003B4B92 /* GetAHATViewController.swift */,
+				607C107C1E1BCC7D001D1E8E /* GetAHATInfoViewController.swift */,
 				6041B20B1DD4AC040018CC31 /* NotablesViewController.swift */,
 				6044B2171DDB3151003A1263 /* TabBarViewController.swift */,
 				6041B20C1DD4AC040018CC31 /* ShareOptionsViewController.swift */,
@@ -499,6 +505,9 @@
 						LastSwiftMigration = 0800;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.ApplePay = {
+								enabled = 1;
+							};
 							com.apple.BackgroundModes = {
 								enabled = 1;
 							};
@@ -746,6 +755,7 @@
 				606435DB1E1B196F001A5D14 /* DateExtension.swift in Sources */,
 				60E753A61DE47F5E001C85E7 /* LocationData.swift in Sources */,
 				B56E2FAC1D23DED900546C7E /* DataSyncDelegate.swift in Sources */,
+				607C107D1E1BCC7D001D1E8E /* GetAHATInfoViewController.swift in Sources */,
 				60236C751E1BA2A6003B4B92 /* GetAHATViewController.swift in Sources */,
 				B56E2FA31D22D1C400546C7E /* JSONDataSourceRequestField.swift in Sources */,
 				6044931B1DE9FE5C00B2FE7B /* UIButtonExtension.swift in Sources */,
@@ -763,6 +773,7 @@
 				B56E2FAA1D23D9FF00546C7E /* SyncDataHelper.swift in Sources */,
 				B54EA61A1D19F5450018EE47 /* DataPointTableViewCell.swift in Sources */,
 				604237DF1E114F2D00E19109 /* UIColorExtension.swift in Sources */,
+				607C107B1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift in Sources */,
 				60E7539A1DE46202001C85E7 /* NotesData.swift in Sources */,
 				B51CC9241D1D5749000C9E48 /* SettingsViewController.swift in Sources */,
 				6044B2181DDB3151003A1263 /* TabBarViewController.swift in Sources */,

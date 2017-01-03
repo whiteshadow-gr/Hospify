@@ -29,6 +29,7 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
     
     /// the number of pages for this page view controller
     private let numberOfPages = [0, 1, 2, 3, 4, 5, 6]
+    
     // MARK: - PageViewController delegate methods
     
     override func viewDidLoad() {
@@ -41,13 +42,13 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
         self.createPageViewController()
         
         // change the color of the pagination dots at the bottom of the screen
-        UIPageControl.appearance().pageIndicatorTintColor = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
+        UIPageControl.appearance().pageIndicatorTintColor = UIColor.tealColor()
         
         // add notification observers for disabling and enabling page controll
         NotificationCenter.default.addObserver(self, selector: #selector(disablePageControll), name: Notification.Name("disablePageControll"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(enablePageControll), name: Notification.Name("enablePageControll"), object: nil)
         
-        self.view.backgroundColor = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
+        self.view.backgroundColor = UIColor.tealColor()
     }
 
     override func didReceiveMemoryWarning() {
@@ -117,7 +118,7 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
      
      - parameter notification: The Notification object send with this notification
      */
-    func disablePageControll(notification: Notification) {
+    @objc private func disablePageControll(notification: Notification) {
         
         self.dataSource = nil
     }
@@ -127,12 +128,12 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
      
      - parameter notification: The Notification object send with this notification
      */
-    func enablePageControll(notification: Notification) {
+    @objc private func enablePageControll(notification: Notification) {
         
         self.dataSource = self
         
         // change the color of the pagination dots at the bottom of the screen
-        UIPageControl.appearance().pageIndicatorTintColor = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
+        UIPageControl.appearance().pageIndicatorTintColor = UIColor.tealColor()
     }
     
     // MARK: - Create view controller

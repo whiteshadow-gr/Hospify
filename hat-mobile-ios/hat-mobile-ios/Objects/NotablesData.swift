@@ -29,22 +29,27 @@ struct NotablesData {
     
     /// the author data
     var authorData: AuthorData
-    /// creation date
-    var createdTime: Date
-    /// if true this note is shared to facebook etc.
-    var shared: Bool
-    /// If shared, where is it shared? Coma seperated string (don't know if it's optional or not)
-    var sharedOn: String
+    
     /// the photo data
     var photoData: PhotoData
+    
     /// the location data
     var locationData: LocationData
-    /// the actual message of the note
-    var message: String
+    
+    /// creation date
+    var createdTime: Date
     /// the date until this note will be public (don't know if it's optional or not)
     var publicUntil: Date?
     /// the updated time of the note
     var updatedTime: Date
+    
+    /// if true this note is shared to facebook etc.
+    var shared: Bool
+    
+    /// If shared, where is it shared? Coma seperated string (don't know if it's optional or not)
+    var sharedOn: String
+    /// the actual message of the note
+    var message: String
     /// the kind of the note. 3 types available note, blog or list
     var kind: String
     
@@ -106,8 +111,11 @@ struct NotablesData {
         
         if let tempCreatedTime = dict["created_time"]?.string {
             
-            //if tempCreatedTime !
-            createdTime = FormatterHelper.formatStringToDate(string: tempCreatedTime)!
+            let returnedDate = FormatterHelper.formatStringToDate(string: tempCreatedTime)
+            if returnedDate != nil {
+                
+                createdTime = returnedDate!
+            }
         }
 
         if let tempDict = dict["shared"]?.string {

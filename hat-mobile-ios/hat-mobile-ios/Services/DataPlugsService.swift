@@ -19,6 +19,7 @@
  */
 
 import Alamofire
+import Crashlytics
 
 // MARK: Class
 
@@ -57,9 +58,10 @@ class DataPlugsService: NSObject {
             switch r {
                 
             // in case of error call the failCallBack
-            case .error( _, _):
+            case .error(let error, let statusCode):
                 
                 failCallBack()
+                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
             // in case of success call the succesfulCallBack
             case .isSuccess(let isSuccess, _, let result):
                 
@@ -216,9 +218,15 @@ class DataPlugsService: NSObject {
             switch r {
                 
             // in case of error call the failCallBack
-            case .error( _, _):
+            case .error(let error, let statusCode):
                 
-                failCallBack()
+                if statusCode != 404 {
+                    
+                    Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
+                } else {
+                    
+                   failCallBack()
+                }
             // in case of success call succesfulCallBack
             case .isSuccess(let isSuccess, let statusCode, let result):
                 
@@ -262,9 +270,10 @@ class DataPlugsService: NSObject {
             switch r {
              
             // in case of error call the failCallBack
-            case .error( _, _):
+            case .error(let error, let statusCode):
                 
                 failCallBack()
+                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
             // in case of success call succesfulCallBack
             case .isSuccess(let isSuccess, let statusCode, let result):
                 
@@ -305,9 +314,10 @@ class DataPlugsService: NSObject {
             switch r {
                 
             // in case of error call the failCallBack
-            case .error( _, _):
+            case .error(let error, let statusCode):
                 
                 failCallBack()
+                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
             // in case of success call succesfulCallBack
             case .isSuccess(let isSuccess, _, _):
                 
@@ -353,9 +363,15 @@ class DataPlugsService: NSObject {
             switch r {
                 
             // in case of error call the failCallBack
-            case .error( _, _):
+            case .error( let error, let statusCode):
                 
-                failCallBack()
+                if statusCode != 404 {
+                    
+                    Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
+                } else {
+                    
+                    failCallBack()
+                }
             // in case of success call succesfulCallBack
             case .isSuccess(let isSuccess, _, let result):
                 
@@ -395,7 +411,7 @@ class DataPlugsService: NSObject {
                 switch r {
                     
                 // in case of error call the failCallBack
-                case .error( _, let statusCode):
+                case .error(let error, let statusCode):
                     
                     if statusCode == 404 {
                         
@@ -404,6 +420,7 @@ class DataPlugsService: NSObject {
                     } else {
                         
                         failCallBack()
+                        Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
                     }
                 // in case of success call succesfulCallBack
                 case .isSuccess(let isSuccess, _, let result):

@@ -20,12 +20,13 @@
 
 // MARK: Protocol
 
-/**
- *  used to provide feddback while syncnig data
- */
+/// used to provide feedback while syncing data
 public protocol DataSyncDelegate {
     
     // MARK: - Protocol's functions
     
+    /**
+     DataSyncDelegate
+     */
     func onDataSyncFeedback(_ isSuccess: Bool, message: String)
 }

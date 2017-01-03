@@ -24,7 +24,7 @@ import RealmSwift
 // MARK: Class
 
 /// The data points to upload or that has been uploaded view controller
-class DataViewController: BaseViewController {
+class DataViewController: UIViewController {
     
     // MARK: - IBOutlet
 
@@ -41,25 +41,19 @@ class DataViewController: BaseViewController {
     @IBAction func buttonPurge(_ sender: UIBarButtonItem) {
         
         // create alert
-        let alert = UIAlertController(title: NSLocalizedString("purge_label", comment:  "purge"), message: NSLocalizedString("purge_message_label", comment:  "purge message"), preferredStyle: .alert)
-        
-        // create actions
-        let yesButtonOnAlertAction = UIAlertAction(title: NSLocalizedString("yes_label", comment:  "yes"), style: .default) {
-            (action) -> Void in
-            
-            if (RealmHelper.Purge()) {
-                
-                self.dataTableView.reloadData()
-            }
-        }
-        
-        // add the actions
-        alert.addAction(yesButtonOnAlertAction)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("no_label", comment:  "no"), style: UIAlertActionStyle.default, handler: nil))
-        
-        // present view controller
-        self.present(alert, animated: true, completion: nil)
-    }
+        self.createClassicAlertWith(alertMessage: NSLocalizedString("purge_message_label", comment:  "purge message"),
+                                    alertTitle: NSLocalizedString("purge_label", comment:  "purge"),
+                                    cancelTitle: NSLocalizedString("no_label", comment:  "no"),
+                                    proceedTitle: NSLocalizedString("yes_label", comment:  "yes"),
+                                    proceedCompletion: {
+                                                            () -> Void in
+                                                            
+                                                            if (RealmHelper.Purge()) {
+                                                                
+                                                                self.dataTableView.reloadData()
+                                                            }
+                                                        },
+                                    cancelCompletion: {() -> Void in return})}
     
     // MARK: - View controller functions
     

@@ -21,56 +21,59 @@
 import UIKit
 import MapKit
 
-class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPickerViewDelegate {
+// MARK: Class
 
+/// The settings view controller
+class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
+    
+    // MARK: - Variables
+
+    /// A MapSettingsDelegate object to pass back to the location tabs the stored values
     var mapSettingsDelegate: MapSettingsDelegate? = nil
 
     // Picker initialiser code below needs to change if you re-order this array
-    let pickerAccuracyData = ["kCLLocationAccuracyHundredMeters","kCLLocationAccuracyKilometer","kCLLocationAccuracyThreeKilometers",
-                              "kCLLocationAccuracyNearestTenMeters"]
+    /// the UIPickerView data
+    private let pickerAccuracyData = ["kCLLocationAccuracyHundredMeters", "kCLLocationAccuracyKilometer", "kCLLocationAccuracyThreeKilometers", "kCLLocationAccuracyNearestTenMeters"]
+    
+    // MARK: - IBOutlets
   
+    /// An IBOutlet for handling the UIPickerView
     @IBOutlet weak var pickerAccuracy: UIPickerView!
+    
+    /// An IBOutlet for handling the distance UITextField
     @IBOutlet weak var textFieldDistance: UITextField!
+    /// An IBOutlet for handling the deferred time UITextField
     @IBOutlet weak var textFieldDeferredTime: UITextField!
+    /// An IBOutlet for handling the deferred distance UITextField
     @IBOutlet weak var textFieldDeferredDistance: UITextField!
     
+    // MARK: - Auto generated methods
+    
     override func viewDidLoad() {
+        
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        // view controller title
-        self.title = NSLocalizedString("settings_label", comment:  "settings title")
+        // change view controller title
+        self.title = NSLocalizedString("settings_label", comment: "settings title")
         
-        pickerAccuracy.dataSource = self
-        pickerAccuracy.delegate = self
+        // add keyboard handling
+        self.hideKeyboardWhenTappedAround()
         
+        // get settings from userdefault
         readAndDisplayCurrentDefaults()
         
-        var selectedAccuracyIndex: Int = 1
-        switch Helper.GetUserPreferencesAccuracy() {
-        case kCLLocationAccuracyKilometer:
-            selectedAccuracyIndex = 1
-        case kCLLocationAccuracyHundredMeters:
-            selectedAccuracyIndex = 0
-        case kCLLocationAccuracyNearestTenMeters:
-            selectedAccuracyIndex = 3
-        case kCLLocationAccuracyThreeKilometers:
-            selectedAccuracyIndex = 2
-        default:
-            selectedAccuracyIndex = 1
-        }
-        
-        pickerAccuracy.selectRow(selectedAccuracyIndex, inComponent: 0, animated: true)
-        
-        //pickerAccuracy.select()
+        // select the right row in picker view
+        self.selectRowInPickerViewFromUserDefaults(picker: self.pickerAccuracy, animated: true)
        
+        // add inputAccessoryView to the text fields
         let keyboardToolbar = UIToolbar()
         keyboardToolbar.sizeToFit()
-        let flexBarButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace,
-                                            target: nil, action: nil)
-        let doneBarButton = UIBarButtonItem(barButtonSystemItem: .done,
-                                            target: view, action: #selector(UIView.endEditing(_:)))
+        
+        let flexBarButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: view, action: #selector(UIView.endEditing(_:)))
         keyboardToolbar.items = [flexBarButton, doneBarButton]
+        
         textFieldDistance.inputAccessoryView = keyboardToolbar
         textFieldDeferredTime.inputAccessoryView = keyboardToolbar
         textFieldDeferredDistance.inputAccessoryView = keyboardToolbar
@@ -80,44 +83,41 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         
         super.viewWillAppear(animated)
         
-        NotificationCenter.default.addObserver(self,
-                                               selector:#selector(keyboardWillDisappear(notification:)),
-                                               name:Notification.Name.UIKeyboardDidHide,
-                                               object:nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(keyboardWillDisappear(notification:)),
+                                               name:Notification.Name.UIKeyboardDidHide, object:nil)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
+    override func didReceiveMemoryWarning() {
         
-        super.viewWillDisappear(animated)
-        
-        NotificationCenter.default.removeObserver(self,
-                                                  name:Notification.Name.UIKeyboardDidHide,
-                                                  object:nil)
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
     }
+    
+    // MARK: - Notifications
 
-    func keyboardWillDisappear(notification: NSNotification) {
+    /**
+     A notification based function, executed when keyboard hides
+     
+     - parameter notification: The notification object that called this method
+     */
+    @objc func keyboardWillDisappear(notification: NSNotification) {
         
         // Do something here
         storeValues()
     }
-    
-    func typeName(_ some: Any) -> String {
-        
-        return (some is Any.Type) ? "\(some)" : "\(type(of: (some) as AnyObject))"
-    }
 
-    //MARK: - Delegates and data sources
-    //MARK: Data Sources
+    //MARK: - UIPickerView delegate
+    
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         
         return 1
     }
+    
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         
         return pickerAccuracyData.count
     }
     
-    //MARK: Delegates
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         
         return pickerAccuracyData[row]
@@ -125,50 +125,64 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
        
-        let valueSelected:String = pickerAccuracyData[row]
-        var locationAccuracy:CLLocationAccuracy = kCLLocationAccuracyHundredMeters //default
+        let valueSelected: String = pickerAccuracyData[row]
+        var locationAccuracy: CLLocationAccuracy = kCLLocationAccuracyHundredMeters //default
+        
         switch valueSelected {
+            
         case "kCLLocationAccuracyKilometer":
+            
             locationAccuracy = kCLLocationAccuracyKilometer
         case "kCLLocationAccuracyHundredMeters":
+            
             locationAccuracy = kCLLocationAccuracyHundredMeters
         case "kCLLocationAccuracyNearestTenMeters":
+            
             locationAccuracy = kCLLocationAccuracyNearestTenMeters
         case "kCLLocationAccuracyThreeKilometers":
+            
             locationAccuracy = kCLLocationAccuracyThreeKilometers
         default:
+            
             locationAccuracy = kCLLocationAccuracyHundredMeters
         }
         
-        let preferences = UserDefaults.standard
-        preferences.set(locationAccuracy, forKey: Constants.Preferences.MapLocationAccuracy)
+        UserDefaults.standard.set(locationAccuracy, forKey: Constants.Preferences.MapLocationAccuracy)
     }
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         
         let pickerLabel = UILabel()
-        var titleData:String = pickerAccuracyData[row]
+        var titleData: String = pickerAccuracyData[row]
+        let valueSelected: String = pickerAccuracyData[row]
         
-        let valueSelected:String = pickerAccuracyData[row]
-        //var locationAccuracy:CLLocationAccuracy = kCLLocationAccuracyBest //default
         switch valueSelected {
+            
         case "kCLLocationAccuracyKilometer":
-            titleData = NSLocalizedString("location_kCLLocationAccuracyKilometer", comment:  "")
+            
+            titleData = NSLocalizedString("location_kCLLocationAccuracyKilometer", comment: "")
         case "kCLLocationAccuracyHundredMeters":
-            titleData = NSLocalizedString("location_kCLLocationAccuracyHundredMeters", comment:  "")
+            
+            titleData = NSLocalizedString("location_kCLLocationAccuracyHundredMeters", comment: "")
         case "kCLLocationAccuracyNearestTenMeters":
-            titleData = NSLocalizedString("location_kCLLocationAccuracyNearestTenMeters", comment:  "")
+            
+            titleData = NSLocalizedString("location_kCLLocationAccuracyNearestTenMeters", comment: "")
         case "kCLLocationAccuracyThreeKilometers":
-            titleData = NSLocalizedString("location_kCLLocationAccuracyThreeKilometers", comment:  "")
+            
+            titleData = NSLocalizedString("location_kCLLocationAccuracyThreeKilometers", comment: "")
         default:
-            titleData = NSLocalizedString("location_kCLLocationAccuracyNearestTenMeters", comment:  "")
+            
+            titleData = NSLocalizedString("location_kCLLocationAccuracyNearestTenMeters", comment: "")
         }
         
-        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "Helvetica", size: 14.0)!,NSForegroundColorAttributeName:UIColor.black])
+        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "OpenSans", size: 13.0)!,NSForegroundColorAttributeName:UIColor.black])
         pickerLabel.attributedText = myTitle
-        pickerLabel.textAlignment = NSTextAlignment.center
+        pickerLabel.textAlignment = .center
+        
         return pickerLabel
     }
+    
+    // MARK: - Navigation
     
     override func willMove(toParentViewController parent: UIViewController?) {
         
@@ -183,19 +197,20 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+    // MARK: - UItextField delegate
     
     override func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
-        //textField.resignFirstResponder()
+        textField.resignFirstResponder()
         return true
     }
     
-    func storeValues() {
+    // MARK: - Set and get values
+    
+    /**
+     Stores values to user defaults
+     */
+    private func storeValues() {
         
         guard Double(textFieldDistance.text!) != nil else {
             
@@ -225,17 +240,54 @@ class SettingsViewController: BaseViewController, UIPickerViewDataSource,UIPicke
         // time
         preferences.set(Double(textFieldDeferredTime.text!)!, forKey: Constants.Preferences.MapLocationDeferredTimeout)
         
+        // pass new settings back and read the defaults from user defaults
         self.mapSettingsDelegate?.onChanged()
         readAndDisplayCurrentDefaults()
     }
     
-    func readAndDisplayCurrentDefaults() {
+    /**
+     Gets the values from user defaults
+     */
+    private func readAndDisplayCurrentDefaults() {
         
+        // get settings from user defaults
         textFieldDistance.text = String(Helper.GetUserPreferencesDistance())
         textFieldDistance.setNeedsDisplay()
+        
         textFieldDeferredDistance.text = String(Helper.GetUserPreferencesDeferredDistance())
         textFieldDeferredDistance.setNeedsDisplay()
+        
         textFieldDeferredTime.text = String(Helper.GetUserPreferencesDeferredTimeout())
         textFieldDeferredTime.setNeedsDisplay()
+    }
+    
+    // MARK: - UIPickerView select row 
+    
+    /**
+     Selects row in the UIPickerView from settings in user defaults
+     
+     - parameter picker: The UIPickerView to select the row
+     - parameter animated: Animated selection or not
+     */
+    private func selectRowInPickerViewFromUserDefaults(picker: UIPickerView, animated: Bool) {
+        
+        switch Helper.GetUserPreferencesAccuracy() {
+            
+        case kCLLocationAccuracyKilometer:
+            
+            picker.selectRow(1, inComponent: 0, animated: animated)
+        case kCLLocationAccuracyHundredMeters:
+            
+            picker.selectRow(0, inComponent: 0, animated: animated)
+        case kCLLocationAccuracyNearestTenMeters:
+            
+            picker.selectRow(3, inComponent: 0, animated: animated)
+        case kCLLocationAccuracyThreeKilometers:
+            
+            picker.selectRow(2, inComponent: 0, animated: animated)
+        default:
+            
+            picker.selectRow(1, inComponent: 0, animated: animated)
+        }
     }
 }

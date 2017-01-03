@@ -19,7 +19,6 @@
  */
 
 import UIKit
-import Alamofire
 
 // MARK: Class
 
@@ -30,10 +29,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     
     /// An array of strings holding the selected social networks to share the note
     private var shareOnSocial: [String] = []
+    
     /// A string passed from Notables view controller about the kind of the note
     var kind: String = "note"
+    
     /// the received note to edit from notables view controller
     var receivedNote: NotesData? = nil
+    
     /// the cached received note to edit from notables view controller
     private var cachedIsNoteShared: Bool = false
     /// a bool value to determine if the user is editing an existing value
@@ -45,14 +47,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     
     /// An IBOutlet for handling the public/private label
     @IBOutlet weak var publicLabel: UILabel!
-    /// An IBOutlet for handling the public/private switch
-    @IBOutlet weak var publicSwitch: UISwitch!
-    /// An IBOutlet for handling the cancel button
-    @IBOutlet weak var cancelButton: UIButton!
-    /// An IBOutlet for handling the delete button
-    @IBOutlet weak var deleteButtonOutlet: UIButton!
-    /// An IBOutlet for handling the action view
-    @IBOutlet weak var actionsView: UIView!
     /// An IBOutlet for handling the public icon label
     @IBOutlet weak var publicImageLabel: UILabel!
     /// An IBOutlet for handling the share for... icon label
@@ -61,20 +55,34 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var shareWithLabel: UILabel!
     /// An IBOutlet for handling the share for... label
     @IBOutlet weak var shareForLabel: UILabel!
+    /// An IBOutlet for handling the durationSharedLabel
+    @IBOutlet weak var durationSharedForLabel: UILabel!
+    
+    /// An IBOutlet for handling the public/private switch
+    @IBOutlet weak var publicSwitch: UISwitch!
+    
+    /// An IBOutlet for handling the cancel button
+    @IBOutlet weak var cancelButton: UIButton!
+    /// An IBOutlet for handling the delete button
+    @IBOutlet weak var deleteButtonOutlet: UIButton!
     /// An IBOutlet for handling the facebook button
     @IBOutlet weak var facebookButton: UIButton!
     /// An IBOutlet for handling the marketsquare button
     @IBOutlet weak var marketsquareButton: UIButton!
     /// An IBOutlet for handling the publish button
     @IBOutlet weak var publishButton: UIButton!
-    /// An IBOutlet for handling the scroll view
-    @IBOutlet weak var scrollView: UIScrollView!
-    /// An IBOutlet for handling the UITextView
-    @IBOutlet weak var textView: UITextView!
+    
+    /// An IBOutlet for handling the action view
+    @IBOutlet weak var actionsView: UIView!
     /// An IBOutlet for handling the shareForView
     @IBOutlet weak var shareForView: UIView!
-    /// An IBOutlet for handling the durationSharedLabel
-    @IBOutlet weak var durationSharedForLabel: UILabel!
+    
+    /// An IBOutlet for handling the scroll view
+    @IBOutlet weak var scrollView: UIScrollView!
+    
+    /// An IBOutlet for handling the UITextView
+    @IBOutlet weak var textView: UITextView!
+
     /// An IBOutlet for handling the textViewAspectRationConstraint NSLayoutConstraint
     @IBOutlet weak var textViewAspectRationConstraint: NSLayoutConstraint!
     
@@ -181,7 +189,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 // save text
                 self.receivedNote?.data.message = self.textView.text!
                 
-                self.checkNotableTableExists(authToken: token)
+                NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
+                    HatAccountService.triggerHatUpdate()
+                    _ = self.navigationController?.popViewController(animated: true)
+                })
             }
             
             if (receivedNote?.data.shared)! {
@@ -200,7 +212,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 receivedNote?.data.message = self.textView.text!
                 
                 NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
-                self.checkNotableTableExists(authToken: token)
+                NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
+                    HatAccountService.triggerHatUpdate()
+                    _ = self.navigationController?.popViewController(animated: true)
+                })
             }
             
             if cachedIsNoteShared && (receivedNote?.data.message != self.textView.text!) {
@@ -356,7 +372,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
      
      - parameter string: The string to remove from the array
      */
-    func removeFromArray(string: String) -> Void {
+    private func removeFromArray(string: String) -> Void {
         
         // check in the array
         var found = false
@@ -384,7 +400,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
      - parameter array: The array that has all the strings we want to combine
      - returns: A String
      */
-    func constructStringFromArray(array: [String]) -> String {
+    private func constructStringFromArray(array: [String]) -> String {
         
         // init a string
         var stringToReturn: String = ""
@@ -402,124 +418,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         
         // return the string
         return stringToReturn
-    }
-    
-    // MARK: - Network methods
-    
-    /**
-     Posts the note to the hat
-     
-     - parameter token: The token returned from the hat
-     - parameter json: The json file as a Dictionary<String, Any>
-     */
-    func postNote(token: String, json: Dictionary<String, Any>) -> Void {
-        
-        // create JSON file for posting with default values
-        let hatDataStructure = JSONHelper.createJSONForPostingOnNotables(hatTableStructure: json)
-        // update JSON file with the values needed
-        let hatData = JSONHelper.updateJSONFile(file: hatDataStructure, noteFile: self.receivedNote!)
-        
-        // create the headers
-        let headers = Helper.ConstructRequestHeaders(token)
-        
-        let domain = HatAccountService.TheUserHATDomain()
-        
-        // make async request
-        NetworkHelper.AsynchronousRequest("https://" + domain + "/data/record/values", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: hatData, headers: headers, completion: { (r: Helper.ResultType) -> Void in
-            
-            // handle result
-            switch r {
-                
-            case .isSuccess(let isSuccess, _, _):
-                
-                if isSuccess {
-                    
-                    // reload table
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
-                    HatAccountService.triggerHatUpdate()
-                    _ = self.navigationController?.popViewController(animated: true)
-                }
-                
-            case .error(let error, _):
-                
-                print("error res: \(error)")
-            }
-        })
-    }
-    
-    /**
-     Checks if notables table exists
-     
-     - parameter authToken: The auth token from hat
-     */
-    func checkNotableTableExists(authToken: String) -> Void {
-        
-        // create the url
-        let tableURL = Helper.TheUserHATCheckIfTableExistsURL(tableName: "notablesv1", sourceName: "rumpel")
-        
-        // create parameters and headers
-        let parameters = ["": ""]
-        let header = ["X-Auth-Token": authToken]
-        
-        let passToken = self.checkNotablesTableExistsCompletionFunction(
-            createTable: HatAccountService.createHatTable(token: authToken, notablesTableStructure: JSONHelper.createNotablesTableJSON()),
-            token: authToken)
-        
-        // make async request
-        NetworkHelper.AsynchronousRequest(
-            tableURL,
-            method: HTTPMethod.get,
-            encoding: Alamofire.URLEncoding.default,
-            contentType: Constants.ContentType.JSON,
-            parameters: parameters,
-            headers: header,
-            completion:passToken)
-    }
-    
-    /**
-     Checks if notables table exists completion handler
-     
-     - parameter token: A function variable of type, (String) -> (_ r: Helper.ResultType)
-     */
-    func checkNotablesTableExistsCompletionFunction(createTable: @escaping (_ callback: Void) -> Void , token: String) -> (_ r: Helper.ResultType) -> Void {
-        
-        return { [weak self](r: Helper.ResultType) -> Void in
-            
-            switch r {
-                
-            case .error( _, _):
-                
-                guard let weakSelf = self else { return }
-                
-                // show error posting
-                weakSelf.createClassicOKAlertWith(alertMessage: "Please try again", alertTitle: "Error saving note", okTitle: "OK", proceedCompletion: {() -> Void in return})
-                // change button title to saving
-                weakSelf.publishButton.setTitle("Save", for: .normal)
-                weakSelf.publishButton.isUserInteractionEnabled = true
-                weakSelf.publishButton.alpha = 1.0
-                
-            case .isSuccess(let isSuccess, let statusCode, let result):
-                
-                if isSuccess {
-                    
-                    guard let weakSelf = self else { return }
-                    
-                    guard let dictionary = result.dictionary else {
-                        
-                       break
-                    }
-                    //table found
-                    if statusCode == 200 {
-                        
-                        weakSelf.postNote(token: token, json: dictionary)
-                        //table not found
-                    } else if statusCode == 404 {
-                        
-                        createTable(weakSelf.postNote(token: token, json: dictionary))
-                    }                    
-                }
-            }
-        }
     }
     
     // MARK: - Autogenerated
@@ -618,6 +516,21 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         // Dispose of any resources that can be recreated.
     }
     
+    override func viewDidLayoutSubviews() {
+        
+        super.viewDidLayoutSubviews()
+        
+        let contentSize = self.textView.sizeThatFits(self.textView.bounds.size)
+        var frame = self.textView.frame
+        frame.size.height = contentSize.height
+        self.textView.frame = frame
+        
+        textViewAspectRationConstraint = NSLayoutConstraint(item: self.textView, attribute: .height, relatedBy: .equal, toItem: self.textView, attribute: .width, multiplier: textView.bounds.height/textView.bounds.width, constant: 1)
+        self.textView.addConstraint(textViewAspectRationConstraint!)
+        self.view.layoutSubviews()
+        self.scrollView.setNeedsLayout()
+    }
+    
     // MARK: - Setup UI functins
     
     /**
@@ -650,7 +563,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         self.durationSharedForLabel.isHidden = false
         
         // set teal color
-        let color = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
+        let color = UIColor.tealColor()
         
         // set the text of the public label
         self.publicLabel.text = "Shared"
@@ -740,7 +653,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     /**
      A funtion executed on tap of the navigation title
      */
-    func navigationTitleTap() {
+    @objc private func navigationTitleTap() {
         
         
     }
@@ -801,22 +714,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         self.textView.isEditable = false
     }
     
-    override func viewDidLayoutSubviews() {
-        
-        super.viewDidLayoutSubviews()
-        
-        let contentSize = self.textView.sizeThatFits(self.textView.bounds.size)
-        var frame = self.textView.frame
-        frame.size.height = contentSize.height
-        self.textView.frame = frame
-        
-        textViewAspectRationConstraint = NSLayoutConstraint(item: self.textView, attribute: .height, relatedBy: .equal, toItem: self.textView, attribute: .width, multiplier: textView.bounds.height/textView.bounds.width, constant: 1)
-        self.textView.addConstraint(textViewAspectRationConstraint!)
-        self.view.layoutSubviews()
-        self.scrollView.setNeedsLayout()
-    }
-    
-    func enableEditingTextView() {
+    @objc private func enableEditingTextView() {
         
         self.textView.isEditable = true
         

@@ -21,16 +21,25 @@
 import UIKit
 import RealmSwift
 
+// MARK: Class
+
 /// Extends UITAbleView. Manage the rendering of DataPoints
 class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSource {
     
-    var dataResults : Results<DataPoint>!
-    let basicCellIdentifier = "DataPointTableViewCell"
+    // MARK: - Variables
+    
+    /// the data points from Realm
+    private var dataResults : Results<DataPoint>!
+    /// the cell identifier
+    private let basicCellIdentifier = "DataPointTableViewCell"
+    
+    // MARK: - View Controller delegate methods
 
     /**
      Initialisation code when first constructed.
      */
     override func awakeFromNib() {
+        
         delegate = self
         dataSource = self
         
@@ -40,18 +49,13 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
         reloadData()
     }
     
-    // MARK: UITableViewDataSource
+    // MARK: - UITableView methods
     
-    /**
-     Part of UITableViewDataSource.
-     */
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         return self.dataResults.count
     }
     
-    /**
-     Part of UITableViewDataSource.
-     */
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         var cell : DataPointTableViewCell? = tableView.dequeueReusableCell(withIdentifier: basicCellIdentifier) as! DataPointTableViewCell?
@@ -82,11 +86,6 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
         return cell!
     }
     
-    // MARK: UITableViewDelegate
-    
-    /**
-     Part of UITableViewDelegate.
-     */
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         // do nothing

@@ -26,6 +26,43 @@ internal class SyncDataHelper {
         
     var dataSyncDelegate: DataSyncDelegate? = nil
     
+    // MARK: - Sync functions
+    
+    /**
+     Gets the last successful sync count from preferences
+     
+     - returns: Int
+     */
+    class func getSuccessfulSyncCount() -> Int {
+        
+        // get standard user defaults
+        let preferences = UserDefaults.standard
+        
+        // returns an integer if the key existed, or 0 if not.
+        let successfulSyncCount:Int = preferences.integer(forKey: Constants.Preferences.SuccessfulSyncCount)
+        
+        return successfulSyncCount
+    }
+    
+    /**
+     Gets the last successful sync count from preferences
+     
+     - returns: The date of last successful sync. Optional
+     */
+    class func getLastSuccessfulSyncDate() -> Date! {
+        
+        // get standard user defaults
+        let preferences = UserDefaults.standard
+        
+        // search for the particular key, if found return it
+        if let successfulSyncDate:Date = preferences.object(forKey: Constants.Preferences.SuccessfulSyncDate) as? Date {
+            
+            return successfulSyncDate
+        }
+        
+        return nil
+    }
+    
     /**
      Check if we have any DataPoints to sync
      
@@ -137,7 +174,7 @@ internal class SyncDataHelper {
                         // inform user
                         if (self.dataSyncDelegate != nil) {
                             
-                        //    self.dataSyncDelegate?.onDataSyncFeedback(true, message: theResult.rawString()!)
+                            self.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
                         }
                     }else{
                         
@@ -215,7 +252,7 @@ internal class SyncDataHelper {
                         // inform user
                         if (self.dataSyncDelegate != nil) {
                             
-                            // self.dataSyncDelegate?.onDataSyncFeedback(true, message: theResult.rawString()!)
+                            self.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
                         }
                     }else{
                         
@@ -299,7 +336,7 @@ internal class SyncDataHelper {
                         // inform user
                         if (self.dataSyncDelegate != nil) {
                             
-                                //self.dataSyncDelegate?.onDataSyncFeedback(true, message: theResult.rawString()!)
+                            self.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
                         }
                     } else {
                         
@@ -393,7 +430,7 @@ internal class SyncDataHelper {
                         // inform user
                         if (self.dataSyncDelegate != nil) {
                             
-                            //self.dataSyncDelegate?.onDataSyncFeedback(true, message: theResult.rawString()!)
+                            self.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
                         }
                     } else {
                         

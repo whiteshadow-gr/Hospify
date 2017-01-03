@@ -27,8 +27,10 @@ class JSONDataSourceRequestField {
     
     /// the ID of the object
     var id: Int = 0
+    
     /// the name of the object
     var name: String = ""
+    
     /// the fieldEnum of the object
     var fieldEnum: Constants.RequestFields = Constants.RequestFields.Latitude // give default for now
 }

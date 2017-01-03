@@ -19,17 +19,12 @@
  */
 
 import UIKit
-import SwiftyJSON
-import Alamofire
 import SafariServices
-import JWTDecode
-import SwiftyRSA
-import KeychainSwift
 
 // MARK: - Class
 
 /// The Login View Controller
-class LoginViewController: BaseViewController, UITextFieldDelegate {
+class LoginViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: - IBOutlets
     
@@ -41,16 +36,21 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
     @IBOutlet weak var getAHATButton: UIButton!
     /// An IBOutlet for handling the buttonLogon
     @IBOutlet weak var buttonLogon: UIButton!
+    
     /// An IBOutlet for handling the inputUserHATDomain
     @IBOutlet weak var inputUserHATDomain: UITextField!
+    
     /// An IBOutlet for handling the labelAppVersion
     @IBOutlet weak var labelAppVersion: UILabel!
+    
     /// An IBOutlet for handling the labelTitle
     @IBOutlet weak var labelTitle: UITextView!
     /// An IBOutlet for handling the labelSubTitle
     @IBOutlet weak var labelSubTitle: UITextView!
+    
     /// An IBOutlet for handling the ivLogo
     @IBOutlet weak var ivLogo: UIImageView!
+    
     /// An IBOutlet for handling the scrollView
     @IBOutlet weak var scrollView: UIScrollView!
     
@@ -60,7 +60,7 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
     typealias MarketAccessToken = String
    
     /// SafariViewController variable
-    var safariVC: SFSafariViewController?
+    private var safariVC: SFSafariViewController?
     
     // MARK: - IBActions
     
@@ -71,64 +71,12 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
      */
     @IBAction func buttonLogonTouchUp(_ sender: AnyObject) {
         
-        // trim values
-        let hatDomain = Helper.TrimString(inputUserHATDomain.text!)
-        
-        // username guard
-        guard let _userDomain = inputUserHATDomain.text, !hatDomain.isEmpty else {
+        let failed = {
             
-            inputUserHATDomain.text = ""
-            return
+            self.createClassicOKAlertWith(alertMessage: "Please check your personal hat address again", alertTitle: "Wrong domain!", okTitle: "OK", proceedCompletion: {() -> Void in return})
         }
         
-        // split text field text by .
-        var array = hatDomain.components(separatedBy: ".")
-        // remove the first string
-        array.remove(at: 0)
-        
-        // form one string
-        var domain = ""
-        for section in array {
-            
-            domain += section + "."
-        }
-        
-        // chack if we are out of bounds and drop last leter
-        if domain.characters.count > 1 {
-            
-            domain = String(domain.characters.dropLast())
-        }
-        
-        // verify if the domain is what we want
-        if self.verifyDomain(domain) {
-            
-            // authorise user
-            authoriseUser(hatDomain: _userDomain)
-        } else {
-            
-            //show alert
-            self.presentUIAlertOK("Wrong domain!", message: "Please check your personal hat address again")
-        }
-    }
-    
-    /**
-     An action executed when the get a hat button is pressed
-     
-     - parameter sender: The object that calls this method
-     */
-    @IBAction func getAHatButton(_ sender: Any) {
-        
-        UIApplication.shared.openURL(URL(string: "https://hatters.hubofallthings.com")!)
-    }
-    
-    /**
-     An action executed when the learn more button is pressed
-     
-     - parameter sender: The object that calls this method
-     */
-    @IBAction func learnMoreButton(_ sender: Any) {
-        
-        
+        HatAccountService.logOnToHAT(userHATDomain: inputUserHATDomain.text!, successfulVerification: self.authoriseUser, failedVerification: failed)
     }
     
     // MARK: - View Controller functions
@@ -140,6 +88,8 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         
         // add keyboard handling
         self.addKeyboardHandling()
+        self.hideKeyboardWhenTappedAround()
+        
         // disable the navigation back button
         self.navigationItem.setHidesBackButton(true, animated:false)
         
@@ -147,8 +97,6 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         self.getAHATButton.addBorderToButton(width: 1, color: .white)
         self.learnMoreButton.addBorderToButton(width: 1, color: .white)
         self.useWithoutHATButton.addBorderToButton(width: 1, color: .white)
-        
-        self.inputUserHATDomain.delegate = self
         
         // set title
         self.title = NSLocalizedString("logon_label", comment:  "logon title")
@@ -162,8 +110,8 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
             ] as [String : Any]
         
         let textAttributes = [
-            NSForegroundColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
-            NSStrokeColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
+            NSForegroundColorAttributeName: UIColor.tealColor(),
+            NSStrokeColorAttributeName: UIColor.tealColor(),
             NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!,
             NSStrokeWidthAttributeName: -1.0
             ] as [String : Any]
@@ -182,7 +130,6 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         
         // input
         inputUserHATDomain.placeholder = NSLocalizedString("hat_domain_placeholder", comment:  "user HAT domain")
-        inputUserHATDomain.text = ""
 
         // button
         buttonLogon.setTitle(NSLocalizedString("logon_label", comment:  "username"), for: UIControlState())
@@ -200,7 +147,7 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         // set tint color, if translucent and the bar tint color of navigation bar
         self.navigationController?.navigationBar.tintColor = UIColor.white
         self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
+        self.navigationController?.navigationBar.barTintColor = UIColor.tealColor()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -209,15 +156,11 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         
         // when the view appears clear the text field. The user might pressed sing out, this field must not contain the previous address
         self.inputUserHATDomain.text = ""
-        
-        // add keyboard handling
-//        self.addKeyboardHandling()
-       self.hideKeyboardWhenTappedAround()
     }
 
     /*
         Override and return false
-        We have a seque in the storyboard, mainly for visual 
+        We have a segue in the storyboard, mainly for visual 
         We openSeque... after validation
     */
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any!) -> Bool {
@@ -237,18 +180,11 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
      
      - parameter hatDomain: The phata address of the user
      */
-    func authoriseUser(hatDomain: String) {
+    private func authoriseUser(hatDomain: String) {
         
         // build up the hat domain auth url
-        let hatDomainURL =
-            "https://" + // https
-            hatDomain + // the user hat domain
-            "/hatlogin?name=" + // param
-            Constants.Auth.ServiceName + // the service name
-            "&redirect=" + // redirect param
-            Constants.Auth.URLScheme + // the url scheme for auth callback to app. We declare it in info.list
-            "://" +
-            Constants.Auth.LocalAuthHost// this is a ghost host. This can be anything
+        let hatDomainURL = "https://" + hatDomain + "/hatlogin?name=" + Constants.Auth.ServiceName + "&redirect=" +
+            Constants.Auth.URLScheme + "://" + Constants.Auth.LocalAuthHost
         
         let authURL = NSURL(string: hatDomainURL)
         
@@ -260,128 +196,23 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
         }        
     }
     
-    override func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
-        self.buttonLogonTouchUp(self)
-        self.view.endEditing(true)
-        return false
-    }
-    
     /**
      The notification received from the login precedure.
      
      - parameter NSNotification: notification
      */
-    func hatLoginAuth(notification: NSNotification) {
+    @objc private func hatLoginAuth(notification: NSNotification) {
         
         // get the url form the auth callback
         let url = notification.object as! NSURL
         
         // first of all, we close the safari vc
-        if let vc:SFSafariViewController = safariVC {
+        if let vc: SFSafariViewController = safariVC {
             
             vc.dismiss(animated: true, completion: nil)
         }
         
-        // get token out
-        if let token = Helper.GetQueryStringParameter(url: url.absoluteString, param: Constants.Auth.TokenParamName) {
-            
-            // save token in keychain
-            let savedSuccesfully = Helper.SetKeychainValue(key: "UserToken", value: token)
-            
-            if savedSuccesfully {
-                
-                // make asynchronous call
-                // parameters..
-                let parameters = ["": ""]
-                // auth header
-                let headers = ["Accept": Constants.ContentType.Text, "Content-Type": Constants.ContentType.Text]
-                // HAT domain
-                let hatDomain = Helper.TrimString(inputUserHATDomain.text!)
-                
-                if let url = Helper.TheUserHATDOmainPublicKeyURL(hatDomain) {
-                    
-                    //. application/json
-                    NetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { [weak self](r: Helper.ResultTypeString) -> Void in
-                        
-                        guard let weakSelf = self else { return }
-
-                        switch r {
-                        case .isSuccess(let isSuccess, _, let result):
-                            
-                            if isSuccess {
-                                
-                                // decode the token and get the iss out
-                                let jwt = try! decode(jwt: token)
-                                
-                                // guard for the issuer check, “iss” (Issuer)
-                                guard let HATDomainFromToken = jwt.issuer else {
-                                    
-                                    weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_general", comment: "auth"))
-                                    return
-                                }
-                                
-                                /*
-                                 The token will consist of header.payload.signature
-                                 To verify the token we use header.payload hashed with signature in base64 format
-                                 The public PEM string is used to verify also
-                                 */
-                                let tokenAttr: [String] = token.components(separatedBy: ".")
-                                
-                                // guard for the attr length. Should be 3 [header, payload, signature]
-                                guard tokenAttr.count == 3 else {
-                                    
-                                    weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_general", comment: "auth"))
-                                    return
-                                }
-                                
-                                // And then to access the individual parts of token
-                                let header : String = tokenAttr[0]
-                                let payload : String = tokenAttr[1]
-                                let signature : String = tokenAttr[2]
-                                
-                                // decode signature from baseUrl64 to base64
-                                let decodedSig = signature.fromBase64URLToBase64(s: signature)
-                                
-                                // data to be verified header.payload
-                                let headerAndPayload = header + "." + payload
-                                
-                                // SwiftyRSA.verifySignatureString
-                                let result: VerificationResult = SwiftyRSA.verifySignatureString(headerAndPayload, signature: decodedSig, publicKeyPEM: result, digestMethod: .SHA256)
-                                
-                                /*
-                                 if successful ,we performSegue to the map view
-                                 else, we display a message
-                                 */
-                                if (result.isSuccessful) {
-                                    
-                                    weakSelf.authoriseAppToWriteToCloud(hatDomain, HATDomainFromToken)
-                                } else {
-                                    
-                                    weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_invalid_token", comment: "auth"))
-                                }
-                            } else {
-                                
-                                // alamo fire http fail
-                                weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: result)
-                            }
-                            
-                        case .error(let error, let statusCode):
-                            
-                            let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                            weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: msg)
-                        }
-                    }
-                }
-            } else {
-                
-                self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message:"Could not save in keychain")
-            }
-        } else {
-
-            // no token in url callback redirect
-            self.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_no_token_in_callback", comment: "auth"))
-        }
+        HatAccountService.loginToHATAuthorization(userDomain: self.inputUserHATDomain.text!, url: url, selfViewController: self)
     }
     
     /**
@@ -390,62 +221,9 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
      - parameter userDomain: The user's domain
      - parameter HATDomainFromToken: The HAT domain extracted from the token
      */
-    func authoriseAppToWriteToCloud(_ userDomain:String,_ HATDomainFromToken:String) {
+    func authoriseAppToWriteToCloud(_ userDomain: String,_ HATDomainFromToken: String) {
         
-        // parameters..
-        let parameters = ["": ""]
-        
-        // auth header
-        let headers:[String: String] = Helper.ConstructRequestHeaders(Helper.TheMarketAccessToken())
-        // construct url
-        let url = Helper.TheAppRegistrationWithHATURL(userDomain)
-        
-        // make asynchronous call
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: "application/json", parameters: parameters, headers: headers) { [weak self](r: Helper.ResultType) -> Void in
-            
-            guard let weakSelf = self else { return }
-            switch r {
-            case .isSuccess(let isSuccess, _, let result):
-                
-                if isSuccess {
-                    
-                    // belt and braces.. check we have a message in the returned JSON
-                    if result["message"].exists() {
-                        
-                        // save the hatdomain from the token to the device Keychain
-                        if(Helper.SetKeychainValue(key: Constants.Keychain.HATDomainKey, value: HATDomainFromToken)) {
-                            
-                            weakSelf.performSegue(withIdentifier: "ShowTabBarController", sender: self)
-                         
-                        // else show error in the saving in keychain
-                        } else {
-                            
-                            weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: NSLocalizedString("auth_error_keychain_save", comment: "keychain"))
-                        }
-                    // No message field in JSON file
-                    } else {
-                        
-                        weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: "Message not found")
-                    }
-                // general error
-                } else {
-                    
-                    weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: result.rawString()!)
-                }
-                
-            case .error(let error, let statusCode):
-                
-                //show error
-                let msg: String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                weakSelf.presentUIAlertOK(NSLocalizedString("error_label", comment: "error"), message: msg)
-            }
-        }
-    }
-    
-    func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        
-        textField.resignFirstResponder()
-        return true
+        HatAccountService.authoriseAppToWriteToCloud(userDomain, HATDomainFromToken, viewController: self)
     }
     
     override func keyboardWillHide(sender: NSNotification) {
@@ -456,23 +234,5 @@ class LoginViewController: BaseViewController, UITextFieldDelegate {
     override func keyboardWillShow(sender: NSNotification) {
         
         self.showKeyboardInView(self.view, scrollView: self.scrollView, sender: sender)
-    }
-    
-    // MARK: - Verify domain
-    
-    /**
-     Verify the domain if it's what we expect
-     
-     - parameter domain: The formated doamain
-     - returns: Bool, true if the domain matches what we expect and false otherwise
-     */
-    private func verifyDomain(_ domain: String) -> Bool {
-        
-        if domain == "hubofallthings.net" || domain == "warwickhat.net"{
-            
-            return true
-        }
-        
-        return false
     }
 }

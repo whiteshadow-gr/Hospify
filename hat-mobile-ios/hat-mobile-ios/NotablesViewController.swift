@@ -11,7 +11,7 @@
  * RumpelLite is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU Affero General Public License for more details.
+ * the GNU Affero General Public Lixcense for more details.
  *
  * You should have received a copy of the GNU Affero General
  * Public License along with this program. If not, see
@@ -19,34 +19,36 @@
  */
 
 import UIKit
-import Alamofire
 import SwiftyJSON
-import KeychainSwift
 import SafariServices
 
 // MARK: - Notables ViewController
 
 /// The notables view controller
-class NotablesViewController: BaseLocationViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
+class NotablesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
     
     // MARK: - Variables
     
     /// an array of the notes to display
-    var notesArray: [NotesData] = []
-    /// the kind of the note to create
-    var kind: String = ""
+    private var notesArray: [NotesData] = []
     /// the cells of the table
-    var cells: [NotablesTableViewCell] = []
+    private var cells: [NotablesTableViewCell] = []
+    
+    /// the kind of the note to create
+    private var kind: String = ""
+    
     /// The safari view controller variable to hold reference for later use
-    var safariDelegate: SFSafariViewController? = nil
+    private var safariDelegate: SFSafariViewController? = nil
     /// A message to display behind the table view if something is wrong
 
     // MARK: - IBOutlets
 
     /// An IBOutlet for handling the table view
     @IBOutlet weak var tableView: UITableView!
+    
     /// An IBOutlet for handling the create new notes green view at the bottom of the screen
     @IBOutlet weak var createNewNoteView: UIView!
+    
     /// An IBOutlet for handling the create new note button
     @IBOutlet weak var createNewNoteLabel: UILabel!
     /// An IBOutlet for handling the create new list button
@@ -55,6 +57,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     @IBOutlet weak var createNewBlogLabel: UILabel!
     /// An IBOutlet for handling the info label when table view is empty or an error has occured
     @IBOutlet weak var eptyTableInfoLabel: UILabel!
+    
     /// An IBOutlet for handling the retry connecting button when an error has occured
     @IBOutlet weak var retryConnectingButton: UIButton!
 
@@ -69,6 +72,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
         
         self.retryConnectingButton.isHidden = true
         self.connectToServerToGetNotes()
+        // FIXME: Do I need the bool result??
         let boolResult = { (bool: String) -> Void in
             
             if bool == "true" {
@@ -77,7 +81,9 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
             }
         }
         
-        DataPlugsService.ensureDataPlugReady(succesfulCallBack: boolResult, failCallBack: self.clearErrorDisplay)
+        let failCallBack = { self.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {() -> Void in return}) }
+        
+        DataPlugsService.ensureDataPlugReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
     }
     
     /**
@@ -151,7 +157,8 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
             }
         }
         
-        DataPlugsService.ensureDataPlugReady(succesfulCallBack: boolResult, failCallBack: self.clearErrorDisplay)
+        let failCallBack = { self.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {() -> Void in return}) }
+        DataPlugsService.ensureDataPlugReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -174,7 +181,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
      
      - parameter notification: The notification object
      */
-    func showReceivedNotesFrom(array: [JSON]) {
+    private func showReceivedNotesFrom(array: [JSON]) {
         
         // delete the notes array
         self.notesArray.removeAll()
@@ -199,7 +206,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
      
      - parameter notification: The notification object
      */
-    func refreshData(notification: Notification) {
+    @objc private func refreshData(notification: Notification) {
         
         // delete the notes array
         self.notesArray.removeAll()
@@ -216,7 +223,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
      
      - parameter array: The fetched notables
      */
-    func showNotables(array: [JSON]) {
+    private func showNotables(array: [JSON]) {
         
         self.showReceivedNotesFrom(array: array)
     }
@@ -242,7 +249,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         // return number of notes
-        return notesArray.count;
+        return notesArray.count
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -287,7 +294,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     /**
      Connects to the server to get the notes
      */
-    func connectToServerToGetNotes() {
+    private func connectToServerToGetNotes() {
         
         // get token and refresh view
         let token = HatAccountService.getUsersTokenFromKeychain()
@@ -336,7 +343,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     /**
      Opens safari view controller to authorize facebook
      */
-    func openSafari() -> Void {
+    @objc private func openSafari() -> Void {
         
         let userDomain = HatAccountService.TheUserHATDomain()
         let link = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=https://social-plug.hubofallthings.com/hat/authenticate"
@@ -358,7 +365,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     /**
      Hides table
      */
-    func hideTable(_ notif: Notification) {
+    @objc private func hideTable(_ notif: Notification) {
         
         guard let message = notif.object as? String else {
             
@@ -373,7 +380,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
      
      - parameter message: The message to show on the label
      */
-    func showEmptyTableLabelWith(message: String) {
+    private func showEmptyTableLabelWith(message: String) {
         
         var stringMessage = message
         
@@ -396,7 +403,7 @@ class NotablesViewController: BaseLocationViewController, UITableViewDataSource,
     /**
      Updates the UI elements according the messages received from the HAT
      */
-    func updateUI() {
+    private func updateUI() {
         
         if notesArray.count > 0 {
             

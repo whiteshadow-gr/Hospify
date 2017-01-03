@@ -29,10 +29,13 @@ struct NotesData {
     
     /// the note id
     var id: Int
+    
     /// the name of the note
     var name: String
+    
     /// the last updated date of the note
     var lastUpdated: Date
+    
     /// the data of the note, such as tables about the author, location, photo etc
     var data: NotablesData
     

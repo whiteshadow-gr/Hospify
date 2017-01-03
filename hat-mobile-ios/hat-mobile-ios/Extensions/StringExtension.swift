@@ -18,6 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+import UIKit
+
 // MARK: String extension
 
 extension String {
@@ -66,5 +68,16 @@ extension String {
         }
         
         return array
+    }
+    
+    /**
+     Trims a given String
+     
+     - parameter string: the String to trim
+     - returns: trimmed String
+     */
+    func TrimString() -> String {
+        
+        return self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
     }
 }

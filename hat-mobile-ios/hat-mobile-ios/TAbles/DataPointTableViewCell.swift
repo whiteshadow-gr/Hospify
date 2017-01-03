@@ -20,10 +20,17 @@
 
 import UIKit
 
-/// Extends UiTableViewCell
-class DataPointTableViewCell: UITableViewCell {
+// MARK: Class
 
+/// The data points table view cell class
+class DataPointTableViewCell: UITableViewCell {
+    
+    // MARK: - IBOutlets
+
+    /// An IBOutlet for handling the latitude label of the cell
     @IBOutlet weak var labelLatitude: UILabel!
+    /// An IBOutlet for handling the date label of the cell
     @IBOutlet weak var labelDateAdded: UILabel!
+    /// An IBOutlet for handling the sync label of the cell
     @IBOutlet weak var labelSyncDate: UILabel!
 }

@@ -31,6 +31,7 @@ struct PhotoData {
     var source: String
     /// the caption of the photo
     var caption: String
+    
     /// if photo is shared
     var shared: Bool
     

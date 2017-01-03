@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     // MARK: - Variables
     
     var window: UIWindow?
-    var deferringUpdates:Bool = false
+    var deferringUpdates: Bool = false
     var lastPos: CLLocation = CLLocation(latitude: 0, longitude: 0)
     
     /// Load the LocationManager
@@ -76,7 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         UIApplication.shared.registerUserNotificationSettings(notificationSettings)
         
         /* we already have a hat_domain, ie. can skip the login screen? */
-        if !Helper.TheUserHATDomain().isEmpty {
+        if !HatAccountService.TheUserHATDomain().isEmpty {
             
             /* Go to the map screen. */
             let nav: UINavigationController = window?.rootViewController as! UINavigationController
@@ -88,6 +88,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }
         
         self.window?.tintColor = Constants.Colours.AppBase
+        
+        // the count delegate
+        //self.updateCountDelegate = self
         
         return true
     }
@@ -153,13 +156,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 //            manager.stopUpdatingLocation()
 //            NSLog("Delegate stopUpdatingLocation");
 //        }
-        
-        
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         
+        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
     // MARK: - oAuth handler function
@@ -231,11 +232,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
                     // add data
                     _ = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
+                    let syncHelper = SyncDataHelper()
+                    _ = syncHelper.CheckNextBlockToSync()
                 }
             } else {
 
                 // add data
                 _ = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
+                let syncHelper = SyncDataHelper()
+                _ = syncHelper.CheckNextBlockToSync()
             }
         }
     }

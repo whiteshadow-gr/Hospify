@@ -22,137 +22,119 @@ import SwiftyJSON
 import KeychainSwift
 import CoreLocation
 
+// MARK: Class
+
 /*
  A series of static help functions
  Note: Note: define class in class to make static
  */
-class Helper
-{
+class Helper {
+    
+    // MARK: - enums
     
     /**
-     Result from HTTP requests
+     JSON Result from HTTP requests
      
-     - IsSuccess: <#IsSuccess description#>
-     - Error:     <#Error description#>
+     - IsSuccess: A tuple containing: isSuccess: Bool, statusCode: Int?, result: JSON
+     - Error: A tuple containing: error: Error, statusCode: Int?
      */
     enum ResultType {
+        
+        /// when the result is success. A tuple containing: isSuccess: Bool, statusCode: Int?, result: JSON
         case isSuccess(isSuccess: Bool, statusCode: Int?, result: JSON)
-        case error(error: Error, statusCode: Int?)
-    }
-    
-    enum ResultTypeString {
-        case isSuccess(isSuccess: Bool, statusCode: Int?, result: String)
+        /// when the result is error. A tuple containing: error: Error, statusCode: Int?
         case error(error: Error, statusCode: Int?)
     }
     
     /**
-     Used for tyime interval creation
+     String Result from HTTP requests
      
-     - Future: <#Future description#>
-     - Past:   <#Past description#>
+     - IsSuccess: A tuple containing: isSuccess: Bool, statusCode: Int?, result: String
+     - Error: A tuple containing: error: Error, statusCode: Int?
+     */
+    enum ResultTypeString {
+        
+        /// when the result is success. A tuple containing: isSuccess: Bool, statusCode: Int?, result: String
+        case isSuccess(isSuccess: Bool, statusCode: Int?, result: String)
+        /// when the result is error. A tuple containing: error: Error, statusCode: Int?
+        case error(error: Error, statusCode: Int?)
+    }
+    
+    /**
+     Used for time interval creation
+     
+     - future: Time interval in the future
+     - past: Time interval in the past
      */
     enum TimeType {
+        
+        /// Time interval in the future
         case future
+        /// Time interval in the past
         case past
     }
     
+    /**
+     Used for time interval creation on map view depending on the user's selection
+     
+     - none: No time period selected
+     - yesterday: Time period selected, yesterday
+     - today: Time period selected, today
+     - lastWeek: Time period selected, last week
+     */
     enum TimePeriodSelected {
+        
+        /// No time period selected
         case none
-        case yesyerday
+        /// Time period selected, yesterday
+        case yesterday
+        /// Time period selected, today
         case today
+        /// Time period selected, last week
         case lastWeek
     }
-    /**
-     Trim a given String
-     
-     - parameter string: the String to trim
-     
-     - returns: trimmed String
-     */
-    class func TrimString(_ string: String) -> String
-    {
-        return string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        
-    }
     
+    // MARK: - Structs
+    
+    /// A stuct to init a time interval in the future
     struct FutureTimeInterval {
+        
+        // the interval
         var interval: TimeInterval
         
+        /**
+         Custom initializer of FutureTimeInterval
+         
+         - parameter days: The days to add
+         - parameter timeType: The time type
+         */
         init(days: TimeInterval, timeType: TimeType) {
-            var timeBase:Double = 24
+            
+            var timeBase: Double = 24
+            // depending on the time type do the math
             switch timeType {
+                
             case .future:
+                
                 timeBase = abs(timeBase)
-                break;
             case .past:
+                
                 timeBase = -abs(timeBase)
-                break;
             }
+            // save time interval
             self.interval = (timeBase * 3600 * days)
         }
     }
     
-    /**
-     *  Whether we are in emulator or not
-     */
-    struct Platform {
-        static let isSimulator: Bool = {
-            var isSim = false
-            #if arch(i386) || arch(x86_64)
-                isSim = true
-            #endif
-            return isSim
-        }()
-    }
-
-    /**
-     Takes a NSDate and returns a string of time ago
-     
-     - parameter date: NSDate object
-     
-     - returns: a formatted string of time-ago
-     */
-    class func TimeAgoSinceDate(_ date: Date) -> String{
-        
-        let calendar = Calendar.current
-        let now = Date()
-        let earliest = (now as NSDate).earlierDate(date)
-        let latest = (earliest == now) ? date : now
-        let components:DateComponents = (calendar as NSCalendar).components([NSCalendar.Unit.minute , NSCalendar.Unit.hour , NSCalendar.Unit.day , NSCalendar.Unit.weekOfYear , NSCalendar.Unit.month , NSCalendar.Unit.year , NSCalendar.Unit.second], from: earliest, to: latest, options: NSCalendar.Options())
-    
-        if (components.year! >= 2) {
-            return NSLocalizedString("Last year", comment: "")
-        } else if (components.month! >= 2) {
-            return String.localizedStringWithFormat(NSLocalizedString("%d months ago", comment: ""), components.month!)
-        } else if (components.weekOfYear! >= 1){
-            return NSLocalizedString("A week ago", comment: "")
-        } else if (components.day! >= 2) {
-            return String.localizedStringWithFormat(NSLocalizedString("%d days ago", comment: ""), components.day!)
-        } else if (components.day! >= 1){
-            return NSLocalizedString("A day ago", comment: "")
-        } else if (components.hour! >= 2) {
-            return String.localizedStringWithFormat(NSLocalizedString("%d hours ago", comment: ""), components.hour!)
-        } else if (components.hour! >= 1){
-            return NSLocalizedString("An hour ago", comment: "")
-        } else if (components.minute! >= 2) {
-            return String.localizedStringWithFormat(NSLocalizedString("%d minutes ago", comment: ""), components.minute!)
-        } else if (components.minute! >= 1){
-            return NSLocalizedString("A minute ago", comment: "")
-        } else if (components.second! >= 3) {
-            return String.localizedStringWithFormat(NSLocalizedString("%d seconds ago", comment: ""), components.second!)
-        } else {
-            return NSLocalizedString("Just now", comment: "")
-        }
-        
-    }
+    // MARK: - Unsorted methods
     
     /**
      Get the Market Access Token for the iOS data plug
      
      - returns: MarketAccessToken
      */
-    class func TheMarketAccessToken() -> Constants.MarketAccessTokenAlias
-    {
+    class func TheMarketAccessToken() -> Constants.MarketAccessTokenAlias {
+        
         return Constants.HATDataPlugCredentials.Market_AccessToken
     }
     
@@ -161,52 +143,15 @@ class Helper
      
      - returns: MarketDataPlugID
      */
-    class func TheMarketDataPlugID() -> Constants.MarketDataPlugIDAlias
-    {
+    class func TheMarketDataPlugID() -> Constants.MarketDataPlugIDAlias {
+        
         return Constants.HATDataPlugCredentials.Market_DataPlugID
     }
     
     /**
-     Get the Market Access Token for the iOS data plug
+     Construct the headers for the Requests
      
-     - returns: HATUsername
-     */
-    class func TheHATUsername() -> Constants.HATUsernameAlias
-    {
-        return Constants.HATDataPlugCredentials.HAT_Username
-    }
-    
-    /**
-     Get the Market Access Token for the iOS data plug
-     
-     - returns: HATPassword
-     */
-    class func TheHATPassword() -> Constants.HATPasswordAlias
-    {
-        return Constants.HATDataPlugCredentials.HAT_Password
-    }
-    
-    /**
-     Get the Market Access Token for the iOS data plug
-     
-     - returns: UserHATDomainAlias
-     */
-    class func TheUserHATDomain() -> Constants.UserHATDomainAlias
-    {
-        
-        if let hatDomain = GetKeychainValue(key: Constants.Keychain.HATDomainKey)
-        {
-            return hatDomain;
-        }
-        
-        return ""
-    }
-    
-    /**
-     Construct the headres for the Requests
-     
-     - parameter xAuthToken: <#xAuthToken description#>
-     
+     - parameter xAuthToken: The xAuthToken String
      - returns: [String: String]
      */
     class func ConstructRequestHeaders(_ xAuthToken: String) -> [String: String] {
@@ -219,48 +164,40 @@ class Helper
     /**
      Register with HAT url
      
+     - parameter userHATDomain: The user's hat domain
      - returns: HATRegistrationURLAlias
      */
-    class func TheAppRegistrationWithHATURL(_ userHATDomain: String) -> Constants.HATRegistrationURLAlias
-    {
+    class func TheAppRegistrationWithHATURL(_ userHATDomain: String) -> Constants.HATRegistrationURLAlias {
+        
         // sample format
         // GET
         // https://marketsquare.hubofallthings.net/api/dataplugs/${MARKET_DATA_PLUG_ID}/connect?hat=${HAT_DOMAIN}
 
-        if let escapedUserHATDomain:String = userHATDomain.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
-        {
-            let url:Constants.HATRegistrationURLAlias =
-                Constants.RequestUrls.AppRegistrationWithHATURL +
+        if let escapedUserHATDomain:String = userHATDomain.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) {
+            
+            let url:Constants.HATRegistrationURLAlias = Constants.RequestUrls.AppRegistrationWithHATURL +
                     self.TheMarketDataPlugID() + "/" + /* data plug id */
-                    "connect?hat=" +
-                    escapedUserHATDomain  /* hat domain for the user */
+                    "connect?hat=" + escapedUserHATDomain  /* hat domain for the user */
             
             return url
-
         }
 
         return ""
     }
     
-    
     /**
      Should be performed before each data post request as token lifetime is short.
      
      - returns: UserHATAccessTokenURLAlias
      */
-    class func TheUserHATAccessTokenURL() -> Constants.UserHATAccessTokenURLAlias
-    {
+    class func TheUserHATAccessTokenURL() -> Constants.UserHATAccessTokenURLAlias {
+        
         // sample format
         // GET
         // https://${HAT_DOMAIN}/users/access_token?username=${HAT_USERNAME}&password=${HAT_PASSWORD}
         
-        let url:Constants.UserHATAccessTokenURLAlias =
-                "https://" +
-                    self.TheUserHATDomain() + /* hat domain for the user */
-                    "/users/access_token?username=" +
-                    self.TheHATUsername() +
-                    "&password=" +
-                    self.TheHATPassword()
+        let url:Constants.UserHATAccessTokenURLAlias = "https://" + HatAccountService.TheUserHATDomain() + /* hat domain for the user */
+                    "/users/access_token?username=" + HatAccountService.TheHATUsername() + "&password=" + HatAccountService.TheHATPassword()
         
         return url
     }
@@ -270,67 +207,53 @@ class Helper
      
      - returns: UserHATAccessTokenURLAlias
      */
-    class func TheUsersAccessTokenURL() -> Constants.UserHATAccessTokenURLAlias
-    {
+    class func TheUsersAccessTokenURL() -> Constants.UserHATAccessTokenURLAlias {
+        
         // sample format
         // GET
         // https://${HAT_DOMAIN}/users/access_token
         
-        let url:Constants.UserHATAccessTokenURLAlias =
-            "https://" +
-                self.TheUserHATDomain() + /* hat domain for the user */
-                "/users/access_token"
+        let url:Constants.UserHATAccessTokenURLAlias = "https://" + HatAccountService.TheUserHATDomain() + "/users/access_token"
         
         return url
     }
-    
     
     /**
      Register with HAT url
      
      - returns: HATRegistrationURLAlias
      */
-    class func TheUserHATDOmainPublicKeyURL(_ userHATDomain: String) -> Constants.UserHATDomainPublicTokenURLAlias!
-    {
+    class func TheUserHATDOmainPublicKeyURL(_ userHATDomain: String) -> Constants.UserHATDomainPublicTokenURLAlias! {
+        
         // sample format
         // GET
         // https://iostesting.hubofallthings.net/publickey
         
-        if let escapedUserHATDomain:String = userHATDomain.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)
-        {
-            let url:Constants.UserHATDomainPublicTokenURLAlias =
-                "https://" +
-                    escapedUserHATDomain + "/" + /* hat domain */
-                    "publickey"
+        if let escapedUserHATDomain:String = userHATDomain.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) {
+            
+            let url: Constants.UserHATDomainPublicTokenURLAlias = "https://" + escapedUserHATDomain + "/" + "publickey"
             
             return url
-            
         }
         
         return nil
     }
-    
-    
     
     /**
         Check if our data source exists.
      
      - returns: String
      */
-    class func TheUserHATCheckIfDataStructureExistsURL() -> String
-    {
+    class func TheUserHATCheckIfDataStructureExistsURL() -> String {
+        
         // sample format
         // GET
         // http://${DOMAIN}/data/table?name=${NAME}&source=${SOURCE}`
         
         
-        let url:String =
-            "https://" +
-                self.TheUserHATDomain() + /* hat domain for the user */
-                "/data/table?name=" +
-                Constants.HATDataSource().name +
-                "&source=" +
-                Constants.HATDataSource().source
+        let url:String = "https://" + HatAccountService.TheUserHATDomain() + /* hat domain for the user */
+                "/data/table?name=" + Constants.HATDataSource().name +
+                "&source=" + Constants.HATDataSource().source
         
         return url
     }
@@ -340,41 +263,29 @@ class Helper
      
      - returns: String
      */
-    class func createTableURL() -> String
-    {
+    class func createTableURL() -> String {
+        
         // sample format
         // GET
         // http://${DOMAIN}/data/table?name=${NAME}&source=${SOURCE}`
         
-        
-        let url:String =
-            "https://" +
-                self.TheUserHATDomain() + /* hat domain for the user */
-                "/data/table"
+        let url:String = "https://" + HatAccountService.TheUserHATDomain() + "/data/table"
         
         return url
     }
     
-    class func TheUserHATCheckIfTableExistsURL(tableName: String, sourceName: String) -> String
-    {
+    class func TheUserHATCheckIfTableExistsURL(tableName: String, sourceName: String) -> String {
+        
         // sample format
         // GET
         // http://${DOMAIN}/data/table?name=${NAME}&source=${SOURCE}`
         
-        
         let url:String =
-            "https://" +
-                self.TheUserHATDomain() + /* hat domain for the user */
-                "/data/table?name=" +
-                tableName +
-                "&source=" +
-                sourceName
+            "https://" + HatAccountService.TheUserHATDomain() + /* hat domain for the user */
+                "/data/table?name=" + tableName + "&source=" + sourceName
         
         return url
     }
-
-
-    
     
     /**
         Should be performed only if there isn’t an existing data source already.
@@ -382,60 +293,48 @@ class Helper
      
      - returns: String
      */
-    class func TheConfigureNewDataSourceURL() -> String
-    {
+    class func TheConfigureNewDataSourceURL() -> String {
+        
         // sample format
         // POST
         // http://${HAT_DOMAIN}/data/table
         // Headers: ‘X-Auth-Token’: ${HAT_ACCESS_TOKEN}
 
-        let url:String =
-                "https://" +
-                    self.TheUserHATDomain() + /* hat domain for the user */
-                    "/data/table"
+        let url:String = "https://" + HatAccountService.TheUserHATDomain() + "/data/table"
         
         return url
     }
-   
     
     /**
      If the datasource exists, we can get the field info using:
         http://${DOMAIN}/data/table/${TABLE_ID}`
      - returns: String
      */
-    class func TheGetFieldInformationUsingTableIDURL(_ fieldID: Int) -> String
-    {
+    class func TheGetFieldInformationUsingTableIDURL(_ fieldID: Int) -> String {
+        
         // sample format
         // POST
         // http://${HAT_DOMAIN}/data/record/values
         // Headers: ‘X-Auth-Token’: ${HAT_ACCESS_TOKEN}
         
-        let url:String =
-            "https://" +
-                self.TheUserHATDomain() + /* hat domain for the user */
-                "/data/table/" +
-                String(fieldID)
+        let url:String = "https://" + HatAccountService.TheUserHATDomain() + "/data/table/" + String(fieldID)
         
         return url
     }
     
-    class func ThePOSTDataToHATURL() -> String
-    {
+    class func ThePOSTDataToHATURL() -> String {
+        
         // sample format
         // POST
         // http://${HAT_DOMAIN}/data/table
         // Headers: ‘X-Auth-Token’: ${HAT_ACCESS_TOKEN}
         
-        let url:String =
-            "https://" +
-                self.TheUserHATDomain() + /* hat domain for the user */
-                "/data/record/values"
+        let url:String = "https://" + HatAccountService.TheUserHATDomain() + "/data/record/values"
         
         return url
     }
 
-    class func getDateFromString(_ dateString : String) -> Date!
-    {
+    class func getDateFromString(_ dateString : String) -> Date! {
         
         let formatter = DateFormatter()
         formatter.dateFormat = Constants.DateFormats.UTC 
@@ -445,8 +344,8 @@ class Helper
         return date
     }
     
-    class func getDateString(_ datetime : Date) -> String
-    {
+    class func getDateString(_ datetime : Date) -> String {
+        
         let formatter = DateFormatter()
         formatter.dateStyle = DateFormatter.Style.full
         formatter.timeStyle = DateFormatter.Style.medium
@@ -457,8 +356,8 @@ class Helper
         return date
     }
     
-    class func getDateString(_ datetime : Date, format: String) -> String
-    {
+    class func getDateString(_ datetime : Date, format: String) -> String {
+        
         let formatter = DateFormatter()
         formatter.dateFormat = format
         formatter.timeZone = TimeZone(abbreviation: "UTC")
@@ -469,7 +368,9 @@ class Helper
     }
     
     class func UIColorFromRGB(_ rgbValue: UInt) -> UIColor {
+        
         return UIColor(
+            
             red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
             green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
             blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
@@ -484,25 +385,30 @@ class Helper
      */
     class func ExceptionFriendlyMessage(_ errorCode: Int!, defaultMessage: String) -> String {
         
-        if let errorCodeCheck:Int = errorCode{
+        if let errorCodeCheck:Int = errorCode {
+            
             switch errorCodeCheck {
+                
             case 401:
+                
                 return NSLocalizedString("exception_401", comment: "")
             case 400:
+                
                 return NSLocalizedString("exception_400", comment: "")
             case 500:
+                
                 return NSLocalizedString("exception_500", comment: "")
             case 504:
+                
                 return NSLocalizedString("exception_504", comment: "")
             default:
+                
                 return defaultMessage
             }
-        }
-        else
-        {
+        } else {
+            
             return defaultMessage
         }
-        
     }
     
     /**
@@ -511,12 +417,15 @@ class Helper
      - returns: String or nil
      */
     class func GetQueryStringParameter(url: String?, param: String) -> String? {
+        
         if let url = url, let urlComponents = NSURLComponents(string: url), let queryItems = (urlComponents.queryItems as [URLQueryItem]!) {
+            
             return queryItems.filter({ (item) in item.name == param }).first?.value!
         }
         return nil
     }
     
+    // MARK: - Keychain methods
     
     /**
     Set a value in the keychain
@@ -531,13 +440,14 @@ class Helper
         let keychain = KeychainSwift()
         //keychain.synchronizable = true
         if keychain.set(value, forKey: key, withAccess: .accessibleWhenUnlocked) {
+            
             // Keychain item is saved successfully
             return true
         } else {
+            
             //let st: OSStatus = keychain.lastResultCode
             return false
         }
-        
     }
     
     /**
@@ -566,6 +476,7 @@ class Helper
         return keychain.delete(key)
     }
     
+    // MARK: - Maps settings
     
     /**
      Check the user preferences for accuracy setting
@@ -578,25 +489,23 @@ class Helper
 
         if preferences.object(forKey: Constants.Preferences.UserNewDefaultAccuracy) != nil {
             // already done
-        }else{
+        } else {
             // if none, best or 10m we go to 100m accuracy instead
             let existingAccuracy:CLLocationAccuracy = preferences.object(forKey: Constants.Preferences.MapLocationAccuracy) as? CLLocationAccuracy ?? kCLLocationAccuracyHundredMeters
             
-            if ((existingAccuracy == kCLLocationAccuracyBest) || (existingAccuracy == kCLLocationAccuracyNearestTenMeters))
-            {
+            if ((existingAccuracy == kCLLocationAccuracyBest) || (existingAccuracy == kCLLocationAccuracyNearestTenMeters)) {
+                
                 preferences.set(kCLLocationAccuracyHundredMeters, forKey: Constants.Preferences.MapLocationAccuracy)
             }
             
             // set user delta
             preferences.set("UserNewDefaultAccuracy", forKey: Constants.Preferences.UserNewDefaultAccuracy)
-
         }
         
         let newAccuracy:CLLocationAccuracy = preferences.object(forKey: Constants.Preferences.MapLocationAccuracy) as? CLLocationAccuracy ?? kCLLocationAccuracyHundredMeters
         
         return newAccuracy
     }
-
 
     /**
      Check the user preferences for distance setting
@@ -605,19 +514,18 @@ class Helper
      */
     class func GetUserPreferencesDistance() -> CLLocationDistance {
         
-        let minValue:CLLocationDistance = 100;
+        let minValue: CLLocationDistance = 100;
         
         let preferences = UserDefaults.standard
-        var newDistance:CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDistance) as? CLLocationDistance ?? minValue
+        var newDistance: CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDistance) as? CLLocationDistance ?? minValue
         
         // We will clip the lowest value up to a default, this can happen via a previous version of the app
-        if newDistance < minValue
-        {
+        if newDistance < minValue {
+            
             newDistance = minValue
         }
         
         return newDistance
-        
     }
     
     /**
@@ -627,19 +535,18 @@ class Helper
      */
     class func GetUserPreferencesDeferredDistance() -> CLLocationDistance {
         
-        let minValue:CLLocationDistance = 150;
+        let minValue: CLLocationDistance = 150;
 
         let preferences = UserDefaults.standard
-        var newDistance:CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDeferredDistance) as? CLLocationDistance ?? minValue
+        var newDistance: CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDeferredDistance) as? CLLocationDistance ?? minValue
         
         // We will clip the lowest value up to a default, this can happen via a previous version of the app
-        if newDistance < minValue
-        {
+        if newDistance < minValue {
+            
             newDistance = minValue
         }
 
         return newDistance
-        
     }
     
     /**
@@ -649,18 +556,17 @@ class Helper
      */
     class func GetUserPreferencesDeferredTimeout() -> TimeInterval {
         
-        let minValue:TimeInterval = 180
+        let minValue: TimeInterval = 180
         
         let preferences = UserDefaults.standard
-        var newTime:TimeInterval = preferences.object(forKey: Constants.Preferences.MapLocationDeferredTimeout) as? TimeInterval ?? minValue
+        var newTime: TimeInterval = preferences.object(forKey: Constants.Preferences.MapLocationDeferredTimeout) as? TimeInterval ?? minValue
         
         // We will clip the lowest value up to a default, this can happen via a previous version of the app
-        if newTime < minValue
-        {
+        if newTime < minValue {
+            
             newTime = minValue
         }
         
         return newTime
     }
- 
 }

@@ -20,12 +20,13 @@
 
 // MARK: Protocol
 
-/**
- *  When data in settings has changed
- */
+/// When data in settings has changed
 public protocol MapSettingsDelegate {
     
     // MARK: - Protocol's functions
     
+    /**
+     MapSettingsDelegate
+     */
     func onChanged()
 }

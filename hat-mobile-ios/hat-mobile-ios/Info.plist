@@ -30,7 +30,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.6.1.2</string>
+	<string>1.6.1.5</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -57,7 +57,7 @@
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Optional for better GPS tracking</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Used to track your location</string>
+	<string>Push location data into your HAT</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>FontAwesome.otf</string>

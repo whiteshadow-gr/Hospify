@@ -33,10 +33,11 @@ struct AuthorData {
     var name: String
     /// the photo url of the author
     var photoURL: String
-    /// the id of the author
-    var id: Int
     /// the phata of the author. Required
     var phata: String
+    
+    /// the id of the author
+    var id: Int
     
     // MARK: - Initialisers
     

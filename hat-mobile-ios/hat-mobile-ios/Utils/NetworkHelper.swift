@@ -88,7 +88,6 @@ class NetworkHelper {
                     completion(Helper.ResultType.error(error: error, statusCode: response.response?.statusCode))
                 }
         }
-        
     }
     
     /**

@@ -20,6 +20,7 @@
 
 import Alamofire
 import SwiftyJSON
+import Crashlytics
 
 // MARK: Class
 
@@ -88,5 +89,57 @@ class NotablesService: NSObject {
     class func completionDeleteNotesFunction(token: String) -> Void {
         
         print(token)
+    }
+    
+    /**
+     Posts the note to the hat
+     
+     - parameter token: The token returned from the hat
+     - parameter json: The json file as a Dictionary<String, Any>
+     */
+    class func postNote(token: String, note: NotesData, successCallBack: @escaping () -> Void) -> Void {
+        
+        let userToken = HatAccountService.getUsersTokenFromKeychain()
+        
+        func posting(resultJSON: Dictionary<String, Any>) {
+            
+            // create JSON file for posting with default values
+            let hatDataStructure = JSONHelper.createJSONForPostingOnNotables(hatTableStructure: resultJSON)
+            // update JSON file with the values needed
+            let hatData = JSONHelper.updateJSONFile(file: hatDataStructure, noteFile: note)
+            
+            // create the headers
+            let headers = Helper.ConstructRequestHeaders(userToken)
+            
+            let domain = HatAccountService.TheUserHATDomain()
+            
+            // make async request
+            NetworkHelper.AsynchronousRequest("https://" + domain + "/data/record/values", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: hatData, headers: headers, completion: { (r: Helper.ResultType) -> Void in
+                
+                // handle result
+                switch r {
+                    
+                case .isSuccess(let isSuccess, _, _):
+                    
+                    if isSuccess {
+                        
+                        // reload table
+                        successCallBack()
+                    }
+                    
+                case .error(let error, let statusCode):
+                    
+                    print("error res: \(error)")
+                    Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "status code: " : "\(statusCode)"])
+                }
+            })
+        }
+        
+        func errorCall() {
+            
+            
+        }
+        
+        HatAccountService.checkHatTableExistsForUploading(tableName: "notablesv1", sourceName: "rumpel", authToken: userToken, successCallback: posting, errorCallback: errorCall)
     }
 }

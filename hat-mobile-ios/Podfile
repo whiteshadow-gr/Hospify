@@ -13,7 +13,7 @@ target 'hat-mobile-ios' do
     pod 'JWTDecode'
     pod 'SwiftyRSA'
     pod 'KeychainSwift'
-    pod 'PromiseKit'
+    pod 'Stripe'
     pod 'Fabric'
     pod 'Crashlytics'
 end

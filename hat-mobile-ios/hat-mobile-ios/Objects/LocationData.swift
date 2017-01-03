@@ -33,16 +33,18 @@ struct LocationData {
     var altitudeAccuracy: Double
     /// the latitude at the time of creating the note
     var latitude: Double
-    /// the heading at the time of creating the note. This value is optinal
-    var heading: String
-    /// is the location shared at the time of creating the note? This value is optional.
-    var shared: Bool
     /// the accuracy at the time of creating the note
     var accuracy: Double
     /// the longitude at the time of creating the note
     var longitude: Double
     /// the speed at the time of creating the note. This value is optional
     var speed: Double
+    
+    /// the heading at the time of creating the note. This value is optinal
+    var heading: String
+    
+    /// is the location shared at the time of creating the note? This value is optional.
+    var shared: Bool
     
     // MARK: Initialisers
     

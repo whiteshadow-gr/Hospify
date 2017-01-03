@@ -20,13 +20,22 @@
 
 // MARK: Protocol
 
-/**
- *  Delegate to update the item count
- */
+/// Delegate to update the item count
 public protocol UpdateCountDelegate {
     
     // MARK: - Protocol's functions
     
+    /**
+     UpdateCountDelegate method
+     
+     - parameter count: the current point count
+     */
     func onUpdateCount(_ count: Int)
+    
+    /**
+     UpdateCountDelegate method
+     
+     - parameter error: The description of the error as a String
+     */
     func onUpdateError(_ error: String)
 }

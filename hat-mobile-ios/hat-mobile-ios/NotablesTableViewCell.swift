@@ -38,8 +38,10 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     @IBOutlet weak var postDataLabel: UILabel!
     /// An IBOutlet for handling the username of the post
     @IBOutlet weak var usernameLabel: UILabel!
+    
     /// An IBOutlet for handling the profile image of the post
     @IBOutlet weak var profileImage: UIImageView!
+    
     /// An IBOutlet for handling the collection view
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -89,7 +91,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         // create this zebra like color based on the index of the cell
         if (indexPath.row % 2 == 1) {
             
-            newCell.contentView.backgroundColor = UIColor.init(colorLiteralRed: 51/255, green: 74/255, blue: 79/255, alpha: 1)
+            newCell.contentView.backgroundColor = UIColor.rumpelLightGray()
         }
         
         // show the data in the cell's labels
@@ -152,7 +154,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         
         cell.collectionView.reloadData()
         
-        cell.contentView.backgroundColor = UIColor.init(colorLiteralRed: 29/255, green: 49/255, blue: 53/255, alpha: 1)
+        cell.contentView.backgroundColor = UIColor.rumpelDarkGray()
 
         return cell
     }
@@ -170,8 +172,8 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         
         // format the info label
         let textAttributes = [
-            NSForegroundColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
-            NSStrokeColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
+            NSForegroundColorAttributeName: UIColor.tealColor(),
+            NSStrokeColorAttributeName: UIColor.tealColor(),
             NSFontAttributeName: UIFont(name: "Open Sans", size: 11)!,
             NSStrokeWidthAttributeName: -1.0
             ] as [String : Any]
@@ -189,7 +191,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         
         if let unwrappedDate = publicUntil {
             
-            if shared && (Date().compare(unwrappedDate) == .orderedAscending) {
+            if shared && (Date().compare(unwrappedDate) == .orderedDescending) {
                 
                 shareString = " Expired"
             }

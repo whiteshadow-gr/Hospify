@@ -33,6 +33,7 @@ struct LearnMoreObject {
     var info: String
     /// The button title if any
     var buttonTitle: String
+    
     /// The image
     var image: UIImage
     

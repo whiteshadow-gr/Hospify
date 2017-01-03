@@ -112,7 +112,7 @@ extension UIViewController {
         keyboardFrame = view.convert(keyboardFrame, from: nil)
         
         var contentInset:UIEdgeInsets = scrollView.contentInset
-        contentInset.bottom = keyboardFrame.size.height
+        contentInset.bottom = keyboardFrame.size.height + 40
         scrollView.contentInset = contentInset
     }
     
@@ -133,9 +133,14 @@ extension UIViewController {
     // MARK: - Custom Alerts
     
     /**
-     <#Function Details#>
+     Creates a classic alert with 2 buttons
      
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter alertMessage: The message of the alert
+     - parameter alertTitle: The title of the alert
+     - parameter cancelTitle: The title of the cancel button
+     - parameter proceedTitle: The title of the proceed button
+     - parameter proceedCompletion: The method to execute when the proceed button is pressed
+     - parameter cancelCompletion: The method to execute when the cancel button is pressed
      */
     func createClassicAlertWith(alertMessage: String, alertTitle: String, cancelTitle: String, proceedTitle: String, proceedCompletion: @escaping () -> Void, cancelCompletion: @escaping () -> Void) {
         
@@ -161,9 +166,12 @@ extension UIViewController {
     }
     
     /**
-     <#Function Details#>
+     Creates a classic OK alert with 1 button
      
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter alertMessage: The message of the alert
+     - parameter alertTitle: The title of the alert
+     - parameter okTitle: The title of the button
+     - parameter proceedCompletion: The method to execute when the ok button is pressed
      */
     func createClassicOKAlertWith(alertMessage: String, alertTitle: String, okTitle: String, proceedCompletion: @escaping () -> Void) {
         
@@ -182,5 +190,17 @@ extension UIViewController {
         
         // present the alert
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    // MARK: - UIStoryboard
+    
+    /**
+     Get Main storyboard reference
+     
+     - returns: UIStoryboard
+     */
+    class func getMainStoryboard() -> UIStoryboard {
+        
+        return UIStoryboard.init(name: "Main", bundle: nil)
     }
 }

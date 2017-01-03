@@ -39,14 +39,14 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         self.navigationItem.hidesBackButton = true
         
         // change tint color, the color of the selected icon in tab bar
-        self.tabBar.tintColor = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
+        self.tabBar.tintColor = UIColor.tealColor()
         // set delete to self in order to receive the calls from tab bar controller
         self.delegate = self
 
         // set tint color, if translucent and the bar tint color of navigation bar
         self.navigationController?.navigationBar.tintColor = UIColor.white
         self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
+        self.navigationController?.navigationBar.barTintColor = UIColor.tealColor()
         
         // change navigation bar title
         self.navigationController?.navigationBar.titleTextAttributes =
@@ -133,19 +133,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
      */
     func logoutUser() -> Void {
         
-        // create alert
-        let alert = UIAlertController(title: NSLocalizedString("logout_label", comment:  "logout"), message: NSLocalizedString("logout_message_label", comment:  "logout message"), preferredStyle: .alert)
-
-        // create yes button with action
-        let yesButtonOnAlertAction = UIAlertAction(title: NSLocalizedString("yes_label", comment:  "yes"), style: .default)
-        { (action) -> Void in
-            
-            // stop location updating
-            let helper = MapViewController()
-            helper.stopUpdating()
-            
-            // stop any timers
-            helper.stopAnyTimers()
+        let yesAction = { () -> Void in
             
             // reset the stack to avoid allowing back
             let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
@@ -166,11 +154,11 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             }
         }
         
-        // add actions to the alert
-        alert.addAction(yesButtonOnAlertAction)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("no_label", comment:  "no"), style: UIAlertActionStyle.default, handler: nil))
-        
-        // present alert
-        self.present(alert, animated: true, completion: nil)
+        self.createClassicAlertWith(alertMessage: NSLocalizedString("logout_message_label", comment:  "logout message"),
+                                    alertTitle: NSLocalizedString("logout_label", comment:  "logout"),
+                                    cancelTitle: NSLocalizedString("no_label", comment:  "no"),
+                                    proceedTitle: NSLocalizedString("yes_label", comment:  "yes"),
+                                    proceedCompletion: yesAction,
+                                    cancelCompletion: {() -> Void in return})
     }
 }

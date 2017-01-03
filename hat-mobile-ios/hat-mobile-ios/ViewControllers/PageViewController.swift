@@ -36,10 +36,12 @@ class PageViewController: UIViewController {
 
     /// An IBOutlet to handle the imageView
     @IBOutlet weak var imageView: UIImageView!
+    
     /// An IBOutlet to handle the titleLabel
     @IBOutlet weak var titleLabel: UILabel!
     /// An IBOutlet to handle the mainLabel
     @IBOutlet weak var mainLabel: UILabel!
+    
     /// An IBOutlet to handle the moreButton
     @IBOutlet weak var moreButton: UIButton!
     
@@ -98,8 +100,8 @@ class PageViewController: UIViewController {
                 ] as [String : Any]
             
             let textAttributes = [
-                NSForegroundColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
-                NSStrokeColorAttributeName: UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1),
+                NSForegroundColorAttributeName: UIColor.tealColor(),
+                NSStrokeColorAttributeName: UIColor.tealColor(),
                 NSFontAttributeName: UIFont(name: "Open Sans", size: 36)!,
                 NSStrokeWidthAttributeName: -1.0
                 ] as [String : Any]
@@ -147,7 +149,7 @@ class PageViewController: UIViewController {
      
      - parameter notification: The Notification object send with this notification
      */
-    func removeSecondPageController(notification: Notification) {
+    @objc private func removeSecondPageController(notification: Notification) {
         
         // if view is found remove it
         if let view = self.pageViewController {

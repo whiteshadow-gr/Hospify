@@ -218,6 +218,43 @@ struct JSONHelper {
         return arrayDictionary
     }
     
+    // MARK: - Create JSON for purchasing
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     - returns: <#Returns#>
+     */
+    static func createPurchaseJSONFrom(stripeModel: StripeModel) -> Dictionary <String, Any> {
+        
+        let address: Dictionary =  [
+            
+            "name" : stripeModel.name,
+            "country" : stripeModel.country,
+            "zip" : stripeModel.postCode,
+            "state" : stripeModel.state,
+            "line1" : stripeModel.address,
+            "city" : stripeModel.city
+        ]
+        
+        let sku: Array = [
+        
+            Dictionary.init(dictionaryLiteral: ("sku", stripeModel.sku)),
+            Dictionary.init(dictionaryLiteral: ("quantity", 1))
+        ] as [Any]
+        
+        let json: Dictionary = [
+        
+            "stripePaymentToken" : stripeModel.token,
+            "email" : stripeModel.email,
+            "address" : address,
+            "items" : sku
+        ] as [String : Any]
+        
+        return json
+    }
+    
     // MARK: - Update JSON file functions
     
     /**

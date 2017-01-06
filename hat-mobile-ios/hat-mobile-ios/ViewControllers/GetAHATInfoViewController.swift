@@ -16,6 +16,10 @@ import UIKit
 
 class GetAHATInfoViewController: UIViewController {
     
+    // MARK: - Variables
+    
+    var hatProvider: HATProviderObject? = nil
+    
     // MARK: - IBOutlets
     
     @IBOutlet weak var hatProviderImage: UIImageView!
@@ -33,6 +37,7 @@ class GetAHATInfoViewController: UIViewController {
     
     @IBAction func signUpAction(_ sender: Any) {
         
+        NotificationCenter.default.post(name: NSNotification.Name("hideView"), object: "1")
     }
     
     @IBAction func cancelButtonAction(_ sender: Any) {
@@ -49,6 +54,53 @@ class GetAHATInfoViewController: UIViewController {
         // Do any additional setup after loading the view.
         cancelButton.imageView?.image = cancelButton.imageView?.image?.withRenderingMode(.alwaysTemplate)
         cancelButton.tintColor = UIColor.black
+        
+        if (hatProvider != nil) {
+            
+            self.hatProviderImage.image = (hatProvider?.hatProviderImage)!
+            self.hatProviderTitle.text = hatProvider?.name
+            self.hatProviderInfo.text = hatProvider?.category.description
+            self.hatProviderDetailedInfo.text = hatProvider?.description
+            self.hatProviderDetailedInfo.sizeToFit()
+            self.hatProviderInfo.sizeToFit()
+            
+            let features: NSMutableAttributedString = NSMutableAttributedString(string: "")
+            for (index, string) in (hatProvider?.features)!.enumerated() {
+                
+                features.append(NSAttributedString(string: string))
+                
+                if (index < (hatProvider?.features.count)! - 1) {
+                    
+                    features.append(NSAttributedString(string: "\n" + "\u{2022}" + "\n"))
+                }
+            }
+            
+            self.hatProviderFeaturesListLabel.attributedText = features
+            
+            // format title label
+            let textAttributesTitle = [
+                NSForegroundColorAttributeName: UIColor.white,
+                NSStrokeColorAttributeName: UIColor.white,
+                NSFontAttributeName: UIFont(name: "Open Sans", size: 14)!,
+                NSStrokeWidthAttributeName: -1.0
+                ] as [String : Any]
+            
+            let textAttributes = [
+                NSForegroundColorAttributeName: UIColor.white,
+                NSStrokeColorAttributeName: UIColor.white,
+                NSFontAttributeName: UIFont(name: "OpenSans-Bold", size: 14)!,
+                NSStrokeWidthAttributeName: -1.0
+                ] as [String : Any]
+            
+            let partOne = NSAttributedString(string: "SIGN ME UP ", attributes: textAttributesTitle)
+            let partTwo = NSAttributedString(string: "FREE", attributes: textAttributes)
+            let combination = NSMutableAttributedString()
+            
+            combination.append(partOne)
+            combination.append(partTwo)
+            
+            self.signUpButton.setAttributedTitle(combination, for: .normal)
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -56,15 +108,4 @@ class GetAHATInfoViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

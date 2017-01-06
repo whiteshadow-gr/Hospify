@@ -87,10 +87,6 @@ struct NotablesData {
             locationData = LocationData.init(dict: tempLocationData)
         }
         
-        // init optional values to default values and then assign the value if found in JSON
-        sharedOn = ""
-        publicUntil = nil
-        
         if let tempSharedOn = dict["shared_on"]?.string {
             
             sharedOn = tempSharedOn

@@ -33,6 +33,7 @@
 		6041B20E1DD4AC040018CC31 /* ShareOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6041B20C1DD4AC040018CC31 /* ShareOptionsViewController.swift */; };
 		6041B2101DD4AC190018CC31 /* NotablesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6041B20F1DD4AC190018CC31 /* NotablesTableViewCell.swift */; };
 		604237DF1E114F2D00E19109 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604237DE1E114F2D00E19109 /* UIColorExtension.swift */; };
+		6043F6D71E1D114D00C5BAD9 /* StripeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6043F6D61E1D114D00C5BAD9 /* StripeViewController.swift */; };
 		6044931B1DE9FE5C00B2FE7B /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6044931A1DE9FE5C00B2FE7B /* UIButtonExtension.swift */; };
 		6044B2181DDB3151003A1263 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6044B2171DDB3151003A1263 /* TabBarViewController.swift */; };
 		6044B21B1DDB7138003A1263 /* HatAccountService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6044B21A1DDB7138003A1263 /* HatAccountService.swift */; };
@@ -46,6 +47,13 @@
 		608EAAA81DFEA8AD00234C60 /* ViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608EAAA71DFEA8AD00234C60 /* ViewControllerExtension.swift */; };
 		608EAAAA1DFED0F300234C60 /* NotablesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608EAAA91DFED0F300234C60 /* NotablesService.swift */; };
 		60A727BD1DDF47ED008AF409 /* FormatterHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A727BC1DDF47EC008AF409 /* FormatterHelper.swift */; };
+		60B486251E1D341000914AD2 /* StripeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B486241E1D341000914AD2 /* StripeModel.swift */; };
+		60B486271E1D51A300914AD2 /* HATProviderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B486261E1D51A300914AD2 /* HATProviderObject.swift */; };
+		60B486291E1D529900914AD2 /* HATProviderKindObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B486281E1D529900914AD2 /* HATProviderKindObject.swift */; };
+		60B4862B1E1D52E400914AD2 /* HATProviderPaymentObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B4862A1E1D52E400914AD2 /* HATProviderPaymentObject.swift */; };
+		60B4862D1E1D534A00914AD2 /* HATProviderCategoryObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B4862C1E1D534A00914AD2 /* HATProviderCategoryObject.swift */; };
+		60B4862F1E1D55AC00914AD2 /* HATService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B4862E1E1D55AC00914AD2 /* HATService.swift */; };
+		60B486311E1D6E7B00914AD2 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B486301E1D6E7B00914AD2 /* UIImageViewExtension.swift */; };
 		60E7539A1DE46202001C85E7 /* NotesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E753991DE46202001C85E7 /* NotesData.swift */; };
 		60E753A01DE468A5001C85E7 /* NotablesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E7539F1DE468A5001C85E7 /* NotablesData.swift */; };
 		60E753A21DE468E9001C85E7 /* AuthorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E753A11DE468E9001C85E7 /* AuthorData.swift */; };
@@ -126,6 +134,8 @@
 		6041B20C1DD4AC040018CC31 /* ShareOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareOptionsViewController.swift; sourceTree = "<group>"; };
 		6041B20F1DD4AC190018CC31 /* NotablesTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotablesTableViewCell.swift; sourceTree = "<group>"; };
 		604237DE1E114F2D00E19109 /* UIColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIColorExtension.swift; path = Extensions/UIColorExtension.swift; sourceTree = "<group>"; };
+		6043F6D51E1D0A3600C5BAD9 /* HatMobile-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HatMobile-Bridging-Header.h"; sourceTree = "<group>"; };
+		6043F6D61E1D114D00C5BAD9 /* StripeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StripeViewController.swift; path = ViewControllers/StripeViewController.swift; sourceTree = "<group>"; };
 		6044931A1DE9FE5C00B2FE7B /* UIButtonExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIButtonExtension.swift; path = Utils/UIButtonExtension.swift; sourceTree = "<group>"; };
 		6044B2171DDB3151003A1263 /* TabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TabBarViewController.swift; path = ViewControllers/TabBarViewController.swift; sourceTree = "<group>"; };
 		6044B21A1DDB7138003A1263 /* HatAccountService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HatAccountService.swift; path = Services/HatAccountService.swift; sourceTree = "<group>"; };
@@ -139,6 +149,13 @@
 		608EAAA71DFEA8AD00234C60 /* ViewControllerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ViewControllerExtension.swift; path = Extensions/ViewControllerExtension.swift; sourceTree = "<group>"; };
 		608EAAA91DFED0F300234C60 /* NotablesService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotablesService.swift; path = Services/NotablesService.swift; sourceTree = "<group>"; };
 		60A727BC1DDF47EC008AF409 /* FormatterHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FormatterHelper.swift; path = Utils/FormatterHelper.swift; sourceTree = "<group>"; };
+		60B486241E1D341000914AD2 /* StripeModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StripeModel.swift; path = Objects/StripeModel.swift; sourceTree = "<group>"; };
+		60B486261E1D51A300914AD2 /* HATProviderObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATProviderObject.swift; path = Objects/HATProviderObject.swift; sourceTree = "<group>"; };
+		60B486281E1D529900914AD2 /* HATProviderKindObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATProviderKindObject.swift; path = Objects/HATProviderKindObject.swift; sourceTree = "<group>"; };
+		60B4862A1E1D52E400914AD2 /* HATProviderPaymentObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATProviderPaymentObject.swift; path = Objects/HATProviderPaymentObject.swift; sourceTree = "<group>"; };
+		60B4862C1E1D534A00914AD2 /* HATProviderCategoryObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATProviderCategoryObject.swift; path = Objects/HATProviderCategoryObject.swift; sourceTree = "<group>"; };
+		60B4862E1E1D55AC00914AD2 /* HATService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATService.swift; path = Services/HATService.swift; sourceTree = "<group>"; };
+		60B486301E1D6E7B00914AD2 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIImageViewExtension.swift; path = Extensions/UIImageViewExtension.swift; sourceTree = "<group>"; };
 		60E753991DE46202001C85E7 /* NotesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotesData.swift; path = Objects/NotesData.swift; sourceTree = "<group>"; };
 		60E7539F1DE468A5001C85E7 /* NotablesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotablesData.swift; path = Objects/NotablesData.swift; sourceTree = "<group>"; };
 		60E753A11DE468E9001C85E7 /* AuthorData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthorData.swift; path = Objects/AuthorData.swift; sourceTree = "<group>"; };
@@ -274,6 +291,7 @@
 			isa = PBXGroup;
 			children = (
 				6044B21A1DDB7138003A1263 /* HatAccountService.swift */,
+				60B4862E1E1D55AC00914AD2 /* HATService.swift */,
 				603152911E0041F40005EB03 /* DataPlugsService.swift */,
 				608EAAA91DFED0F300234C60 /* NotablesService.swift */,
 			);
@@ -285,6 +303,7 @@
 			children = (
 				6044931A1DE9FE5C00B2FE7B /* UIButtonExtension.swift */,
 				606435DA1E1B196F001A5D14 /* DateExtension.swift */,
+				60B486301E1D6E7B00914AD2 /* UIImageViewExtension.swift */,
 				604237DE1E114F2D00E19109 /* UIColorExtension.swift */,
 				608EAAA51DFEA7ED00234C60 /* StringExtension.swift */,
 				608EAAA71DFEA8AD00234C60 /* ViewControllerExtension.swift */,
@@ -342,6 +361,7 @@
 				B59136811D19D33400E9EDD0 /* Utils */,
 				B564E99A1D19888A00EDB8F1 /* ViewControllers */,
 				6000CE521DE7282D0076E173 /* Fonts */,
+				6043F6D51E1D0A3600C5BAD9 /* HatMobile-Bridging-Header.h */,
 			);
 			path = "hat-mobile-ios";
 			sourceTree = "<group>";
@@ -376,6 +396,7 @@
 				6041B20B1DD4AC040018CC31 /* NotablesViewController.swift */,
 				6044B2171DDB3151003A1263 /* TabBarViewController.swift */,
 				6041B20C1DD4AC040018CC31 /* ShareOptionsViewController.swift */,
+				6043F6D61E1D114D00C5BAD9 /* StripeViewController.swift */,
 				603CE74B1DF7091500421429 /* ParentPageViewController.swift */,
 				603CE7491DF6FA7400421429 /* PageViewController.swift */,
 				604D68DD1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift */,
@@ -402,6 +423,11 @@
 			isa = PBXGroup;
 			children = (
 				B59136871D19DC2700E9EDD0 /* DataPoint.swift */,
+				60B486241E1D341000914AD2 /* StripeModel.swift */,
+				60B486261E1D51A300914AD2 /* HATProviderObject.swift */,
+				60B486281E1D529900914AD2 /* HATProviderKindObject.swift */,
+				60B4862A1E1D52E400914AD2 /* HATProviderPaymentObject.swift */,
+				60B4862C1E1D534A00914AD2 /* HATProviderCategoryObject.swift */,
 				603CE74D1DF85E1600421429 /* LearnMoreObject.swift */,
 				60E753991DE46202001C85E7 /* NotesData.swift */,
 				60E753A11DE468E9001C85E7 /* AuthorData.swift */,
@@ -521,12 +547,15 @@
 					};
 					B564E9781D19717900EDB8F1 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = 84XHE3A5BA;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 						TestTargetID = B564E9641D19717900EDB8F1;
 					};
 					B564E9831D19717900EDB8F1 = {
 						CreatedOnToolsVersion = 7.3.1;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 						TestTargetID = B564E9641D19717900EDB8F1;
 					};
 				};
@@ -752,6 +781,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				603D3A731DE879E600C973D8 /* SocialImageCollectionViewCell.swift in Sources */,
+				60B486271E1D51A300914AD2 /* HATProviderObject.swift in Sources */,
 				606435DB1E1B196F001A5D14 /* DateExtension.swift in Sources */,
 				60E753A61DE47F5E001C85E7 /* LocationData.swift in Sources */,
 				B56E2FAC1D23DED900546C7E /* DataSyncDelegate.swift in Sources */,
@@ -767,7 +797,9 @@
 				B54EA6181D19F2750018EE47 /* DataPointsTableView.swift in Sources */,
 				608EAAA61DFEA7ED00234C60 /* StringExtension.swift in Sources */,
 				6041B20D1DD4AC040018CC31 /* NotablesViewController.swift in Sources */,
+				60B486311E1D6E7B00914AD2 /* UIImageViewExtension.swift in Sources */,
 				604D68DE1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift in Sources */,
+				60B486291E1D529900914AD2 /* HATProviderKindObject.swift in Sources */,
 				603CE74E1DF85E1600421429 /* LearnMoreObject.swift in Sources */,
 				6041B20E1DD4AC040018CC31 /* ShareOptionsViewController.swift in Sources */,
 				B56E2FAA1D23D9FF00546C7E /* SyncDataHelper.swift in Sources */,
@@ -781,6 +813,7 @@
 				603CE74C1DF7091500421429 /* ParentPageViewController.swift in Sources */,
 				B591368A1D19DE6C00E9EDD0 /* RealmHelper.swift in Sources */,
 				60E753A21DE468E9001C85E7 /* AuthorData.swift in Sources */,
+				60B4862B1E1D52E400914AD2 /* HATProviderPaymentObject.swift in Sources */,
 				606528D31DDA037400026EA6 /* JSONHelper.swift in Sources */,
 				B59136851D19D3BB00E9EDD0 /* Constants.swift in Sources */,
 				608EAAA81DFEA8AD00234C60 /* ViewControllerExtension.swift in Sources */,
@@ -789,7 +822,11 @@
 				B5138ACE1D1ECA2C00CD1530 /* NetworkHelper.swift in Sources */,
 				B564E9691D19717900EDB8F1 /* AppDelegate.swift in Sources */,
 				B59136881D19DC2700E9EDD0 /* DataPoint.swift in Sources */,
+				60B486251E1D341000914AD2 /* StripeModel.swift in Sources */,
+				60B4862D1E1D534A00914AD2 /* HATProviderCategoryObject.swift in Sources */,
 				604D68E01DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift in Sources */,
+				6043F6D71E1D114D00C5BAD9 /* StripeViewController.swift in Sources */,
+				60B4862F1E1D55AC00914AD2 /* HATService.swift in Sources */,
 				B51CC9281D1D7895000C9E48 /* LoginViewController.swift in Sources */,
 				B59136831D19D36D00E9EDD0 /* Helper.swift in Sources */,
 				6041B2101DD4AC190018CC31 /* NotablesTableViewCell.swift in Sources */,
@@ -892,10 +929,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "hat-mobile-ios/HatMobile-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -934,9 +972,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "hat-mobile-ios/HatMobile-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -997,6 +1036,8 @@
 			baseConfigurationReference = 61FEF86F98CFF7E17DC9A675 /* Pods-hat-mobile-iosTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 84XHE3A5BA;
 				INFOPLIST_FILE = "hat-mobile-iosTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.green-custard.hat-mobile-iosTests";
@@ -1011,6 +1052,8 @@
 			baseConfigurationReference = 7F169C21E522510FBB67AA4C /* Pods-hat-mobile-iosTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 84XHE3A5BA;
 				INFOPLIST_FILE = "hat-mobile-iosTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.green-custard.hat-mobile-iosTests";
@@ -1024,6 +1067,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 26C98AB2D41A67B044DF47CB /* Pods-hat-mobile-iosUITests.debug.xcconfig */;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "hat-mobile-iosUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.green-custard.hat-mobile-iosUITests";
@@ -1037,6 +1081,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A135F01251F442E39E0589B6 /* Pods-hat-mobile-iosUITests.release.xcconfig */;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "hat-mobile-iosUITests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.green-custard.hat-mobile-iosUITests";

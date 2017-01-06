@@ -49,10 +49,7 @@ struct LearnMoreObject {
      */
     init(pageNumber: Int) {
         
-        title = ""
-        info = ""
-        buttonTitle = ""
-        image = UIImage(named: "Profile")!
+        self.init()
         
         if pageNumber == 0 {
             

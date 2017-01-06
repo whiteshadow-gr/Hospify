@@ -47,7 +47,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // Override point for customization after application launch.
         
         Fabric.with([Crashlytics.self])
+        
         STPPaymentConfiguration.shared().publishableKey = "pk_test_RSXoNEBWTexMQhgr9a9nC77m"
+        STPPaymentConfiguration.shared().appleMerchantIdentifier = "merchant.com.hubofallthings.rumpellocationtracker"
 
         // if app was closed by iOS (low mem, etc), then receives a location update, and respawns your app, letting it know it respawned due to a location service
         if launchOptions?[UIApplicationLaunchOptionsKey.location] != nil {

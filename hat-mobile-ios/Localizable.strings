@@ -56,7 +56,7 @@
 
 /* notifications */
 "sync_reminder_title" = "Reminder to sync";
-"sync_reminder_message" = "It's been more than 3 days since you last syned your data";
+"sync_reminder_message" = "It's been more than 3 days since you last synced your data";
 
 
 "logout_message_label" = "Are you sure you want to sign out?";

@@ -221,7 +221,7 @@
                 </pageViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mpl-WH-WpY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="365" y="1026"/>
+            <point key="canvasLocation" x="-486" y="1114"/>
         </scene>
         <!--Page View Controller-->
         <scene sceneID="9zh-2c-IWh">
@@ -321,7 +321,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vlg-Gz-5zY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1128.75" y="1030.9859154929577"/>
+            <point key="canvasLocation" x="279" y="1120"/>
         </scene>
         <!--Capabilities Page View Controller-->
         <scene sceneID="jFL-DA-G4Z">
@@ -331,7 +331,7 @@
                 </pageViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Dbj-l0-19O" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="371" y="1716"/>
+            <point key="canvasLocation" x="-480" y="1804"/>
         </scene>
         <!--Capabilities View Controller-->
         <scene sceneID="Lck-5k-mv2">
@@ -445,7 +445,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ylN-9F-Mfp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1128.75" y="1715.4929577464789"/>
+            <point key="canvasLocation" x="279" y="1804"/>
         </scene>
         <!--Location-->
         <scene sceneID="xFw-eM-6lT">
@@ -632,7 +632,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="f5B-ou-OL5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1961" y="-303"/>
+            <point key="canvasLocation" x="1984" y="-1817"/>
         </scene>
         <!--Data View Controller-->
         <scene sceneID="GOc-83-IhQ">
@@ -1008,7 +1008,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Eh8-hA-C3b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1535.625" y="1065.8450704225352"/>
+            <point key="canvasLocation" x="-1523" y="1114"/>
         </scene>
         <!--GetAHAT Info View Controller-->
         <scene sceneID="xYv-XN-NFj">
@@ -1153,7 +1153,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qvu-z5-5Rg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2171.25" y="1942.605633802817"/>
+            <point key="canvasLocation" x="-2168" y="1873"/>
         </scene>
         <!--Stripe View Controller-->
         <scene sceneID="HPB-b3-ydu">
@@ -1475,7 +1475,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N8V-ai-0U6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1536" y="2013"/>
+            <point key="canvasLocation" x="-1524" y="1943"/>
         </scene>
         <!--Notables-->
         <scene sceneID="fXN-3h-Pjq">
@@ -1750,7 +1750,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qyg-Jo-n4D" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1961" y="-1004"/>
+            <point key="canvasLocation" x="1984" y="-2517"/>
         </scene>
         <!--Share Options View Controller-->
         <scene sceneID="kfW-GN-ydW">
@@ -2065,7 +2065,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EVz-p4-fF8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2706" y="-1005"/>
+            <point key="canvasLocation" x="2730" y="-2518"/>
         </scene>
         <!--Notes-->
         <scene sceneID="cEx-lr-1cO">
@@ -2085,11 +2085,137 @@
                         <segue destination="VSO-tC-6mG" kind="relationship" relationship="viewControllers" id="GkM-B5-gQn"/>
                         <segue destination="bvB-RA-s02" kind="show" identifier="dataSegue" id="yoL-ZN-IYW"/>
                         <segue destination="ArB-7q-wad" kind="show" identifier="settingsSegue" id="bYU-hu-7cW"/>
+                        <segue destination="Zm4-mn-pPm" kind="relationship" relationship="viewControllers" id="fQR-pK-t3c"/>
+                        <segue destination="fkN-Ku-3Hc" kind="relationship" relationship="viewControllers" id="ZXK-sP-iCL"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Lsk-LA-Rf9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1145" y="-437"/>
+        </scene>
+        <!--Profile-->
+        <scene sceneID="IFM-bZ-gss">
+            <objects>
+                <collectionViewController id="fkN-Ku-3Hc" customClass="ProfileCollectionViewController" customModule="hat_mobile_ios" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="i0m-4A-1UF">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="nuq-Bj-6Kb">
+                            <size key="itemSize" width="160" height="160"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="profileCell" id="9Od-pI-1Gv">
+                                <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Lu-4x-Hwu">
+                                            <rect key="frame" x="8" y="34" width="144" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="12"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jIK-8x-bCt">
+                                            <rect key="frame" x="55" y="69" width="50" height="50"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        </imageView>
+                                    </subviews>
+                                </view>
+                            </collectionViewCell>
+                        </cells>
+                        <connections>
+                            <outlet property="dataSource" destination="fkN-Ku-3Hc" id="SjO-6v-wk6"/>
+                            <outlet property="delegate" destination="fkN-Ku-3Hc" id="dz5-ys-tcS"/>
+                        </connections>
+                    </collectionView>
+                    <tabBarItem key="tabBarItem" title="Profile" id="MGZ-Ua-kGD"/>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XS5-pL-Zs5" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1983.75" y="-437.32394366197184"/>
+        </scene>
+        <!--Data Plugs-->
+        <scene sceneID="tL6-wp-nlK">
+            <objects>
+                <collectionViewController id="Zm4-mn-pPm" customClass="DataPlugsCollectionViewController" customModule="hat_mobile_ios" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="VpC-ZV-WXZ">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="qZh-ba-ChU">
+                            <size key="itemSize" width="160" height="160"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="dataPlugCell" id="0TD-qU-FsG" customClass="DataPlugCollectionViewCell" customModule="hat_mobile_ios" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AAt-1b-gdy">
+                                            <rect key="frame" x="8" y="8" width="144" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="xv5-5F-1uj"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ucF-1I-2iD">
+                                            <rect key="frame" x="8" y="62" width="144" height="21"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="21" id="hm5-aW-f0N"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="12"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fHb-QR-dg3">
+                                            <rect key="frame" x="8" y="92" width="144" height="60"/>
+                                            <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="12"/>
+                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </view>
+                                <constraints>
+                                    <constraint firstItem="ucF-1I-2iD" firstAttribute="top" secondItem="AAt-1b-gdy" secondAttribute="bottom" constant="14" id="2aS-yZ-oPp"/>
+                                    <constraint firstItem="ucF-1I-2iD" firstAttribute="trailing" secondItem="fHb-QR-dg3" secondAttribute="trailing" id="5Ui-rA-mR8"/>
+                                    <constraint firstItem="AAt-1b-gdy" firstAttribute="trailing" secondItem="0TD-qU-FsG" secondAttribute="trailingMargin" id="8GU-Qe-caE"/>
+                                    <constraint firstItem="ucF-1I-2iD" firstAttribute="leading" secondItem="fHb-QR-dg3" secondAttribute="leading" id="8zr-1C-5eg"/>
+                                    <constraint firstItem="AAt-1b-gdy" firstAttribute="trailing" secondItem="ucF-1I-2iD" secondAttribute="trailing" id="Ihi-k3-hg0"/>
+                                    <constraint firstItem="AAt-1b-gdy" firstAttribute="leading" secondItem="ucF-1I-2iD" secondAttribute="leading" id="SZt-67-SLZ"/>
+                                    <constraint firstItem="fHb-QR-dg3" firstAttribute="top" secondItem="ucF-1I-2iD" secondAttribute="bottom" constant="9" id="TTu-mC-F4B"/>
+                                    <constraint firstItem="AAt-1b-gdy" firstAttribute="leading" secondItem="0TD-qU-FsG" secondAttribute="leadingMargin" id="UrI-y9-hxv"/>
+                                    <constraint firstItem="fHb-QR-dg3" firstAttribute="bottom" secondItem="0TD-qU-FsG" secondAttribute="bottomMargin" id="vxP-7e-CHt"/>
+                                    <constraint firstItem="AAt-1b-gdy" firstAttribute="top" secondItem="0TD-qU-FsG" secondAttribute="topMargin" id="zHy-uW-QQJ"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="dataPlugDetailsLabel" destination="fHb-QR-dg3" id="aVV-6E-Svq"/>
+                                    <outlet property="dataPlugImage" destination="AAt-1b-gdy" id="Elx-rB-2ZY"/>
+                                    <outlet property="dataPlugTitleLabel" destination="ucF-1I-2iD" id="RMz-gQ-ESB"/>
+                                </connections>
+                            </collectionViewCell>
+                        </cells>
+                        <connections>
+                            <outlet property="dataSource" destination="Zm4-mn-pPm" id="SjO-Qr-6Sx"/>
+                            <outlet property="delegate" destination="Zm4-mn-pPm" id="iRP-9x-4vb"/>
+                        </connections>
+                    </collectionView>
+                    <tabBarItem key="tabBarItem" title="Data Plugs" id="ddv-kh-Im9"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QWK-aI-D3J" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1984" y="-1128"/>
         </scene>
     </scenes>
     <resources>

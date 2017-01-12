@@ -133,7 +133,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
                 let config = STPPaymentConfiguration.shared()
                 config.requiredBillingAddressFields = .full
                 config.requiredShippingAddressFields = .email
-                config.smsAutofillDisabled = false
+                //config.smsAutofillDisabled = false
                 
                 let addCardViewController = STPAddCardViewController(configuration: config, theme: .default())
                 addCardViewController.delegate = self

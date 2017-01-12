@@ -54,11 +54,20 @@
 		60B4862D1E1D534A00914AD2 /* HATProviderCategoryObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B4862C1E1D534A00914AD2 /* HATProviderCategoryObject.swift */; };
 		60B4862F1E1D55AC00914AD2 /* HATService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B4862E1E1D55AC00914AD2 /* HATService.swift */; };
 		60B486311E1D6E7B00914AD2 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B486301E1D6E7B00914AD2 /* UIImageViewExtension.swift */; };
+		60DD7F6A1E27C719000C1B1E /* ProfileCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DD7F691E27C719000C1B1E /* ProfileCollectionViewController.swift */; };
+		60DD7F6C1E27CE56000C1B1E /* ProfileObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DD7F6B1E27CE56000C1B1E /* ProfileObject.swift */; };
 		60E7539A1DE46202001C85E7 /* NotesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E753991DE46202001C85E7 /* NotesData.swift */; };
 		60E753A01DE468A5001C85E7 /* NotablesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E7539F1DE468A5001C85E7 /* NotablesData.swift */; };
 		60E753A21DE468E9001C85E7 /* AuthorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E753A11DE468E9001C85E7 /* AuthorData.swift */; };
 		60E753A41DE4721E001C85E7 /* PhotoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E753A31DE4721E001C85E7 /* PhotoData.swift */; };
 		60E753A61DE47F5E001C85E7 /* LocationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E753A51DE47F5E001C85E7 /* LocationData.swift */; };
+		60FAC7691E223A1D00532C01 /* DataPlugsCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60FAC7681E223A1D00532C01 /* DataPlugsCollectionViewController.swift */; };
+		60FAC76B1E223AA700532C01 /* DataPlugCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60FAC76A1E223AA700532C01 /* DataPlugCollectionViewCell.swift */; };
+		60FAC76D1E27856900532C01 /* DataPlugObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60FAC76C1E27856900532C01 /* DataPlugObject.swift */; };
+		60FAC76F1E2785BF00532C01 /* DataPlugOwnerObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60FAC76E1E2785BF00532C01 /* DataPlugOwnerObject.swift */; };
+		60FAC7711E27862200532C01 /* DataPlugDataDefinitionObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60FAC7701E27862200532C01 /* DataPlugDataDefinitionObject.swift */; };
+		60FAC7731E27865700532C01 /* DataPlugDataSetObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60FAC7721E27865700532C01 /* DataPlugDataSetObject.swift */; };
+		60FAC7771E2787E000532C01 /* DataPlugRatingObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60FAC7761E2787E000532C01 /* DataPlugRatingObject.swift */; };
 		8DE435014968672CA444EAD5 /* Pods_hat_mobile_iosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB9788EB5E42BE7C49C3D5F0 /* Pods_hat_mobile_iosTests.framework */; };
 		A61D448C09AEF14D57C20E47 /* Pods_hat_mobile_iosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B1099428E2FE7DE31C71CBC /* Pods_hat_mobile_iosUITests.framework */; };
 		B5138ACE1D1ECA2C00CD1530 /* NetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5138ACD1D1ECA2C00CD1530 /* NetworkHelper.swift */; };
@@ -156,11 +165,20 @@
 		60B4862C1E1D534A00914AD2 /* HATProviderCategoryObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATProviderCategoryObject.swift; path = Objects/HATProviderCategoryObject.swift; sourceTree = "<group>"; };
 		60B4862E1E1D55AC00914AD2 /* HATService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATService.swift; path = Services/HATService.swift; sourceTree = "<group>"; };
 		60B486301E1D6E7B00914AD2 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIImageViewExtension.swift; path = Extensions/UIImageViewExtension.swift; sourceTree = "<group>"; };
+		60DD7F691E27C719000C1B1E /* ProfileCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProfileCollectionViewController.swift; path = ViewControllers/ProfileCollectionViewController.swift; sourceTree = "<group>"; };
+		60DD7F6B1E27CE56000C1B1E /* ProfileObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProfileObject.swift; path = Objects/ProfileObject.swift; sourceTree = "<group>"; };
 		60E753991DE46202001C85E7 /* NotesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotesData.swift; path = Objects/NotesData.swift; sourceTree = "<group>"; };
 		60E7539F1DE468A5001C85E7 /* NotablesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotablesData.swift; path = Objects/NotablesData.swift; sourceTree = "<group>"; };
 		60E753A11DE468E9001C85E7 /* AuthorData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthorData.swift; path = Objects/AuthorData.swift; sourceTree = "<group>"; };
 		60E753A31DE4721E001C85E7 /* PhotoData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhotoData.swift; path = Objects/PhotoData.swift; sourceTree = "<group>"; };
 		60E753A51DE47F5E001C85E7 /* LocationData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LocationData.swift; path = Objects/LocationData.swift; sourceTree = "<group>"; };
+		60FAC7681E223A1D00532C01 /* DataPlugsCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataPlugsCollectionViewController.swift; path = ViewControllers/DataPlugsCollectionViewController.swift; sourceTree = "<group>"; };
+		60FAC76A1E223AA700532C01 /* DataPlugCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataPlugCollectionViewCell.swift; path = Cells/DataPlugCollectionViewCell.swift; sourceTree = "<group>"; };
+		60FAC76C1E27856900532C01 /* DataPlugObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataPlugObject.swift; path = Objects/DataPlugObject.swift; sourceTree = "<group>"; };
+		60FAC76E1E2785BF00532C01 /* DataPlugOwnerObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataPlugOwnerObject.swift; path = Objects/DataPlugOwnerObject.swift; sourceTree = "<group>"; };
+		60FAC7701E27862200532C01 /* DataPlugDataDefinitionObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataPlugDataDefinitionObject.swift; path = Objects/DataPlugDataDefinitionObject.swift; sourceTree = "<group>"; };
+		60FAC7721E27865700532C01 /* DataPlugDataSetObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataPlugDataSetObject.swift; path = Objects/DataPlugDataSetObject.swift; sourceTree = "<group>"; };
+		60FAC7761E2787E000532C01 /* DataPlugRatingObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataPlugRatingObject.swift; path = Objects/DataPlugRatingObject.swift; sourceTree = "<group>"; };
 		61FEF86F98CFF7E17DC9A675 /* Pods-hat-mobile-iosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hat-mobile-iosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-hat-mobile-iosTests/Pods-hat-mobile-iosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7F169C21E522510FBB67AA4C /* Pods-hat-mobile-iosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hat-mobile-iosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-hat-mobile-iosTests/Pods-hat-mobile-iosTests.release.xcconfig"; sourceTree = "<group>"; };
 		8B1099428E2FE7DE31C71CBC /* Pods_hat_mobile_iosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_hat_mobile_iosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -280,9 +298,8 @@
 		6041B2111DD4AC1E0018CC31 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				6041B20F1DD4AC190018CC31 /* NotablesTableViewCell.swift */,
-				603D3A721DE879E600C973D8 /* SocialImageCollectionViewCell.swift */,
-				607C107A1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift */,
+				60DD7F6D1E27CEE3000C1B1E /* TableView */,
+				60DD7F6E1E27CEF3000C1B1E /* CollectionView */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -309,6 +326,59 @@
 				608EAAA71DFEA8AD00234C60 /* ViewControllerExtension.swift */,
 			);
 			name = Extensions;
+			sourceTree = "<group>";
+		};
+		60DD7F6D1E27CEE3000C1B1E /* TableView */ = {
+			isa = PBXGroup;
+			children = (
+				6041B20F1DD4AC190018CC31 /* NotablesTableViewCell.swift */,
+			);
+			name = TableView;
+			sourceTree = "<group>";
+		};
+		60DD7F6E1E27CEF3000C1B1E /* CollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				603D3A721DE879E600C973D8 /* SocialImageCollectionViewCell.swift */,
+				607C107A1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift */,
+				60FAC76A1E223AA700532C01 /* DataPlugCollectionViewCell.swift */,
+			);
+			name = CollectionView;
+			sourceTree = "<group>";
+		};
+		60FAC7781E2791AC00532C01 /* DataPlug */ = {
+			isa = PBXGroup;
+			children = (
+				60FAC76C1E27856900532C01 /* DataPlugObject.swift */,
+				60FAC76E1E2785BF00532C01 /* DataPlugOwnerObject.swift */,
+				60FAC7701E27862200532C01 /* DataPlugDataDefinitionObject.swift */,
+				60FAC7721E27865700532C01 /* DataPlugDataSetObject.swift */,
+				60FAC7761E2787E000532C01 /* DataPlugRatingObject.swift */,
+			);
+			name = DataPlug;
+			sourceTree = "<group>";
+		};
+		60FAC7791E2791BE00532C01 /* Notables */ = {
+			isa = PBXGroup;
+			children = (
+				60E753991DE46202001C85E7 /* NotesData.swift */,
+				60E753A11DE468E9001C85E7 /* AuthorData.swift */,
+				60E7539F1DE468A5001C85E7 /* NotablesData.swift */,
+				60E753A51DE47F5E001C85E7 /* LocationData.swift */,
+				60E753A31DE4721E001C85E7 /* PhotoData.swift */,
+			);
+			name = Notables;
+			sourceTree = "<group>";
+		};
+		60FAC77A1E2791D100532C01 /* HATProvider */ = {
+			isa = PBXGroup;
+			children = (
+				60B486261E1D51A300914AD2 /* HATProviderObject.swift */,
+				60B486281E1D529900914AD2 /* HATProviderKindObject.swift */,
+				60B4862A1E1D52E400914AD2 /* HATProviderPaymentObject.swift */,
+				60B4862C1E1D534A00914AD2 /* HATProviderCategoryObject.swift */,
+			);
+			name = HATProvider;
 			sourceTree = "<group>";
 		};
 		B54EA6161D19F2340018EE47 /* Tables */ = {
@@ -393,6 +463,8 @@
 				B51CC9271D1D7895000C9E48 /* LoginViewController.swift */,
 				60236C741E1BA2A6003B4B92 /* GetAHATViewController.swift */,
 				607C107C1E1BCC7D001D1E8E /* GetAHATInfoViewController.swift */,
+				60FAC7681E223A1D00532C01 /* DataPlugsCollectionViewController.swift */,
+				60DD7F691E27C719000C1B1E /* ProfileCollectionViewController.swift */,
 				6041B20B1DD4AC040018CC31 /* NotablesViewController.swift */,
 				6044B2171DDB3151003A1263 /* TabBarViewController.swift */,
 				6041B20C1DD4AC040018CC31 /* ShareOptionsViewController.swift */,
@@ -422,19 +494,14 @@
 		B59136861D19DBFE00E9EDD0 /* Objects */ = {
 			isa = PBXGroup;
 			children = (
+				60FAC77A1E2791D100532C01 /* HATProvider */,
+				60FAC7791E2791BE00532C01 /* Notables */,
+				60FAC7781E2791AC00532C01 /* DataPlug */,
 				B59136871D19DC2700E9EDD0 /* DataPoint.swift */,
 				60B486241E1D341000914AD2 /* StripeModel.swift */,
-				60B486261E1D51A300914AD2 /* HATProviderObject.swift */,
-				60B486281E1D529900914AD2 /* HATProviderKindObject.swift */,
-				60B4862A1E1D52E400914AD2 /* HATProviderPaymentObject.swift */,
-				60B4862C1E1D534A00914AD2 /* HATProviderCategoryObject.swift */,
 				603CE74D1DF85E1600421429 /* LearnMoreObject.swift */,
-				60E753991DE46202001C85E7 /* NotesData.swift */,
-				60E753A11DE468E9001C85E7 /* AuthorData.swift */,
-				60E7539F1DE468A5001C85E7 /* NotablesData.swift */,
-				60E753A51DE47F5E001C85E7 /* LocationData.swift */,
-				60E753A31DE4721E001C85E7 /* PhotoData.swift */,
 				B56E2FA21D22D1C400546C7E /* JSONDataSourceRequestField.swift */,
+				60DD7F6B1E27CE56000C1B1E /* ProfileObject.swift */,
 			);
 			name = Objects;
 			sourceTree = "<group>";
@@ -796,6 +863,7 @@
 				B564E9A01D198C4D00EDB8F1 /* MapViewController.swift in Sources */,
 				B54EA6181D19F2750018EE47 /* DataPointsTableView.swift in Sources */,
 				608EAAA61DFEA7ED00234C60 /* StringExtension.swift in Sources */,
+				60DD7F6C1E27CE56000C1B1E /* ProfileObject.swift in Sources */,
 				6041B20D1DD4AC040018CC31 /* NotablesViewController.swift in Sources */,
 				60B486311E1D6E7B00914AD2 /* UIImageViewExtension.swift in Sources */,
 				604D68DE1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift in Sources */,
@@ -804,7 +872,11 @@
 				6041B20E1DD4AC040018CC31 /* ShareOptionsViewController.swift in Sources */,
 				B56E2FAA1D23D9FF00546C7E /* SyncDataHelper.swift in Sources */,
 				B54EA61A1D19F5450018EE47 /* DataPointTableViewCell.swift in Sources */,
+				60FAC7731E27865700532C01 /* DataPlugDataSetObject.swift in Sources */,
+				60FAC76D1E27856900532C01 /* DataPlugObject.swift in Sources */,
+				60FAC7691E223A1D00532C01 /* DataPlugsCollectionViewController.swift in Sources */,
 				604237DF1E114F2D00E19109 /* UIColorExtension.swift in Sources */,
+				60DD7F6A1E27C719000C1B1E /* ProfileCollectionViewController.swift in Sources */,
 				607C107B1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift in Sources */,
 				60E7539A1DE46202001C85E7 /* NotesData.swift in Sources */,
 				B51CC9241D1D5749000C9E48 /* SettingsViewController.swift in Sources */,
@@ -812,15 +884,18 @@
 				60E753A01DE468A5001C85E7 /* NotablesData.swift in Sources */,
 				603CE74C1DF7091500421429 /* ParentPageViewController.swift in Sources */,
 				B591368A1D19DE6C00E9EDD0 /* RealmHelper.swift in Sources */,
+				60FAC7771E2787E000532C01 /* DataPlugRatingObject.swift in Sources */,
 				60E753A21DE468E9001C85E7 /* AuthorData.swift in Sources */,
 				60B4862B1E1D52E400914AD2 /* HATProviderPaymentObject.swift in Sources */,
 				606528D31DDA037400026EA6 /* JSONHelper.swift in Sources */,
 				B59136851D19D3BB00E9EDD0 /* Constants.swift in Sources */,
+				60FAC76F1E2785BF00532C01 /* DataPlugOwnerObject.swift in Sources */,
 				608EAAA81DFEA8AD00234C60 /* ViewControllerExtension.swift in Sources */,
 				60A727BD1DDF47ED008AF409 /* FormatterHelper.swift in Sources */,
 				603CE74A1DF6FA7400421429 /* PageViewController.swift in Sources */,
 				B5138ACE1D1ECA2C00CD1530 /* NetworkHelper.swift in Sources */,
 				B564E9691D19717900EDB8F1 /* AppDelegate.swift in Sources */,
+				60FAC76B1E223AA700532C01 /* DataPlugCollectionViewCell.swift in Sources */,
 				B59136881D19DC2700E9EDD0 /* DataPoint.swift in Sources */,
 				60B486251E1D341000914AD2 /* StripeModel.swift in Sources */,
 				60B4862D1E1D534A00914AD2 /* HATProviderCategoryObject.swift in Sources */,
@@ -833,6 +908,7 @@
 				603152921E0041F40005EB03 /* DataPlugsService.swift in Sources */,
 				B51CC9261D1D620C000C9E48 /* MapSettingsDelegate.swift in Sources */,
 				B5E97D9B1D1C03A000CFD1C8 /* UpdateCountDelegate.swift in Sources */,
+				60FAC7711E27862200532C01 /* DataPlugDataDefinitionObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

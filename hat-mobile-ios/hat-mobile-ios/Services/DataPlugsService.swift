@@ -18,6 +18,44 @@ import Crashlytics
 /// The data plugs service class
 class DataPlugsService: NSObject {
     
+    // MARK: - Get available data plugs
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     */
+    class func getAvailableDataPlugs(succesfulCallBack: @escaping ([DataPlugObject]) -> Void, failCallBack: @escaping (Void) -> Void) -> Void {
+        
+        let url: String = "https://marketsquare.hubofallthings.com/api/dataplugs"
+        
+        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: [:], completion: { (r: Helper.ResultType) -> Void in
+            
+            switch r {
+                
+            // in case of error call the failCallBack
+            case .error(let error, let statusCode):
+                
+                failCallBack()
+                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
+            // in case of success call the succesfulCallBack
+            case .isSuccess(let isSuccess, _, let result):
+                
+                if isSuccess {
+                    
+                    var returnValue: [DataPlugObject] = []
+                    
+                    for item in result.arrayValue {
+                        
+                        returnValue.append(DataPlugObject(dict: item.dictionaryValue))
+                    }
+                    
+                    succesfulCallBack(returnValue)
+                }
+            }
+        })
+    }
+    
     // MARK: - Application Token
     
     /**

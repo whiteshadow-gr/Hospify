@@ -221,35 +221,53 @@ struct JSONHelper {
     // MARK: - Create JSON for purchasing
     
     /**
-     <#Function Details#>
+     Creates the json file to purchase a HAT
      
-     - parameter <#Parameter#>: <#Parameter description#>
-     - returns: <#Returns#>
+     - parameter purchaseModel: The purchase model with all the necessary values
+     - returns: A Dictionary <String, Any>
      */
-    static func createPurchaseJSONFrom(stripeModel: StripeModel) -> Dictionary <String, Any> {
+    static func createPurchaseJSONFrom(purchaseModel: PurchaseModel) -> Dictionary <String, Any> {
         
-        let address: Dictionary =  [
+        // hat table dictionary
+        let hat: Dictionary =  [
             
-            "name" : stripeModel.name,
-            "country" : stripeModel.country,
-            "zip" : stripeModel.postCode,
-            "state" : stripeModel.state,
-            "line1" : stripeModel.address,
-            "city" : stripeModel.city
-        ]
+            "address" : purchaseModel.address,
+            "termsAgreed" : purchaseModel.termsAgreed,
+            "country" : purchaseModel.country
+        ] as [String : Any]
         
-        let sku: Array = [
+        // user table dictionary
+        let user: Dictionary =  [
+            
+            "firstName" : purchaseModel.firstName,
+            "lastName" : purchaseModel.lastName,
+            "password" : purchaseModel.password,
+            "termsAgreed" : purchaseModel.termsAgreed,
+            "nick" : purchaseModel.nick,
+            "email" : purchaseModel.email
+        ] as [String : Any]
         
-            Dictionary.init(dictionaryLiteral: ("sku", stripeModel.sku)),
-            Dictionary.init(dictionaryLiteral: ("quantity", 1))
-        ] as [Any]
+        // items table dictionary
+        let items: Dictionary = [
         
+            "sku": purchaseModel.sku,
+            "quantity": 1
+        ] as [String : Any]
+        
+        // purchase table dictionary
+        let purchase: Dictionary = [
+        
+            "stripePaymentToken" : purchaseModel.token,
+            "items" : [items]
+        ] as [String : Any]
+        
+        // the final JSON file to be returned
         let json: Dictionary = [
         
-            "stripePaymentToken" : stripeModel.token,
-            "email" : stripeModel.email,
-            "address" : address,
-            "items" : sku
+            "purchase" : purchase,
+            "user" : user,
+            "hat" : hat,
+            "password" : purchaseModel.password
         ] as [String : Any]
         
         return json

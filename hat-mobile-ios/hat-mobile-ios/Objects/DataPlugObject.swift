@@ -12,35 +12,67 @@
 
 import SwiftyJSON
 
-struct DataPlugObject {
+// MARK: Struct
 
+/// A struct representing the outer data plug JSON format
+struct DataPlugObject {
+    
+    // MARK: - Variables
+
+    /// The unique id of the data plug
     var uuid: String = ""
-    var owner: DataPlugOwnerObject = DataPlugOwnerObject()
-    var created: Date? = nil
+    /// The name of the data plug
     var name: String = ""
+    /// The description of the data plug
     var description: String = ""
-    var dataDefinition: DataPlugDataDefinitionObject = DataPlugDataDefinitionObject()
+    /// The url of the data plug
     var url: String = ""
+    /// The url of the image, asset, of the data plug
     var illustrationUrl: String = ""
-    var approved: Bool = false
+    
+    /// The owner object of the data plug
+    var owner: DataPlugOwnerObject = DataPlugOwnerObject()
+    /// The data definition object of the data plug
+    var dataDefinition: DataPlugDataDefinitionObject = DataPlugDataDefinitionObject()
+    /// The rating object of the data plug
     var rating: DataPlugRatingObject = DataPlugRatingObject()
+    
+    /// The created date of the data plug
+    var created: Date? = nil
+    
+    /// The status of the data plug, if enabled is approved
+    var approved: Bool = false
+
+    /// The users using the data plug
     var users: Int = -1
     
+    // MARK: - Initializers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         uuid = ""
-        owner = DataPlugOwnerObject()
-        created = nil
         name = ""
         description = ""
-        dataDefinition = DataPlugDataDefinitionObject()
         url = ""
         illustrationUrl = ""
-        approved = false
+        
+        owner = DataPlugOwnerObject()
+        dataDefinition = DataPlugDataDefinitionObject()
         rating = DataPlugRatingObject()
+        
+        created = nil
+        
+        approved = false
+
         users = -1
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     init(dict: Dictionary<String, JSON>){
         
         self.init()
@@ -49,25 +81,13 @@ struct DataPlugObject {
             
             uuid = tempUuid
         }
-        if let tempOwner = (dict["owner"]?.dictionaryValue) {
-            
-            owner = DataPlugOwnerObject(dict: tempOwner)
-        }
-        if let tempCreated = (dict["created"]?.intValue) {
-            
-            created = FormatterHelper.formatStringToDate(string: String(tempCreated))
-        }
-        if let tempName = (dict["name"]?.stringValue) {
-            
-            name = tempName
-        }
         if let tempDescription = (dict["description"]?.stringValue) {
             
             description = tempDescription
         }
-        if let tempDefinition = (dict["dataDefinition"]?.dictionaryValue) {
+        if let tempName = (dict["name"]?.stringValue) {
             
-            dataDefinition = DataPlugDataDefinitionObject(dict: tempDefinition)
+            name = tempName
         }
         if let tempUrl = (dict["url"]?.stringValue) {
             
@@ -77,14 +97,30 @@ struct DataPlugObject {
             
             illustrationUrl = tempIllustrationUrl
         }
-        if let tempApproved = (dict["approved"]?.boolValue) {
+        
+        if let tempOwner = (dict["owner"]?.dictionaryValue) {
             
-            approved = tempApproved
+            owner = DataPlugOwnerObject(dict: tempOwner)
+        }
+        if let tempDefinition = (dict["dataDefinition"]?.dictionaryValue) {
+            
+            dataDefinition = DataPlugDataDefinitionObject(dict: tempDefinition)
         }
         if let tempRating = (dict["rating"]?.dictionaryValue) {
             
             rating = DataPlugRatingObject(dict: tempRating)
         }
+        
+        if let tempApproved = (dict["approved"]?.boolValue) {
+            
+            approved = tempApproved
+        }
+        
+        if let tempCreated = (dict["created"]?.intValue) {
+            
+            created = FormatterHelper.formatStringToDate(string: String(tempCreated))
+        }
+        
         if let tempUsers = (dict["users"]?.intValue) {
             
             users = tempUsers

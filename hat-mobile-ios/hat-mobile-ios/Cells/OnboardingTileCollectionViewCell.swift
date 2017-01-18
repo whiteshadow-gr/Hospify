@@ -26,4 +26,53 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var titleLabel: UILabel!
     /// An IBOutlet for handling the info label of the cell
     @IBOutlet weak var infoLabel: UILabel!
+    
+    // MARK: - Set up cell
+    
+    /**
+     Sets up a cell according to our needs
+     
+     - parameter cell: The UICollectionViewCell to set up
+     - parameter indexPath: The index path of the cell
+     - parameter hatProvider: The object to take the values from
+
+     - returns: An UICollectionViewCell
+     */
+    class func setUp(cell: OnboardingTileCollectionViewCell, indexPath: IndexPath, hatProvider: HATProviderObject) -> UICollectionViewCell {
+
+        // set the color of the cell accordingly based on the indexPath.row
+        if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
+            
+            cell.backgroundColor = UIColor.rumpelVeryLightGray()
+        } else {
+            
+            cell.backgroundColor = UIColor.white
+        }
+        
+        // set cell's title
+        cell.titleLabel.text = hatProvider.name
+        
+        // set cell's info label
+        if hatProvider.price == 0 {
+            
+            cell.infoLabel.text = String(hatProvider.purchased) + " of " + String(hatProvider.available) + " remaining"
+        } else {
+            
+            // format the price of the hat
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .currency
+            formatter.locale = Locale.current
+            
+            let price: Double = Double(hatProvider.price / 100)
+            
+            cell.infoLabel.text = formatter.string(from: NSNumber(value: price))
+        }
+        
+        // get image from url and set it to the image view
+        let url: URL = URL(string: "https://hatters.hubofallthings.com/assets" + hatProvider.illustration)!
+        cell.hatProviderImage.downloadedFrom(url: url)
+        
+        // return cell
+        return cell
+    }
 }

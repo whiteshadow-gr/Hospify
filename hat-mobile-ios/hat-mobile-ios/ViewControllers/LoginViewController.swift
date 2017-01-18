@@ -127,6 +127,26 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         buttonLogon.setTitle(NSLocalizedString("logon_label", comment:  "username"), for: UIControlState())
         buttonLogon.backgroundColor = Constants.Colours.AppBase
         
+        // Create a button bar for the number pad
+        let toolbar = UIToolbar()
+        toolbar.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 30)
+        
+        var barButtonTitle = "Autofill"
+        
+        if let result = Helper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
+            
+            barButtonTitle = result
+        }
+
+        // Setup the buttons to be put in the system.
+        let autofillButton = UIBarButtonItem(title: barButtonTitle, style: .done, target: self, action: #selector(self.autofillPHATA))
+        autofillButton.setTitleTextAttributes([NSFontAttributeName: UIFont(name: "Open Sans", size: 17.0)!, NSForegroundColorAttributeName: UIColor.white], for: .normal)
+        toolbar.barTintColor = .black
+        toolbar.setItems([autofillButton], animated: true)
+
+        self.inputUserHATDomain.inputAccessoryView = toolbar
+        self.inputUserHATDomain.inputAccessoryView?.backgroundColor = .black
+        
         // app version
         if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
             
@@ -163,6 +183,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
         
         return true
+    }
+    
+    // MARK: - Accesory Input View Method
+    
+    /**
+     Fills the domain text field with the user's domain
+     */
+    func autofillPHATA() {
+        
+        if let result = Helper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
+            
+            self.inputUserHATDomain.text = result
+        }
     }
     
     // MARK: - Authorisation functions
@@ -217,6 +250,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         HatAccountService.authoriseAppToWriteToCloud(userDomain, HATDomainFromToken, viewController: self)
     }
+    
+    // MARK: - Keyboard handling
     
     override func keyboardWillHide(sender: NSNotification) {
         

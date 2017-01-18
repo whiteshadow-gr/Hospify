@@ -12,9 +12,19 @@
 
 import UIKit
 
-class ProfileCollectionViewController: UICollectionViewController {
+// MARK: Class
 
+/// The profile View in the tab bar controller
+class ProfileCollectionViewController: UICollectionViewController {
+    
+    // MARK: - Variables
+
+    /// Cell's reuse identifier
     private let reuseIdentifier = "profileCell"
+    /// An array with the available profile tiles
+    private var profileTiles: [ProfileObject] = []
+    
+    // MARK: - View controller methods
 
     override func viewDidLoad() {
         
@@ -27,6 +37,7 @@ class ProfileCollectionViewController: UICollectionViewController {
         //self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: self.reuseIdentifier)
 
         // Do any additional setup after loading the view.
+        profileTiles.append(ProfileObject(with: "PHATA page", and: UIImage(named: "Profile")!))
     }
 
     override func didReceiveMemoryWarning() {
@@ -45,7 +56,7 @@ class ProfileCollectionViewController: UICollectionViewController {
     }
     */
 
-    // MARK: UICollectionViewDataSource
+    // MARK: - UICollectionView methods
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         
@@ -60,11 +71,9 @@ class ProfileCollectionViewController: UICollectionViewController {
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ProfileCollectionViewCell
     
-        // Configure the cell
-    
-        return cell
+        return ProfileCollectionViewCell.setUp(cell: cell, indexPath: indexPath, profile: self.profileTiles[indexPath.row])
     }
 
 }

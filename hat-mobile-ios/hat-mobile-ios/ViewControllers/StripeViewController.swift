@@ -11,114 +11,77 @@
  */
 
 import UIKit
-import Stripe
 import Alamofire
 
 // MARK: Class
 
 /// The class responsible for buying staff via Stripe
-class StripeViewController: UIViewController {
+class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     // MARK: - Variables
     
     var sku: String = ""
-    private var stripeModel = StripeModel()
+    var token: String = ""
+    
+    private var purchaseModel: PurchaseModel = PurchaseModel()
+    private let countriesArray: [String] = StripeViewController.getCountries()
+    private let privatePicker = UIPickerView()
     
     // MARK: - IBOutlets
     
-    @IBOutlet weak var hatProviderImage: UIImageView!
+    @IBOutlet weak var arrowBarImage: UIImageView!
     
-    @IBOutlet weak var hatProviderTitleLabel: UILabel!
-    
+    @IBOutlet weak var firstNameTextField: UITextField!
+    @IBOutlet weak var lastNameTextField: UITextField!
+    @IBOutlet weak var nicknameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
-    @IBOutlet weak var nameTextField: UITextField!
-    @IBOutlet weak var addressTextField: UITextField!
-    @IBOutlet weak var cityTextField: UITextField!
-    @IBOutlet weak var postCodeTextField: UITextField!
-    @IBOutlet weak var coyntryTextField: UITextField!
-    @IBOutlet weak var cardTextField: UITextField!
-    @IBOutlet weak var cardExpiryTextField: UITextField!
-    @IBOutlet weak var cardCVVTextField: UITextField!
+    @IBOutlet weak var personalHATAddressTextField: UITextField!
+    @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var invitationCodeTextField: UITextField!
+    @IBOutlet weak var countryTextField: UITextField!
+    
+    @IBOutlet weak var termsAndConditionsButton: UIButton!
+    
+    @IBOutlet weak var dataView: UIView!
+    
+    @IBOutlet weak var scrollView: UIScrollView!
     
     // MARK: - IBActions
     
-    @IBAction func subscribeButtonAction(_ sender: Any) {
-        
-        // Initiate the card
-        let stripCard = STPCardParams()
-        
-        // Split the expiration date to extract Month & Year
-        if self.cardExpiryTextField.text?.isEmpty == false {
-            
-            let expirationDate = self.cardExpiryTextField.text?.components(separatedBy: "/")
-            let expMonth = UInt((expirationDate?[0])!)
-            let expYear = UInt((expirationDate?[1])!)
-            
-            // Send the card info to Strip to get the token
-            stripCard.number = self.cardTextField.text
-            stripCard.cvc = self.cardCVVTextField.text
-            stripCard.expMonth = expMonth!
-            stripCard.expYear = expYear!
-            
-            let address = STPAddress()
-            
-            address.city = self.cityTextField.text
-            address.line1 = self.addressTextField.text
-            address.country = self.coyntryTextField.text
-            address.postalCode = self.postCodeTextField.text
-            
-            stripCard.address = address
-            stripCard.name = self.nameTextField.text
-            
-            stripeModel.address = address.line1!
-            stripeModel.city = address.city!
-            stripeModel.postCode = address.postalCode!
-            stripeModel.country = address.country!
-            //stripeModel.state = address.state!
-            
-            stripeModel.cardCVV = stripCard.cvc!
-            stripeModel.cardNumber = stripCard.number!
-            stripeModel.cardExpiryMonth = String(stripCard.expYear)
-            stripeModel.cardExpiryYear = String(stripCard.expMonth)
-            
-            stripeModel.name = stripCard.name!
-            stripeModel.email = self.emailTextField.text!
-            stripeModel.sku = self.sku
-        }
-        
-        if STPCardValidator.validationState(forCard: stripCard) == .valid {
-            
-            STPAPIClient.shared().createToken(withCard: stripCard, completion: { (token, error) -> Void in
-                
-                if error != nil {
-                    
-                    self.handleError(error: error!)
-                    return
-                }
-                
-                self.stripeModel.token = (token?.tokenId)!
-                self.postStripeToken()
-            })
-        } else {
-            
-            self.createClassicOKAlertWith(alertMessage: "No card", alertTitle: "Please Try Again", okTitle: "OK", proceedCompletion: {() -> Void in return})
-        }
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     */
+    @IBAction func termsAndConditionsButtonAction(_ sender: Any) {
     }
     
-    func handleError(error: Error) {
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     */
+    @IBAction func createHATButtonAction(_ sender: Any) {
         
-        print(error)
-        self.createClassicOKAlertWith(alertMessage: error.localizedDescription, alertTitle: "Please Try Again", okTitle: "OK", proceedCompletion: {() -> Void in return})
-    }
-    
-    func postStripeToken() {
+        purchaseModel.address = self.personalHATAddressTextField.text!
+        purchaseModel.country = self.countryTextField.text!
+        purchaseModel.email = self.emailTextField.text!
+        purchaseModel.firstName = self.firstNameTextField.text!
+        purchaseModel.lastName = self.lastNameTextField.text!
+        purchaseModel.nick = self.nicknameTextField.text!
+        purchaseModel.password = self.passwordTextField.text!
         
-        let json = JSONHelper.createPurchaseJSONFrom(stripeModel: stripeModel)
+        purchaseModel.sku = self.sku
+        purchaseModel.token = self.token
+        purchaseModel.termsAgreed = true
+        
+        let json = JSONHelper.createPurchaseJSONFrom(purchaseModel: purchaseModel)
+        
         let url = "https://hatters.hubofallthings.com/api/products/hat/purchase"
         
-        Alamofire.request(url, method: .post, parameters: json, encoding: Alamofire.JSONEncoding.default, headers: [:]).responseJSON(completionHandler: {(data: DataResponse<Any>) -> Void in
+        let _ = Alamofire.request(url, method: .post, parameters: json, encoding: Alamofire.JSONEncoding.default, headers: nil).responseJSON(completionHandler: { response in
         
-            print(data)
+            print(response)
         })
     }
     
@@ -129,12 +92,93 @@ class StripeViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        // config the arrowBar
+        arrowBarImage.image = arrowBarImage.image!.withRenderingMode(.alwaysTemplate)
+        arrowBarImage.tintColor = UIColor.rumpelVeryLightGray()
+        
+        self.termsAndConditionsButton.addBorderToButton(width: 1, color: .lightGray)
+        
+        self.privatePicker.dataSource = self
+        self.privatePicker.delegate = self
+        
+        self.countryTextField.inputView = self.privatePicker
+        
+        // create 2 notification observers for listening to the keyboard
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHandling(sender:)), name:.UIKeyboardWillShow, object: nil);
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHandling(sender:)), name:.UIKeyboardWillHide, object: nil);
+        
+        self.hideKeyboardWhenTappedAround()
     }
 
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - Get Countries
+    
+    /**
+     <#Function Details#>
+     
+     - returns: <#Returns#>
+     */
+    class func getCountries() -> [String] {
+        
+        let locale = Locale.current
+        let countryArray = NSLocale.isoCountryCodes
+        let unsortedCountryArray:[String] = countryArray.map { (countryCode) -> String in
+            
+            return (locale as NSLocale).displayName(forKey: NSLocale.Key.countryCode, value: countryCode)!
+        }
+        
+        return unsortedCountryArray.sorted()
+    }
+    
+    // MARK: - UIPickerView methods
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        
+        return countriesArray.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        
+        return countriesArray[row] as String
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        
+        self.countryTextField.text = self.countriesArray[row]
+    }
+    
+    // MARK: - Keyboard handling
+    
+    /**
+     Function executed before the keyboard is shown to the user
+     
+     - parameter sender: The object that called this method
+     */
+    func keyboardHandling(sender: NSNotification) {
+        
+        let userInfo = sender.userInfo!
+        
+        let keyboardScreenEndFrame = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
+        
+        if sender.name == Notification.Name.UIKeyboardWillHide {
+            
+            self.scrollView.contentInset = UIEdgeInsets.zero
+        } else {
+            
+            self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardViewEndFrame.height + 60, right: 0)
+        }
     }
     
     /*

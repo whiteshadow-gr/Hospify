@@ -137,9 +137,8 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             
             // delete keys from keychain
             let clearUserToken = Helper.ClearKeychainKey(key: "UserToken")
-            let clearUserDomain = Helper.ClearKeychainKey(key: "user_hat_domain")
             
-            if (!clearUserToken || !clearUserDomain) {
+            if (!clearUserToken) {
                 
                 // show alert that the log out was not completed for some reason
                 // MARK: TODO

@@ -14,18 +14,16 @@ import UIKit
 
 // MARK: Class
 
-/// The collection view cell class for data plugs screen
-class DataPlugCollectionViewCell: UICollectionViewCell {
+/// The collection view cell class for the profile screen
+class ProfileCollectionViewCell: UICollectionViewCell {
     
     // MARK: - IBOutlets
     
-    /// The image for the data plug
-    @IBOutlet weak var dataPlugImage: UIImageView!
+    /// The title for the profile tile
+    @IBOutlet weak var profileTileLabel: UILabel!
     
-    /// The title for the data plug
-    @IBOutlet weak var dataPlugTitleLabel: UILabel!
-    /// Some details for the data plug
-    @IBOutlet weak var dataPlugDetailsLabel: UILabel!
+    /// The image for the profile tile
+    @IBOutlet weak var profileTileImageView: UIImageView!
     
     // MARK: - Set up cell
     
@@ -38,20 +36,19 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
      
      - returns: An UICollectionViewCell
      */
-    class func setUp(cell: DataPlugCollectionViewCell, indexPath: IndexPath, dataPlug: DataPlugObject) -> UICollectionViewCell {
+    class func setUp(cell: ProfileCollectionViewCell, indexPath: IndexPath, profile: ProfileObject) -> UICollectionViewCell {
         
         // Configure the cell
-        cell.dataPlugTitleLabel.text = dataPlug.name
-        cell.dataPlugDetailsLabel.text = dataPlug.description
-        cell.dataPlugImage.downloadedFrom(url: URL(string: dataPlug.illustrationUrl)!)
+        cell.profileTileLabel.text = profile.profileTileLabel
+        cell.profileTileImageView.image = profile.profileTileImage
         
-        // create this zebra like color based on the index of the cell
+        // set the color of the cell based on indexPath.row
         if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
             
-            cell.backgroundColor = UIColor.rumpelVeryLightGray()
+            cell.backgroundColor = UIColor.tealColor()
         } else {
             
-            cell.backgroundColor = UIColor.white
+            cell.backgroundColor = UIColor.rumpelDarkGray()
         }
         
         // return cell

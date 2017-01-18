@@ -14,23 +14,33 @@ import UIKit
 
 // MARK: Class
 
+/// Get A hat info view controller, used in onboarding of new users. A pop up view in GetAHATViewController
 class GetAHATInfoViewController: UIViewController {
     
     // MARK: - Variables
     
+    /// the HAT provider object
     var hatProvider: HATProviderObject? = nil
     
     // MARK: - IBOutlets
     
+    /// An IBOutlet for handling the hatProviderImage image view
     @IBOutlet weak var hatProviderImage: UIImageView!
     
+    /// An IBOutlet for handling the hatProviderTitle label
     @IBOutlet weak var hatProviderTitle: UILabel!
+    /// An IBOutlet for handling the hatProviderInfo label
     @IBOutlet weak var hatProviderInfo: UILabel!
+    /// An IBOutlet for handling the hatProviderDetailedInfo label
     @IBOutlet weak var hatProviderDetailedInfo: UILabel!
+    /// An IBOutlet for handling the hatProviderFeaturesLabel label
     @IBOutlet weak var hatProviderFeaturesLabel: UILabel!
+    /// An IBOutlet for handling the hatProviderFeaturesList label
     @IBOutlet weak var hatProviderFeaturesListLabel: UILabel!
 
+    /// An IBOutlet for handling the signUpButton button
     @IBOutlet weak var signUpButton: UIButton!
+    /// An IBOutlet for handling the cancelButton button
     @IBOutlet weak var cancelButton: UIButton!
     
     // MARK: - IBActions
@@ -52,9 +62,12 @@ class GetAHATInfoViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        // set up cancel button
         cancelButton.imageView?.image = cancelButton.imageView?.image?.withRenderingMode(.alwaysTemplate)
         cancelButton.tintColor = UIColor.black
         
+        // if we have a passed value from parent view controler, set up the view with this value
         if (hatProvider != nil) {
             
             self.hatProviderImage.image = (hatProvider?.hatProviderImage)!

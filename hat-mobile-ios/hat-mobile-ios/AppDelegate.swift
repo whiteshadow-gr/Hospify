@@ -48,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         Fabric.with([Crashlytics.self])
         
-        STPPaymentConfiguration.shared().publishableKey = "pk_test_RSXoNEBWTexMQhgr9a9nC77m"
+        STPPaymentConfiguration.shared().publishableKey = "pk_live_IkuCnCV8N48VKdcMfbfb1Mp7"
         STPPaymentConfiguration.shared().appleMerchantIdentifier = "merchant.com.hubofallthings.rumpellocationtracker"
 
         // if app was closed by iOS (low mem, etc), then receives a location update, and respawns your app, letting it know it respawned due to a location service

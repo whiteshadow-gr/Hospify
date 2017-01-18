@@ -12,14 +12,29 @@
 
 import SwiftyJSON
 
-struct DataPlugOwnerObject {
+// MARK: Struct
 
+/// A struct representing the data plug owner from data plug JSON file
+struct DataPlugOwnerObject {
+    
+    // MARK: - Variables
+
+    /// The id of the owner
     var id: String = ""
+    /// The email of the owner
     var email: String = ""
+    /// The nickname of the owner
     var nick: String = ""
+    /// The first name of the owner
     var firstName: String = ""
+    /// The last name of the owner
     var lastName: String = ""
     
+    // MARK: - Initializers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         id = ""
@@ -29,6 +44,9 @@ struct DataPlugOwnerObject {
         lastName = ""
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     init(dict: Dictionary<String, JSON>) {
         
         self.init()

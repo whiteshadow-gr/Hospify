@@ -12,10 +12,19 @@
 
 import UIKit
 
+// MARK: Class
+
+/// The data plugs View in the tab bar view controller
 class DataPlugsCollectionViewController: UICollectionViewController {
     
+    // MARK: - Variables
+    
+    /// Cell's reuse identifier
     private let reuseIdentifier = "dataPlugCell"
+    /// An array with the available data plugs
     private var dataPlugs: [DataPlugObject] = []
+    
+    // MARK: - View controller methods
 
     override func viewDidLoad() {
         
@@ -38,6 +47,7 @@ class DataPlugsCollectionViewController: UICollectionViewController {
             
             
         }
+        
         DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: failureCallBack)
     }
 
@@ -47,13 +57,12 @@ class DataPlugsCollectionViewController: UICollectionViewController {
         // Dispose of any resources that can be recreated.
     }
 
-    // MARK: - UICollectionViewDataSource
+    // MARK: - UICollectionView methods
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         
         return 1
     }
-
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
@@ -64,15 +73,8 @@ class DataPlugsCollectionViewController: UICollectionViewController {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.reuseIdentifier, for: indexPath) as? DataPlugCollectionViewCell
     
-        // Configure the cell
-        cell!.dataPlugTitleLabel.text = self.dataPlugs[indexPath.row].name
-        cell!.dataPlugDetailsLabel.text = self.dataPlugs[indexPath.row].description
-        cell!.dataPlugImage.downloadedFrom(url: URL(string: self.dataPlugs[indexPath.row].illustrationUrl)!)
-        
-        return cell!
+        return DataPlugCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, dataPlug: self.dataPlugs[indexPath.row])
     }
-
-    // MARK: - UICollectionViewDelegate
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         

@@ -18,69 +18,21 @@ import Alamofire
 
 /// Get A hat view controller, used in onboarding of new users
 class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, STPAddCardViewControllerDelegate {
-//    @available(iOS 8.0, *)
-//    public func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
-//        
-//    }
-//
-//    @available(iOS 8.0, *)
-//    public func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: @escaping (PKPaymentAuthorizationStatus) -> Void) {
-//        
-//    }
-//
-//    
-//    /**
-//     *  This is called when the user selects a shipping method. If no shipping methods are given, or if the shipping type doesn't require a shipping method, this will be called after the user has a shipping address and your validation has succeeded. After updating your app with the user's shipping info, you should dismiss (or pop) the view controller. Note that if `shippingMethod` is non-nil, there will be an additional shipping methods view controller on the navigation controller's stack.
-//     *
-//     *  @param addressViewController the view controller where the address was entered
-//     *  @param address               the address that was entered. @see STPAddress
-//     *  @param shippingMethod        the shipping method that was selected.
-//     */
-//    @available(iOS 8.0, *)
-//    public func shippingAddressViewController(_ addressViewController: STPShippingAddressViewController, didFinishWith address: STPAddress, shippingMethod method: PKShippingMethod?) {
-//        
-//    }
-//
-//    /**
-//     *  This is called when the user enters a shipping address and taps next. You should validate the address and determine what shipping methods are available, and call the `completion` block when finished. If an error occurrs, call the `completion` block with the error. Otherwise, call the `completion` block with a nil error and an array of available shipping methods. If you don't need to collect a shipping method, you may pass an empty array.
-//     *
-//     *  @param addressViewController the view controller where the address was entered
-//     *  @param address               the address that was entered. @see STPAddress
-//     *  @param completion            call this callback when you're done validating the address and determining available shipping methods.
-//     */
-//    public func shippingAddressViewController(_ addressViewController: STPShippingAddressViewController, didEnter address: STPAddress, completion: @escaping STPShippingMethodsCompletionBlock) {
-//        
-//        self.dismiss(animated: true, completion: nil)
-//        let config = STPPaymentConfiguration.shared()
-//        config.requiredBillingAddressFields = .full
-//        config.smsAutofillDisabled = false
-//        
-//        let addCardViewController = STPAddCardViewController(configuration: config, theme: .default())
-//        addCardViewController.delegate = self
-//        //addCardViewController.prefilledInformation.email = "a@google.com"
-//        
-//        // STPAddCardViewController must be shown inside a UINavigationController.
-//        let navigationController = UINavigationController(rootViewController: addCardViewController)
-//        self.present(navigationController, animated: true, completion: nil)
-//    }
-//
-//    /**
-//     *  Called when the user cancels entering a shipping address. You should dismiss (or pop) the view controller at this point.
-//     *
-//     *  @param addressViewController the view controller that has been cancelled
-//     */
-//    public func shippingAddressViewControllerDidCancel(_ addressViewController: STPShippingAddressViewController) {
-//        
-//        self.dismiss(animated: true, completion: nil)
-//    }
-
     
-    // MARL: - Variables
+    // MARK: - Variables
+    
+    /// the SKU determining the product user wants to buy
     private var sku: String = ""
+    /// Stripe token for this purchase
+    private var token: String = ""
+    
+    /// the available HAT providers fetched from HAT
     private var hatProviders: [HATProviderObject] = []
+    /// the pop up info view controller
     private var infoViewController: GetAHATInfoViewController? = nil
+    
+    /// a dark view pop up holding title and stuff
     private var darkView: UIView? = nil
-    private var stripeModel = StripeModel()
 
     // MARK: - IBOutlets
 
@@ -97,11 +49,16 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        // config the arrowBar
         arrowBarImage.image = arrowBarImage.image!.withRenderingMode(.alwaysTemplate)
         arrowBarImage.tintColor = UIColor.rumpelDarkGray()
+        
+        // add notification observers
         NotificationCenter.default.addObserver(self, selector: #selector(hidePopUpView), name: NSNotification.Name("hideView"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshCollectionView), name: NSNotification.Name("hatProviders"), object: nil)
         
+        // getch available hat providers
         HATService.getAvailableHATProviders() 
     }
 
@@ -111,12 +68,26 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - Refresh collection view
+    
+    /**
+     Refreshes the collection view when the right notification is received
+     
+     - parameter notification: The norification object that called this method
+     */
     func refreshCollectionView(notification: Notification) {
         
         self.hatProviders = notification.object as! [HATProviderObject]
         self.collectionView.reloadData()
     }
     
+    // MARK: - Hide pop up
+    
+    /**
+     Hides the pop up view controller when the right notification is received
+     
+     - parameter notification: The norification object that called this method
+     */
     func hidePopUpView(notification: Notification) {
         
         // if view is found remove it
@@ -126,24 +97,25 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
             view.view.removeFromSuperview()
             view.removeFromParentViewController()
             
+            // check if we have an object
             if (notification.object != nil) {
                 
-                //self.performSegue(withIdentifier: "stripeSegue", sender: self)
-                
+                // config the STPPaymentConfiguration accordingly
                 let config = STPPaymentConfiguration.shared()
                 config.requiredBillingAddressFields = .full
-                config.requiredShippingAddressFields = .email
-                //config.smsAutofillDisabled = false
+                config.smsAutofillDisabled = true
                 
+                // config the STPAddCardViewController in order to present it to the user
                 let addCardViewController = STPAddCardViewController(configuration: config, theme: .default())
                 addCardViewController.delegate = self
-                addCardViewController.prefilledInformation.email = "a@google.com"
                 
                 // STPAddCardViewController must be shown inside a UINavigationController.
+                // show the STPAddCardViewController
                 let navigationController = UINavigationController(rootViewController: addCardViewController)
                 self.present(navigationController, animated: true, completion: nil)
             }
             
+            // remove the dark view pop up
             darkView?.removeFromSuperview()
         }
     }
@@ -154,32 +126,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "onboardingTile", for: indexPath) as? OnboardingTileCollectionViewCell
         
-        if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
-            
-            cell!.backgroundColor = UIColor.rumpelVeryLightGray()
-        } else {
-            
-            cell!.backgroundColor = UIColor.white
-        }
-        
-        cell?.titleLabel.text = hatProviders[indexPath.row].name
-        
-        if hatProviders[indexPath.row].price == 0 {
-            
-            cell?.infoLabel.text = String(hatProviders[indexPath.row].purchased) + " of " + String(hatProviders[indexPath.row].available) + " remaining"
-        } else {
-            
-            let formatter = NumberFormatter()
-            formatter.numberStyle = .currency
-            formatter.locale = Locale.current
-            let price: Double = Double(hatProviders[indexPath.row].price / 100)
-            cell?.infoLabel.text = formatter.string(from: NSNumber(value: price))
-        }
-        
-        let url: URL = URL(string: "https://hatters.hubofallthings.com/assets" + hatProviders[indexPath.row].illustration)!
-        cell?.hatProviderImage.downloadedFrom(url: url)
-        // Configure the cell
-        return cell!
+        return OnboardingTileCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, hatProvider: hatProviders[indexPath.row])
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -192,10 +139,12 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         // create page view controller
         let cell = collectionView.cellForItem(at: indexPath) as! OnboardingTileCollectionViewCell
         
+        // set up page controller
         let pageItemController = self.storyboard!.instantiateViewController(withIdentifier: "HATProviderInfo") as! GetAHATInfoViewController
         hatProviders[indexPath.row].hatProviderImage = cell.hatProviderImage.image
         pageItemController.hatProvider = hatProviders[indexPath.row]
         
+        // present a dark pop up view
         darkView = UIView(frame: CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.width, height: self.view.frame.height))
         darkView?.backgroundColor = UIColor.darkGray
         darkView?.alpha = 0.6
@@ -210,8 +159,12 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         self.addChildViewController(pageItemController)
         self.view.addSubview(pageItemController.view)
         pageItemController.didMove(toParentViewController: self)
+        
+        // save the sku
         sku = hatProviders[indexPath.row].sku
     }
+    
+    // MARK: - Stripe methods
     
     func addCardViewControllerDidCancel(_ addCardViewController: STPAddCardViewController) {
         
@@ -220,34 +173,9 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     
     func addCardViewController(_ addCardViewController: STPAddCardViewController, didCreateToken token: STPToken, completion: @escaping STPErrorBlock) {
         
-        let email = addCardViewController
-        print(email)
-        
-        self.submitToken(token, completion: { (error: Error?) in
-            
-            if let error = error {
-                
-                completion(error)
-            } else {
-                
-                self.dismiss(animated: true, completion: {
-                    
-                    //self.showReceiptPage()
-                    completion(nil)
-                })
-            }
-        })
-    }
-    
-    func submitToken(_ token: STPToken, completion: @escaping (Error?) -> Void) {
-        
-        let json = JSONHelper.createPurchaseJSONFrom(stripeModel: stripeModel)
-        let url = "https://hatters.hubofallthings.com/api/products/hat/purchase"
-        
-        Alamofire.request(url, method: .post, parameters: json, encoding: Alamofire.JSONEncoding.default, headers: [:]).responseJSON(completionHandler: {(data: DataResponse<Any>) -> Void in
-            
-            completion(nil)
-        })
+        self.token = token.tokenId
+        self.dismiss(animated: true, completion: nil)
+        self.performSegue(withIdentifier: "stripeSegue", sender: self)
     }
 
     // MARK: - Navigation
@@ -261,7 +189,8 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         if segue.identifier == "stripeSegue" {
             
             let controller = segue.destination as? StripeViewController
-            controller?.sku = sku
+            controller?.sku = self.sku
+            controller?.token = self.token
         }
     }
 }

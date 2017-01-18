@@ -12,12 +12,26 @@
 
 import SwiftyJSON
 
-struct DataPlugDataSetObject {
+// MARK: Struct
 
+/// A struct representing the data plug dataset from data plug JSON file
+struct DataPlugDataSetObject {
+    
+    // MARK: - Variables
+
+    /// The name of the dataset
     var name: String = ""
+    /// The description of the dataset
     var description: String = ""
+    
+    /// The fields of the dataset
     var fields: [DataPlugDataSetObject] = []
     
+    // MARK: - Initialiazers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         name = ""
@@ -25,6 +39,9 @@ struct DataPlugDataSetObject {
         fields = []
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     init(dict: Dictionary<String, JSON>) {
         
         self.init()

@@ -12,17 +12,32 @@
 
 import SwiftyJSON
 
-struct DataPlugRatingObject {
+// MARK: Struct
 
+/// A struct representing the data plug rating from data plug JSON file
+struct DataPlugRatingObject {
+    
+    // MARK: - Variables
+
+    /// The number of the upvotes
     var up: Int = -1
+    /// The number of the downvotes
     var down: Int = -1
     
+    // MARK: - Initializers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         up = -1
         down = -1
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     init(dict: Dictionary<String, JSON>) {
         
         self.init()

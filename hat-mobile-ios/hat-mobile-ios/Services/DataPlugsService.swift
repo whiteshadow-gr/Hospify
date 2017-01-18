@@ -21,9 +21,10 @@ class DataPlugsService: NSObject {
     // MARK: - Get available data plugs
     
     /**
-     <#Function Details#>
+     Gets the available data plugs for the user to enable
      
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter succesfulCallBack: A function of type ([DataPlugObject]) -> Void, executed on a successful result
+     - parameter failCallBack: A function of type (Void) -> Void, executed on an unsuccessful result
      */
     class func getAvailableDataPlugs(succesfulCallBack: @escaping ([DataPlugObject]) -> Void, failCallBack: @escaping (Void) -> Void) -> Void {
         

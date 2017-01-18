@@ -12,20 +12,38 @@
 
 import UIKit
 
+// MARK: Struct
+
+/// A struct representing the profile object for the profile view controller
 struct ProfileObject {
     
+    // MARK: - Variables
+    
+    /// The profile title for this tile
     var profileTileLabel: String = ""
+    
+    /// The image for this tile
     var profileTileImage: UIImage = UIImage()
     
+    // MARK: - Initializers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         profileTileLabel = ""
+        
         profileTileImage = UIImage()
     }
     
+    /**
+     It initialises everything according the desired title and image
+     */
     init(with title: String, and image: UIImage) {
         
         profileTileLabel = title
+        
         profileTileImage = image
     }
 }

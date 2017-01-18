@@ -14,14 +14,21 @@ import UIKit
 
 // MARK: Class
 
+/// A pop up view controller in ProfileViewController about PHATA
 class LearnMorePHATAViewController: UIViewController {
     
     // MARK: - IBOutlets
     
+    /// An IBOutlet for controlling the label that has the info
     @IBOutlet weak var details: UILabel!
     
     // MARK: - IBActions
     
+    /**
+     Posts a notification to hide this pop up view controller since the user wants to hide it.
+     
+     - parameter sender: The object that calls this method
+     */
     @IBAction func cancelButtonAction(_ sender: Any) {
         
         NotificationCenter.default.post(name: NSNotification.Name("HideLearnMore"), object: nil)
@@ -34,6 +41,8 @@ class LearnMorePHATAViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        // set the desired text
         self.details.text = "PHATA is your personal HAT address (e.g. YourHATname.hubofallthings.net). It is similar to a PO Box or a nickname for your HAT server. \n\n It is what you use to sign in on to HAT-ready services on the internet. You can set up your PHATA page and it can then be your personal home page on the Internet. Customise what information you wish to share on your PHATA page here. "
     }
 

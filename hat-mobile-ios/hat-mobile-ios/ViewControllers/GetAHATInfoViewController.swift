@@ -30,7 +30,7 @@ class GetAHATInfoViewController: UIViewController {
     /// An IBOutlet for handling the hatProviderTitle label
     @IBOutlet weak var hatProviderTitle: UILabel!
     /// An IBOutlet for handling the hatProviderInfo label
-    @IBOutlet weak var hatProviderInfo: UILabel!
+    @IBOutlet weak var hatProviderInfo: UITextView!
     /// An IBOutlet for handling the hatProviderDetailedInfo label
     @IBOutlet weak var hatProviderDetailedInfo: UILabel!
     /// An IBOutlet for handling the hatProviderFeaturesLabel label

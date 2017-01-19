@@ -62,8 +62,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     private lazy var locationManager: CLLocationManager! = {
         
         let locationManager = CLLocationManager()
-        locationManager.desiredAccuracy = Helper.GetUserPreferencesAccuracy()
-        locationManager.distanceFilter = Helper.GetUserPreferencesDistance()
+        locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
+        locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
         locationManager.delegate = self
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.requestAlwaysAuthorization()
@@ -333,8 +333,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         // Location stop
         self.locationManager.stopUpdatingLocation()
         // apply changes
-        self.locationManager.desiredAccuracy = Helper.GetUserPreferencesAccuracy()
-        self.locationManager.distanceFilter = Helper.GetUserPreferencesDistance()
+        self.locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
+        self.locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
     }
 
     func onDataSyncFeedback(_ isSuccess: Bool, message: String) {

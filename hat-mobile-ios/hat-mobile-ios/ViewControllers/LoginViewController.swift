@@ -133,7 +133,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         var barButtonTitle = "Autofill"
         
-        if let result = Helper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
+        if let result = KeychainHelper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
             
             barButtonTitle = result
         }
@@ -192,7 +192,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
      */
     func autofillPHATA() {
         
-        if let result = Helper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
+        if let result = KeychainHelper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
             
             self.inputUserHATDomain.text = result
         }

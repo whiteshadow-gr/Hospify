@@ -1,18 +1,18 @@
 PODS:
-  - Alamofire (4.2.0)
+  - Alamofire (4.3.0)
   - Crashlytics (3.8.3):
     - Fabric (~> 1.6.3)
   - Fabric (1.6.11)
   - FBAnnotationClusteringSwift (2.0)
   - JWTDecode (2.0.0)
   - KeychainSwift (7.0.0)
-  - Realm (2.1.2):
-    - Realm/Headers (= 2.1.2)
-  - Realm/Headers (2.1.2)
-  - RealmSwift (2.1.2):
-    - Realm (= 2.1.2)
-  - Stripe (9.2.0)
-  - SwiftyJSON (3.1.3)
+  - Realm (2.3.0):
+    - Realm/Headers (= 2.3.0)
+  - Realm/Headers (2.3.0)
+  - RealmSwift (2.3.0):
+    - Realm (= 2.3.0)
+  - Stripe (9.3.0)
+  - SwiftyJSON (3.1.4)
   - SwiftyRSA (0.5.0)
   - Toaster (2.0.1)
 
@@ -40,19 +40,19 @@ CHECKOUT OPTIONS:
     :git: https://github.com/ribl/FBAnnotationClusteringSwift/
 
 SPEC CHECKSUMS:
-  Alamofire: aa2e09d871c9160ac53c90e83c68064a94e3dfbe
+  Alamofire: 856a113053a7bc9cbe5d6367a555d773fc5cfef7
   Crashlytics: 2b6dbe138a42395577cfa73dfa1aa7248cadf39e
   Fabric: 5911403591946b8228ab1c51d98f1d7137e863c6
   FBAnnotationClusteringSwift: 0698ddcee46d1c28f14336909b2b0af4906b213f
   JWTDecode: 178e47e5d28d3abcff778bacced8342858cd6cb5
   KeychainSwift: b6947435dd78cc442c64a84ae648dd0e871cf448
-  Realm: efe855f4d977c8ce5a82d3116d9f1ff155a6550c
-  RealmSwift: 17d6ee30b6f9df86364408c2197492e33bfea567
-  Stripe: a47770e82db059d0e7e160f9aabc2997055ee911
-  SwiftyJSON: 38a8ea2006779c0fc4c310cb2ee8195327740faf
+  Realm: 69d7de9aa569a11eed490aaabc8f2109e3985ecf
+  RealmSwift: dc6f99ea55e59490cec69c860f91932b6bf7efb6
+  Stripe: 0f41a33a6fa3ac76ee668d7df3e2680c28b8ab1a
+  SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
   SwiftyRSA: e73c44402451ad74c603cc87f7cd8a6d6f418138
   Toaster: be65cd48e93a525b2a9cc4bd25a2bfc900e02d9f
 
-PODFILE CHECKSUM: 2d2c50642bc82cf85b84baa41357d19308c28206
+PODFILE CHECKSUM: b5156a76efbe1401cd211a2ed677960448362003
 
-COCOAPODS: 1.2.0.beta.3
+COCOAPODS: 1.2.0.rc.1

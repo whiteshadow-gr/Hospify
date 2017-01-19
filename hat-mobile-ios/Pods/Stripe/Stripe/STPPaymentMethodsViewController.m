@@ -98,21 +98,13 @@
     activityIndicator.animating = YES;
     [self.view addSubview:activityIndicator];
     self.activityIndicator = activityIndicator;
-    
-    self.navigationItem.title = STPLocalizedString(@"Loading…", @"Title for screen when data is still loading from the network.");
-    
-    self.backItem = [UIBarButtonItem stp_backButtonItemWithTitle:STPLocalizedString(@"Back", @"Text for back button") 
-                                                           style:UIBarButtonItemStylePlain 
-                                                          target:self
-                                                          action:@selector(cancel:)];
-    self.cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:STPLocalizedString(@"Back", @"Text for back button") 
-                                                                             style:UIBarButtonItemStylePlain 
-                                                                            target:nil 
-                                                                            action:nil];
+
     WEAK(self);
     [self.loadingPromise onSuccess:^(STPPaymentMethodTuple *tuple) {
         STRONG(self);
+        if (!self) {
+            return;
+        }
         UIViewController *internal;
         if (tuple.paymentMethods.count > 0) {
             internal = [[STPPaymentMethodsInternalViewController alloc] initWithConfiguration:self.configuration
@@ -147,7 +139,10 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.navigationItem.leftBarButtonItem = [self stp_isAtRootOfNavigationController] ? self.cancelItem : self.backItem;
+
+    if (![self stp_isAtRootOfNavigationController]) {
+        self.navigationItem.leftBarButtonItem = self.backItem;
+    }
 }
 
 - (void)viewDidLayoutSubviews {
@@ -159,16 +154,19 @@
 }
 
 - (void)updateAppearance {
-    [self.navigationItem.backBarButtonItem stp_setTheme:self.theme];
-    [self.backItem stp_setTheme:self.theme];
-    [self.cancelItem stp_setTheme:self.theme];
+    STPTheme *navBarTheme = self.navigationController.navigationBar.stp_theme ?: self.theme;
+    [self.navigationItem.leftBarButtonItem stp_setTheme:navBarTheme];
+    [self.backItem stp_setTheme:navBarTheme];
+    [self.cancelItem stp_setTheme:navBarTheme];
+
     self.activityIndicator.tintColor = self.theme.accentColor;
     self.view.backgroundColor = self.theme.primaryBackgroundColor;
     [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    return ([STPColorUtils colorIsBright:self.theme.primaryBackgroundColor] 
+    STPTheme *navBarTheme = self.navigationController.navigationBar.stp_theme ?: self.theme;
+    return ([STPColorUtils colorIsBright:navBarTheme.secondaryBackgroundColor]
             ? UIStatusBarStyleDefault
             : UIStatusBarStyleLightContent);
 }
@@ -244,6 +242,15 @@
         _apiAdapter = apiAdapter;
         _loadingPromise = loadingPromise;
         _delegate = delegate;
+
+        self.navigationItem.title = STPLocalizedString(@"Loading…", @"Title for screen when data is still loading from the network.");
+        _cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
+        _backItem = [UIBarButtonItem stp_backButtonItemWithTitle:STPLocalizedString(@"Back", @"Text for back button")
+                                                               style:UIBarButtonItemStylePlain
+                                                              target:self
+                                                              action:@selector(cancel:)];
+        self.navigationItem.leftBarButtonItem = self.cancelItem;
+
         WEAK(self);
         [loadingPromise onSuccess:^(STPPaymentMethodTuple *tuple) {
             STRONG(self);

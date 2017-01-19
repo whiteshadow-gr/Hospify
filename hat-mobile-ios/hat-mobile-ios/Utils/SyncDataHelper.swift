@@ -133,7 +133,7 @@ internal class SyncDataHelper {
         let parameters = ["": ""]
         
         // auth header
-        let headers:[String: String] = Helper.ConstructRequestHeaders(Helper.TheMarketAccessToken())
+        let headers:[String: String] = NetworkHelper.ConstructRequestHeaders(Helper.TheMarketAccessToken())
 
         // construct url
         let url = Helper.TheUserHATAccessTokenURL()
@@ -188,7 +188,7 @@ internal class SyncDataHelper {
                 
                 if (self.dataSyncDelegate != nil) {
                     
-                    let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                    let msg:String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
                     self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
                 }
             }
@@ -210,7 +210,7 @@ internal class SyncDataHelper {
         
         //print(userHATAccessToken)
         // auth header
-        let headers:[String: String] = Helper.ConstructRequestHeaders(userHATAccessToken)
+        let headers:[String: String] = NetworkHelper.ConstructRequestHeaders(userHATAccessToken)
 
         // construct url
         let url = Helper.TheUserHATCheckIfDataStructureExistsURL()
@@ -275,7 +275,7 @@ internal class SyncDataHelper {
                     // else it's a more general error
                     if (self.dataSyncDelegate != nil) {
                         
-                        let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                        let msg:String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
                         self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
                     }
                 }
@@ -299,7 +299,7 @@ internal class SyncDataHelper {
         //let parameters = test// ["": ""] // Constants.HATDataSource().toJSON()
         
         // auth header
-        let headers:[String: String] = Helper.ConstructRequestHeaders(userHATAccessToken)
+        let headers:[String: String] = NetworkHelper.ConstructRequestHeaders(userHATAccessToken)
 
         // construct url
         let url = Helper.TheConfigureNewDataSourceURL()
@@ -350,7 +350,7 @@ internal class SyncDataHelper {
                 //print("error res: \(error)")
                 if (self.dataSyncDelegate != nil) {
                     
-                    let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                    let msg:String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
                     self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
                 }
             }
@@ -368,7 +368,7 @@ internal class SyncDataHelper {
         let parameters = ["": ""]
         
         // auth header
-        let headers:[String: String] = Helper.ConstructRequestHeaders(userHATAccessToken)
+        let headers:[String: String] = NetworkHelper.ConstructRequestHeaders(userHATAccessToken)
         
         // construct url
         let url = Helper.TheGetFieldInformationUsingTableIDURL(fieldID)
@@ -445,7 +445,7 @@ internal class SyncDataHelper {
                 //print("error res: \(error)")
                 if (self.dataSyncDelegate != nil) {
                     
-                    let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                    let msg:String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
                     self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
                 }
             }
@@ -462,7 +462,7 @@ internal class SyncDataHelper {
             iCount += 1
             
             // the record name
-            let dateStr = Helper.getDateString(dataPoint.dateAdded, format: Constants.DateFormats.UTC)
+            let dateStr = FormatterHelper.getDateString(dataPoint.dateAdded, format: Constants.DateFormats.UTC)
             let record: [String : Any] = ["name": "record " + String(iCount), "lastUpdated" : dateStr]
             
             var jsonObjectInner: [Any] = []
@@ -483,7 +483,7 @@ internal class SyncDataHelper {
         
         // ready to POST our data to HAT
         // auth header
-        let headers:[String: String] = Helper.ConstructRequestHeaders(userHATAccessToken)
+        let headers:[String: String] = NetworkHelper.ConstructRequestHeaders(userHATAccessToken)
         
         // construct url
         let url = Helper.ThePOSTDataToHATURL()
@@ -528,8 +528,8 @@ internal class SyncDataHelper {
                                             if let r = result {
                                                 
                                                 // Is our latest date newer? Use it if so
-                                                let currentDate:NSDate? = Helper.getDateFromString(r) as NSDate?
-                                                let potentialDate:NSDate? = Helper.getDateFromString(dateString) as NSDate?
+                                                let currentDate:NSDate? = FormatterHelper.getDateFromString(r) as NSDate?
+                                                let potentialDate:NSDate? = FormatterHelper.getDateFromString(dateString) as NSDate?
 
                                                 if let c:NSDate = currentDate {
                                                     
@@ -554,7 +554,7 @@ internal class SyncDataHelper {
                                     
                                 if let dateUpdatedString:String = getLastUpdatedDate(array) {
                                     
-                                    if let dateUpdated:NSDate = Helper.getDateFromString(dateUpdatedString) as NSDate? {
+                                    if let dateUpdated:NSDate = FormatterHelper.getDateFromString(dateUpdatedString) as NSDate? {
                                             
                                         // if we get here, we can update our local DB with the last sync date
                                         RealmHelper.UpdateData(dataPoints, lastUpdated: dateUpdated as Date)
@@ -593,7 +593,7 @@ internal class SyncDataHelper {
                     //print("error res: \(error)")
                     if (self.dataSyncDelegate != nil) {
                         
-                        let msg:String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                        let msg:String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
                         self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
                     }
                 }
@@ -624,7 +624,7 @@ internal class SyncDataHelper {
             case Constants.RequestFields.Timestamp:
                 
                 // do conversion to UTC
-                let dateStr = Helper.getDateString(dataPoint.dateAdded, format: Constants.DateFormats.UTC) 
+                let dateStr = FormatterHelper.getDateString(dataPoint.dateAdded, format: Constants.DateFormats.UTC) 
                 return (requsetField.id, requsetField.name, dateStr)
         }
     }

@@ -12,6 +12,9 @@
 #import "STPEmailAddressValidator.h"
 #import "STPPhoneNumberValidator.h"
 
+#define FAUXPAS_IGNORED_IN_FILE(...)
+FAUXPAS_IGNORED_IN_FILE(APIAvailability)
+
 @implementation STPAddress
 
 #pragma clang diagnostic push
@@ -92,12 +95,14 @@
         ABMultiValueAddValueAndLabel(phonesRef, (__bridge CFStringRef)self.phone,
                                      kABPersonPhoneMainLabel, NULL);
         ABRecordSetValue(record, kABPersonPhoneProperty, phonesRef, nil);
+        CFRelease(phonesRef);
     }
     if (self.email != nil) {
         ABMutableMultiValueRef emailsRef = ABMultiValueCreateMutable(kABMultiStringPropertyType);
         ABMultiValueAddValueAndLabel(emailsRef, (__bridge CFStringRef)self.email,
                                      kABHomeLabel, NULL);
         ABRecordSetValue(record, kABPersonEmailProperty, emailsRef, nil);
+        CFRelease(emailsRef);
     }
     ABMutableMultiValueRef addressRef = ABMultiValueCreateMutable(kABMultiDictionaryPropertyType);
     NSMutableDictionary *addressDict = [NSMutableDictionary dictionary];
@@ -108,7 +113,8 @@
     addressDict[(NSString *)kABPersonAddressCountryCodeKey] = self.country;
     ABMultiValueAddValueAndLabel(addressRef, (__bridge CFTypeRef)[addressDict copy], kABWorkLabel, NULL);
     ABRecordSetValue(record, kABPersonAddressProperty, addressRef, nil);
-    return record;
+    CFRelease(addressRef);
+    return CFAutorelease(record);
 }
 
 #pragma clang diagnostic pop

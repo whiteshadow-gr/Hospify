@@ -15,35 +15,52 @@ import Alamofire
 
 // MARK: Class
 
-/// The class responsible for buying staff via Stripe
+/// The class responsible for buying stuff via Stripe
 class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     // MARK: - Variables
     
+    /// the SKU determining the product user wants to buy
     var sku: String = ""
+    /// Stripe token for this purchase
     var token: String = ""
     
+    /// The purchase model to work on and push to the hat later
     private var purchaseModel: PurchaseModel = PurchaseModel()
+    /// An array with all the countries
     private let countriesArray: [String] = StripeViewController.getCountries()
+    /// A picker view to show as inputView on keyboard later
     private let privatePicker = UIPickerView()
     
     // MARK: - IBOutlets
     
+    /// An IBOutlet for handling the arrow bar on top of the view
     @IBOutlet weak var arrowBarImage: UIImageView!
     
+    /// An IBOutlet for handling the first name textField
     @IBOutlet weak var firstNameTextField: UITextField!
+    /// An IBOutlet for handling the last name textField
     @IBOutlet weak var lastNameTextField: UITextField!
+    /// An IBOutlet for handling the nickname textField
     @IBOutlet weak var nicknameTextField: UITextField!
+    /// An IBOutlet for handling the email textField
     @IBOutlet weak var emailTextField: UITextField!
+    /// An IBOutlet for handling the personal HAT address textField
     @IBOutlet weak var personalHATAddressTextField: UITextField!
+    /// An IBOutlet for handling the password textField
     @IBOutlet weak var passwordTextField: UITextField!
+    /// An IBOutlet for handling the invitation code textField
     @IBOutlet weak var invitationCodeTextField: UITextField!
+    /// An IBOutlet for handling the country textField
     @IBOutlet weak var countryTextField: UITextField!
     
+    /// An IBOutlet for handling the terms and conditions button
     @IBOutlet weak var termsAndConditionsButton: UIButton!
     
+    /// An IBOutlet for handling the data view
     @IBOutlet weak var dataView: UIView!
     
+    /// An IBOutlet for handling the scrollView
     @IBOutlet weak var scrollView: UIScrollView!
     
     // MARK: - IBActions
@@ -51,18 +68,19 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     /**
      <#Function Details#>
      
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter sender: The object called this method
      */
     @IBAction func termsAndConditionsButtonAction(_ sender: Any) {
     }
     
     /**
-     <#Function Details#>
+     Creates a hat
      
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter sender: The object called this method
      */
     @IBAction func createHATButtonAction(_ sender: Any) {
         
+        // configure the purchaseModel basen on the info entered
         purchaseModel.address = self.personalHATAddressTextField.text!
         purchaseModel.country = self.countryTextField.text!
         purchaseModel.email = self.emailTextField.text!
@@ -75,10 +93,13 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         purchaseModel.token = self.token
         purchaseModel.termsAgreed = true
         
+        // create the json file based on the purchaseModel
         let json = JSONHelper.createPurchaseJSONFrom(purchaseModel: purchaseModel)
         
+        // url to make the request
         let url = "https://hatters.hubofallthings.com/api/products/hat/purchase"
         
+        // request the creation of the hat
         let _ = Alamofire.request(url, method: .post, parameters: json, encoding: Alamofire.JSONEncoding.default, headers: nil).responseJSON(completionHandler: { response in
         
             print(response)
@@ -97,17 +118,21 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         arrowBarImage.image = arrowBarImage.image!.withRenderingMode(.alwaysTemplate)
         arrowBarImage.tintColor = UIColor.rumpelVeryLightGray()
         
+        // add border to terms and conditions button
         self.termsAndConditionsButton.addBorderToButton(width: 1, color: .lightGray)
         
+        // configure the pickerView
         self.privatePicker.dataSource = self
         self.privatePicker.delegate = self
         
+        // add the pickerView as an inputView to the textField
         self.countryTextField.inputView = self.privatePicker
         
         // create 2 notification observers for listening to the keyboard
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardHandling(sender:)), name:.UIKeyboardWillShow, object: nil);
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardHandling(sender:)), name:.UIKeyboardWillHide, object: nil);
         
+        // add handling for taps
         self.hideKeyboardWhenTappedAround()
     }
 
@@ -120,17 +145,17 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     // MARK: - Get Countries
     
     /**
-     <#Function Details#>
+     Creates and returns an array with all the countries
      
-     - returns: <#Returns#>
+     - returns: An array of String
      */
     class func getCountries() -> [String] {
         
-        let locale = Locale.current
-        let countryArray = NSLocale.isoCountryCodes
-        let unsortedCountryArray:[String] = countryArray.map { (countryCode) -> String in
+        let locale: NSLocale = NSLocale.current as NSLocale
+        let countryArray = Locale.isoRegionCodes
+        let unsortedCountryArray: [String] = countryArray.map { (countryCode) -> String in
             
-            return (locale as NSLocale).displayName(forKey: NSLocale.Key.countryCode, value: countryCode)!
+            return locale.displayName(forKey: NSLocale.Key.countryCode, value: countryCode)!
         }
         
         return unsortedCountryArray.sorted()

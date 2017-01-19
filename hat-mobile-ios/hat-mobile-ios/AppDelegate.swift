@@ -31,8 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     lazy var locationManager: CLLocationManager! = {
         
         let locationManager = CLLocationManager()
-        locationManager.desiredAccuracy = Helper.GetUserPreferencesAccuracy()
-        locationManager.distanceFilter = Helper.GetUserPreferencesDistance()
+        locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
+        locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
         locationManager.delegate = self
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.requestAlwaysAuthorization()

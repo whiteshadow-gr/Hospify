@@ -74,7 +74,7 @@ class DataPlugsService: NSObject {
         var headers = ["" : ""]
     
         // get token
-        if let token = Helper.GetKeychainValue(key: "UserToken") {
+        if let token = KeychainHelper.GetKeychainValue(key: "UserToken") {
             
             headers = ["X-Auth-Token": token]
         }

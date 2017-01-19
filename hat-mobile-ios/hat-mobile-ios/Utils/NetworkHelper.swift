@@ -17,6 +17,66 @@ import SwiftyJSON
 class NetworkHelper {
     
     /**
+     Gets the friendly message for an exception
+     
+     - returns: String
+     */
+    class func ExceptionFriendlyMessage(_ errorCode: Int!, defaultMessage: String) -> String {
+        
+        if let errorCodeCheck: Int = errorCode {
+            
+            switch errorCodeCheck {
+                
+            case 401:
+                
+                return NSLocalizedString("exception_401", comment: "")
+            case 400:
+                
+                return NSLocalizedString("exception_400", comment: "")
+            case 500:
+                
+                return NSLocalizedString("exception_500", comment: "")
+            case 504:
+                
+                return NSLocalizedString("exception_504", comment: "")
+            default:
+                
+                return defaultMessage
+            }
+        } else {
+            
+            return defaultMessage
+        }
+    }
+    
+    /**
+     Gets a param value from a url
+     
+     - returns: String or nil
+     */
+    class func GetQueryStringParameter(url: String?, param: String) -> String? {
+        
+        if let url = url, let urlComponents = NSURLComponents(string: url), let queryItems = (urlComponents.queryItems as [URLQueryItem]!) {
+            
+            return queryItems.filter({ (item) in item.name == param }).first?.value!
+        }
+        return nil
+    }
+    
+    /**
+     Construct the headers for the Requests
+     
+     - parameter xAuthToken: The xAuthToken String
+     - returns: [String: String]
+     */
+    class func ConstructRequestHeaders(_ xAuthToken: String) -> [String: String] {
+        
+        let headers = ["Accept": Constants.ContentType.JSON, "Content-Type": Constants.ContentType.JSON, "X-Auth-Token": xAuthToken]
+        
+        return headers
+    }
+    
+    /**
      Makes ansychronous network call
      Closure for caller to handle
      

@@ -75,6 +75,7 @@
         }
         else if (prefilledInformation != nil) {
             STPAddress *prefilledAddress = [STPAddress new];
+            prefilledAddress.country = _addressViewModel.address.country;
             if (self.configuration.requiredShippingAddressFields & PKAddressFieldEmail) {
                 prefilledAddress.email = prefilledInformation.email;
             }
@@ -85,6 +86,16 @@
         }
 
         self.title = [self titleForShippingType:self.configuration.shippingType];
+
+        _backItem = [UIBarButtonItem stp_backButtonItemWithTitle:STPLocalizedString(@"Back", @"Text for back button")
+                                                               style:UIBarButtonItemStylePlain
+                                                              target:self
+                                                              action:@selector(cancel:)];
+        _cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                        target:self
+                                                                        action:@selector(cancel:)];
+
+        self.stp_navigationItemProxy.leftBarButtonItem = self.cancelItem;
     }
     return self;
 }
@@ -96,13 +107,7 @@
     tableView.sectionHeaderHeight = 30;
     [self.view addSubview:tableView];
     self.tableView = tableView;
-    self.backItem = [UIBarButtonItem stp_backButtonItemWithTitle:STPLocalizedString(@"Back", @"Text for back button")
-                                                           style:UIBarButtonItemStylePlain
-                                                          target:self
-                                                          action:@selector(cancel:)];
-    self.cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                    target:self
-                                                                    action:@selector(cancel:)];
+
     UIBarButtonItem *nextItem;
     switch (self.configuration.shippingType) {
         case STPShippingTypeShipping:
@@ -142,9 +147,11 @@
 
 - (void)updateAppearance {
     self.view.backgroundColor = self.theme.primaryBackgroundColor;
-    [self.nextItem stp_setTheme:self.theme];
-    [self.cancelItem stp_setTheme:self.theme];
-    [self.backItem stp_setTheme:self.theme];
+    STPTheme *navBarTheme = self.navigationController.navigationBar.stp_theme ?: self.theme;
+    [self.nextItem stp_setTheme:navBarTheme];
+    [self.cancelItem stp_setTheme:navBarTheme];
+    [self.backItem stp_setTheme:navBarTheme];
+    
     self.tableView.allowsSelection = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = self.theme.primaryBackgroundColor;
@@ -161,9 +168,18 @@
     [self setNeedsStatusBarAppearanceUpdate];
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    STPTheme *navBarTheme = self.navigationController.navigationBar.stp_theme ?: self.theme;
+    return ([STPColorUtils colorIsBright:navBarTheme.secondaryBackgroundColor]
+            ? UIStatusBarStyleDefault
+            : UIStatusBarStyleLightContent);
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.stp_navigationItemProxy.leftBarButtonItem = [self stp_isAtRootOfNavigationController] ? self.cancelItem : self.backItem;
+    if (![self stp_isAtRootOfNavigationController]) {
+        self.stp_navigationItemProxy.leftBarButtonItem = self.backItem;
+    }
     [self.tableView reloadData];
     if (self.navigationController.navigationBar.translucent) {
         CGFloat insetTop = CGRectGetMaxY(self.navigationController.navigationBar.frame);

@@ -26,6 +26,9 @@
         <array key="OpenSans-Regular.ttf">
             <string>OpenSans</string>
         </array>
+        <array key="OpenSans-Semibold.ttf">
+            <string>OpenSans-Semibold</string>
+        </array>
     </customFonts>
     <scenes>
         <!--Login View Controller-->
@@ -447,6 +450,131 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ylN-9F-Mfp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="279" y="1804"/>
+        </scene>
+        <!--Complete Purchase View Controller-->
+        <scene sceneID="esf-Ak-TL9">
+            <objects>
+                <viewController id="aWE-iq-qje" customClass="CompletePurchaseViewController" customModule="hat_mobile_ios" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Abh-YO-8ZC"/>
+                        <viewControllerLayoutGuide type="bottom" id="DgC-hn-pwS"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="HqH-9F-UQL">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ArrowBar" translatesAutoresizingMaskIntoConstraints="NO" id="cIx-zV-mwG">
+                                <rect key="frame" x="0.0" y="64" width="320" height="100"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Congratulations!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EIH-Gj-J7N">
+                                <rect key="frame" x="78" y="99" width="165" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="ppt-Cg-MWt"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.58628696199999997" blue="0.53447610140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UYL-YI-8el">
+                                <rect key="frame" x="78" y="178" width="165" height="49"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="49" id="vh7-SJ-iNF"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your hat has been created" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cwa-Fv-eOu">
+                                <rect key="frame" x="16" y="254" width="288" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="9EL-hE-TY9"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="OpenSans-CondensedLight" family="Open Sans" pointSize="22"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ioS-2N-EGE">
+                                <rect key="frame" x="16" y="377" width="288" height="30"/>
+                                <color key="backgroundColor" red="0.0" green="0.58628696199999997" blue="0.53447610140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="60v-Kd-tjs"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="15"/>
+                                <state key="normal" title="What can I do with my HAT?">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Jb-iv-gMC">
+                                <rect key="frame" x="16" y="415" width="288" height="30"/>
+                                <color key="backgroundColor" red="0.0" green="0.58628696199999997" blue="0.53447610140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="jdO-cg-7Cz"/>
+                                </constraints>
+                                <state key="normal" title="When will my HAT be ready?">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="hatAvailabilityButtonAction:" destination="aWE-iq-qje" eventType="touchUpInside" id="yaf-gE-JoC"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HZt-1L-Fgq">
+                                <rect key="frame" x="16" y="453" width="288" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="fBl-dc-IPm"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="15"/>
+                                <state key="normal" title="HOME">
+                                    <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="homeButtonAction:" destination="aWE-iq-qje" eventType="touchUpInside" id="xUY-Sn-MCe"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You will receive an email notification when your HAT is ready." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2XM-Ze-vAY">
+                                <rect key="frame" x="16" y="283" width="288" height="62"/>
+                                <fontDescription key="fontDescription" name="OpenSans-Semibold" family="Open Sans" pointSize="16"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="ioS-2N-EGE" firstAttribute="trailing" secondItem="HqH-9F-UQL" secondAttribute="trailingMargin" id="24d-RJ-fV1"/>
+                            <constraint firstItem="cIx-zV-mwG" firstAttribute="leading" secondItem="HqH-9F-UQL" secondAttribute="leading" id="4H6-Px-7xE"/>
+                            <constraint firstItem="UYL-YI-8el" firstAttribute="centerX" secondItem="cwa-Fv-eOu" secondAttribute="centerX" id="4xu-VZ-ATt"/>
+                            <constraint firstItem="UYL-YI-8el" firstAttribute="top" secondItem="cIx-zV-mwG" secondAttribute="bottom" constant="14" id="5Bs-xj-2vo"/>
+                            <constraint firstItem="0Jb-iv-gMC" firstAttribute="top" secondItem="ioS-2N-EGE" secondAttribute="bottom" constant="8" symbolic="YES" id="67S-dZ-79E"/>
+                            <constraint firstItem="0Jb-iv-gMC" firstAttribute="leading" secondItem="HZt-1L-Fgq" secondAttribute="leading" id="GaO-9a-hUM"/>
+                            <constraint firstItem="ioS-2N-EGE" firstAttribute="top" secondItem="2XM-Ze-vAY" secondAttribute="bottom" constant="32" id="HO7-IF-zOg"/>
+                            <constraint firstItem="cwa-Fv-eOu" firstAttribute="top" secondItem="UYL-YI-8el" secondAttribute="bottom" constant="27" id="M84-YV-UXi"/>
+                            <constraint firstItem="2XM-Ze-vAY" firstAttribute="centerX" secondItem="ioS-2N-EGE" secondAttribute="centerX" id="Mof-of-KJg"/>
+                            <constraint firstItem="cIx-zV-mwG" firstAttribute="top" secondItem="Abh-YO-8ZC" secondAttribute="bottom" id="OjE-dH-RdX"/>
+                            <constraint firstItem="cwa-Fv-eOu" firstAttribute="trailing" secondItem="HqH-9F-UQL" secondAttribute="trailingMargin" id="OtI-t6-mO4"/>
+                            <constraint firstItem="HZt-1L-Fgq" firstAttribute="trailing" secondItem="HqH-9F-UQL" secondAttribute="trailingMargin" id="SFd-xv-FhY"/>
+                            <constraint firstItem="2XM-Ze-vAY" firstAttribute="top" secondItem="cwa-Fv-eOu" secondAttribute="bottom" constant="8" id="Sio-IE-69B"/>
+                            <constraint firstItem="ioS-2N-EGE" firstAttribute="leading" secondItem="0Jb-iv-gMC" secondAttribute="leading" id="Vbg-6o-Kb0"/>
+                            <constraint firstItem="HZt-1L-Fgq" firstAttribute="top" secondItem="0Jb-iv-gMC" secondAttribute="bottom" constant="8" symbolic="YES" id="WtI-Vq-b5L"/>
+                            <constraint firstItem="0Jb-iv-gMC" firstAttribute="trailing" secondItem="HqH-9F-UQL" secondAttribute="trailingMargin" id="d6P-Yz-UfH"/>
+                            <constraint firstItem="DgC-hn-pwS" firstAttribute="top" secondItem="HZt-1L-Fgq" secondAttribute="bottom" constant="85" id="eJZ-Cd-bd9"/>
+                            <constraint firstItem="2XM-Ze-vAY" firstAttribute="trailing" secondItem="HqH-9F-UQL" secondAttribute="trailingMargin" id="eRk-Xr-0b8"/>
+                            <constraint firstItem="EIH-Gj-J7N" firstAttribute="leading" secondItem="HqH-9F-UQL" secondAttribute="leadingMargin" constant="62" id="eUu-ZF-kPQ"/>
+                            <constraint firstItem="EIH-Gj-J7N" firstAttribute="trailing" secondItem="UYL-YI-8el" secondAttribute="trailing" id="iq6-Qp-CYo"/>
+                            <constraint firstItem="cIx-zV-mwG" firstAttribute="centerY" secondItem="EIH-Gj-J7N" secondAttribute="centerY" id="p74-rA-gcl"/>
+                            <constraint firstItem="EIH-Gj-J7N" firstAttribute="top" secondItem="Abh-YO-8ZC" secondAttribute="bottom" constant="35" id="sT9-Qj-Ndg"/>
+                            <constraint firstAttribute="trailing" secondItem="cIx-zV-mwG" secondAttribute="trailing" id="ssV-xR-SWg"/>
+                            <constraint firstItem="cIx-zV-mwG" firstAttribute="centerX" secondItem="EIH-Gj-J7N" secondAttribute="centerX" id="ujR-ji-bpb"/>
+                            <constraint firstItem="EIH-Gj-J7N" firstAttribute="leading" secondItem="UYL-YI-8el" secondAttribute="leading" id="w7U-v6-m6T"/>
+                            <constraint firstItem="cwa-Fv-eOu" firstAttribute="leading" secondItem="2XM-Ze-vAY" secondAttribute="leading" id="yON-0a-WQX"/>
+                        </constraints>
+                    </view>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
+                    <modalPageSheetSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <connections>
+                        <outlet property="arrowbar" destination="cIx-zV-mwG" id="to9-V1-Jcl"/>
+                        <outlet property="hatProviderImage" destination="UYL-YI-8el" id="ClH-Jh-5Kv"/>
+                        <outlet property="homeButton" destination="HZt-1L-Fgq" id="y6n-Us-yFE"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QPO-lS-TE6" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1524" y="3070"/>
         </scene>
         <!--Learn MorePHATA View Controller-->
         <scene sceneID="yyv-o9-tjf">
@@ -1605,6 +1733,7 @@
                         <outlet property="passwordTextField" destination="whr-pj-0QQ" id="cwd-pr-Wuq"/>
                         <outlet property="personalHATAddressTextField" destination="jjF-td-UZ7" id="Bbw-xU-HyN"/>
                         <outlet property="termsAndConditionsButton" destination="JPF-bz-2p4" id="7Ld-FR-jlM"/>
+                        <segue destination="aWE-iq-qje" kind="show" identifier="completePurchaseSegue" id="MGa-Tu-aKe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N8V-ai-0U6" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2231,7 +2360,7 @@
         <scene sceneID="IFM-bZ-gss">
             <objects>
                 <collectionViewController id="fkN-Ku-3Hc" customClass="ProfileCollectionViewController" customModule="hat_mobile_ios" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="i0m-4A-1UF">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="i0m-4A-1UF">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.0" green="0.58628696199999997" blue="0.53447610140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -3164,7 +3293,7 @@
         <scene sceneID="tL6-wp-nlK">
             <objects>
                 <collectionViewController id="Zm4-mn-pPm" customClass="DataPlugsCollectionViewController" customModule="hat_mobile_ios" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="VpC-ZV-WXZ">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="VpC-ZV-WXZ">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

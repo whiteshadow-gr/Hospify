@@ -81,4 +81,37 @@ struct FormatterHelper {
         
         return dateString.replacingOccurrences(of: ",", with: " -")
     }
+    
+    static func getDateFromString(_ dateString : String) -> Date! {
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = Constants.DateFormats.UTC
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
+        let date = formatter.date(from: dateString)
+        
+        return date
+    }
+    
+    static func getDateString(_ datetime : Date) -> String {
+        
+        let formatter = DateFormatter()
+        formatter.dateStyle = DateFormatter.Style.full
+        formatter.timeStyle = DateFormatter.Style.medium
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
+        
+        let date = formatter.string(from: datetime)
+        
+        return date
+    }
+    
+    static func getDateString(_ datetime : Date, format: String) -> String {
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = format
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
+        
+        let date = formatter.string(from: datetime)
+        
+        return date
+    }
 }

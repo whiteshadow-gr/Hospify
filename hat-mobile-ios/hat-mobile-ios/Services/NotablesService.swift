@@ -101,7 +101,7 @@ class NotablesService: NSObject {
             let hatData = JSONHelper.updateJSONFile(file: hatDataStructure, noteFile: note)
             
             // create the headers
-            let headers = Helper.ConstructRequestHeaders(userToken)
+            let headers = NetworkHelper.ConstructRequestHeaders(userToken)
             
             let domain = HatAccountService.TheUserHATDomain()
             

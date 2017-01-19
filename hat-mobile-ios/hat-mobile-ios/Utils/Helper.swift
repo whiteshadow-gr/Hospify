@@ -11,8 +11,6 @@
  */
 
 import SwiftyJSON
-import KeychainSwift
-import CoreLocation
 
 // MARK: Class
 
@@ -141,19 +139,6 @@ class Helper {
     }
     
     /**
-     Construct the headers for the Requests
-     
-     - parameter xAuthToken: The xAuthToken String
-     - returns: [String: String]
-     */
-    class func ConstructRequestHeaders(_ xAuthToken: String) -> [String: String] {
-        
-        let headers = ["Accept": Constants.ContentType.JSON, "Content-Type": Constants.ContentType.JSON, "X-Auth-Token": xAuthToken]
-
-        return headers
-    }
-    
-    /**
      Register with HAT url
      
      - parameter userHATDomain: The user's hat domain
@@ -195,22 +180,6 @@ class Helper {
     }
     
     /**
-     Should be performed before each data post request as token lifetime is short.
-     
-     - returns: UserHATAccessTokenURLAlias
-     */
-    class func TheUsersAccessTokenURL() -> Constants.UserHATAccessTokenURLAlias {
-        
-        // sample format
-        // GET
-        // https://${HAT_DOMAIN}/users/access_token
-        
-        let url:Constants.UserHATAccessTokenURLAlias = "https://" + HatAccountService.TheUserHATDomain() + "/users/access_token"
-        
-        return url
-    }
-    
-    /**
      Register with HAT url
      
      - returns: HATRegistrationURLAlias
@@ -246,22 +215,6 @@ class Helper {
         let url:String = "https://" + HatAccountService.TheUserHATDomain() + /* hat domain for the user */
                 "/data/table?name=" + Constants.HATDataSource().name +
                 "&source=" + Constants.HATDataSource().source
-        
-        return url
-    }
-    
-    /**
-     Creates a table creation URL
-     
-     - returns: String
-     */
-    class func createTableURL() -> String {
-        
-        // sample format
-        // GET
-        // http://${DOMAIN}/data/table?name=${NAME}&source=${SOURCE}`
-        
-        let url:String = "https://" + HatAccountService.TheUserHATDomain() + "/data/table"
         
         return url
     }
@@ -325,240 +278,5 @@ class Helper {
         
         return url
     }
-
-    class func getDateFromString(_ dateString : String) -> Date! {
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = Constants.DateFormats.UTC 
-        formatter.timeZone = TimeZone(abbreviation: "UTC")
-        let date = formatter.date(from: dateString)
-        
-        return date
-    }
     
-    class func getDateString(_ datetime : Date) -> String {
-        
-        let formatter = DateFormatter()
-        formatter.dateStyle = DateFormatter.Style.full
-        formatter.timeStyle = DateFormatter.Style.medium
-        formatter.timeZone = TimeZone(abbreviation: "UTC")
-
-        let date = formatter.string(from: datetime)
-        
-        return date
-    }
-    
-    class func getDateString(_ datetime : Date, format: String) -> String {
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = format
-        formatter.timeZone = TimeZone(abbreviation: "UTC")
-
-        let date = formatter.string(from: datetime)
-        
-        return date
-    }
-    
-    class func UIColorFromRGB(_ rgbValue: UInt) -> UIColor {
-        
-        return UIColor(
-            
-            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
-            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
-            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-            alpha: CGFloat(1.0)
-        )
-    }
-    
-    /**
-     Gets the friendly message for an exception
-     
-     - returns: String
-     */
-    class func ExceptionFriendlyMessage(_ errorCode: Int!, defaultMessage: String) -> String {
-        
-        if let errorCodeCheck:Int = errorCode {
-            
-            switch errorCodeCheck {
-                
-            case 401:
-                
-                return NSLocalizedString("exception_401", comment: "")
-            case 400:
-                
-                return NSLocalizedString("exception_400", comment: "")
-            case 500:
-                
-                return NSLocalizedString("exception_500", comment: "")
-            case 504:
-                
-                return NSLocalizedString("exception_504", comment: "")
-            default:
-                
-                return defaultMessage
-            }
-        } else {
-            
-            return defaultMessage
-        }
-    }
-    
-    /**
-     Gets a param value from a url
-     
-     - returns: String or nil
-     */
-    class func GetQueryStringParameter(url: String?, param: String) -> String? {
-        
-        if let url = url, let urlComponents = NSURLComponents(string: url), let queryItems = (urlComponents.queryItems as [URLQueryItem]!) {
-            
-            return queryItems.filter({ (item) in item.name == param }).first?.value!
-        }
-        return nil
-    }
-    
-    // MARK: - Keychain methods
-    
-    /**
-    Set a value in the keychain
-     
-     - parameter String: the key
-     - parameter String: the value
-     
-     - returns: Bool
-     */
-    class func SetKeychainValue(key: String, value: String) -> Bool {
-        
-        let keychain = KeychainSwift()
-        //keychain.synchronizable = true
-        if keychain.set(value, forKey: key, withAccess: .accessibleWhenUnlocked) {
-            
-            // Keychain item is saved successfully
-            return true
-        } else {
-            
-            //let st: OSStatus = keychain.lastResultCode
-            return false
-        }
-    }
-    
-    /**
-     Get a value from keychain
-     
-     - parameter String: the key
-     
-     - returns: String
-     */
-    class func GetKeychainValue(key: String) -> String? {
-        
-        let keychain = KeychainSwift()
-        return keychain.get(key)
-    }
-    
-    /**
-     Clear a value from keychain
-     
-     - parameter String: the key
-     
-     - returns: String
-     */
-    class func ClearKeychainKey(key: String) -> Bool {
-        
-        let keychain = KeychainSwift()
-        return keychain.delete(key)
-    }
-    
-    // MARK: - Maps settings
-    
-    /**
-     Check the user preferences for accuracy setting
-     
-     - returns: <#return value description#>
-     */
-    class func GetUserPreferencesAccuracy() -> CLLocationAccuracy {
-        
-        let preferences = UserDefaults.standard
-
-        if preferences.object(forKey: Constants.Preferences.UserNewDefaultAccuracy) != nil {
-            // already done
-        } else {
-            // if none, best or 10m we go to 100m accuracy instead
-            let existingAccuracy:CLLocationAccuracy = preferences.object(forKey: Constants.Preferences.MapLocationAccuracy) as? CLLocationAccuracy ?? kCLLocationAccuracyHundredMeters
-            
-            if ((existingAccuracy == kCLLocationAccuracyBest) || (existingAccuracy == kCLLocationAccuracyNearestTenMeters)) {
-                
-                preferences.set(kCLLocationAccuracyHundredMeters, forKey: Constants.Preferences.MapLocationAccuracy)
-            }
-            
-            // set user delta
-            preferences.set("UserNewDefaultAccuracy", forKey: Constants.Preferences.UserNewDefaultAccuracy)
-        }
-        
-        let newAccuracy:CLLocationAccuracy = preferences.object(forKey: Constants.Preferences.MapLocationAccuracy) as? CLLocationAccuracy ?? kCLLocationAccuracyHundredMeters
-        
-        return newAccuracy
-    }
-
-    /**
-     Check the user preferences for distance setting
-     
-     - returns: <#return value description#>
-     */
-    class func GetUserPreferencesDistance() -> CLLocationDistance {
-        
-        let minValue: CLLocationDistance = 100;
-        
-        let preferences = UserDefaults.standard
-        var newDistance: CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDistance) as? CLLocationDistance ?? minValue
-        
-        // We will clip the lowest value up to a default, this can happen via a previous version of the app
-        if newDistance < minValue {
-            
-            newDistance = minValue
-        }
-        
-        return newDistance
-    }
-    
-    /**
-     Check the user preferences for deferred distance
-     
-     - returns: <#return value description#>
-     */
-    class func GetUserPreferencesDeferredDistance() -> CLLocationDistance {
-        
-        let minValue: CLLocationDistance = 150;
-
-        let preferences = UserDefaults.standard
-        var newDistance: CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDeferredDistance) as? CLLocationDistance ?? minValue
-        
-        // We will clip the lowest value up to a default, this can happen via a previous version of the app
-        if newDistance < minValue {
-            
-            newDistance = minValue
-        }
-
-        return newDistance
-    }
-    
-    /**
-     Check the user preferences for accuracy setting
-     
-     - returns: <#return value description#>
-     */
-    class func GetUserPreferencesDeferredTimeout() -> TimeInterval {
-        
-        let minValue: TimeInterval = 180
-        
-        let preferences = UserDefaults.standard
-        var newTime: TimeInterval = preferences.object(forKey: Constants.Preferences.MapLocationDeferredTimeout) as? TimeInterval ?? minValue
-        
-        // We will clip the lowest value up to a default, this can happen via a previous version of the app
-        if newTime < minValue {
-            
-            newTime = minValue
-        }
-        
-        return newTime
-    }
 }

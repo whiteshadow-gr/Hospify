@@ -61,13 +61,13 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
         
         cell!.labelLatitude.text = String(dataPoint.lat) + ", " + String(dataPoint.lng) + ", " + String(dataPoint.accuracy)
         
-        cell!.labelDateAdded.text = "Added " + Helper.getDateString(dataPoint.dateAdded)
+        cell!.labelDateAdded.text = "Added " + FormatterHelper.getDateString(dataPoint.dateAdded)
         
         
         // last sync date
         if let lastSynced:Date = dataPoint.lastSynced as Date? {
             
-            cell!.labelSyncDate.text = "Synced " + Helper.getDateString(lastSynced)
+            cell!.labelSyncDate.text = "Synced " + FormatterHelper.getDateString(lastSynced)
             cell!.labelSyncDate.textColor = Constants.Colours.AppBase
         } else {
             

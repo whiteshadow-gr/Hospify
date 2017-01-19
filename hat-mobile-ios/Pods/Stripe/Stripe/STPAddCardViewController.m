@@ -71,10 +71,13 @@
 @end
 
 static NSString *const STPPaymentCardCellReuseIdentifier = @"STPPaymentCardCellReuseIdentifier";
-static NSInteger STPPaymentCardEmailSection = 0;
-static NSInteger STPPaymentCardNumberSection = 1;
-static NSInteger STPPaymentCardBillingAddressSection = 2;
-static NSInteger STPPaymentCardRememberMeSection = 3;
+
+typedef NS_ENUM(NSUInteger, STPPaymentCardSection) {
+    STPPaymentCardEmailSection = 0,
+    STPPaymentCardNumberSection = 1,
+    STPPaymentCardBillingAddressSection = 2,
+    STPPaymentCardRememberMeSection = 3
+};
 
 @implementation STPAddCardViewController
 
@@ -114,6 +117,9 @@ static NSInteger STPPaymentCardRememberMeSection = 3;
     _addressViewModel.delegate = self;
     _checkoutAPIClient = [[STPCheckoutAPIClient alloc] initWithPublishableKey:configuration.publishableKey];
     self.title = STPLocalizedString(@"Add a Card", @"Title for Add a Card view");
+    self.backItem = [UIBarButtonItem stp_backButtonItemWithTitle:STPLocalizedString(@"Back", @"Text for back button") style:UIBarButtonItemStylePlain target:self action:@selector(cancel:)];
+    self.cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
+    self.stp_navigationItemProxy.leftBarButtonItem = self.cancelItem;
 }
 
 - (void)viewDidLoad {
@@ -123,9 +129,6 @@ static NSInteger STPPaymentCardRememberMeSection = 3;
     tableView.sectionHeaderHeight = 30;
     [self.view addSubview:tableView];
     self.tableView = tableView;
-    
-    self.backItem = [UIBarButtonItem stp_backButtonItemWithTitle:STPLocalizedString(@"Back", @"Text for back button") style:UIBarButtonItemStylePlain target:self action:@selector(cancel:)];
-    self.cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
     
     UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(nextPressed:)];
     self.doneItem = doneItem;
@@ -190,8 +193,11 @@ static NSInteger STPPaymentCardRememberMeSection = 3;
 
 - (void)updateAppearance {
     self.view.backgroundColor = self.theme.primaryBackgroundColor;
-    [self.doneItem stp_setTheme:self.theme];
-    [self.backItem stp_setTheme:self.theme];
+
+    STPTheme *navBarTheme = self.navigationController.navigationBar.stp_theme ?: self.theme;
+    [self.doneItem stp_setTheme:navBarTheme];
+    [self.backItem stp_setTheme:navBarTheme];
+    [self.cancelItem stp_setTheme:navBarTheme];
     self.tableView.allowsSelection = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone; // handle this with fake separator views for flexibility
     self.tableView.backgroundColor = self.theme.primaryBackgroundColor;
@@ -218,7 +224,8 @@ static NSInteger STPPaymentCardRememberMeSection = 3;
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-    return ([STPColorUtils colorIsBright:self.theme.primaryBackgroundColor] 
+    STPTheme *navBarTheme = self.navigationController.navigationBar.stp_theme ?: self.theme;
+    return ([STPColorUtils colorIsBright:navBarTheme.secondaryBackgroundColor]
             ? UIStatusBarStyleDefault
             : UIStatusBarStyleLightContent);
 }
@@ -269,7 +276,9 @@ static NSInteger STPPaymentCardRememberMeSection = 3;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self reloadRememberMeCellAnimated:NO];
-    self.stp_navigationItemProxy.leftBarButtonItem = [self stp_isAtRootOfNavigationController] ? self.cancelItem : self.backItem;
+    if (![self stp_isAtRootOfNavigationController]) {
+        self.stp_navigationItemProxy.leftBarButtonItem = self.backItem;
+    }
     [self.tableView reloadData];
     if (self.navigationController.navigationBar.translucent) {
         CGFloat insetTop = CGRectGetMaxY(self.navigationController.navigationBar.frame);
@@ -506,7 +515,7 @@ static NSInteger STPPaymentCardRememberMeSection = 3;
             codeViewController.theme = self.theme;
             codeViewController.delegate = self;
             UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:codeViewController];
-            [nav.navigationBar stp_setTheme:self.theme];
+            nav.navigationBar.stp_theme = self.theme;
             nav.modalPresentationStyle = UIModalPresentationFormSheet;
             [self presentViewController:nav animated:YES completion:nil];
         }] onCompletion:^(__unused id value, NSError *error) {
@@ -522,7 +531,7 @@ static NSInteger STPPaymentCardRememberMeSection = 3;
     // this is the email cell; do nothing.
 }
 
-- (void)switchTableViewCell:(__unused STPSwitchTableViewCell *)cell didToggleSwitch:(BOOL)on {
+- (void)switchTableViewCell:(STPSwitchTableViewCell *)cell didToggleSwitch:(BOOL)on {
     self.showingRememberMePhoneAndTerms = on;
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:1
@@ -610,20 +619,24 @@ static NSInteger STPPaymentCardRememberMeSection = 3;
 - (UITableViewCell *)tableView:(__unused UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell;
-    if (indexPath.section == STPPaymentCardEmailSection) {
-        return self.emailCell;
-    }
-    else if (indexPath.section == STPPaymentCardNumberSection) {
-        cell = self.paymentCell;
-    } else if (indexPath.section == STPPaymentCardBillingAddressSection) {
-        cell = [self.addressViewModel.addressCells stp_boundSafeObjectAtIndex:indexPath.row];
-    } else if (indexPath.section == STPPaymentCardRememberMeSection) {
-        if (indexPath.row == 0) {
-            cell = self.rememberMeCell;
-        } else {
-            cell = self.rememberMePhoneCell;
-        }
-        
+    switch (indexPath.section) {
+        case STPPaymentCardEmailSection:
+            return self.emailCell;
+        case STPPaymentCardNumberSection:
+            cell = self.paymentCell;
+            break;
+        case STPPaymentCardBillingAddressSection:
+            cell = [self.addressViewModel.addressCells stp_boundSafeObjectAtIndex:indexPath.row];
+            break;
+        case STPPaymentCardRememberMeSection:
+            if (indexPath.row == 0) {
+                cell = self.rememberMeCell;
+            } else {
+                cell = self.rememberMePhoneCell;
+            }
+            break;
+        default:
+            return [UITableViewCell new]; // won't be called; exists to make the static analyzer happy
     }
     cell.backgroundColor = [UIColor clearColor];
     cell.contentView.backgroundColor = self.theme.secondaryBackgroundColor;

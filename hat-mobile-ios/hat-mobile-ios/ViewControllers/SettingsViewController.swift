@@ -243,13 +243,13 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     private func readAndDisplayCurrentDefaults() {
         
         // get settings from user defaults
-        textFieldDistance.text = String(Helper.GetUserPreferencesDistance())
+        textFieldDistance.text = String(MapsHelper.GetUserPreferencesDistance())
         textFieldDistance.setNeedsDisplay()
         
-        textFieldDeferredDistance.text = String(Helper.GetUserPreferencesDeferredDistance())
+        textFieldDeferredDistance.text = String(MapsHelper.GetUserPreferencesDeferredDistance())
         textFieldDeferredDistance.setNeedsDisplay()
         
-        textFieldDeferredTime.text = String(Helper.GetUserPreferencesDeferredTimeout())
+        textFieldDeferredTime.text = String(MapsHelper.GetUserPreferencesDeferredTimeout())
         textFieldDeferredTime.setNeedsDisplay()
     }
     
@@ -263,7 +263,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
      */
     private func selectRowInPickerViewFromUserDefaults(picker: UIPickerView, animated: Bool) {
         
-        switch Helper.GetUserPreferencesAccuracy() {
+        switch MapsHelper.GetUserPreferencesAccuracy() {
             
         case kCLLocationAccuracyKilometer:
             

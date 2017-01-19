@@ -60,6 +60,9 @@
 		60DD7F6A1E27C719000C1B1E /* ProfileCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DD7F691E27C719000C1B1E /* ProfileCollectionViewController.swift */; };
 		60DD7F6C1E27CE56000C1B1E /* ProfileObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DD7F6B1E27CE56000C1B1E /* ProfileObject.swift */; };
 		60DD7F701E27D790000C1B1E /* ProfileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DD7F6F1E27D790000C1B1E /* ProfileCollectionViewCell.swift */; };
+		60DDE16D1E30E19300AB9E18 /* CompletePurchaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DDE16C1E30E19300AB9E18 /* CompletePurchaseViewController.swift */; };
+		60DDE16F1E30FCD200AB9E18 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DDE16E1E30FCD200AB9E18 /* KeychainHelper.swift */; };
+		60DDE1711E31006600AB9E18 /* MapsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DDE1701E31006600AB9E18 /* MapsHelper.swift */; };
 		60E7539A1DE46202001C85E7 /* NotesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E753991DE46202001C85E7 /* NotesData.swift */; };
 		60E753A01DE468A5001C85E7 /* NotablesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E7539F1DE468A5001C85E7 /* NotablesData.swift */; };
 		60E753A21DE468E9001C85E7 /* AuthorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E753A11DE468E9001C85E7 /* AuthorData.swift */; };
@@ -175,6 +178,9 @@
 		60DD7F691E27C719000C1B1E /* ProfileCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProfileCollectionViewController.swift; path = ViewControllers/ProfileCollectionViewController.swift; sourceTree = "<group>"; };
 		60DD7F6B1E27CE56000C1B1E /* ProfileObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProfileObject.swift; path = Objects/ProfileObject.swift; sourceTree = "<group>"; };
 		60DD7F6F1E27D790000C1B1E /* ProfileCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileCollectionViewCell.swift; sourceTree = "<group>"; };
+		60DDE16C1E30E19300AB9E18 /* CompletePurchaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CompletePurchaseViewController.swift; path = ViewControllers/CompletePurchaseViewController.swift; sourceTree = "<group>"; };
+		60DDE16E1E30FCD200AB9E18 /* KeychainHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = KeychainHelper.swift; path = Utils/KeychainHelper.swift; sourceTree = "<group>"; };
+		60DDE1701E31006600AB9E18 /* MapsHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MapsHelper.swift; path = Utils/MapsHelper.swift; sourceTree = "<group>"; };
 		60E753991DE46202001C85E7 /* NotesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotesData.swift; path = Objects/NotesData.swift; sourceTree = "<group>"; };
 		60E7539F1DE468A5001C85E7 /* NotablesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotablesData.swift; path = Objects/NotablesData.swift; sourceTree = "<group>"; };
 		60E753A11DE468E9001C85E7 /* AuthorData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthorData.swift; path = Objects/AuthorData.swift; sourceTree = "<group>"; };
@@ -488,6 +494,7 @@
 				6044B2171DDB3151003A1263 /* TabBarViewController.swift */,
 				6041B20C1DD4AC040018CC31 /* ShareOptionsViewController.swift */,
 				6043F6D61E1D114D00C5BAD9 /* StripeViewController.swift */,
+				60DDE16C1E30E19300AB9E18 /* CompletePurchaseViewController.swift */,
 				603CE74B1DF7091500421429 /* ParentPageViewController.swift */,
 				603CE7491DF6FA7400421429 /* PageViewController.swift */,
 				604D68DD1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift */,
@@ -501,6 +508,8 @@
 			isa = PBXGroup;
 			children = (
 				B59136821D19D36D00E9EDD0 /* Helper.swift */,
+				60DDE1701E31006600AB9E18 /* MapsHelper.swift */,
+				60DDE16E1E30FCD200AB9E18 /* KeychainHelper.swift */,
 				606528D21DDA037400026EA6 /* JSONHelper.swift */,
 				60A727BC1DDF47EC008AF409 /* FormatterHelper.swift */,
 				B59136841D19D3BB00E9EDD0 /* Constants.swift */,
@@ -916,11 +925,13 @@
 				60A727BD1DDF47ED008AF409 /* FormatterHelper.swift in Sources */,
 				603CE74A1DF6FA7400421429 /* PageViewController.swift in Sources */,
 				B5138ACE1D1ECA2C00CD1530 /* NetworkHelper.swift in Sources */,
+				60DDE16D1E30E19300AB9E18 /* CompletePurchaseViewController.swift in Sources */,
 				B564E9691D19717900EDB8F1 /* AppDelegate.swift in Sources */,
 				60FAC76B1E223AA700532C01 /* DataPlugCollectionViewCell.swift in Sources */,
 				B59136881D19DC2700E9EDD0 /* DataPoint.swift in Sources */,
 				60B486251E1D341000914AD2 /* PurchaseModel.swift in Sources */,
 				6045FBBE1E2EDAE300086926 /* LearnMorePHATAViewController.swift in Sources */,
+				60DDE1711E31006600AB9E18 /* MapsHelper.swift in Sources */,
 				60B4862D1E1D534A00914AD2 /* HATProviderCategoryObject.swift in Sources */,
 				604D68E01DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift in Sources */,
 				6043F6D71E1D114D00C5BAD9 /* StripeViewController.swift in Sources */,
@@ -933,6 +944,7 @@
 				60B470101E2E4D0F0016F956 /* ProfileViewController.swift in Sources */,
 				B5E97D9B1D1C03A000CFD1C8 /* UpdateCountDelegate.swift in Sources */,
 				60FAC7711E27862200532C01 /* DataPlugDataDefinitionObject.swift in Sources */,
+				60DDE16F1E30FCD200AB9E18 /* KeychainHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

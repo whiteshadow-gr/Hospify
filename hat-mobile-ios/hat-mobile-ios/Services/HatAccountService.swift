@@ -51,7 +51,7 @@ class HatAccountService {
      */
     class func TheUserHATDomain() -> Constants.UserHATDomainAlias {
         
-        if let hatDomain = Helper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
+        if let hatDomain = KeychainHelper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
             
             return hatDomain
         }
@@ -67,7 +67,7 @@ class HatAccountService {
     class func getUsersTokenFromKeychain() -> String {
         
         // check if the token has been saved in the keychain and return it. Else return an empty string
-        if let token = Helper.GetKeychainValue(key: "UserToken") {
+        if let token = KeychainHelper.GetKeychainValue(key: "UserToken") {
             
             return token
         }
@@ -163,7 +163,7 @@ class HatAccountService {
             
             // create headers and parameters
             //let parameters = JSONHelper.createNotablesTableJSON()
-            let headers = Helper.ConstructRequestHeaders(token)
+            let headers = NetworkHelper.ConstructRequestHeaders(token)
             let url = "https://" + HatAccountService.TheUserHATDomain() + "/data/table"
             
             // make async request
@@ -545,10 +545,10 @@ class HatAccountService {
     class func loginToHATAuthorization(userDomain: String, url: NSURL, selfViewController: LoginViewController) {
         
         // get token out
-        if let token = Helper.GetQueryStringParameter(url: url.absoluteString, param: Constants.Auth.TokenParamName) {
+        if let token = NetworkHelper.GetQueryStringParameter(url: url.absoluteString, param: Constants.Auth.TokenParamName) {
             
             // save token in keychain
-            let savedSuccesfully = Helper.SetKeychainValue(key: "UserToken", value: token)
+            let savedSuccesfully = KeychainHelper.SetKeychainValue(key: "UserToken", value: token)
             
             if savedSuccesfully {
                 
@@ -629,7 +629,7 @@ class HatAccountService {
                             
                         case .error(let error, let statusCode):
                             
-                            let msg: String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                            let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
                             weakSelf.createClassicOKAlertWith(alertMessage: msg, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
                         }
                     }
@@ -658,7 +658,7 @@ class HatAccountService {
         let parameters = ["" : ""]
         
         // auth header
-        let headers: [String : String] = Helper.ConstructRequestHeaders(Helper.TheMarketAccessToken())
+        let headers: [String : String] = NetworkHelper.ConstructRequestHeaders(Helper.TheMarketAccessToken())
         // construct url
         let url = Helper.TheAppRegistrationWithHATURL(userDomain)
         
@@ -675,7 +675,7 @@ class HatAccountService {
                     if result["message"].exists() {
                         
                         // save the hatdomain from the token to the device Keychain
-                        if(Helper.SetKeychainValue(key: Constants.Keychain.HATDomainKey, value: HATDomainFromToken)) {
+                        if(KeychainHelper.SetKeychainValue(key: Constants.Keychain.HATDomainKey, value: HATDomainFromToken)) {
                             
                             weakSelf.performSegue(withIdentifier: "ShowTabBarController", sender: viewController)
                             
@@ -698,8 +698,20 @@ class HatAccountService {
             case .error(let error, let statusCode):
                 
                 //show error
-                let msg: String = Helper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                weakSelf.createClassicOKAlertWith(alertMessage: msg, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                weakSelf.createClassicOKAlertWith(alertMessage: msg, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in
+                
+                    // save the hatdomain from the token to the device Keychain
+                    if(KeychainHelper.SetKeychainValue(key: Constants.Keychain.HATDomainKey, value: HATDomainFromToken)) {
+                        
+                        weakSelf.performSegue(withIdentifier: "ShowTabBarController", sender: viewController)
+                        
+                        // else show error in the saving in keychain
+                    } else {
+                        
+                        weakSelf.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_keychain_save", comment: "keychain"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                    }
+                })
             }
         }
     }

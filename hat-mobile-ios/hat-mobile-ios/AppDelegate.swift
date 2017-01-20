@@ -123,12 +123,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         UIApplication.shared.cancelAllLocalNotifications()
         
         // date
-        let timeInterval:TimeInterval = Helper.FutureTimeInterval.init(days: Double(3), timeType: Helper.TimeType.future).interval
+        let timeInterval:TimeInterval = FutureTimeInterval.init(days: Double(3), timeType: TimeType.future).interval
         let futureDate = Date().addingTimeInterval(timeInterval) // e.g. 3 days from now
         // add new
         let localNotification:UILocalNotification = UILocalNotification()
-        localNotification.alertAction = NSLocalizedString("sync_reminder_title", comment:  "title")
-        localNotification.alertBody = NSLocalizedString("sync_reminder_message", comment:  "message")
+        localNotification.alertAction = NSLocalizedString("sync_reminder_title", comment: "title")
+        localNotification.alertBody = NSLocalizedString("sync_reminder_message", comment: "message")
         localNotification.fireDate = futureDate
         localNotification.timeZone = TimeZone.current
         localNotification.soundName = UILocalNotificationDefaultSoundName
@@ -184,7 +184,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
      */
     func purgeUsingPredicate() -> Void {
         
-        let lastWeek = Date().addingTimeInterval(Helper.FutureTimeInterval.init(days: Constants.PurgeData.OlderThan, timeType: Helper.TimeType.past).interval)
+        let lastWeek = Date().addingTimeInterval(FutureTimeInterval.init(days: Constants.PurgeData.OlderThan, timeType: TimeType.past).interval)
         let predicate = NSPredicate(format: "dateAdded <= %@", lastWeek as CVarArg)
         
         // use _ to get rid of result is unused warnings

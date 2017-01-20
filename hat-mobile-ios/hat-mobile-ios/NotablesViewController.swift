@@ -138,28 +138,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         let newBlogTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newBlogButton(_:)))
         self.createNewBlogLabel.addGestureRecognizer(newBlogTapGestureRecognizer)
         self.createNewBlogLabel.isUserInteractionEnabled = true
-        
-        // connect to the server
-        self.connectToServerToGetNotes()
-        
-        // check if user has been notified about the facebook plug
-        if (UserDefaults.standard.value(forKey: "facebookPlug") as? Bool == nil) {
-            
-            let boolResult = { (bool: String) -> Void in
-                
-                if bool == "true" {
-                    
-                    // refresh
-                    UserDefaults.standard.set(true, forKey: "facebookPlug")
-                }
-            }
-            
-            let failCallBack = { self.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {() -> Void in return}) }
-            DataPlugsService.ensureDataPlugReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
-            
-            // user has been notified about the facebook data plug
-            UserDefaults.standard.set(false, forKey: "facebookPlug")
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {

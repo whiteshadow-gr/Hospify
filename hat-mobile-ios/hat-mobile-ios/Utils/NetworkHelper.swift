@@ -13,13 +13,50 @@
 import Alamofire
 import SwiftyJSON
 
-/// All network requests for through here
+// MARK: Class
+
+/// All network related methods
 class NetworkHelper {
+    
+    // MARK: - Enums
+    
+    /**
+     JSON Result from HTTP requests
+     
+     - IsSuccess: A tuple containing: isSuccess: Bool, statusCode: Int?, result: JSON
+     - Error: A tuple containing: error: Error, statusCode: Int?
+     */
+    enum ResultType {
+        
+        /// when the result is success. A tuple containing: isSuccess: Bool, statusCode: Int?, result: JSON
+        case isSuccess(isSuccess: Bool, statusCode: Int?, result: JSON)
+        /// when the result is error. A tuple containing: error: Error, statusCode: Int?
+        case error(error: Error, statusCode: Int?)
+    }
+    
+    /**
+     String Result from HTTP requests
+     
+     - IsSuccess: A tuple containing: isSuccess: Bool, statusCode: Int?, result: String
+     - Error: A tuple containing: error: Error, statusCode: Int?
+     */
+    enum ResultTypeString {
+        
+        /// when the result is success. A tuple containing: isSuccess: Bool, statusCode: Int?, result: String
+        case isSuccess(isSuccess: Bool, statusCode: Int?, result: String)
+        /// when the result is error. A tuple containing: error: Error, statusCode: Int?
+        case error(error: Error, statusCode: Int?)
+    }
+    
+    // MARK: - Friendly exception message
     
     /**
      Gets the friendly message for an exception
      
-     - returns: String
+     - parameter errorCode: The error code occured
+     - parameter defaultMessage: The default message to show if the errorCode does not match
+     
+     - returns: A message as a String
      */
     class func ExceptionFriendlyMessage(_ errorCode: Int!, defaultMessage: String) -> String {
         
@@ -49,10 +86,15 @@ class NetworkHelper {
         }
     }
     
+    // MARK: - Query from string
+    
     /**
      Gets a param value from a url
      
-     - returns: String or nil
+     - parameter url: The url to extract the parameters from
+     - parameter param: The parameter
+     
+     - returns: String or nil if not found
      */
     class func GetQueryStringParameter(url: String?, param: String) -> String? {
         
@@ -60,33 +102,37 @@ class NetworkHelper {
             
             return queryItems.filter({ (item) in item.name == param }).first?.value!
         }
+        
         return nil
     }
+    
+    // MARK: - Construct request headers
     
     /**
      Construct the headers for the Requests
      
      - parameter xAuthToken: The xAuthToken String
+     
      - returns: [String: String]
      */
     class func ConstructRequestHeaders(_ xAuthToken: String) -> [String: String] {
         
-        let headers = ["Accept": Constants.ContentType.JSON, "Content-Type": Constants.ContentType.JSON, "X-Auth-Token": xAuthToken]
-        
-        return headers
+        return ["Accept": Constants.ContentType.JSON, "Content-Type": Constants.ContentType.JSON, "X-Auth-Token": xAuthToken]
     }
     
+    // MARK: - Request methods
+    
     /**
-     Makes ansychronous network call
+     Makes ansychronous JSON request
      Closure for caller to handle
      
-     - parameter url:         <#url description#>
-     - parameter method:      <#method description#>
-     - parameter encoding:    <#encoding description#>
-     - parameter contentType: <#contentType description#>
-     - parameter parameters:  <#parameters description#>
-     - parameter headers:     <#headers description#>
-     - parameter completion:  <#completion description#>
+     - parameter url: The URL to connect to
+     - parameter method: The method to use in connecting with the URL
+     - parameter encoding: The encoding to use in the request
+     - parameter contentType: The content type of the request
+     - parameter parameters: The parameters in the request
+     - parameter headers: The headers in the request
+     - parameter completion: The completion handler to execute upon completing the request
      */
     class func AsynchronousRequest(
         
@@ -96,7 +142,7 @@ class NetworkHelper {
             contentType: String,
             parameters: Dictionary<String, Any>,
             headers: Dictionary<String, String>,
-            completion: @escaping (_ r: Helper.ResultType) -> Void) -> Void {
+            completion: @escaping (_ r: NetworkHelper.ResultType) -> Void) -> Void {
         
         // do a post
         Alamofire.request(
@@ -117,17 +163,18 @@ class NetworkHelper {
                 switch response.result {
                 case .success(_):
                     
+                    // check if we have a value and return it
                     if let value = response.result.value {
                         
                         let json = JSON(value)
-                        completion(
-                            Helper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json)
-                        )
+                        completion(NetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json))
+                    // else return isSuccess: false and nil for value
                     } else {
                         
-                        completion(Helper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                        completion(NetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
                     }
                     
+                // in case of failure return the error but check for internet connection or unauthorised status and let the user know
                 case .failure(let error):
                     
                     if error.localizedDescription == "The Internet connection appears to be offline." {
@@ -136,23 +183,27 @@ class NetworkHelper {
                     } else if response.response?.statusCode == 401 {
                         
                          NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "Unauthorized. Please sign out and try again.")
+                        
+                        // post a notification to log user out
+                        //NotificationCenter.default.post(name: NSNotification.Name("signOut"), object: nil)
                     }
-                    completion(Helper.ResultType.error(error: error, statusCode: response.response?.statusCode))
+                    
+                    completion(NetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
                 }
         }
     }
     
     /**
-     Makes ansychronous network call
+     Makes ansychronous string request
      Closure for caller to handle
      
-     - parameter url:         <#url description#>
-     - parameter method:      <#method description#>
-     - parameter encoding:    <#encoding description#>
-     - parameter contentType: <#contentType description#>
-     - parameter parameters:  <#parameters description#>
-     - parameter headers:     <#headers description#>
-     - parameter completion:  <#completion description#>
+     - parameter url: The URL to connect to
+     - parameter method: The method to use in connecting with the URL
+     - parameter encoding: The encoding to use in the request
+     - parameter contentType: The content type of the request
+     - parameter parameters: The parameters in the request
+     - parameter headers: The headers in the request
+     - parameter completion: The completion handler to execute upon completing the request
      */
     class func AsynchronousStringRequest(
         
@@ -162,7 +213,7 @@ class NetworkHelper {
         contentType: String,
         parameters: Dictionary<String, Any>,
         headers: Dictionary<String, String>,
-        completion: @escaping (_ r: Helper.ResultTypeString) -> Void) -> Void {
+        completion: @escaping (_ r: NetworkHelper.ResultTypeString) -> Void) -> Void {
         
         // do a post
         Alamofire.request(
@@ -183,32 +234,36 @@ class NetworkHelper {
                 switch response.result {
                 case .success(_):
                     
+                    // check if we have a value and return it
                     if let value = response.result.value {
                         
-                        completion(Helper.ResultTypeString.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: value))
+                        completion(NetworkHelper.ResultTypeString.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: value))
+                    // else return isSuccess: false and nil for value
                     } else {
                         
-                        completion(Helper.ResultTypeString.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                        completion(NetworkHelper.ResultTypeString.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
                     }
+                // return the error
                 case .failure(let error):
                     
-                    completion(Helper.ResultTypeString.error(error: error, statusCode: response.response?.statusCode))
+                    completion(NetworkHelper.ResultTypeString.error(error: error, statusCode: response.response?.statusCode))
                 }
         }
     }
     
     /**
+     Makes ansychronous data request
      used to POST data TO HAT
      Closure for caller to handle
      
-     - parameter url:                <#url description#>
-     - parameter method:             <#method description#>
-     - parameter encoding:           <#encoding description#>
-     - parameter contentType:        <#contentType description#>
-     - parameter parameters:         <#parameters description#>
-     - parameter headers:            <#headers description#>
-     - parameter userHATAccessToken: <#userHATAccessToken description#>
-     - parameter completion:         <#completion description#>
+     - parameter url: The URL to connect to
+     - parameter method: The method to use in connecting with the URL
+     - parameter encoding: The encoding to use in the request
+     - parameter contentType: The content type of the request
+     - parameter parameters: The parameters in the request
+     - parameter headers: The headers in the request
+     - parameter userHATAccessToken: The HAT access token
+     - parameter completion: The completion handler to execute upon completing the request
      */
     class func AsynchronousRequestData(
         
@@ -219,7 +274,7 @@ class NetworkHelper {
         parameters: [AnyObject],
         headers: Dictionary<String, String>,
         userHATAccessToken: String,
-        completion: @escaping (_ r: Helper.ResultType) -> Void) -> Void {
+        completion: @escaping (_ r: NetworkHelper.ResultType) -> Void) -> Void {
         
         let nsURL = NSURL(string: url)
 
@@ -239,18 +294,20 @@ class NetworkHelper {
                 switch response.result {
                 case .success(_):
                     
+                    // check if we have a value and return it
                     if let value = response.result.value {
                         
                         let json = JSON(value)
-                        completion(Helper.ResultType.isSuccess(isSuccess: true, statusCode: response.response!.statusCode, result: json))
+                        completion(NetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response!.statusCode, result: json))
+                    // else return isSuccess: false and nil for value
                     } else {
                         
-                        completion(Helper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                        completion(NetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
                     }
-                    
+                // return the error
                 case .failure(let error):
                     
-                    completion(Helper.ResultType.error(error: error, statusCode: response.response?.statusCode))
+                    completion(NetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
                 }
         }
     }

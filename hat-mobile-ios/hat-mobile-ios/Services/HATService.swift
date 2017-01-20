@@ -13,13 +13,21 @@
 import Alamofire
 import Crashlytics
 
-struct HATService {
+// MARK: Struct
 
+/// A class about the methods concerning the HAT
+struct HATService {
+    
+    // MARK: - Get available HAT providers
+
+    /**
+     Fetches the available HAT providers
+     */
     static func getAvailableHATProviders() {
         
         let url = "https://hatters.hubofallthings.com/api/products/hat"
         
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: [:], completion: {(r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: [:], completion: {(r: NetworkHelper.ResultType) -> Void in
         
             switch r {
                 

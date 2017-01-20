@@ -25,6 +25,8 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     private var sku: String = ""
     /// Stripe token for this purchase
     private var token: String = ""
+    private var hatImage: UIImage? = nil
+    private var hatDomain: String = ""
     
     /// the available HAT providers fetched from HAT
     private var hatProviders: [HATProviderObject] = []
@@ -162,6 +164,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         
         // save the sku
         sku = hatProviders[indexPath.row].sku
+        hatImage = cell.hatProviderImage.image
     }
     
     // MARK: - Stripe methods
@@ -189,8 +192,11 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         if segue.identifier == "stripeSegue" {
             
             let controller = segue.destination as? StripeViewController
+            
             controller?.sku = self.sku
             controller?.token = self.token
+            controller?.hatImage = self.hatImage
+            controller?.domain = "." + self.hatDomain
         }
     }
 }

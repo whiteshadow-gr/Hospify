@@ -40,7 +40,7 @@ class DataViewController: UIViewController {
                                     proceedCompletion: {
                                                             () -> Void in
                                                             
-                                                            if (RealmHelper.Purge()) {
+                                                            if (RealmHelper.Purge(nil)) {
                                                                 
                                                                 self.dataTableView.reloadData()
                                                             }

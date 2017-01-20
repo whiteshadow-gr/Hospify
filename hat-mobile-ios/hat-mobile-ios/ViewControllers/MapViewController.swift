@@ -54,7 +54,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     /// The timerSYnc DispatchSource object
     private var timerSync: DispatchSource!
     /// The selected enum category of Helper.TimePeriodSelected object
-    private var timePeriodSelectedEnum: Helper.TimePeriodSelected = Helper.TimePeriodSelected.none
+    private var timePeriodSelectedEnum: TimePeriodSelected = TimePeriodSelected.none
     /// The error message, if any
     private var lastErrorMessage: String = ""
     
@@ -211,9 +211,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     @IBAction func buttonLastWeekTouchUp(_ sender: UIBarButtonItem) {
         
         // filter data
-        self.timePeriodSelectedEnum = Helper.TimePeriodSelected.lastWeek
+        self.timePeriodSelectedEnum = TimePeriodSelected.lastWeek
         
-        let lastWeek = Date().addingTimeInterval(Helper.FutureTimeInterval.init(days: Double(7), timeType: Helper.TimeType.past).interval)
+        let lastWeek = Date().addingTimeInterval(FutureTimeInterval.init(days: Double(7), timeType: TimeType.past).interval)
         let predicate = NSPredicate(format: "dateAdded >= %@", lastWeek as CVarArg)
         self.fetchAndClusterPoints(predicate)
     }
@@ -227,7 +227,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     @IBAction func buttonTodayTouchUp(_ sender: UIBarButtonItem) {
         
         // filter data
-        self.timePeriodSelectedEnum = Helper.TimePeriodSelected.today
+        self.timePeriodSelectedEnum = TimePeriodSelected.today
         
         let startOfToday = Calendar.current.startOfDay(for: Date())
         let predicate = NSPredicate(format: "dateAdded >= %@", startOfToday as CVarArg)
@@ -243,10 +243,10 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     @IBAction func buttonYesterdayTouchUp(_ sender: UIBarButtonItem) {
         
         // filter data
-        self.timePeriodSelectedEnum = Helper.TimePeriodSelected.yesterday
+        self.timePeriodSelectedEnum = TimePeriodSelected.yesterday
         
         let startOfToday = Calendar.current.startOfDay(for: Date())
-        let yesteday = startOfToday.addingTimeInterval(Helper.FutureTimeInterval.init(days: Double(1), timeType: Helper.TimeType.past).interval) // remove 24hrs
+        let yesteday = startOfToday.addingTimeInterval(FutureTimeInterval.init(days: Double(1), timeType: TimeType.past).interval) // remove 24hrs
         let predicate = NSPredicate(format: "dateAdded >= %@ and dateAdded <= %@", yesteday as CVarArg, startOfToday as CVarArg)
         self.fetchAndClusterPoints(predicate)
     }
@@ -309,7 +309,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         displayLastDataPointTime()
         
         // only update if today
-        if self.timePeriodSelectedEnum == Helper.TimePeriodSelected.today {
+        if self.timePeriodSelectedEnum == TimePeriodSelected.today {
             
             // refresh map UI too on changed
             DispatchQueue.main.async(execute: {

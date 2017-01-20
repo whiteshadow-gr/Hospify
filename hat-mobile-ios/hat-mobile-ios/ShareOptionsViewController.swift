@@ -59,6 +59,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var deleteButtonOutlet: UIButton!
     /// An IBOutlet for handling the facebook button
     @IBOutlet weak var facebookButton: UIButton!
+    @IBOutlet weak var twitterButton: UIButton!
     /// An IBOutlet for handling the marketsquare button
     @IBOutlet weak var marketsquareButton: UIButton!
     /// An IBOutlet for handling the publish button
@@ -79,6 +80,28 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     @IBOutlet weak var textViewAspectRationConstraint: NSLayoutConstraint!
     
     // MARK: - IBActions
+    
+    @IBAction func twitterButtonAction(_ sender: Any) {
+        
+        // if button is enabled
+        if self.twitterButton.isUserInteractionEnabled {
+            
+            // if button was selected deselect it and remove the button from the array
+            if self.twitterButton.alpha == 1{
+                
+                self.twitterButton.alpha = 0.4
+                self.removeFromArray(string: "twitter")
+                // else select it and add it to the array
+            } else {
+                
+                self.twitterButton.alpha = 1
+                shareOnSocial.append("twitter")
+            }
+            
+            // construct string from the array and save it
+            self.receivedNote?.data.sharedOn = self.constructStringFromArray(array: self.shareOnSocial)
+        }
+    }
     
     @IBAction func shareForDurationAction(_ sender: Any) {
         
@@ -275,6 +298,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 self.turnUIElementsOn()
                 self.turnImagesOn()
                 self.facebookButton.isUserInteractionEnabled = true
+                self.twitterButton.isUserInteractionEnabled = true
                 self.marketsquareButton.isUserInteractionEnabled = true
                 self.receivedNote?.data.shared = true
             } else {
@@ -283,6 +307,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 self.turnUIElementsOff()
                 self.turnImagesOff()
                 self.facebookButton.isUserInteractionEnabled = false
+                self.twitterButton.isUserInteractionEnabled = false
                 self.marketsquareButton.isUserInteractionEnabled = false
                 self.receivedNote?.data.shared = false
                 self.durationSharedForLabel.text = "Forever"
@@ -320,6 +345,30 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 self.removeFromArray(string: "facebook")
             // else select it and add it to the array
             } else {
+                
+                let result = UserDefaults.standard.value(forKey: "facebookPlug") as? Bool
+                
+                // check if user has been notified about the facebook plug
+                if (result == nil || result == false) {
+                    
+                    let boolResult = { (bool: String) -> Void in
+                        
+                        if bool == "true" {
+                            
+                            // refresh
+                            UserDefaults.standard.set(true, forKey: "facebookPlug")
+                        }
+                    }
+                    
+                    let failCallBack = {
+                        
+                        self.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                        
+                        self.facebookButton.alpha = 0.4
+                        self.removeFromArray(string: "facebook")
+                    }
+                    DataPlugsService.ensureDataPlugReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
+                }
                 
                 self.facebookButton.alpha = 1
                 shareOnSocial.append("facebook")
@@ -565,6 +614,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         
         // enable social images
         self.facebookButton.isUserInteractionEnabled = true
+        self.twitterButton.isUserInteractionEnabled = true
         self.marketsquareButton.isUserInteractionEnabled = true
         
         // set image fonts
@@ -600,6 +650,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         
         // disable social images
         self.facebookButton.isUserInteractionEnabled = false
+        self.twitterButton.isUserInteractionEnabled = false
         self.marketsquareButton.isUserInteractionEnabled = false
         
         // set image fonts
@@ -627,6 +678,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 
                 self.marketsquareButton.alpha = 1
             }
+            //  enable marketsquare button
+            if socialName == "twitter" {
+                
+                self.twitterButton.alpha = 1
+            }
         }
     }
     
@@ -640,6 +696,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         // deselect buttons
         self.facebookButton.alpha = 0.4
         self.marketsquareButton.alpha = 0.4
+        self.twitterButton.alpha = 0.4
     }
 
     /**

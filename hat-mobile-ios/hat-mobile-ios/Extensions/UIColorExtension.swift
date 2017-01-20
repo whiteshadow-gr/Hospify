@@ -12,7 +12,11 @@
 
 import UIKit
 
+// MARK: Extension
+
 extension UIColor {
+    
+    // MARK: - Methods
 
     /**
      Returns the teal color
@@ -46,6 +50,9 @@ extension UIColor {
         return UIColor.init(colorLiteralRed: 244/255, green: 244/255, blue: 244/255, alpha: 1)
     }
     
+    /**
+     Returns an UIColor object from a RGB value
+     */
     class func fromRGB(_ rgbValue: UInt) -> UIColor {
         
         return UIColor(

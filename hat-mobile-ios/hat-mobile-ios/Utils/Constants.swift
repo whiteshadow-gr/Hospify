@@ -10,9 +10,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import SwiftyJSON
+import UIKit
 
-class Constants  {
+// MARK: Class
+
+// A class handling all the constant values for easy access
+class Constants {
+    
+    // MARK: - Typealiases
     
     typealias MarketAccessTokenAlias = String
     typealias MarketDataPlugIDAlias = String
@@ -23,153 +28,202 @@ class Constants  {
     typealias UserHATAccessTokenURLAlias = String
     typealias UserHATDomainPublicTokenURLAlias = String
     
-    /**
-     *  Date formats
-     */
-    struct DateFormats {
-        
-        // UTC format
-        static let UTC:String = "yyyy-MM-dd'T'HH:mm:ssZ"
-    }
+    // MARK: - Enums
     
     /**
-     *  DataPoint Block size
-     */
-    struct DataPointBlockSize {
-        
-        static let MaxBlockSize:Int = 100
-    }
-    
-    /**
-     *  DataPoint Block size
-     */
-    struct DataSync {
-        
-        static let DataSyncPeriod:UInt64 = 10
-    }
-    
-    /**
-     *  DataPoint Block size
-     */
-    struct PurgeData {
-        
-        static let OlderThan:Double = 7
-    }
-    
-    /**
-     *  DataPoint Block size
-     */
-    struct Colours {
-        
-        static let AppBase:UIColor = UIColor.fromRGB(0x018675)
-    }
-    
-    /**
-     *  DataPoint Block size
-     */
-    struct Auth {
-        
-        static let URLScheme:String = "rumpellocationtrackerapp" // this is delcared in our url schemes info.list
-        static let ServiceName:String = "RumpelLite" // the service name
-        static let LocalAuthHost:String = "rumpellocationtrackerapphost" // this can be anything
-        static let NotificationHandlerName:String = "rumpellocationtrackerappnotificationhandler" // this can be anything
-        static let TokenParamName:String = "token" // QS param
-    }
-    
-    /**
-     *  Keychain. HATDomain: String value
-     */
-    struct Keychain {
-        
-        // UTC format
-        static let HATDomainKey:String = "user_hat_domain"
-    }
-    
-    
-    // the request urls
-    struct RequestUrls {
-        
-        // Check upload privs against MarketSquare
-        static let AppRegistrationWithHATURL = "https://marketsquare.hubofallthings.com/api/dataplugs/"
-    }
-    
-    struct ContentType {
-        
-        static let JSON = "application/json"
-        static let Text = "text/plain"
-        
-    }
+     The request fields for data points
      
-    // the HAT data-plug credentials
-    struct HATDataPlugCredentials {
-        
-        // hat username
-        static let HAT_Username = "location"
-        // hat password
-        static let HAT_Password = "MYl06ati0n"
-        // market data plug id
-        static let Market_DataPlugID = "c532e122-db4a-44b8-9eaf-18989f214262"
-        // market access token
-        static let Market_AccessToken:MarketAccessTokenAlias = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxLUw2Vlphd0JWSG1oU2FPc0NxdktMTnFLTEUrREVvN2M2VWxnSGZVVTJMQW9PSG9MdVRoQ1VcL05Nc0dVR0hYVVFWTjUwVnE2MkxTUjBFeDVaNWNqdjhXaWk3Y25WdFNrcjJHZERobnNBPSIsImRhdGFwbHVnIjoiYjY2NzNlNDYtOTI0Ni00MTM1LTkwNWUtYzI3NWUwMWU2YjVkIiwiaXNzIjoiaGF0LW1hcmtldCIsImV4cCI6MTUxNTU4NzkyOCwiaWF0IjoxNDg0ODI5NTI4LCJqdGkiOiI5NDU0MzAwMGE0ODBmN2FjMzdjOTM0NGVjZGQ0YTZiZjBkOWIzNzVmNWM3NGM0MWJlYmZjZjAwMTE0YjA0ZGY3NGViN2I5MjY1MjFkNmUwZTRjNDM4NGY3YmMxYWM1NDExYjdjN2JkZDBkNjUwYmQwOTVlYTZiNzc2MzE5MzE2MzNkZGY2MjVkMjY1NWE3N2NmYjczM2QzNGQwMDFmNTU4MDE4OTU5Zjc3ZGYxYzM5NTdhYTlkNDg0NDkzOThhZGFhMGY3OWY1NGUyNmZiN2MyMzMxZmE1YTEwMDA3YTM1NGFmN2EwNTIyOGM5NzI4OGI2NGU2MGJmY2UwYzBlOTllIn0.YHxs80oUdMvTJ1xFcryqX5xONMgPXt3Q3FE9ZwFJp4k"
-    }
-        
-    /**
-     *  The user token
+     - Latitude: latitude
+     - Longitude: longitude
+     - Accuracy: accuracy
+     - Timestamp: timestamp
+     - allValues: An array of all the above values
      */
-    struct Preferences {
-
-        // new type 1
-        static let UserNewDelta1 = "shared_user_new_delta_1"
-        static let UserNewDefaultAccuracy = "shared_user_new_default_accuracy"
-
-        // map
-        static let MapLocationAccuracy = "shared_map_location_accuracy"
-        static let MapLocationDistance = "shared_map_location_distance"
-        static let MapLocationDeferredDistance = "shared_map_location_deferred_distance"
-        static let MapLocationDeferredTimeout = "shared_map_location_deferred_timeout"
-        
-        // sync
-        static let SuccessfulSyncCount = "shared_successful_sync_count"
-        static let SuccessfulSyncDate = "shared_successful_sync_date"
-    }
-    
-    /// An enum for creating field requests. We use this to iterate over
     enum RequestFields: String {
         
+        /// Requesting Latitude
         case Latitude = "latitude"
+        /// Requesting Longitude
         case Longitude = "longitude"
+        /// Requesting Accuracy
         case Accuracy = "accuracy"
+        /// Requesting Timestamp
         case Timestamp = "timestamp"
         
+        /// Requesting all of RequestFields values in an array
         static let allValues = [Latitude, Longitude, Accuracy, Timestamp]
     }
     
+    // MARK: - Structs
+    
     /**
-     *  The HAT datasource will never change (not for v1 at least). It's the structure for the data held at HAT
+     Date formats
+     */
+    struct DateFormats {
+        
+        /// UTC format
+        static let UTC: String = "yyyy-MM-dd'T'HH:mm:ssZ"
+    }
+    
+    /**
+     DataPoint Block size
+     */
+    struct DataPointBlockSize {
+        
+        /// Max block size
+        static let MaxBlockSize: Int = 100
+    }
+    
+    /**
+     DataPoint sync period
+     */
+    struct DataSync {
+        
+        /// the data sync period
+        static let DataSyncPeriod: UInt64 = 10
+    }
+    
+    /**
+     DataPoint purge data
+     */
+    struct PurgeData {
+        
+        /// Older than 7 days
+        static let OlderThan: Double = 7
+    }
+    
+    /**
+     Colors struct
+     */
+    struct Colours {
+        
+        /// The app's basic color
+        static let AppBase: UIColor = UIColor.fromRGB(0x018675)
+    }
+    
+    /**
+     Authentication struct
+     */
+    struct Auth {
+        
+        /// The name of the declared in the bundle identifier
+        static let URLScheme: String = "rumpellocationtrackerapp"
+        /// The name of the service, RumpelLite
+        static let ServiceName: String = "RumpelLite"
+        /// The name of the local authentication host, can be anything
+        static let LocalAuthHost: String = "rumpellocationtrackerapphost"
+        /// The notification handler name, can be anything
+        static let NotificationHandlerName: String = "rumpellocationtrackerappnotificationhandler"
+        /// The token name, QS parameter
+        static let TokenParamName: String = "token"
+    }
+    
+    /**
+     Keychain struct
+     */
+    struct Keychain {
+        
+        /// the HAT domain key
+        static let HATDomainKey: String = "user_hat_domain"
+    }
+    
+    /**
+     Request URL's struct
+     */
+    struct RequestUrls {
+        
+        /// data plugs URL
+        static let AppRegistrationWithHATURL = "https://marketsquare.hubofallthings.com/api/dataplugs/"
+    }
+    
+    /**
+     The content types available
+     */
+    struct ContentType {
+        
+        /// JSON content
+        static let JSON = "application/json"
+        /// Text content
+        static let Text = "text/plain"
+    }
+     
+    /**
+     HAT credintials for location tracking
+     */
+    struct HATDataPlugCredentials {
+        
+        /// hat username used for location data plug
+        static let HAT_Username = "location"
+        /// hat password used for location data plug
+        static let HAT_Password = "MYl06ati0n"
+        /// market data plug id used for location data plug
+        static let Market_DataPlugID = "c532e122-db4a-44b8-9eaf-18989f214262"
+        /// market access token used for location data plug
+        static let Market_AccessToken:MarketAccessTokenAlias = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxLVZyaHVrWFh1bm9LRVwvd3p2Vmh4bm5FakdxVHc2RCs3WVZoMnBLYTdIRjJXbHdUV29MQWR3K0tEdzZrTCtkQjI2eHdEbE5sdERqTmRtRlwvVWtWM1A2ODF3TXBPSUxZbFVPaHI1WnErTT0iLCJkYXRhcGx1ZyI6ImM1MzJlMTIyLWRiNGEtNDRiOC05ZWFmLTE4OTg5ZjIxNDI2MiIsImlzcyI6ImhhdC1tYXJrZXQiLCJleHAiOjE1MTU2MDQ3NzUsImlhdCI6MTQ4NDg0NjM3NSwianRpIjoiZTBlMjIwY2VmNTMwMjllZmQ3ZDFkZWQxOTQzYzdlZWE5NWVjNWEwNGI4ZjA1MjU1MzEwNDgzYTk1N2VmYTQzZWZiMzQ5MGRhZThmMTY0M2ViOGNhNGVlOGZkNzI3ZDBiZDBhZGQyZTgzZWZkNmY4NjM2NWJiMjllYjY2NzQ3MWVhMjgwMmQ4ZTdkZWIxMzlhZDUzY2UwYzQ1ZTgxZmVmMGVjZTI5NWRkNTU0N2I2ODQzZmRiZTZlNjJmZTU1YzczYzAyYjA4MDAzM2FlMzQyMWUxZWJlMGFhOTgzNmE4MGNjZjQ0YmIxY2E1NmQ0ZjM4NWJkMzg1ZDY4ZmY0ZTIwMyJ9.bPTryrVhFa2uAMSZ6A5-Vvca7muEf8RrWoiire7K7ko"
+    }
+        
+    /**
+     The user's preferences, settings
+     */
+    struct Preferences {
+
+        /// User's default accuracy
+        static let UserNewDefaultAccuracy = "shared_user_new_default_accuracy"
+
+        /// User's map accuracy
+        static let MapLocationAccuracy = "shared_map_location_accuracy"
+        /// User's map distance
+        static let MapLocationDistance = "shared_map_location_distance"
+        /// User's map deferred distance
+        static let MapLocationDeferredDistance = "shared_map_location_deferred_distance"
+        /// User's map deferred timeout
+        static let MapLocationDeferredTimeout = "shared_map_location_deferred_timeout"
+        
+        /// Successful sync count
+        static let SuccessfulSyncCount = "shared_successful_sync_count"
+        /// Successful sync date
+        static let SuccessfulSyncDate = "shared_successful_sync_date"
+    }
+    
+    /**
+     The HAT datasource will never change (not for v1 at least). It's the structure for the data held at HAT
      */
      struct HATDataSource {
         
+        /// The name of the data source
         let name: String = "locations"
+        /// The source of the data source
         let source: String = "iphone"
+        /// The fields of the data source
         var fields: [JSONDataSourceRequestField] = [JSONDataSourceRequestField]()
 
+        /**
+         Initializer, for each field in RequestFields.allValues extracts the info and adds it to fields
+         */
         init() {
 
             // iterate over our RequestFields enum
-            for field in RequestFields.allValues{
+            for field in RequestFields.allValues {
+                
                 let f: JSONDataSourceRequestField = JSONDataSourceRequestField()
+                
                 f.name = field.rawValue
                 f.fieldEnum = field
+                
                 fields.append(f)
             }
-            
         }
         
+        /**
+         Turns the fields into a JSON object, dictionary
+         
+         - returns: A dictionary of <String, AnyObject>
+         */
         func toJSON() -> Dictionary<String, AnyObject> {
             
-            var dictionaries = [[String: String]]()
+            var dictionaries = [[String : String]]()
 
-            for field:JSONDataSourceRequestField in self.fields {
+            for field: JSONDataSourceRequestField in self.fields {
                 
                 dictionaries.append(["name" : field.name])
             }

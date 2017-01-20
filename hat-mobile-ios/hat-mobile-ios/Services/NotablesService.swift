@@ -83,6 +83,8 @@ class NotablesService: NSObject {
         print(token)
     }
     
+    // MARK: - Post note
+    
     /**
      Posts the note to the hat
      
@@ -106,7 +108,7 @@ class NotablesService: NSObject {
             let domain = HatAccountService.TheUserHATDomain()
             
             // make async request
-            NetworkHelper.AsynchronousRequest("https://" + domain + "/data/record/values", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: hatData, headers: headers, completion: { (r: Helper.ResultType) -> Void in
+            NetworkHelper.AsynchronousRequest("https://" + domain + "/data/record/values", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: hatData, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
                 
                 // handle result
                 switch r {
@@ -128,7 +130,6 @@ class NotablesService: NSObject {
         }
         
         func errorCall() {
-            
             
         }
         

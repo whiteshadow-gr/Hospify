@@ -19,7 +19,7 @@ import SwiftyRSA
 
 // MARK: Class
 
-/// A class about the methods concerning the HAT
+/// A class about the methods concerning the user's HAT account
 class HatAccountService {
     
     // MARK: - User's settings
@@ -80,10 +80,10 @@ class HatAccountService {
      
      - parameter callback: A function variable of type, @escaping (String) -> Void) -> (_ r: Helper.ResultType)
      */
-    private class func getUserTokenCompletionFunction (callback: @escaping (String) -> Void) -> (_ r: Helper.ResultType) -> Void {
+    private class func getUserTokenCompletionFunction (callback: @escaping (String) -> Void) -> (_ r: NetworkHelper.ResultType) -> Void {
         
         // return the token if success
-        return { (_ r: Helper.ResultType) -> Void in
+        return { (_ r: NetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -128,7 +128,7 @@ class HatAccountService {
         let headers = ["X-Auth-Token": token]
         
         // make the request
-        NetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
             
             // handle result
             switch r {
@@ -162,12 +162,11 @@ class HatAccountService {
         return { (_ callback: Void) -> Void in
             
             // create headers and parameters
-            //let parameters = JSONHelper.createNotablesTableJSON()
             let headers = NetworkHelper.ConstructRequestHeaders(token)
             let url = "https://" + HatAccountService.TheUserHATDomain() + "/data/table"
             
             // make async request
-            NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: notablesTableStructure, headers: headers, completion: { (r: Helper.ResultType) -> Void in
+            NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: notablesTableStructure, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
                 
                 // handle result
                 switch r {
@@ -200,7 +199,7 @@ class HatAccountService {
     class func checkHatTableExists(tableName: String, sourceName: String, authToken: String, successCallback: @escaping (NSNumber) -> Void, errorCallback: @escaping (Void) -> Void) -> Void {
         
         // create the url
-        let tableURL = Helper.TheUserHATCheckIfTableExistsURL(tableName: tableName, sourceName: sourceName)
+        let tableURL = HatAccountService.TheUserHATCheckIfTableExistsURL(tableName: tableName, sourceName: sourceName)
         
         // create parameters and headers
         let parameters = ["": ""]
@@ -214,7 +213,7 @@ class HatAccountService {
             contentType: Constants.ContentType.JSON,
             parameters: parameters,
             headers: header,
-            completion: {(r: Helper.ResultType) -> Void in
+            completion: {(r: NetworkHelper.ResultType) -> Void in
                 
                 switch r {
                     
@@ -263,7 +262,7 @@ class HatAccountService {
     class func checkHatTableExistsForUploading(tableName: String, sourceName: String, authToken: String, successCallback: @escaping (Dictionary<String, Any>) -> Void, errorCallback: @escaping (Void) -> Void) -> Void {
         
         // create the url
-        let tableURL = Helper.TheUserHATCheckIfTableExistsURL(tableName: tableName, sourceName: sourceName)
+        let tableURL = HatAccountService.TheUserHATCheckIfTableExistsURL(tableName: tableName, sourceName: sourceName)
         
         // create parameters and headers
         let parameters = ["": ""]
@@ -277,7 +276,7 @@ class HatAccountService {
             contentType: Constants.ContentType.JSON,
             parameters: parameters,
             headers: header,
-            completion: {(r: Helper.ResultType) -> Void in
+            completion: {(r: NetworkHelper.ResultType) -> Void in
                 
                 switch r {
                     
@@ -337,7 +336,7 @@ class HatAccountService {
     // make the request
     NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers,
                                       completion:
-                                        { (r: Helper.ResultType) -> Void in
+                                        { (r: NetworkHelper.ResultType) -> Void in
                                             
                                             switch r {
                                                 
@@ -560,10 +559,10 @@ class HatAccountService {
                 // HAT domain
                 let hatDomain = userDomain.TrimString()
                 
-                if let url = Helper.TheUserHATDOmainPublicKeyURL(hatDomain) {
+                if let url = HatAccountService.TheUserHATDOmainPublicKeyURL(hatDomain) {
                     
                     //. application/json
-                    NetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { [weak selfViewController](r: Helper.ResultTypeString) -> Void in
+                    NetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { [weak selfViewController](r: NetworkHelper.ResultTypeString) -> Void in
                         
                         guard let weakSelf = selfViewController else { return }
                         
@@ -658,12 +657,12 @@ class HatAccountService {
         let parameters = ["" : ""]
         
         // auth header
-        let headers: [String : String] = NetworkHelper.ConstructRequestHeaders(Helper.TheMarketAccessToken())
+        let headers: [String : String] = NetworkHelper.ConstructRequestHeaders(MarketSquareService.TheMarketAccessToken())
         // construct url
-        let url = Helper.TheAppRegistrationWithHATURL(userDomain)
+        let url = MarketSquareService.TheAppRegistrationWithHATURL(userDomain)
         
         // make asynchronous call
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: "application/json", parameters: parameters, headers: headers) { [weak viewController](r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: "application/json", parameters: parameters, headers: headers) { [weak viewController](r: NetworkHelper.ResultType) -> Void in
             
             guard let weakSelf = viewController else { return }
             switch r {
@@ -714,5 +713,84 @@ class HatAccountService {
                 })
             }
         }
+    }
+    
+    // MARK: - Constructing URLs
+    
+    /**
+     Should be performed before each data post request as token lifetime is short.
+     
+     - returns: UserHATAccessTokenURLAlias
+     */
+    class func TheUserHATAccessTokenURL() -> Constants.UserHATAccessTokenURLAlias {
+        
+        let url: Constants.UserHATAccessTokenURLAlias = "https://" + HatAccountService.TheUserHATDomain() +
+            "/users/access_token?username=" + HatAccountService.TheHATUsername() + "&password=" + HatAccountService.TheHATPassword()
+        
+        return url
+    }
+    
+    /**
+     Constructs URL to get the public key
+     
+     - parameter userHATDomain: The user's HAT domain
+     
+     - returns: HATRegistrationURLAlias
+     */
+    class func TheUserHATDOmainPublicKeyURL(_ userHATDomain: String) -> Constants.UserHATDomainPublicTokenURLAlias! {
+        
+        if let escapedUserHATDomain: String = userHATDomain.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) {
+            
+            let url: Constants.UserHATDomainPublicTokenURLAlias = "https://" + escapedUserHATDomain + "/" + "publickey"
+            
+            return url
+        }
+        
+        return nil
+    }
+    
+    /**
+     Constructs the url to access the table we want
+     
+     - parameter tableName: The table name
+     - parameter sourceName: The source name
+     
+     - returns: String
+     */
+    class func TheUserHATCheckIfTableExistsURL(tableName: String, sourceName: String) -> String {
+        
+        return "https://" + HatAccountService.TheUserHATDomain() + "/data/table?name=" + tableName + "&source=" + sourceName
+    }
+    
+    /**
+     Constructs the URL in order to create new table. Should be performed only if there isn’t an existing data source already.
+     
+     - returns: String
+     */
+    class func TheConfigureNewDataSourceURL() -> String {
+        
+        return "https://" + HatAccountService.TheUserHATDomain() + "/data/table"
+    }
+    
+    /**
+     Constructs the URL to get a field from a table
+     
+     - parameter fieldID: The fieldID number
+     
+     - returns: String
+     */
+    class func TheGetFieldInformationUsingTableIDURL(_ fieldID: Int) -> String {
+        
+        return "https://" + HatAccountService.TheUserHATDomain() + "/data/table/" + String(fieldID)
+    }
+    
+    /**
+     Constructs the URL to post data to HAT
+     
+     - returns: String
+     */
+    class func ThePOSTDataToHATURL() -> String {
+        
+        return "https://" + HatAccountService.TheUserHATDomain() + "/data/record/values"
     }
 }

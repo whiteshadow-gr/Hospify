@@ -12,31 +12,40 @@
 
 import RealmSwift
 
+// MARK: Class
+
 /// Static Realm Helper methods
 class RealmHelper {
+    
+    // MARK: - Typealiases
     
     typealias Latitude = Double
     typealias Longitude = Double
     typealias Accuracy = Double
     
+    // MARK: - Get realm
+    
     /**
-     Get the defaylt Realm DB representation
+     Get the default Realm DB representation
      
      - returns: The default Realm object
      */
     class func GetRealm() -> Realm {
         
         // Get the default Realm
-        let realm:Realm = try! Realm()
+        let realm: Realm = try! Realm()
         
         return realm
     }
     
+    // MARK: - Add data
+    
     /**
      Adds data in form of lat/lng
      
-     - parameter latitude:  latitude value
-     - parameter longitude: longitude value
+     - parameter latitude: The latitude value of the point
+     - parameter longitude: The longitude value of the point
+     - parameter accuracy: The accuracy of the point
      
      - returns: current item count
      */
@@ -54,6 +63,7 @@ class RealmHelper {
         
         // Persist your data easily
         try! realm.write {
+            
             realm.add(dataPoint)
         }
         
@@ -62,6 +72,8 @@ class RealmHelper {
 
         return dataPoints.count
     }
+    
+    // MARK: - Update realm
 
     /**
      Takes an array of DataPoints and updates the lastUpdated field
@@ -84,38 +96,39 @@ class RealmHelper {
             }
         }
     }
-
+    
+    // MARK: - Delete from realm
+    
     /**
-     Purge all data
+     Purge all data for a predicate
      
+     - parameter predicate: The predicate used to filter the data
      - returns: always true if sucessful
      */
-    class func Purge() -> Bool {
+    class func Purge(_ predicate: NSPredicate?) -> Bool {
         
-        let realm:Realm = self.GetRealm()
+        // Get the default Realm
+        let realm: Realm = self.GetRealm()
+
         try! realm.write {
             
-            realm.deleteAll()
+            // check if predicate is nil, if it is delete everything
+            guard let unwrappedPredicate = predicate else {
+                
+                realm.deleteAll()
+                
+                return
+            }
+            
+            // filter the data using the predicate
+            let list: Results<DataPoint> = realm.objects(DataPoint.self).filter(unwrappedPredicate)
+            realm.delete(list)
         }
         
         return true
     }
     
-    /**
-     Purge all data for a predicate
-     
-     - returns: always true if sucessful
-     */
-    class func Purge(_ predicate: NSPredicate) -> Bool {
-        
-        let realm:Realm = self.GetRealm()
-        let list:Results<DataPoint> = realm.objects(DataPoint.self).filter(predicate)
-        try! realm.write {
-            
-            realm.delete(list)
-        }
-        return true
-    }
+    // MARK: - Get results from realm
     
     /**
      Gets a list of results from the current Realm DB object and filters by the predicate
@@ -126,19 +139,24 @@ class RealmHelper {
      */
     class func GetResults(_ predicate: NSPredicate) -> Results<DataPoint>? {
         
-        let realm:Realm = self.GetRealm()
-        let sortProperties = [SortDescriptor(property: "dateAdded", ascending: true)]
+        // Get the default Realm
+        let realm: Realm = self.GetRealm()
+        
+        let sortProperties = [SortDescriptor(keyPath: "dateAdded", ascending: true)]
+        
         return realm.objects(DataPoint.self).filter(predicate).sorted(by: sortProperties)
     }
 
     /**
      Gets the most recent DataPoint
      
-     - returns: <#return value description#>
+     - returns: A DataPoint object
      */
     class func GetLastDataPoint() -> DataPoint! {
         
-        let realm:Realm = self.GetRealm()
+        // Get the default Realm
+        let realm: Realm = self.GetRealm()
+        
         return realm.objects(DataPoint.self).last
     }
 }

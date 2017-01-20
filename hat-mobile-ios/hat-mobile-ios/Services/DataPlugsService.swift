@@ -30,7 +30,7 @@ class DataPlugsService: NSObject {
         
         let url: String = "https://marketsquare.hubofallthings.com/api/dataplugs"
         
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: [:], completion: { (r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: [:], completion: { (r: NetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -84,7 +84,7 @@ class DataPlugsService: NSObject {
         let url = "https://" + userDomain + "/users/application_token?"
     
         // async request
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -244,7 +244,7 @@ class DataPlugsService: NSObject {
         let url = "https://marketsquare.hubofallthings.com/api/offer/" + offerID + "/userClaim"
         
         // make async request
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -296,7 +296,7 @@ class DataPlugsService: NSObject {
         let url = "https://marketsquare.hubofallthings.com/api/offer/" + offerID + "/claim"
         
         // make async request
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
             
             switch r {
              
@@ -340,7 +340,7 @@ class DataPlugsService: NSObject {
         let url = "https://" + userDomain + "/dataDebit/" + dataDebitID + "/enable"
         
         // make async request
-        NetworkHelper.AsynchronousRequest(url, method: .put, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: .put, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -389,7 +389,7 @@ class DataPlugsService: NSObject {
         let url = "https://" + userDomain + "/dataDebit/" + dataDebitID
         
         // make async request
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: Helper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -437,7 +437,7 @@ class DataPlugsService: NSObject {
             let url = "https://social-plug.hubofallthings.com/api/user/token/status"
             
             // make async request
-            NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: Helper.ResultType) -> Void in
+            NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
                 
                 switch r {
                     

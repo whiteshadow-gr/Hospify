@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (4.3.0)
+  - BEMCheckBox (1.4.0)
   - Crashlytics (3.8.3):
     - Fabric (~> 1.6.3)
   - Fabric (1.6.11)
@@ -18,6 +19,7 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire
+  - BEMCheckBox
   - Crashlytics
   - Fabric
   - FBAnnotationClusteringSwift (from `https://github.com/ribl/FBAnnotationClusteringSwift/`, branch `master`)
@@ -41,6 +43,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Alamofire: 856a113053a7bc9cbe5d6367a555d773fc5cfef7
+  BEMCheckBox: e18e4a148905b290bd03d98b767651c104f4eda3
   Crashlytics: 2b6dbe138a42395577cfa73dfa1aa7248cadf39e
   Fabric: 5911403591946b8228ab1c51d98f1d7137e863c6
   FBAnnotationClusteringSwift: 0698ddcee46d1c28f14336909b2b0af4906b213f
@@ -53,6 +56,6 @@ SPEC CHECKSUMS:
   SwiftyRSA: e73c44402451ad74c603cc87f7cd8a6d6f418138
   Toaster: be65cd48e93a525b2a9cc4bd25a2bfc900e02d9f
 
-PODFILE CHECKSUM: b5156a76efbe1401cd211a2ed677960448362003
+PODFILE CHECKSUM: 6aa3b6c1db6562cdb8c2c05d472b6891b85583d6
 
 COCOAPODS: 1.2.0.rc.1

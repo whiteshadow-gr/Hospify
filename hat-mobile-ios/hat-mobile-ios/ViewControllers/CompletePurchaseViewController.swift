@@ -17,6 +17,10 @@ import UIKit
 /// The class responsible for notifying the user about the purchase and giving some info
 class CompletePurchaseViewController: UIViewController {
     
+    // MARK: - Variables
+    
+    var image: UIImage? = nil
+    
     // MARK: - IBOutlets
     
     /// An IBOutlet for handling the hat provider image
@@ -64,6 +68,11 @@ class CompletePurchaseViewController: UIViewController {
         
         // add border to home button
         self.homeButton.addBorderToButton(width: 1, color: UIColor.rumpelDarkGray())
+        
+        if image != nil {
+            
+            self.hatProviderImage.image = image
+        }
     }
 
     override func didReceiveMemoryWarning() {

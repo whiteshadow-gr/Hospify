@@ -118,6 +118,9 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         } else if self.sharedOn[indexPath.row] == "marketsquare" {
             
             cell.socialImage.image = UIImage(named: "Marketsquare")
+        } else if self.sharedOn[indexPath.row] == "twitter" {
+            
+            cell.socialImage.image = UIImage(named: "Twitter")
         }
         
         // flip the image to appear correctly

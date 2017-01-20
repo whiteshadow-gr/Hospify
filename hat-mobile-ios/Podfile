@@ -16,6 +16,7 @@ target 'hat-mobile-ios' do
     pod 'Stripe'
     pod 'Fabric'
     pod 'Crashlytics'
+    pod 'BEMCheckBox'
 end
 
 target 'hat-mobile-iosTests' do

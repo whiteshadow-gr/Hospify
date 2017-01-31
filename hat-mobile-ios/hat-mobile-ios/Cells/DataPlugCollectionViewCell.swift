@@ -21,6 +21,7 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
     
     /// The image for the data plug
     @IBOutlet weak var dataPlugImage: UIImageView!
+    @IBOutlet weak var checkMarkImage: UIImageView!
     
     /// The title for the data plug
     @IBOutlet weak var dataPlugTitleLabel: UILabel!
@@ -38,20 +39,39 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
      
      - returns: An UICollectionViewCell
      */
-    class func setUp(cell: DataPlugCollectionViewCell, indexPath: IndexPath, dataPlug: DataPlugObject) -> UICollectionViewCell {
+    class func setUp(cell: DataPlugCollectionViewCell, indexPath: IndexPath, dataPlug: DataPlugObject, orientation: UIInterfaceOrientation) -> UICollectionViewCell {
         
         // Configure the cell
         cell.dataPlugTitleLabel.text = dataPlug.name
         cell.dataPlugDetailsLabel.text = dataPlug.description
         cell.dataPlugImage.downloadedFrom(url: URL(string: dataPlug.illustrationUrl)!)
         
-        // create this zebra like color based on the index of the cell
-        if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
+        if dataPlug.showCheckMark == true {
             
-            cell.backgroundColor = UIColor.rumpelVeryLightGray()
+            cell.checkMarkImage.isHidden = false
+        }
+        
+        // check if device is in portrait mode, 3 tiles per row vs 2
+        if orientation.isPortrait {
+            
+            // create this zebra like color based on the index of the cell
+            if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
+                
+                cell.backgroundColor = UIColor.rumpelVeryLightGray()
+            } else {
+                
+                cell.backgroundColor = UIColor.white
+            }
         } else {
             
-            cell.backgroundColor = UIColor.white
+            // create this zebra like color based on the index of the cell
+            if (indexPath.row % 2 == 0 ) {
+                
+                cell.backgroundColor = UIColor.rumpelVeryLightGray()
+            } else {
+                
+                cell.backgroundColor = UIColor.white
+            }
         }
         
         // return cell

@@ -54,6 +54,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     /// SafariViewController variable
     private var safariVC: SFSafariViewController?
     
+    /// SafariViewController variable
+    private var pageViewController: FirstOnboardingPageViewController = FirstOnboardingPageViewController()
+    
     // MARK: - IBActions
     
     /**
@@ -131,7 +134,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         let toolbar = UIToolbar()
         toolbar.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 30)
         
-        var barButtonTitle = "Autofill"
+        var barButtonTitle = ""
         
         if let result = KeychainHelper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
             
@@ -144,8 +147,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         toolbar.barTintColor = .black
         toolbar.setItems([autofillButton], animated: true)
 
-        self.inputUserHATDomain.inputAccessoryView = toolbar
-        self.inputUserHATDomain.inputAccessoryView?.backgroundColor = .black
+        if barButtonTitle != "" {
+            
+            self.inputUserHATDomain.inputAccessoryView = toolbar
+            self.inputUserHATDomain.inputAccessoryView?.backgroundColor = .black
+        }
         
         // app version
         if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
@@ -155,6 +161,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         // add notification observer for the login in
         NotificationCenter.default.addObserver(self, selector: #selector(self.hatLoginAuth), name: NSNotification.Name(rawValue: Constants.Auth.NotificationHandlerName), object: nil)
+        // add a notification observer in order to hide the second page view controller
+        NotificationCenter.default.addObserver(self, selector: #selector(removePageController), name: Notification.Name("hidePageViewContoller"), object: nil)
         
         // set tint color, if translucent and the bar tint color of navigation bar
         self.navigationController?.navigationBar.tintColor = UIColor.white
@@ -261,5 +269,21 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     override func keyboardWillShow(sender: NSNotification) {
         
         self.showKeyboardInView(self.view, scrollView: self.scrollView, sender: sender)
+    }
+    
+    // MARK: - Remove second PageViewController
+    
+    /**
+     Removes the second pageviewcontroller on demand when receivd the notification
+     
+     - parameter notification: The Notification object send with this notification
+     */
+    @objc private func removePageController(notification: Notification) {
+        
+        // if view is found remove it
+        
+            self.pageViewController.willMove(toParentViewController: nil)
+            self.pageViewController.view.removeFromSuperview()
+            self.pageViewController.removeFromParentViewController()
     }
 }

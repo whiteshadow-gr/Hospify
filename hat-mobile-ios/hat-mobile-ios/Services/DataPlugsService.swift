@@ -82,7 +82,7 @@ class DataPlugsService: NSObject {
         // contruct the url
         let userDomain = HatAccountService.TheUserHATDomain()
         let url = "https://" + userDomain + "/users/application_token?"
-    
+        
         // async request
         NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
             

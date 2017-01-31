@@ -17,7 +17,7 @@ import Alamofire
 // MARK: Class
 
 /// Get A hat view controller, used in onboarding of new users
-class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, STPAddCardViewControllerDelegate {
+class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, STPAddCardViewControllerDelegate {
     
     // MARK: - Variables
     
@@ -27,6 +27,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     private var token: String = ""
     private var hatImage: UIImage? = nil
     private var hatDomain: String = ""
+    private var orientation: UIInterfaceOrientation = .portrait
     
     /// the available HAT providers fetched from HAT
     private var hatProviders: [HATProviderObject] = []
@@ -52,6 +53,8 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
 
         // Do any additional setup after loading the view.
         
+        self.orientation = UIInterfaceOrientation(rawValue: UIDevice.current.orientation.rawValue)!
+        
         // config the arrowBar
         arrowBarImage.image = arrowBarImage.image!.withRenderingMode(.alwaysTemplate)
         arrowBarImage.tintColor = UIColor.rumpelDarkGray()
@@ -61,7 +64,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         NotificationCenter.default.addObserver(self, selector: #selector(refreshCollectionView), name: NSNotification.Name("hatProviders"), object: nil)
         
         // getch available hat providers
-        HATService.getAvailableHATProviders() 
+        HATService.getAvailableHATProviders()
     }
 
     override func didReceiveMemoryWarning() {
@@ -128,7 +131,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "onboardingTile", for: indexPath) as? OnboardingTileCollectionViewCell
         
-        return OnboardingTileCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, hatProvider: hatProviders[indexPath.row])
+        return OnboardingTileCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, hatProvider: hatProviders[indexPath.row], orientation: self.orientation)
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -165,6 +168,23 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         // save the sku
         sku = hatProviders[indexPath.row].sku
         hatImage = cell.hatProviderImage.image
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        if self.orientation == .landscapeLeft || self.orientation == .landscapeRight {
+            
+            return CGSize(width: UIScreen.main.bounds.width/3, height: UIScreen.main.bounds.width/3)
+        }
+        
+        return CGSize(width: UIScreen.main.bounds.width/2, height: UIScreen.main.bounds.width/2)
+    }
+    
+    override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
+        
+        self.orientation = toInterfaceOrientation
+        
+        self.collectionView?.reloadData()
     }
     
     // MARK: - Stripe methods

@@ -33,10 +33,6 @@ class GetAHATInfoViewController: UIViewController {
     @IBOutlet weak var hatProviderInfo: UITextView!
     /// An IBOutlet for handling the hatProviderDetailedInfo label
     @IBOutlet weak var hatProviderDetailedInfo: UILabel!
-    /// An IBOutlet for handling the hatProviderFeaturesLabel label
-    @IBOutlet weak var hatProviderFeaturesLabel: UILabel!
-    /// An IBOutlet for handling the hatProviderFeaturesList label
-    @IBOutlet weak var hatProviderFeaturesListLabel: UILabel!
 
     /// An IBOutlet for handling the signUpButton button
     @IBOutlet weak var signUpButton: UIButton!
@@ -87,9 +83,7 @@ class GetAHATInfoViewController: UIViewController {
                     features.append(NSAttributedString(string: "\n" + "\u{2022}" + "\n"))
                 }
             }
-            
-            self.hatProviderFeaturesListLabel.attributedText = features
-            
+                        
             // format title label
             let textAttributesTitle = [
                 NSForegroundColorAttributeName: UIColor.white,

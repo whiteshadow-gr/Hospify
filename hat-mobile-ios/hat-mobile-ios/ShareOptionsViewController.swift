@@ -21,6 +21,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     
     /// An array of strings holding the selected social networks to share the note
     private var shareOnSocial: [String] = []
+    /// An array of strings holding the selected social networks to share the note
+    private var dataPlugs: [DataPlugObject] = []
     
     /// A string passed from Notables view controller about the kind of the note
     var kind: String = "note"
@@ -83,11 +85,15 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     
     @IBAction func twitterButtonAction(_ sender: Any) {
         
+        self.publishButton.isUserInteractionEnabled = false
+        self.publishButton.setTitle("Please Wait..", for: .normal)
+        self.isTwitterEnabled()
+        
         // if button is enabled
         if self.twitterButton.isUserInteractionEnabled {
             
             // if button was selected deselect it and remove the button from the array
-            if self.twitterButton.alpha == 1{
+            if self.twitterButton.alpha == 1 {
                 
                 self.twitterButton.alpha = 0.4
                 self.removeFromArray(string: "twitter")
@@ -101,6 +107,64 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             // construct string from the array and save it
             self.receivedNote?.data.sharedOn = self.constructStringFromArray(array: self.shareOnSocial)
         }
+    }
+    
+    private func isTwitterEnabled() {
+        
+        func checkDataPlug(appToken: String) {
+            
+            func dataPlugIsEnabled() {
+                
+                self.publishButton.setTitle("Save", for: .normal)
+                self.publishButton.isUserInteractionEnabled = true
+            }
+            
+            func dataPugIsNotEnabled() {
+                
+                func noAction() {
+                    
+                    // if button was selected deselect it and remove the button from the array
+                    if self.twitterButton.alpha == 1 {
+                        
+                        self.twitterButton.alpha = 0.4
+                        self.removeFromArray(string: "twitter")
+                        // else select it and add it to the array
+                    } else {
+                        
+                        self.twitterButton.alpha = 1
+                        self.shareOnSocial.append("twitter")
+                        
+                        // construct string from the array and save it
+                        self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
+                    }
+                }
+                
+                func yesAction() {
+                    
+                    func successfullCallBack(data: [DataPlugObject]) {
+                        
+                        for i in 0 ... data.count - 1 {
+                            
+                            if data[i].name == "twitter" {
+                                
+                                let userDomain = HatAccountService.TheUserHATDomain()
+                                
+                                let url = "https://" + userDomain + "/hatlogin?name=Twitter&redirect=" + data[i].url + "/authenticate/hat"
+                                
+                                UIApplication.shared.openURL(URL(string: url)!)
+                            }
+                        }
+                    }
+                    
+                    DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {() -> Void in return})
+                }
+                
+                self.createClassicAlertWith(alertMessage: "You have to enable Twitter data plug before sharing on Twitter, do you want to enable now?", alertTitle: "Data plug not enabled", cancelTitle: "No", proceedTitle: "Yes", proceedCompletion: yesAction, cancelCompletion: noAction)
+            }
+            TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: dataPlugIsEnabled, failed: dataPugIsNotEnabled)
+        }
+        
+        TwitterDataPlugService.getAppTokenForTwitter(successful: checkDataPlug, failed: {() -> Void in return})
     }
     
     @IBAction func shareForDurationAction(_ sender: Any) {
@@ -182,7 +246,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         // start the procedure to upload the note to the hat
         let token = HatAccountService.getUsersTokenFromKeychain()
         // if user is note editing an existing note post as a new note
-        
+    
         func defaultCancelAction() {
             
             self.publishButton.setTitle(previousButtonTitle, for: .normal)
@@ -192,8 +256,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         
         if (self.receivedNote?.data.shared)! && ((self.receivedNote?.data.sharedOn)! == "") {
             
-            self.createClassicOKAlertWith(alertMessage: "Please select at least one shared destination", alertTitle: "", okTitle: "OK", proceedCompletion: {() -> Void in defaultCancelAction()})
-            return
+            self.createClassicOKAlertWith(alertMessage: "Please select at least one shared destination", alertTitle: "", okTitle: "OK", proceedCompletion: defaultCancelAction)
         }
         
         // not editing note
@@ -205,6 +268,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 self.receivedNote?.data.message = self.textView.text!
                 
                 NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
+                    
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
                     HatAccountService.triggerHatUpdate()
                     _ = self.navigationController?.popViewController(animated: true)
@@ -213,7 +277,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             
             if (receivedNote?.data.shared)! {
                 
-                self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in defaultCancelAction()})
+                self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
             } else {
                 
                 proceedCompletion()
@@ -228,6 +292,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 
                 NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
                 NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
+                    
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
                     HatAccountService.triggerHatUpdate()
                     _ = self.navigationController?.popViewController(animated: true)
@@ -236,11 +301,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             
             if cachedIsNoteShared && (receivedNote?.data.message != self.textView.text!) {
                 
-                self.createClassicAlertWith(alertMessage: "Your post would not be edited at the destination.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "OK", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in defaultCancelAction()})
+                self.createClassicAlertWith(alertMessage: "Your post would not be edited at the destination.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "OK", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
 
             } else if (receivedNote?.data.shared)! {
                 
-                self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in defaultCancelAction()})
+                self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
             } else {
                 
                 proceedCompletion()

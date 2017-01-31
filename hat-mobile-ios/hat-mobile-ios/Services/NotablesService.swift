@@ -26,14 +26,21 @@ class NotablesService: NSObject {
      
      - parameter authToken: The auth token from hat
      */
-    class func fetchNotables(authToken: String, success: @escaping (_ array: [JSON]) -> Void ) -> Void {
+    class func fetchNotables(authToken: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void, failure: @escaping () -> Void ) -> Void {
         
-        let createNotablesTables = HatAccountService.createHatTable(token: authToken, notablesTableStructure: JSONHelper.createNotablesTableJSON())
+        let createNotablesTables: (Void) -> Void = {
+            
+            return {() -> Void in
+            
+                _ = HatAccountService.createHatTable(token: authToken, notablesTableStructure: JSONHelper.createNotablesTableJSON())
+                failure()
+            }
+        }()
         
-        HatAccountService.checkHatTableExists(tableName: "notablesv1",
-                            sourceName: "rumpel",
+        HatAccountService.checkHatTableExists(tableName: "notablesv1", //posts // tweets
+                            sourceName: "rumpel", // facebook // twitter
                             authToken: authToken,
-                            successCallback: getNotes(token: authToken, success: success),
+                            successCallback: getNotes(token: authToken, parameters: parameters, success: success),
                             errorCallback: createNotablesTables)
     }
     
@@ -43,11 +50,11 @@ class NotablesService: NSObject {
      - parameter token: The user's token
      - parameter tableID: The table id of the notes
      */
-    private class func getNotes (token: String, success: @escaping (_ array: [JSON]) -> Void) -> (_ tableID: NSNumber) -> Void {
+    private class func getNotes (token: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void) -> (_ tableID: NSNumber) -> Void {
         
         return { (tableID: NSNumber) -> Void in
         
-            HatAccountService.getHatTableValues(token: token, tableID: tableID, successCallback: success, errorCallback: showNotablesFetchError)
+            HatAccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: success, errorCallback: showNotablesFetchError)
         }
     }
     

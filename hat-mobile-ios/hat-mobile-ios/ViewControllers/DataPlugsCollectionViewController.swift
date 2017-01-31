@@ -15,7 +15,7 @@ import UIKit
 // MARK: Class
 
 /// The data plugs View in the tab bar view controller
-class DataPlugsCollectionViewController: UICollectionViewController {
+class DataPlugsCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     // MARK: - Variables
     
@@ -23,6 +23,8 @@ class DataPlugsCollectionViewController: UICollectionViewController {
     private let reuseIdentifier = "dataPlugCell"
     /// An array with the available data plugs
     private var dataPlugs: [DataPlugObject] = []
+    private var orientation: UIInterfaceOrientation = .portrait
+    private var loadingView: UIView = UIView()
     
     // MARK: - View controller methods
 
@@ -30,24 +32,97 @@ class DataPlugsCollectionViewController: UICollectionViewController {
         
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Register cell classes
-        // self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: self.reuseIdentifier)
-
         // Do any additional setup after loading the view.
+    }
+
+    func checkDataPlugsIfActive() {
+        
+        func checkIfFacebookIsActive(appToken: String) {
+            
+            func enableCheckMarkOnFacebook() {
+                
+                for i in 0 ... dataPlugs.count - 1 {
+                    
+                    if dataPlugs[i].name == "facebook" {
+                        
+                        self.dataPlugs[i].showCheckMark = true
+                        self.collectionView?.reloadData()
+                        self.loadingView.removeFromSuperview()
+                    }
+                }
+            }
+            
+            FacebookDataPlugService.isFacebookDataPlugActive(token: appToken, successful: enableCheckMarkOnFacebook, failed: {() -> Void in return})
+        }
+        
+        func checkIfTwitterIsActive(appToken: String) {
+            
+            func enableCheckMarkOnTwitter() {
+                
+                for i in 0 ... dataPlugs.count - 1 {
+                    
+                    if dataPlugs[i].name == "twitter" {
+                        
+                        self.dataPlugs[i].showCheckMark = true
+                        self.collectionView?.reloadData()
+                        self.loadingView.removeFromSuperview()
+                    }
+                }
+            }
+            
+            TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: enableCheckMarkOnTwitter, failed: {() -> Void in return
+            })
+        }
+        
+    
+        FacebookDataPlugService.getAppTokenForFacebook(successful: checkIfFacebookIsActive, failed: {() -> Void in return})
+
+        TwitterDataPlugService.getAppTokenForTwitter(successful: checkIfTwitterIsActive, failed: {() -> Void in return})
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        super.viewWillAppear(animated)
+        
+        self.orientation = UIInterfaceOrientation(rawValue: UIDevice.current.orientation.rawValue)!
+        
         func successfullCallBack(data: [DataPlugObject]) {
             
-            self.dataPlugs = data
-            self.collectionView?.reloadData()
+            self.dataPlugs.removeAll()
+            
+            for i in 0 ... data.count - 1 {
+                
+                if data[i].name == "twitter" {
+                    
+                    self.dataPlugs.append(data[i])
+                }
+                if data[i].name == "facebook" {
+                    
+                    self.dataPlugs.append(data[i])
+                }
+            }
+            
+            checkDataPlugsIfActive()
         }
         
         func failureCallBack() {
             
-            
+           self.loadingView.removeFromSuperview()
         }
         
+        loadingView = UIView(frame: CGRect(x: (self.collectionView?.frame.midX)! - 50, y: (self.collectionView?.frame.midY)! - 15, width: 100, height: 30))
+        loadingView.backgroundColor = UIColor.tealColor()
+        loadingView.layer.cornerRadius = 15
+        
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
+        label.text = "Getting data plugs..."
+        label.textColor = .white
+        label.font = UIFont(name: "Open Sans", size: 12)
+        label.textAlignment = NSTextAlignment.center
+        
+        loadingView.addSubview(label)
+        
+        self.view.addSubview(loadingView)
         DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: failureCallBack)
     }
 
@@ -73,12 +148,40 @@ class DataPlugsCollectionViewController: UICollectionViewController {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.reuseIdentifier, for: indexPath) as? DataPlugCollectionViewCell
     
-        return DataPlugCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, dataPlug: self.dataPlugs[indexPath.row])
+        return DataPlugCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, dataPlug: self.dataPlugs[indexPath.row], orientation: self.orientation)
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        UIApplication.shared.openURL(URL(string: self.dataPlugs[indexPath.row].url)!)
+        let userDomain: String = HatAccountService.TheUserHATDomain()
+        let name: String = self.dataPlugs[indexPath.row].name
+        var url: String = ""
+        
+        if name == "twitter" {
+            
+            url = "https://" + userDomain + "/hatlogin?name=Twitter&redirect=" + self.dataPlugs[indexPath.row].url + "/authenticate/hat"
+        } else if name == "facebook" {
+            
+            url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + self.dataPlugs[indexPath.row].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
+        }
+        
+        UIApplication.shared.openURL(URL(string: url)!)
     }
 
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        if self.orientation == .landscapeLeft || self.orientation == .landscapeRight {
+            
+            return CGSize(width: UIScreen.main.bounds.width/3, height: UIScreen.main.bounds.width/3)
+        }
+        
+        return CGSize(width: UIScreen.main.bounds.width/2, height: UIScreen.main.bounds.width/2)
+    }
+    
+    override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
+        
+        self.orientation = toInterfaceOrientation
+        
+        self.collectionView?.reloadData()
+    }
 }

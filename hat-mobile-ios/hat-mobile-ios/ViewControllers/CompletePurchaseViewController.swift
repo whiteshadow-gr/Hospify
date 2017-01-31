@@ -41,7 +41,7 @@ class CompletePurchaseViewController: UIViewController {
      */
     @IBAction func hatAvailabilityButtonAction(_ sender: Any) {
         
-        self.createClassicOKAlertWith(alertMessage: "Your HAT will be created and available within 2-10mins.", alertTitle: "Availability", okTitle: "OK", proceedCompletion: {() -> Void in return})
+        self.createClassicOKAlertWith(alertMessage: "Your HAT is being created and will be available within 2-10mins", alertTitle: "Availability", okTitle: "OK", proceedCompletion: {() -> Void in return})
     }
     
     /**

@@ -29,6 +29,8 @@ struct DataPlugObject {
     var url: String = ""
     /// The url of the image, asset, of the data plug
     var illustrationUrl: String = ""
+    /// The url of the image, asset, of the data plug
+    var showCheckMark: Bool = false
     
     /// The owner object of the data plug
     var owner: DataPlugOwnerObject = DataPlugOwnerObject()
@@ -58,6 +60,7 @@ struct DataPlugObject {
         description = ""
         url = ""
         illustrationUrl = ""
+        showCheckMark = false
         
         owner = DataPlugOwnerObject()
         dataDefinition = DataPlugDataDefinitionObject()

@@ -93,6 +93,29 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             // add buttons to navigation bar
             self.navigationItem.leftBarButtonItems = [button1, button2]
             self.navigationItem.rightBarButtonItem = button3
+        } else if viewController is SocialFeedViewController {
+            
+            // set title in navigation bar
+            self.navigationItem.title = "Social Feed"
+            
+            // create buttons
+            let button1 = UIBarButtonItem(title: "Filter by", style: .plain, target: self, action: #selector(filterSocialFeed))
+            let button3 = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
+            
+            // add buttons to navigation bar
+            self.navigationItem.leftBarButtonItem = button1
+            self.navigationItem.rightBarButtonItem = button3
+        } else if viewController is DataPlugsCollectionViewController {
+            
+            // set title in navigation bar
+            self.navigationItem.title = "Data Plugs"
+            
+            // create buttons
+            let button = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
+            
+            // add buttons to navigation bar
+            self.navigationItem.leftBarButtonItem = nil
+            self.navigationItem.rightBarButtonItem = button
         } else {
             
             // change title in navigation bar
@@ -120,6 +143,11 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
     func showSettingsViewController() {
         
         self.performSegue(withIdentifier: "settingsSegue", sender: self)
+    }
+    
+    func filterSocialFeed() {
+        
+        NotificationCenter.default.post(name: NSNotification.Name("filterSocialFeed"), object: nil)
     }
     
     /**

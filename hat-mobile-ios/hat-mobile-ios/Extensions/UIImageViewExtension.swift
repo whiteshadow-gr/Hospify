@@ -38,7 +38,8 @@ extension UIImageView {
                 else { return }
             
             // set image on the main thread
-            DispatchQueue.main.async() { () -> Void in
+            DispatchQueue.main.async() { [unowned self]
+                () -> Void in
                 
                 self.image = image
             }

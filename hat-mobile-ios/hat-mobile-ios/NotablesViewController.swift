@@ -23,6 +23,8 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     /// an array of the notes to display
     private var notesArray: [NotesData] = []
+    /// a cached array of the notes to display
+    private var cachedNotesArray: [NotesData] = []
     /// the cells of the table
     private var cells: [NotablesTableViewCell] = []
     
@@ -31,7 +33,9 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     /// The safari view controller variable to hold reference for later use
     private var safariDelegate: SFSafariViewController? = nil
-    /// A message to display behind the table view if something is wrong
+    private var notablesFetchLimit: String = "50"
+    private var notablesFetchEndDate: String? = nil
+    private var token: String = ""
 
     // MARK: - IBOutlets
 
@@ -173,8 +177,10 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         if self.notesArray.count == 0 {
             
-            self.showEmptyTableLabelWith(message: "No notables. Please create your first notable!")
+            self.showEmptyTableLabelWith(message: "No notables. Keep your words on your HAT. Create your first notable!")
         }
+        
+        self.cachedNotesArray = self.notesArray
         
         // update UI
         self.updateUI()
@@ -204,6 +210,26 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     private func showNotables(array: [JSON]) {
         
+        if array.count >= Int(self.notablesFetchLimit)! {
+            
+            self.notablesFetchLimit = "500"
+
+            let object = NotesData(dict: (array.last?.dictionaryValue)!)
+            let elapse = object.data.createdTime.timeIntervalSince1970
+            
+            let temp = String(elapse)
+            
+            let array2 = temp.components(separatedBy: ".")
+            
+            self.notablesFetchEndDate = array2[0]
+            
+            let parameters: Dictionary<String, String> = ["starttime" : "0",
+                                                          "endtime" : self.notablesFetchEndDate!,
+                                                          "limit" : self.notablesFetchLimit]
+            
+            NotablesService.fetchNotables(authToken: self.token, parameters: parameters, success: self.showNotables, failure: {() -> Void in return})
+        }
+        
         self.showReceivedNotesFrom(array: array)
     }
 
@@ -216,7 +242,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         // setup cell
         var cell = tableView.dequeueReusableCell(withIdentifier: "cellData", for: indexPath) as? NotablesTableViewCell
-        cell = controller.setUpCell(cell!, note: notesArray[indexPath.row], indexPath: indexPath)
+        cell = controller.setUpCell(cell!, note: self.cachedNotesArray[indexPath.row], indexPath: indexPath)
         
         // add cell to array
         cells.append(cell!)
@@ -228,7 +254,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         // return number of notes
-        return notesArray.count
+        return self.cachedNotesArray.count
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -245,14 +271,14 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 
                 // delete data from hat and remove from table
                 let token = HatAccountService.getUsersTokenFromKeychain()
-                NotablesService.deleteNoteWithKeychain(id: self.notesArray[indexPath.row].id, tkn: token)
-                self.notesArray.remove(at: indexPath.row)
+                NotablesService.deleteNoteWithKeychain(id: self.cachedNotesArray[indexPath.row].id, tkn: token)
+                self.cachedNotesArray.remove(at: indexPath.row)
                 tableView.deleteRows(at: [indexPath], with: .fade)
                 self.updateUI()
             }
             
             // if it is shared show message else delete the row
-            if self.notesArray[indexPath.row].data.shared {
+            if self.cachedNotesArray[indexPath.row].data.shared {
                 
                 self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
             } else {
@@ -276,7 +302,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     private func connectToServerToGetNotes() {
         
         // get token and refresh view
-        let token = HatAccountService.getUsersTokenFromKeychain()
+        self.token = HatAccountService.getUsersTokenFromKeychain()
         if token == "" {
             
             let loginPageView =  self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
@@ -284,7 +310,9 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         } else {
             
             self.showEmptyTableLabelWith(message: "Accessing your HAT...")
-            NotablesService.fetchNotables(authToken: token, success: self.showNotables)
+            let parameters: Dictionary<String, String> = ["starttime" : "0",
+                                                          "limit" : "50"]
+            NotablesService.fetchNotables(authToken: self.token, parameters: parameters, success: self.showNotables, failure: showNewbieScreens)
         }
     }
     
@@ -303,7 +331,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             if segue.identifier == "editNoteSegue" {
                 
                 let cellIndexPath = self.tableView.indexPath(for: sender as! UITableViewCell)
-                destinationVC?.receivedNote = self.notesArray[(cellIndexPath?.row)!]
+                destinationVC?.receivedNote = self.cachedNotesArray[(cellIndexPath?.row)!]
                 destinationVC?.isEditingExistingNote = true
             } else {
                 
@@ -361,22 +389,25 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     private func showEmptyTableLabelWith(message: String) {
         
-        var stringMessage = message
-        
-        if stringMessage == "The Internet connection appears to be offline." {
+        if self.notesArray.count == 0 {
             
-            self.retryConnectingButton.isHidden = false
-            stringMessage = "No Internet connection. Please retry"
-        } else {
+            var stringMessage = message
             
-            self.retryConnectingButton.isHidden = true
+            if stringMessage == "The Internet connection appears to be offline." {
+                
+                self.retryConnectingButton.isHidden = false
+                stringMessage = "No Internet connection. Please retry"
+            } else {
+                
+                self.retryConnectingButton.isHidden = true
+            }
+            
+            self.eptyTableInfoLabel.isHidden = false
+            
+            self.eptyTableInfoLabel.text = stringMessage
+            
+            self.tableView.isHidden = true
         }
-        
-        self.eptyTableInfoLabel.isHidden = false
-        
-        self.eptyTableInfoLabel.text = stringMessage
-        
-        self.tableView.isHidden = true
     }
     
     /**
@@ -384,7 +415,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     private func updateUI() {
         
-        if notesArray.count > 0 {
+        if self.notesArray.count > 0 {
             
             self.eptyTableInfoLabel.isHidden = true
 
@@ -397,6 +428,24 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             self.eptyTableInfoLabel.isHidden = false
             
             self.tableView.isHidden = true
+        }
+    }
+    
+    private func showNewbieScreens() -> Void {
+        
+        let result = KeychainHelper.GetKeychainValue(key: "hasOnboardingCompleted")
+        
+        if result != "yes" {
+            
+            // set up the created page view controller
+            let pageViewController = self.storyboard!.instantiateViewController(withIdentifier: "firstTimeOnboarding") as! FirstOnboardingPageViewController
+            pageViewController.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.x + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30)
+            pageViewController.view.layer.cornerRadius = 15
+            
+            // add the page view controller to self
+            self.addChildViewController(pageViewController)
+            self.view.addSubview(pageViewController.view)
+            pageViewController.didMove(toParentViewController: self)
         }
     }
 }

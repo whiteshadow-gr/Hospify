@@ -38,17 +38,31 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
 
      - returns: An UICollectionViewCell
      */
-    class func setUp(cell: OnboardingTileCollectionViewCell, indexPath: IndexPath, hatProvider: HATProviderObject) -> UICollectionViewCell {
+    class func setUp(cell: OnboardingTileCollectionViewCell, indexPath: IndexPath, hatProvider: HATProviderObject, orientation: UIInterfaceOrientation) -> UICollectionViewCell {
 
-        // set the color of the cell accordingly based on the indexPath.row
-        if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
+        // check if device is in portrait mode, 3 tiles per row vs 2
+        if orientation.isPortrait {
             
-            cell.backgroundColor = UIColor.rumpelVeryLightGray()
+            // set the color of the cell accordingly based on the indexPath.row
+            if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
+                
+                cell.backgroundColor = UIColor.rumpelVeryLightGray()
+            } else {
+                
+                cell.backgroundColor = UIColor.white
+            }
         } else {
             
-            cell.backgroundColor = UIColor.white
+            // set the color of the cell accordingly based on the indexPath.row
+            if (indexPath.row % 2 == 0) {
+                
+                cell.backgroundColor = UIColor.rumpelVeryLightGray()
+            } else {
+                
+                cell.backgroundColor = UIColor.white
+            }
         }
-        
+
         // set cell's title
         cell.titleLabel.text = hatProvider.name
         
@@ -58,14 +72,9 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
             cell.infoLabel.text = String(hatProvider.purchased) + " of " + String(hatProvider.available) + " remaining"
         } else {
             
-            // format the price of the hat
-            let formatter = NumberFormatter()
-            formatter.numberStyle = .currency
-            formatter.locale = Locale.current
+            let price: Double = Double(Double(hatProvider.price)/100.0)
             
-            let price: Double = Double(hatProvider.price / 100)
-            
-            cell.infoLabel.text = formatter.string(from: NSNumber(value: price))
+            cell.infoLabel.text = String(price) + " £"
         }
         
         // get image from url and set it to the image view

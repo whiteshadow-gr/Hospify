@@ -50,8 +50,7 @@ struct FormatterHelper {
         }
         
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale.current
-        //dateFormatter.timeZone = TimeZone(abbreviation: "GMT")
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         var date = dateFormatter.date(from: string)
         
@@ -59,6 +58,13 @@ struct FormatterHelper {
         if date == nil {
             
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+            date = dateFormatter.date(from: string)
+        }
+        
+        // if date is nil try a different format, for twitter format and reformat
+        if date == nil {
+            
+            dateFormatter.dateFormat = "E MMM dd HH:mm:ss Z yyyy"
             date = dateFormatter.date(from: string)
         }
         

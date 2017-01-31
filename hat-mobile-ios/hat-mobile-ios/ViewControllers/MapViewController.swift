@@ -150,7 +150,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
             
             // update on ui thread
             let addedOn: Date = dataPoint.dateAdded
-            DispatchQueue.main.async(execute: {
+            DispatchQueue.main.async(execute: {[unowned self]
+                () -> Void in
                 
                 self.labelMostRecentInformation.text = NSLocalizedString("information_label", comment:  "info") + " " + addedOn.TimeAgoSinceDate()
             })
@@ -158,7 +159,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         // sync date
         // last sync date
-        DispatchQueue.main.async(execute: {
+        DispatchQueue.main.async(execute: {[unowned self]
+            () -> Void in
             
             if let dateSynced: Date = SyncDataHelper.getLastSuccessfulSyncDate() {
                 
@@ -268,7 +270,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
             let mapRectWidth: Double = self.mapView.visibleMapRect.size.width
             let scale: Double = mapBoundsWidth / mapRectWidth
             let annotationArray = self.clusteringManager.clusteredAnnotations(withinMapRect: self.mapView.visibleMapRect, zoomScale: scale)
-            DispatchQueue.main.sync(execute: {
+            DispatchQueue.main.sync(execute: { [unowned self]
+                () -> Void in
                 
                 // display map
                 self.clusteringManager.display(annotations: annotationArray, onMapView: self.mapView)
@@ -312,7 +315,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         if self.timePeriodSelectedEnum == TimePeriodSelected.today {
             
             // refresh map UI too on changed
-            DispatchQueue.main.async(execute: {
+            DispatchQueue.main.async(execute: { [unowned self]
+                () -> Void in
                 
                 // refresh map UI too
                 self.buttonToday.sendActions(for: .touchUpInside)
@@ -382,7 +386,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
                 // force map changed to refresh the map and any pins
                 self.mapView(self.mapView, regionDidChangeAnimated: true)
                 
-                DispatchQueue.main.async(execute: {
+                DispatchQueue.main.async(execute: { [unowned self]
+                    () -> Void in
                     
                     if(annottationArray.count > 0) {
                         
@@ -455,7 +460,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         timerSync.setEventHandler {
             
             // sync with HAT
-            DispatchQueue.main.async(execute: {
+            DispatchQueue.main.async(execute: { [unowned self]
+                () -> Void in
                 
                 _ = self.syncDataHelper.CheckNextBlockToSync()
             })

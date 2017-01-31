@@ -56,8 +56,6 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     @IBOutlet weak var personalHATAddressTextField: UITextField!
     /// An IBOutlet for handling the password textField
     @IBOutlet weak var passwordTextField: UITextField!
-    /// An IBOutlet for handling the invitation code textField
-    @IBOutlet weak var invitationCodeTextField: UITextField!
     /// An IBOutlet for handling the country textField
     @IBOutlet weak var countryTextField: UITextField!
     

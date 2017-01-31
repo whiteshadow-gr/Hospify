@@ -176,6 +176,8 @@ class HatAccountService {
                     if isSuccess {
                         
                         callback
+                        // if user is creating notables table send a notif back that the table has been created
+                        NotificationCenter.default.post(name: NSNotification.Name("refreshTable"), object: nil)
                     }
                     
                 case .error(let error, let statusCode):
@@ -202,7 +204,7 @@ class HatAccountService {
         let tableURL = HatAccountService.TheUserHATCheckIfTableExistsURL(tableName: tableName, sourceName: sourceName)
         
         // create parameters and headers
-        let parameters = ["": ""]
+        let parameters: Dictionary<String, String> = [:]
         let header = ["X-Auth-Token": authToken]
         
         // make async request
@@ -318,10 +320,11 @@ class HatAccountService {
      
      - parameter token: The token in String format
      - parameter tableID: The table id as NSNumber
+     - parameter parameters: The parameters to pass to the request, e.g. startime, endtime, limit
      - parameter successCallback: A callback called when successful of type @escaping ([JSON]) -> Void
      - parameter errorCallback: A callback called when failed of type @escaping (Void) -> Void)
      */
-    class func getHatTableValues(token: String, tableID: NSNumber, successCallback: @escaping ([JSON]) -> Void, errorCallback: @escaping (Void) -> Void) {
+    class func getHatTableValues(token: String, tableID: NSNumber, parameters: Dictionary<String, String>, successCallback: @escaping ([JSON]) -> Void, errorCallback: @escaping (Void) -> Void) {
     
     // get user's hat domain
     let userDomain = self.TheUserHATDomain()
@@ -330,7 +333,6 @@ class HatAccountService {
     let url = "https://"+userDomain+"/data/table/"+tableID.stringValue+"/values?pretty=true"
     
     // create parameters and headers
-    let parameters = ["starttime": "0"]
     let headers = ["X-Auth-Token": token]
     
     // make the request
@@ -677,18 +679,17 @@ class HatAccountService {
                         if(KeychainHelper.SetKeychainValue(key: Constants.Keychain.HATDomainKey, value: HATDomainFromToken)) {
                             
                             weakSelf.performSegue(withIdentifier: "ShowTabBarController", sender: viewController)
-                            
-                            // else show error in the saving in keychain
+                        // else show error in the saving in keychain
                         } else {
                             
                             weakSelf.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_keychain_save", comment: "keychain"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
                         }
-                        // No message field in JSON file
+                    // No message field in JSON file
                     } else {
                         
                         weakSelf.createClassicOKAlertWith(alertMessage: "Message not found", alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
                     }
-                    // general error
+                // general error
                 } else {
                     
                     weakSelf.createClassicOKAlertWith(alertMessage: result.rawString()!, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})

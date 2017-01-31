@@ -54,44 +54,44 @@ struct LearnMoreObject {
         if pageNumber == 0 {
             
             title = "The HAT is your own data store"
-            info = "your words, information, photos, music; everything on the Internet that is personal to you, is your data.\n\nClaim your data, safely use and share it on demand, everywhere you go. \n\nHave control and privacy"
+            info = "Υour words, information, photos, music; everything on the Internet that is personal to you, is your data.\n\nClaim your data, safely use and share it on demand, everywhere you go. \n\nHave control and privacy"
             image = UIImage(named: "Data store")!
         } else if pageNumber == 1 {
             
             title = "The HAT belongs to you, the individual"
-            info = "You choose your HAT provider. \n\nYour provider has no right to access your data unless you give them permission"
+            info = "You choose your HAT provider. \n\nYour provider has no right to access your data unless you give them permission."
             image = UIImage(named: "Individual")!
         } else if pageNumber == 2 {
             
             title = "The HAT is secure"
-            info = "A state-of-the-art container technology for a data store on demand. \n\nSynchronise with organizations instead of having so many sets of your data out there"
+            info = "A state-of-the-art container technology for a data store on demand. \n\nSynchronise with organisations instead of having so many sets of your data out there."
             image = UIImage(named: "Secure")!
         } else if pageNumber == 3 {
             
             title = "The HAT is portable"
-            info = "You can move your HAT to a provider you like\n\n(or even bring it to your own server at home)"
+            info = "You can move your HAT to a provider you like\n\n(or even bring it to your own server at home)."
             image = UIImage(named: "Portable")!
         } else if pageNumber == 4 {
             
             title = "The HAT changes the future of the Internet"
-            info = "Your data and words can become your history and memory for health, well being and personalized products. \n\nYour HAT can be a personal data assistant with a wiki-me!"
+            info = "Your data and words can become your history and memory for health, well being and personalised products. \n\nYour HAT can be a personal data assistant with a wiki-me!"
             image = UIImage(named: "Future")!
         } else if pageNumber == 5 {
             
             title = "The HAT is built on research"
-            info = "£1.7m, 6 UK universities, 7 professors and 20 researchers researched into the design of the technology, business and economic models"
+            info = "£1.7m, 6 UK universities, 7 professors and 20 researchers worked on the design of the technology, business and economic models."
             image = UIImage(named: "Research")!
         } else if pageNumber == 6 {
             
             title = "The HAT stands for the Hub-of-All-Things"
-            info = "Because we think YOU should be at the hub of all things"
+            info = "Because we think YOU should be at the hub of all things."
             image = UIImage(named: "Stands for")!
             buttonTitle = "What you can do with your HAT"
 
         } else if pageNumber == 10 {
             
             title = "Stuff your HAT!"
-            info = "Claim data from Internet companies and make it useful to YOU. \n\nWith just a few key presses. (We think it's like printing money)"
+            info = "Claim data from Internet companies and make it useful to YOU. \n\nWith just a few key presses. (We think it's like printing money)."
             image = UIImage(named: "Stuff your HAT")!
         } else if pageNumber == 11 {
             
@@ -113,6 +113,26 @@ struct LearnMoreObject {
             title = "Get smart"
             info = "Gain insights from your data to help you with buying, nutrition and many life decisions!"
             image = UIImage(named: "Get Smart")!
+        } else if pageNumber == 20 {
+            
+            title = "Welcome to Rumpel Lite!"
+            info = "Your HAT dashboard"
+            image = UIImage(named: "Rumpel")!
+        } else if pageNumber == 21 {
+            
+            title = "Your HAT is your personal data container, accessible only by you"
+            info = "Claim, control and utilise the data you generate such as your location"
+            image = UIImage(named: "Data store")!
+        } else if pageNumber == 22 {
+            
+            title = "The HAT stores your data in a way that allows you to be in complete control of who accesses it"
+            info = "Add data straight to your HAT by writing notes with Rumpel's own notable tool. \nUse Rumpel to post on social media and set for it to be deleted, while keeping it on your HAT. \n(More data for you to claim will be coming soon.)"
+            image = UIImage(named: "Individual")!
+        } else if pageNumber == 23 {
+            
+            title = "Head to your profile to set up your PHATA(Personal HAT Address) page"
+            info = ""
+            image = UIImage(named: "Stands for")!
         }
     }
 }

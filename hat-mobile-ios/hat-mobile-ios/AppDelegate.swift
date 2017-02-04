@@ -166,11 +166,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
      */
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         
-        if let urlHost:String = url.host {
+        if let urlHost: String = url.host {
             
             if urlHost == Constants.Auth.LocalAuthHost {
                 
                 let notification = Notification.Name(Constants.Auth.NotificationHandlerName)
+                NotificationCenter.default.post(name: notification, object: url)
+            } else if urlHost == "dataplugsapphost" {
+                
+                let notification = Notification.Name("dataPlugMessage")
                 NotificationCenter.default.post(name: notification, object: url)
             }
         }
@@ -205,10 +209,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         //get last location
         let latestLocation: CLLocation = locations[locations.count - 1]
         var dblocation: CLLocation? = nil
+        var timeInterval: TimeInterval = TimeInterval()
 
         if let dbLastPoint = RealmHelper.GetLastDataPoint() {
 
             dblocation = CLLocation(latitude: (dbLastPoint.lat), longitude: (dbLastPoint.lng))
+            let lastRecordedDate = dbLastPoint.dateAdded
+            timeInterval = Date().timeIntervalSince(lastRecordedDate)
         }
 
         // test that the horizontal accuracy does not indicate an invalid measurement
@@ -216,9 +223,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
             return
         }
-        ///distance(current location, previous location) > threshold - (current location accuracy + previous location accuracy)
+        
         // check we have a measurement that meets our requirements,
-        if (latestLocation.horizontalAccuracy <= locationManager.desiredAccuracy) {
+        if ((latestLocation.horizontalAccuracy <= locationManager.desiredAccuracy)) || !(timeInterval.isLess(than: 3600)) {
 
             if (dblocation != nil) {
 

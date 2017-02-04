@@ -11,6 +11,7 @@
  */
 
 import UIKit
+import SafariServices
 
 // MARK: Class
 
@@ -25,6 +26,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
     private var dataPlugs: [DataPlugObject] = []
     private var orientation: UIInterfaceOrientation = .portrait
     private var loadingView: UIView = UIView()
+    private var safariVC: SFSafariViewController? = nil
     
     // MARK: - View controller methods
 
@@ -33,6 +35,16 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(showAlertForDataPlug), name: Notification.Name("dataPlugMessage"), object: nil)
+    }
+    
+    func showAlertForDataPlug(notif: Notification) {
+                
+        if safariVC != nil {
+            
+            safariVC?.dismiss(animated: true, completion: nil)
+        }
     }
 
     func checkDataPlugsIfActive() {
@@ -52,7 +64,20 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
                 }
             }
             
-            FacebookDataPlugService.isFacebookDataPlugActive(token: appToken, successful: enableCheckMarkOnFacebook, failed: {() -> Void in return})
+            func disableCheckMarkOnFacebook() {
+                
+                for i in 0 ... dataPlugs.count - 1 {
+                    
+                    if dataPlugs[i].name == "facebook" {
+                        
+                        self.dataPlugs[i].showCheckMark = false
+                        self.collectionView?.reloadData()
+                        self.loadingView.removeFromSuperview()
+                    }
+                }
+            }
+            
+            FacebookDataPlugService.isFacebookDataPlugActive(token: appToken, successful: enableCheckMarkOnFacebook, failed: disableCheckMarkOnFacebook)
         }
         
         func checkIfTwitterIsActive(appToken: String) {
@@ -70,8 +95,20 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
                 }
             }
             
-            TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: enableCheckMarkOnTwitter, failed: {() -> Void in return
-            })
+            func disableCheckMarkOnTwitter() {
+                
+                for i in 0 ... dataPlugs.count - 1 {
+                    
+                    if dataPlugs[i].name == "twitter" {
+                        
+                        self.dataPlugs[i].showCheckMark = false
+                        self.collectionView?.reloadData()
+                        self.loadingView.removeFromSuperview()
+                    }
+                }
+            }
+            
+            TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: enableCheckMarkOnTwitter, failed: disableCheckMarkOnTwitter)
         }
         
     
@@ -110,14 +147,14 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
            self.loadingView.removeFromSuperview()
         }
         
-        loadingView = UIView(frame: CGRect(x: (self.collectionView?.frame.midX)! - 50, y: (self.collectionView?.frame.midY)! - 15, width: 100, height: 30))
+        loadingView = UIView(frame: CGRect(x: (self.collectionView?.frame.midX)! - 60, y: (self.collectionView?.frame.midY)! - 15, width: 120, height: 30))
         loadingView.backgroundColor = UIColor.tealColor()
         loadingView.layer.cornerRadius = 15
         
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 100, height: 30))
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 120, height: 30))
         label.text = "Getting data plugs..."
         label.textColor = .white
-        label.font = UIFont(name: "Open Sans", size: 12)
+        label.font = UIFont(name: "OpenSans", size: 12)
         label.textAlignment = NSTextAlignment.center
         
         loadingView.addSubview(label)
@@ -165,7 +202,9 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
             url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + self.dataPlugs[indexPath.row].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
         }
         
-        UIApplication.shared.openURL(URL(string: url)!)
+        self.safariVC = SFSafariViewController(url: URL(string: url)!)
+        //self.safariVC?.delegate = self
+        self.present(self.safariVC!, animated: true, completion: nil)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

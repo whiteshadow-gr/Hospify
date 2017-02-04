@@ -63,6 +63,6 @@ class HATCapabilitiesViewController: UIViewController {
     @IBAction func cancelButton(_ sender: Any) {
         
         NotificationCenter.default.post(name: Notification.Name("enablePageControll"), object: nil)
-        NotificationCenter.default.post(name: Notification.Name("hidePageViewContoller"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name("hideCapabilitiesPageViewContoller"), object: nil)
     }
 }

@@ -11,11 +11,12 @@
  */
 
 import UIKit
+import SafariServices
 
 // MARK: Class
 
 /// The share options view controller
-class ShareOptionsViewController: UIViewController, UITextViewDelegate {
+class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafariViewControllerDelegate {
     
     // MARK: - Private variables
     
@@ -29,6 +30,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
     
     /// the received note to edit from notables view controller
     var receivedNote: NotesData? = nil
+    /// Total notes user has, need this to show a message on the first time
+    var usersNotesCount: Int? = nil
     
     /// the cached received note to edit from notables view controller
     private var cachedIsNoteShared: Bool = false
@@ -80,6 +83,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
 
     /// An IBOutlet for handling the textViewAspectRationConstraint NSLayoutConstraint
     @IBOutlet weak var textViewAspectRationConstraint: NSLayoutConstraint!
+    
+    private var safariVC: SFSafariViewController? = nil
     
     // MARK: - IBActions
     
@@ -151,7 +156,9 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                                 
                                 let url = "https://" + userDomain + "/hatlogin?name=Twitter&redirect=" + data[i].url + "/authenticate/hat"
                                 
-                                UIApplication.shared.openURL(URL(string: url)!)
+                                self.safariVC = SFSafariViewController(url: URL(string: url)!)
+                                self.present(self.safariVC!, animated: true, completion: nil)
+                                self.claimOffer()
                             }
                         }
                     }
@@ -164,7 +171,12 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: dataPlugIsEnabled, failed: dataPugIsNotEnabled)
         }
         
-        TwitterDataPlugService.getAppTokenForTwitter(successful: checkDataPlug, failed: {() -> Void in return})
+        TwitterDataPlugService.getAppTokenForTwitter(successful: checkDataPlug, failed: {() -> Void in
+            
+            self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            
+            self.turnUIElementsOn()
+        })
     }
     
     @IBAction func shareForDurationAction(_ sender: Any) {
@@ -199,12 +211,20 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             self.shareForLabel.text = "Share for..."
         })
         
+        let forEverAction = UIAlertAction(title: "Forever", style: .default, handler: { (action) -> Void in
+            
+            self.durationSharedForLabel.text = "Forever"
+            self.receivedNote?.data.publicUntil = nil
+            self.shareForLabel.text = "Share for..."
+        })
+        
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         alertController.addAction(oneDayAction)
         alertController.addAction(sevenDaysAction)
         alertController.addAction(fourteenDaysAction)
         alertController.addAction(oneMonthAction)
+        alertController.addAction(forEverAction)
         alertController.addAction(cancelButton)
         
         if UI_USER_INTERFACE_IDIOM() == .pad {
@@ -293,7 +313,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
                 NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
                 NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
                     
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: self.receivedNote)
                     HatAccountService.triggerHatUpdate()
                     _ = self.navigationController?.popViewController(animated: true)
                 })
@@ -404,35 +424,81 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         if self.facebookButton.isUserInteractionEnabled {
             
             // if button was selected deselect it and remove the button from the array
-            if self.facebookButton.alpha == 1{
+            if self.facebookButton.alpha == 1 {
                 
                 self.facebookButton.alpha = 0.4
                 self.removeFromArray(string: "facebook")
             // else select it and add it to the array
             } else {
                 
-                let result = UserDefaults.standard.value(forKey: "facebookPlug") as? Bool
+                let result = KeychainHelper.GetKeychainValue(key: "facebookPlug")
                 
                 // check if user has been notified about the facebook plug
-                if (result == nil || result == false) {
+                if (result == nil || result == "false") {
                     
-                    let boolResult = { (bool: String) -> Void in
+                    func facebookTokenReceived(token: String) {
                         
-                        if bool == "true" {
+                        func successfulCallback() {
                             
-                            // refresh
-                            UserDefaults.standard.set(true, forKey: "facebookPlug")
+                            _ = KeychainHelper.SetKeychainValue(key: "facebookPlug", value: "true")
                         }
+                        
+                        func failedCallback() {
+                            
+                            func noAction() {
+                                
+                                // if button was selected deselect it and remove the button from the array
+                                if self.facebookButton.alpha == 1 {
+                                    
+                                    self.facebookButton.alpha = 0.4
+                                    self.removeFromArray(string: "facebook")
+                                    // else select it and add it to the array
+                                } else {
+                                    
+                                    self.facebookButton.alpha = 1
+                                    self.shareOnSocial.append("facebook")
+                                    
+                                    // construct string from the array and save it
+                                    self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
+                                }
+                            }
+                            
+                            func yesAction() {
+                                
+                                func successfullCallBack(data: [DataPlugObject]) {
+                                    
+                                    for i in 0 ... data.count - 1 {
+                                        
+                                        if data[i].name == "facebook" {
+                                            
+                                            let userDomain = HatAccountService.TheUserHATDomain()
+                                            
+                                            let url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + data[i].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
+                                            
+                                            self.safariVC = SFSafariViewController(url: URL(string: url)!)
+                                            self.present(self.safariVC!, animated: true, completion: nil)
+                                            self.claimOffer()
+                                        }
+                                    }
+                                    
+                                    
+                                }
+                                
+                                DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {() -> Void in return})
+                            }
+                            
+                            self.createClassicAlertWith(alertMessage: "You have to enable Facebook data plug before sharing on Facebook, do you want to enable now?", alertTitle: "Data plug not enabled", cancelTitle: "No", proceedTitle: "Yes", proceedCompletion: yesAction, cancelCompletion: noAction)
+                        }
+                        
+                        FacebookDataPlugService.isFacebookDataPlugActive(token: token, successful: successfulCallback, failed: failedCallback)
+
                     }
                     
-                    let failCallBack = {
+                    FacebookDataPlugService.getAppTokenForFacebook(successful: facebookTokenReceived, failed: {() -> Void in
                         
-                        self.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {() -> Void in return})
-                        
-                        self.facebookButton.alpha = 0.4
-                        self.removeFromArray(string: "facebook")
-                    }
-                    DataPlugsService.ensureDataPlugReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
+                        self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                    
+                    })
                 }
                 
                 self.facebookButton.alpha = 1
@@ -584,7 +650,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
             }
             if let unwrappedDate = self.receivedNote?.data.publicUntil {
                 
-                if unwrappedDate.compare(self.receivedNote!.data.updatedTime) == .orderedDescending && self.receivedNote!.data.shared {
+                if unwrappedDate < Date() && self.receivedNote!.data.shared {
                     
                     self.durationSharedForLabel.text = FormatterHelper.formatDateStringToUsersDefinedDate(date: unwrappedDate, dateStyle: .short, timeStyle: .none)
                     self.shareForLabel.text = "Shared until"
@@ -601,6 +667,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow2), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide2), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(showAlertForDataPlug), name: Notification.Name("dataPlugMessage"), object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -635,6 +703,16 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         self.textView.addConstraint(textViewAspectRationConstraint!)
         self.view.layoutSubviews()
         self.scrollView.setNeedsLayout()
+    }
+    
+    func showAlertForDataPlug(notif: Notification) {
+        
+        if safariVC != nil {
+            
+            safariVC?.dismiss(animated: true, completion: nil)
+            self.publishButton.setTitle("Save", for: .normal)
+            self.publishButton.isUserInteractionEnabled = true
+        }
     }
     
     // MARK: - Setup UI functins
@@ -834,5 +912,24 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate {
         
         textViewDidBeginEditing(self.textView)
         self.textView.becomeFirstResponder()
+    }
+    
+    private func claimOffer() {
+        
+        func failCallback() {
+            
+            self.createClassicOKAlertWith(alertMessage: "There was a problem enabling offer. Please try again later", alertTitle: "Error enabling offer", okTitle: "OK", proceedCompletion: {() -> Void in return})
+        }
+        
+        func succesfulCallBack(string: String) {
+            
+            
+        }
+        
+        // setup succesfulCallBack
+        let offerClaimForToken = DataPlugsService.ensureOfferDataDebitEnabled(offerID: "32dde42f-5df9-4841-8257-5639db222e41", succesfulCallBack: succesfulCallBack, failCallBack: failCallback)
+        
+        // get applicationToken async
+        DataPlugsService.getApplicationTokenFor(serviceName: "MarketSquare", resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: failCallback)
     }
 }

@@ -20,9 +20,25 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
     
     private var posts: [FacebookSocialFeedObject] = []
     private var tweets: [TwitterSocialFeedObject] = []
-    private var dataArray: [SocialFeedObject] = []
-    private var cachedDataArray: [Any] = []
+    private var allData: [SocialFeedObject] = []
+    private var cachedDataArray: [SocialFeedObject] = []
     
+    private var filterBy: String = "All"
+    
+    private var isTwitterAvailable: Bool = false
+    private var twitterEndTime: String? = nil
+    private var twitterAppToken: String = ""
+    private var twitterLimitParameter: String = "50" {
+        
+        didSet {
+            
+            self.reloadCollectionView(with: self.filterBy)
+            
+            self.fetchTwitterData(appToken: self.twitterAppToken)
+        }
+    }
+    
+    private var isFacebookAvailable: Bool = false
     private var facebookProfileImage: UIImageView? = nil
     private var facebookEndTime: String? = nil
     private var facebookAppToken: String = ""
@@ -30,90 +46,10 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         
         didSet {
             
+            self.reloadCollectionView(with: self.filterBy)
+            
             self.fetchFacebookData(appToken: self.facebookAppToken)
         }
-    }
-    
-    private var twitterEndTime: String? = nil
-    private var twitterAppToken: String = ""
-    private var twitterLimitParameter: String = "50" {
-        
-        didSet {
-            
-            self.fetchTwitterData(appToken: self.twitterAppToken)
-        }
-    }
-    
-    private var isFacebookAvailable = false
-    
-    private var isTwitterAvailable = false
-    
-    private var isFacebookDownloading = false {
-        
-        didSet {
-            
-            self.reloadCollectionView()
-        }
-    }
-    
-    private var isTwitterDownloading = false {
-        
-        didSet {
-            
-            self.reloadCollectionView()
-        }
-    }
-    
-    func filterSocialNetworksButtonAction(notification: NSNotification) {
-        
-        let alert = UIAlertController(title: "Filter by:", message: "", preferredStyle: .actionSheet)
-        
-        let facebookAction = UIAlertAction(title: "Facebook", style: .default, handler: { [unowned self](action) -> Void in
-            
-            self.dataArray.removeAll()
-            
-            if self.posts.count > 0 {
-                
-                for i in 0...self.posts.count - 1 {
-                    
-                    self.dataArray.append(self.posts[i])
-                }
-            }
-            
-            self.reloadCollectionView()
-        })
-        
-        let twitterAction = UIAlertAction(title: "Twitter", style: .default, handler: { [unowned self](action) -> Void in
-            
-            self.dataArray.removeAll()
-            
-            if self.tweets.count > 0 {
-                
-                for i in 0...self.tweets.count - 1 {
-                    
-                    self.dataArray.append(self.tweets[i])
-                }
-            }
-            
-            self.reloadCollectionView()
-        })
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
-            
-            return
-        })
-        
-        alert.addAction(facebookAction)
-        alert.addAction(twitterAction)
-        alert.addAction(cancelAction)
-        
-        if UI_USER_INTERFACE_IDIOM() == .pad {
-            
-            alert.popoverPresentationController?.barButtonItem = self.navigationItem.leftBarButtonItem
-            alert.popoverPresentationController?.sourceView = self.view;
-        }
-        
-        self.navigationController!.present(alert, animated: true, completion: nil)
     }
 
     override func viewDidLoad() {
@@ -121,7 +57,6 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        self.showEptyLabelWith(text: "Checking data plugs...")
         
         // add notification observers
         NotificationCenter.default.addObserver(self, selector: #selector(filterSocialNetworksButtonAction), name: NSNotification.Name("filterSocialFeed"), object: nil)
@@ -131,13 +66,12 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         
         super.viewWillAppear(animated)
         
-        self.dataArray.removeAll()
+        showEptyLabelWith(text: "Checking data plugs....")
         
-        FacebookDataPlugService.getAppTokenForFacebook(successful: self.fetchFacebookData, failed: self.updateFacebookDataPlugStatus)
+        // get Token for plugs
+        FacebookDataPlugService.getAppTokenForFacebook(successful: self.fetchFacebookData, failed: {() -> Void in return})
         
-        self.isTwitterDownloading = true
-        
-        TwitterDataPlugService.getAppTokenForTwitter(successful: self.fetchTwitterData, failed: self.updateTwitterDataPlugStatus)
+        TwitterDataPlugService.getAppTokenForTwitter(successful: self.fetchTwitterData, failed: {() -> Void in return})
         
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
@@ -149,62 +83,81 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         // Dispose of any resources that can be recreated.
     }
     
-    // MARK: - Facebook
-    
-    func showPosts(array: [JSON]) {
+    func fetchTwitterData(appToken: String) {
         
-        DispatchQueue.global().async { [unowned self]
-            () -> Void in
+        self.twitterAppToken = appToken
+        
+        var parameters: Dictionary<String, String> = ["limit" : self.twitterLimitParameter,
+                                                      "starttime" : "0"]
+        
+        if self.twitterEndTime != nil {
             
-            var filteredArray = FacebookDataPlugService.removeDuplicatesFrom(array: array)
+            parameters = ["limit" : self.twitterLimitParameter,
+                          "starttime" : "0",
+                          "endtime" : self.twitterEndTime!]
+        }
+        
+        func failed() {
             
-            func sorting(a: FacebookSocialFeedObject, b: FacebookSocialFeedObject) -> Bool {
-                
-                return a.tryingLastUpdate! > b.tryingLastUpdate!
-            }
+            self.isTwitterAvailable = false
+            self.showEptyLabelWith(text: "Please enable at least one data plug in order to use social feed")
+        }
+        
+        TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: self.fetchTweets(parameters: parameters), failed: failed)
+    }
+    
+    func fetchTweets(parameters: Dictionary<String, String>) -> (Void) -> Void {
+        
+        return { [unowned self](Void) -> Void in
             
-            filteredArray = filteredArray.sorted(by: sorting)
+            self.showEptyLabelWith(text: "Fetching social feed...")
+            self.isTwitterAvailable = true
             
-            // for each dictionary parse it and add it to the array
-            for posts in filteredArray {
-                
-                self.posts.append(posts)
-                self.dataArray.append(posts)
-            }
+            let token = HatAccountService.getUsersTokenFromKeychain()
+            TwitterDataPlugService.twitterDataPlug(authToken: token, parameters: parameters, success: (self.showTweets))
+        }
+    }
+    
+    func showTweets(array: [JSON]) {
+        
+        if self.isViewLoaded && (self.view.window != nil) {
             
-            if array.count == Int(self.facebookLimitParameter) {
-                
-                let elapse = (filteredArray.last?.tryingLastUpdate)!.timeIntervalSince1970
-                
-                let temp = String(elapse)
-                
-                let array2 = temp.components(separatedBy: ".")
-                
-                self.facebookEndTime = array2[0]
-                
-                self.facebookLimitParameter = "500"
-            } else {
-                
-                self.facebookEndTime = nil
-            }
-            
-            DispatchQueue.main.async { [unowned self]
+            DispatchQueue.global().async { [unowned self]
                 () -> Void in
                 
-                print("Received " + String(array.count) + " posts")
+                var filteredArray = TwitterDataPlugService.removeDuplicatesFrom(array: array)
                 
-                self.isFacebookDownloading = false
+                filteredArray = self.sortArray(array: filteredArray) as! [TwitterSocialFeedObject]
+                
+                // for each dictionary parse it and add it to the array
+                for tweets in filteredArray {
+                    
+                    self.tweets.append(tweets)
+                }
+                                
+                if array.count == Int(self.twitterLimitParameter) {
+                    
+                    let elapse = (filteredArray.last?.tryingLastUpdate)!.timeIntervalSince1970
+                    
+                    let temp = String(elapse)
+                    
+                    let array2 = temp.components(separatedBy: ".")
+                    
+                    self.twitterEndTime = array2[0]
+                    
+                    self.twitterLimitParameter = "500"
+                } else {
+                    
+                    self.twitterEndTime = nil
+                    self.reloadCollectionView(with: self.filterBy)
+                }
             }
         }
     }
     
     func fetchFacebookData(appToken: String) {
         
-        self.isFacebookDownloading = true
-        
         self.facebookAppToken = appToken
-        
-        self.showEptyLabelWith(text: "Fetching social feed...")
         
         var parameters: Dictionary<String, String> = ["limit" : self.facebookLimitParameter,
                                                       "starttime" : "0"]
@@ -216,119 +169,86 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                           "endtime" : self.facebookEndTime!]
         }
         
-        FacebookDataPlugService.isFacebookDataPlugActive(token: appToken, successful: self.fetchPosts(parameters: parameters), failed: self.updateFacebookDataPlugStatus)
+        func failed() {
+            
+            self.isFacebookAvailable = false
+            self.showEptyLabelWith(text: "Please enable at least one data plug in order to use social feed")
+        }
+        
+        FacebookDataPlugService.isFacebookDataPlugActive(token: appToken, successful: self.fetchPosts(parameters: parameters), failed: failed)
     }
     
     func fetchPosts(parameters: Dictionary<String, String>) -> (Void) -> Void {
         
         return { [unowned self](Void) -> Void in
             
+            self.showEptyLabelWith(text: "Fetching social feed...")
             self.isFacebookAvailable = true
             
             let token = HatAccountService.getUsersTokenFromKeychain()
             FacebookDataPlugService.facebookDataPlug(authToken: token, parameters: parameters, success: self.showPosts)
             
-//            if self.facebookProfileImage == nil {
-//                
-//                func success(array: [JSON]) -> Void {
-//                    
-//                    self.facebookProfileImage = UIImageView()
-//                    
-//                    let dict = array[0].dictionaryValue
-//                    let object = FacebookSocialFeedObject(from: dict)
-//                    self.facebookProfileImage?.downloadedFrom(url: URL(string:object.data.posts.picture)!)
-//                }
-//                FacebookDataPlugService.fetchProfileFacebookPhoto(authToken: token, parameters: ["X-Auth-Token" : token], success: success)
-//            }
+            DispatchQueue.global().async { [unowned self] () -> Void in
+                
+                if self.facebookProfileImage == nil {
+                    
+                    func success(array: [JSON]) -> Void {
+                        
+                        if array.count > 0 {
+                            
+                            self.facebookProfileImage = UIImageView()
+                            
+                            if let url = URL(string: array[0]["data"]["profile_picture"]["url"].stringValue) {
+                                
+                                self.facebookProfileImage?.downloadedFrom(url: url)
+                            } else {
+                                
+                                self.facebookProfileImage = nil
+                            }
+                        }
+                    }
+                    FacebookDataPlugService.fetchProfileFacebookPhoto(authToken: token, parameters: [:], success: success)
+                }
+            }
         }
     }
     
-    func updateFacebookDataPlugStatus() {
+    func showPosts(array: [JSON]) {
         
-        self.isFacebookAvailable = false
-        self.isFacebookDownloading = false
-    }
-    
-    // MARK - Twitter
-    
-    func updateTwitterDataPlugStatus() {
-        
-        self.isTwitterAvailable = false
-        self.isTwitterDownloading = false
-    }
-    
-    func fetchTwitterData(appToken: String) {
-        
-        self.twitterAppToken = appToken
-        
-        self.showEptyLabelWith(text: "Fetching social feed...")
-        
-        var parameters: Dictionary<String, String> = ["limit" : self.twitterLimitParameter,
-                                                      "starttime" : "0"]
-        
-        if self.twitterEndTime != nil {
+         if self.isViewLoaded && (self.view.window != nil) {
             
-            parameters = ["limit" : self.twitterLimitParameter,
-                          "starttime" : "0",
-                          "endtime" : self.twitterEndTime!]
-        }
-        TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: self.fetchTweets(parameters: parameters), failed: self.updateTwitterDataPlugStatus)
-    }
-    
-    func fetchTweets(parameters: Dictionary<String, String>) -> (Void) -> Void {
-        
-        return { [unowned self](Void) -> Void in
-            
-            self.isTwitterAvailable = true
-            
-            let token = HatAccountService.getUsersTokenFromKeychain()
-            TwitterDataPlugService.twitterDataPlug(authToken: token, parameters: parameters, success: (self.showTweets))
-        }
-    }
-    
-    func showTweets(array: [JSON]) {
-        
-        DispatchQueue.global().async { [unowned self]
-            () -> Void in
-            
-            var filteredArray = TwitterDataPlugService.removeDuplicatesFrom(array: array)
-            
-            func sorting(a: TwitterSocialFeedObject, b: TwitterSocialFeedObject) -> Bool { 
+            DispatchQueue.global().async { [unowned self] () -> Void in
                 
-                return a.tryingLastUpdate! > b.tryingLastUpdate!
-            }
-            
-            filteredArray = filteredArray.sorted(by: sorting)
-            
-            // for each dictionary parse it and add it to the array
-            for tweets in filteredArray {
+                // removes duplicates from parameter array
+                var filteredArray = FacebookDataPlugService.removeDuplicatesFrom(array: array)
                 
-                self.tweets.append(tweets)
-                self.dataArray.append(tweets)
-            }
-            
-            if array.count == Int(self.twitterLimitParameter) {
-                
-                let elapse = (filteredArray.last?.tryingLastUpdate)!.timeIntervalSince1970
-                
-                let temp = String(elapse)
-                
-                let array2 = temp.components(separatedBy: ".")
-                
-                self.twitterEndTime = array2[0]
-                
-                self.twitterLimitParameter = "500"
-            } else {
-                
-                self.twitterEndTime = nil
-            }
-            
-            DispatchQueue.main.async { [unowned self]
-                () -> Void in
-                
-                print("Received " + String(array.count) + " tweets")
-                
-                self.isTwitterDownloading = false
+                if let tempArray = self.sortArray(array: filteredArray) as? [FacebookSocialFeedObject] {
+                    
+                    filteredArray = tempArray
+                    
+                    // for each dictionary parse it and add it to the array
+                    for posts in filteredArray {
+                        
+                        self.posts.append(posts)
+                    }
+                    
+                    if array.count == Int(self.facebookLimitParameter) {
+                        
+                        let elapse = (filteredArray.last?.data.posts.createdTime)!.timeIntervalSince1970
+                        
+                        let temp = String(elapse)
+                        
+                        let array2 = temp.components(separatedBy: ".")
+                        
+                        self.facebookEndTime = array2[0]
+                        
+                        self.facebookLimitParameter = "500"
+                    } else {
+                        
+                        self.facebookEndTime = nil
+                        self.reloadCollectionView(with: self.filterBy)
+                    }
+                }
             }
         }
     }
@@ -339,21 +259,29 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         
         if let post = self.cachedDataArray[indexPath.row] as? FacebookSocialFeedObject {
             
-            var cell = collectionView.dequeueReusableCell(withReuseIdentifier: "statusSocialFeedCell", for: indexPath) as! SocialFeedCollectionViewCell
+            var cell = SocialFeedCollectionViewCell()
             
             if post.data.posts.type == "photo" {
                 
                 cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageSocialFeedCell", for: indexPath) as! SocialFeedCollectionViewCell
+            } else {
+                
+                cell = collectionView.dequeueReusableCell(withReuseIdentifier: "statusSocialFeedCell", for: indexPath) as! SocialFeedCollectionViewCell
             }
             
-            cell.profileImage.image = self.facebookProfileImage?.image
+            if self.facebookProfileImage != nil {
+                
+                cell.profileImage.image = self.facebookProfileImage?.image
+            }
             
             return SocialFeedCollectionViewCell.setUpCell(cell: cell, indexPath: indexPath, posts: post)
         } else {
-
+            
+            let tweet = self.cachedDataArray[indexPath.row] as? TwitterSocialFeedObject
+            
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "statusSocialFeedCell", for: indexPath) as! SocialFeedCollectionViewCell
             
-            return SocialFeedCollectionViewCell.setUpCell(cell: cell, indexPath: indexPath, posts: self.cachedDataArray[indexPath.row] as! TwitterSocialFeedObject)
+            return SocialFeedCollectionViewCell.setUpCell(cell: cell, indexPath: indexPath, posts: tweet!)
         }
     }
     
@@ -390,7 +318,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             let size = self.calculateCellHeight(text: text, width: self.collectionView.frame.width - 16)
             
             return CGSize(width: collectionView.frame.width, height: 85 + size.height)
-        } else {
+        }else {
             
             let tweet = self.cachedDataArray[indexPath.row] as! TwitterSocialFeedObject
             
@@ -403,74 +331,192 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
     
     func calculateCellHeight(text: String, width: CGFloat) -> CGSize {
         
-        let attributes: Dictionary<String, UIFont> = [NSFontAttributeName: UIFont(name: "Open Sans", size: 14)!]
-        return text.boundingRect( with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: attributes, context: nil).size
+        return text.boundingRect( with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: nil, context: nil).size
     }
     
-    func reloadCollectionView() {
+    func sortArray(array: [SocialFeedObject]) -> [SocialFeedObject] {
         
-       if !self.isFacebookDownloading && !isTwitterDownloading {
-        
-             if !self.isTwitterAvailable && !isFacebookAvailable {
+        func sorting(a: SocialFeedObject, b: SocialFeedObject) -> Bool {
+            
+            if let postA = a as? FacebookSocialFeedObject {
                 
-                self.createClassicOKAlertWith(alertMessage: "Please enable at least one data plug in order to use social feed", alertTitle: "No data plugs found", okTitle: "OK", proceedCompletion: {self.showEptyLabelWith(text: "Please enable at least one data plug in order to use social feed")})
-             }
-        }
-                
-        DispatchQueue.global().async {[unowned self]
-            () -> Void in
-            
-            self.sortFeed()
-            
-            self.cachedDataArray = self.dataArray.map {($0 as AnyObject)}
-            
-            print("tweets array " + String(self.tweets.count))
-            print("posts array " + String(self.posts.count))
-            print("data array " + String(self.dataArray.count))
-            print("cached data array " + String(self.cachedDataArray.count))
-            
-            if self.cachedDataArray.count > 0 {
-                
-                DispatchQueue.main.async { [unowned self]
-                    () -> Void in
+                if let postB = b as? FacebookSocialFeedObject {
                     
-                    self.collectionView.reloadData()
+                    return (postA.data.posts.createdTime)! > (postB.data.posts.createdTime)!
+                } else {
                     
-                    self.showEptyLabelWith(text: "")
+                    let tweetB = b as? TwitterSocialFeedObject
+                    return (postA.data.posts.createdTime)! > (tweetB!.data.tweets.createdAt)!
+                }
+            } else {
+                
+                let tweetA = a as? TwitterSocialFeedObject
+                
+                if let postB = b as? FacebookSocialFeedObject {
+                    
+                    return (tweetA!.data.tweets.createdAt)! > (postB.data.posts.createdTime)!
+                } else {
+                    
+                    let tweetB = b as? TwitterSocialFeedObject
+                    return (tweetA?.data.tweets.createdAt)! > (tweetB!.data.tweets.createdAt)!
                 }
             }
         }
+        
+        return array.sorted(by: sorting)
+    }
+    
+    func reloadCollectionView(with filter: String) {
+        
+        self.removeDuplicates()
+        
+        self.rebuildDataArray(filter: filter)
+        
+        DispatchQueue.main.async {
+            
+            self.showEptyLabelWith(text: "")
+            self.collectionView.reloadData()
+        }
+    }
+    
+    func removeDuplicates() {
+        
+        self.posts = FacebookDataPlugService.removeDuplicatesFrom(array: self.posts)
+        self.tweets = TwitterDataPlugService.removeDuplicatesFrom(array: self.tweets)
+    }
+    
+    func rebuildDataArray(filter: String)  {
+        
+        if filter == "All" {
+            
+            for post in self.posts {
+                
+                self.allData.append(post)
+            }
+            for tweet in self.tweets {
+                
+                self.allData.append(tweet)
+            }
+        } else if filter == "Twitter" {
+            
+            for tweet in self.tweets {
+                
+                self.allData.append(tweet)
+            }
+        } else if filter == "Facebook" {
+            
+            for post in self.posts {
+                
+                self.allData.append(post)
+            }
+        }
+        
+        self.allData = self.sortArray(array: allData)
+        
+        self.cachedDataArray = self.allData
+        
+        self.allData.removeAll()
+    }
+    
+    func filterSocialNetworksButtonAction(notification: NSNotification) {
+        
+        let alert = UIAlertController(title: "Filter by:", message: "", preferredStyle: .actionSheet)
+        
+        let facebookAction = UIAlertAction(title: "Facebook", style: .default, handler: { [unowned self](action) -> Void in
+            
+            self.cachedDataArray.removeAll()
+            
+            if self.posts.count > 0 {
+                
+                for i in 0...self.posts.count - 1 {
+                    
+                    self.cachedDataArray.append(self.posts[i])
+                }
+            }
+            
+            self.filterBy = "Facebook"
+            
+            self.reloadCollectionView(with: self.filterBy)
+        })
+        
+        let twitterAction = UIAlertAction(title: "Twitter", style: .default, handler: { [unowned self](action) -> Void in
+            
+            self.cachedDataArray.removeAll()
+            
+            if self.tweets.count > 0 {
+                
+                for i in 0...self.tweets.count - 1 {
+                    
+                    self.cachedDataArray.append(self.tweets[i])
+                }
+            }
+            
+            self.filterBy = "Twitter"
+            
+            self.reloadCollectionView(with: self.filterBy)
+        })
+        
+        let allNetworksAction = UIAlertAction(title: "All", style: .default, handler: { [unowned self](action) -> Void in
+            
+            self.cachedDataArray.removeAll()
+            
+            if self.tweets.count > 0 {
+                
+                for i in 0...self.tweets.count - 1 {
+                    
+                    self.cachedDataArray.append(self.tweets[i])
+                }
+            }
+            
+            if self.posts.count > 0 {
+                
+                for i in 0...self.posts.count - 1 {
+                    
+                    self.cachedDataArray.append(self.posts[i])
+                }
+            }
+            
+            self.filterBy = "All"
+            
+            self.reloadCollectionView(with: self.filterBy)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
+            
+            return
+        })
+        
+        alert.addAction(facebookAction)
+        alert.addAction(twitterAction)
+        alert.addAction(allNetworksAction)
+        alert.addAction(cancelAction)
+        
+        if UI_USER_INTERFACE_IDIOM() == .pad {
+            
+            alert.popoverPresentationController?.barButtonItem = self.navigationItem.leftBarButtonItem
+            alert.popoverPresentationController?.sourceView = self.view;
+        }
+        
+        self.navigationController!.present(alert, animated: true, completion: nil)
     }
     
     func showEptyLabelWith(text: String) {
         
+        if !isTwitterAvailable && !isFacebookAvailable {
+            
+            self.collectionView.isHidden = true
+            self.emptyCollectionViewLabel.text = text
+        }
         if text == "" {
             
             self.collectionView.isHidden = false
             self.emptyCollectionViewLabel.text = text
-        } else {
-            
-            if self.cachedDataArray.count == 0 {
-                
-                self.collectionView.isHidden = true
-                self.emptyCollectionViewLabel.text = text
-            }
         }
     }
     
     override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
         
         self.collectionView.reloadData()
-    }
-    
-    func sortFeed() {
-        
-        func sorting(a: SocialFeedObject, b: SocialFeedObject) -> Bool {
-            
-            return a.tryingLastUpdate! > b.tryingLastUpdate!
-        }
-
-        self.dataArray = self.dataArray.sorted(by: sorting)
     }
 
 }

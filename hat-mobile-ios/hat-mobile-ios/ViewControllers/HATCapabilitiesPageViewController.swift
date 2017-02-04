@@ -34,6 +34,7 @@ class HATCapabilitiesPageViewController: UIPageViewController, UIPageViewControl
         
         // change the color of the pagination dots at the bottom of the screen
         UIPageControl.appearance().pageIndicatorTintColor = UIColor.lightGray
+        UIPageControl.appearance().currentPageIndicatorTintColor = .white
     }
 
     override func didReceiveMemoryWarning() {

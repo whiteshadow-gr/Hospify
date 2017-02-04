@@ -24,11 +24,12 @@ class FirstOnboardingViewController: UIViewController {
     
     @IBAction func clearButtonAction(_ sender: Any) {
         
-        NotificationCenter.default.post(name: NSNotification.Name("hidePageViewContoller"), object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name("hideNewbiePageViewContoller"), object: nil)
     }
     
     @IBAction func learnMoreButtonAction(_ sender: Any) {
         
+        NotificationCenter.default.post(name: NSNotification.Name("hideNewbiePageViewContoller"), object: nil)
     }
     
     override func viewDidLoad() {
@@ -43,15 +44,15 @@ class FirstOnboardingViewController: UIViewController {
             
             // format title label
             let textAttributesTitle = [
-                NSForegroundColorAttributeName: UIColor.white,
-                NSStrokeColorAttributeName: UIColor.white,
-                NSFontAttributeName: UIFont(name: "Open Sans Condensed", size: 30)!,
+                NSForegroundColorAttributeName: UIColor.tealColor(),
+                NSStrokeColorAttributeName: UIColor.tealColor(),
+                NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 30)!,
                 NSStrokeWidthAttributeName: -1.0
                 ] as [String : Any]
             let textAttributes = [
                 NSForegroundColorAttributeName: UIColor.darkGray,
                 NSStrokeColorAttributeName: UIColor.darkGray,
-                NSFontAttributeName: UIFont(name: "OpenSans", size: 16)!,
+                NSFontAttributeName: UIFont(name: "OpenSans", size: 20)!,
                 NSStrokeWidthAttributeName: -1.0
                 ] as [String : Any]
             
@@ -69,9 +70,9 @@ class FirstOnboardingViewController: UIViewController {
             
             // format title label
             let textAttributesTitle = [
-                NSForegroundColorAttributeName: UIColor.white,
-                NSStrokeColorAttributeName: UIColor.white,
-                NSFontAttributeName: UIFont(name: "Open Sans Condensed", size: 30)!,
+                NSForegroundColorAttributeName: UIColor.tealColor(),
+                NSStrokeColorAttributeName: UIColor.tealColor(),
+                NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 30)!,
                 NSStrokeWidthAttributeName: -1.0
                 ] as [String : Any]
             let textAttributes = [
@@ -95,9 +96,9 @@ class FirstOnboardingViewController: UIViewController {
             
             // format title label
             let textAttributesTitle = [
-                NSForegroundColorAttributeName: UIColor.white,
-                NSStrokeColorAttributeName: UIColor.white,
-                NSFontAttributeName: UIFont(name: "Open Sans Condensed", size: 30)!,
+                NSForegroundColorAttributeName: UIColor.tealColor(),
+                NSStrokeColorAttributeName: UIColor.tealColor(),
+                NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 30)!,
                 NSStrokeWidthAttributeName: -1.0
                 ] as [String : Any]
             let textAttributes = [
@@ -108,7 +109,7 @@ class FirstOnboardingViewController: UIViewController {
                 ] as [String : Any]
             
             let partOne = NSAttributedString(string: learnMoreObject.title + "\n", attributes: textAttributesTitle)
-            let partTwo = NSAttributedString(string: learnMoreObject.info, attributes: textAttributes)
+            let partTwo = NSAttributedString(string: learnMoreObject.info + "\n", attributes: textAttributes)
             let combination = NSMutableAttributedString()
             
             combination.append(partOne)
@@ -117,7 +118,6 @@ class FirstOnboardingViewController: UIViewController {
             self.messages.attributedText = combination
             self.learnMoreButton.isHidden = false
             self.learnMoreButton.setTitle("GET STARTED", for: .normal)
-            self.learnMoreButton.addBorderToButton(width: 1, color: .white)
             self.image.image = learnMoreObject.image
         } else if pageIndex == 3 {
             
@@ -125,7 +125,7 @@ class FirstOnboardingViewController: UIViewController {
             let textAttributesTitle = [
                 NSForegroundColorAttributeName: UIColor.white,
                 NSStrokeColorAttributeName: UIColor.white,
-                NSFontAttributeName: UIFont(name: "Open Sans Condensed", size: 30)!,
+                NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 30)!,
                 NSStrokeWidthAttributeName: -1.0
                 ] as [String : Any]
             

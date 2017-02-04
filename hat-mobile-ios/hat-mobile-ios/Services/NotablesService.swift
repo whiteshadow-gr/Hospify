@@ -28,14 +28,12 @@ class NotablesService: NSObject {
      */
     class func fetchNotables(authToken: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void, failure: @escaping () -> Void ) -> Void {
         
-        let createNotablesTables: (Void) -> Void = {
+        func createNotablesTables() {
             
-            return {() -> Void in
+            HatAccountService.createHatTable(token: authToken, notablesTableStructure: JSONHelper.createNotablesTableJSON())()
             
-                _ = HatAccountService.createHatTable(token: authToken, notablesTableStructure: JSONHelper.createNotablesTableJSON())
-                failure()
-            }
-        }()
+            failure()
+        }
         
         HatAccountService.checkHatTableExists(tableName: "notablesv1", //posts // tweets
                             sourceName: "rumpel", // facebook // twitter
@@ -141,5 +139,40 @@ class NotablesService: NSObject {
         }
         
         HatAccountService.checkHatTableExistsForUploading(tableName: "notablesv1", sourceName: "rumpel", authToken: userToken, successCallback: posting, errorCallback: errorCall)
+    }
+    
+    class func removeDuplicatesFrom(array: [NotesData]) -> [NotesData] {
+        
+        var arrayToReturn: [NotesData] = []
+        
+        for note in array {
+            
+            let result = arrayToReturn.contains(where: {(note2: NotesData) -> Bool in
+                
+                if note.id == note2.id {
+                    
+                    return true
+                }
+                
+                return false
+            })
+            
+            if !result {
+                
+                arrayToReturn.append(note)
+            }
+        }
+        
+        return NotablesService.sortNotables(notes: arrayToReturn)
+    }
+    
+    class func sortNotables(notes: [NotesData]) -> [NotesData] {
+        
+        func sorting(a: NotesData, b: NotesData) -> Bool {
+                    
+            return a.data.updatedTime < b.data.updatedTime
+        }
+                
+        return notes.sorted(by: sorting)
     }
 }

@@ -27,12 +27,12 @@ class GetAHATInfoViewController: UIViewController {
     /// An IBOutlet for handling the hatProviderImage image view
     @IBOutlet weak var hatProviderImage: UIImageView!
     
+    /// An IBOutlet for handling the hatProviderDetailedInfo label
+    @IBOutlet weak var hatProviderDetailedInfo: UITextView!
     /// An IBOutlet for handling the hatProviderTitle label
     @IBOutlet weak var hatProviderTitle: UILabel!
     /// An IBOutlet for handling the hatProviderInfo label
     @IBOutlet weak var hatProviderInfo: UITextView!
-    /// An IBOutlet for handling the hatProviderDetailedInfo label
-    @IBOutlet weak var hatProviderDetailedInfo: UILabel!
 
     /// An IBOutlet for handling the signUpButton button
     @IBOutlet weak var signUpButton: UIButton!
@@ -43,7 +43,22 @@ class GetAHATInfoViewController: UIViewController {
     
     @IBAction func signUpAction(_ sender: Any) {
         
-        NotificationCenter.default.post(name: NSNotification.Name("hideView"), object: "1")
+        if self.hatProvider?.name == "HALL Free HAT" {
+            
+            if let url = URL(string: "http://hubofallthings.com/hall/") {
+                
+                UIApplication.shared.openURL(url)
+            }
+        } else if self.hatProvider?.kind.kind == "External" {
+            
+            if let url = URL(string: (self.hatProvider?.kind.link)!) {
+                
+                UIApplication.shared.openURL(url)
+            }
+        } else {
+            
+            NotificationCenter.default.post(name: NSNotification.Name("hideView"), object: "1")
+        }
     }
     
     @IBAction func cancelButtonAction(_ sender: Any) {
@@ -69,9 +84,9 @@ class GetAHATInfoViewController: UIViewController {
             self.hatProviderImage.image = (hatProvider?.hatProviderImage)!
             self.hatProviderTitle.text = hatProvider?.name
             self.hatProviderInfo.text = hatProvider?.category.description
+            self.hatProviderInfo.layoutIfNeeded()
             self.hatProviderDetailedInfo.text = hatProvider?.description
             self.hatProviderDetailedInfo.sizeToFit()
-            self.hatProviderInfo.sizeToFit()
             
             let features: NSMutableAttributedString = NSMutableAttributedString(string: "")
             for (index, string) in (hatProvider?.features)!.enumerated() {
@@ -88,7 +103,7 @@ class GetAHATInfoViewController: UIViewController {
             let textAttributesTitle = [
                 NSForegroundColorAttributeName: UIColor.white,
                 NSStrokeColorAttributeName: UIColor.white,
-                NSFontAttributeName: UIFont(name: "Open Sans", size: 14)!,
+                NSFontAttributeName: UIFont(name: "OpenSans", size: 14)!,
                 NSStrokeWidthAttributeName: -1.0
                 ] as [String : Any]
             
@@ -99,14 +114,24 @@ class GetAHATInfoViewController: UIViewController {
                 NSStrokeWidthAttributeName: -1.0
                 ] as [String : Any]
             
-            let partOne = NSAttributedString(string: "SIGN ME UP ", attributes: textAttributesTitle)
-            let partTwo = NSAttributedString(string: "FREE", attributes: textAttributes)
-            let combination = NSMutableAttributedString()
-            
-            combination.append(partOne)
-            combination.append(partTwo)
-            
-            self.signUpButton.setAttributedTitle(combination, for: .normal)
+            if (self.hatProvider?.price)! > 0 && self.hatProvider?.kind.kind != "External" {
+                
+                self.signUpButton.setAttributedTitle(NSAttributedString(string: "SIGN ME UP", attributes: textAttributesTitle), for: .normal)
+            } else if self.hatProvider?.kind.kind == "External" {
+                
+                let buttonName = "Learn more about " + (self.hatProvider?.name)!
+                self.signUpButton.setAttributedTitle(NSAttributedString(string: buttonName, attributes: textAttributesTitle), for: .normal)
+            } else {
+                
+                let partOne = NSAttributedString(string: "SIGN ME UP ", attributes: textAttributesTitle)
+                let partTwo = NSAttributedString(string: "FREE", attributes: textAttributes)
+                let combination = NSMutableAttributedString()
+                
+                combination.append(partOne)
+                combination.append(partTwo)
+                
+                self.signUpButton.setAttributedTitle(combination, for: .normal)
+            }
         }
     }
 

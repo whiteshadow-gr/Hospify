@@ -33,17 +33,43 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     private var hatProviders: [HATProviderObject] = []
     /// the pop up info view controller
     private var infoViewController: GetAHATInfoViewController? = nil
+    /// the pop up for hat info view controller
+    private var hatInfoViewController: InfoHatProvidersViewController? = nil
     
-    /// a dark view pop up holding title and stuff
+    /// a dark view pop up to hide the background
     private var darkView: UIView? = nil
 
     // MARK: - IBOutlets
 
+    @IBOutlet weak var learnMoreButton: UIButton!
     /// An IBOutlet for handling the arrow bar on top of the view
     @IBOutlet weak var arrowBarImage: UIImageView!
     
     /// An IBOutlet for handling the collection view
     @IBOutlet weak var collectionView: UICollectionView!
+    
+    // MARK: - IBActions
+    
+    @IBAction func learnMoreInfoButtonAction(_ sender: Any) {
+        
+        // set up page controller
+        self.hatInfoViewController = self.storyboard!.instantiateViewController(withIdentifier: "HATInfo") as? InfoHatProvidersViewController
+        
+        // present a dark pop up view
+        darkView = UIView(frame: CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.width, height: self.view.frame.height))
+        darkView?.backgroundColor = UIColor.darkGray
+        darkView?.alpha = 0.6
+        self.view.addSubview((darkView)!)
+        
+        // set up the created page view controller
+        self.hatInfoViewController!.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.bounds.origin.y + 15, width: self.view.frame.width - 30, height: self.view.bounds.height - 30)
+        self.hatInfoViewController!.view.layer.cornerRadius = 15
+        
+        // add the page view controller to self
+        self.addChildViewController(self.hatInfoViewController!)
+        self.view.addSubview((self.hatInfoViewController?.view!)!)
+        self.hatInfoViewController!.didMove(toParentViewController: self)
+    }
     
     // MARK: - UIViewController delegate methods
     
@@ -59,12 +85,24 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         arrowBarImage.image = arrowBarImage.image!.withRenderingMode(.alwaysTemplate)
         arrowBarImage.tintColor = UIColor.rumpelDarkGray()
         
+        self.learnMoreButton.addBorderToButton(width: 1, color: UIColor.tealColor())
+        
         // add notification observers
         NotificationCenter.default.addObserver(self, selector: #selector(hidePopUpView), name: NSNotification.Name("hideView"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(refreshCollectionView), name: NSNotification.Name("hatProviders"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(hideInfoViewController), name: NSNotification.Name("hideInfoHATProvider"), object: nil)
         
         // getch available hat providers
         HATService.getAvailableHATProviders()
+    }
+    
+    func hideInfoViewController() {
+        
+        self.hatInfoViewController?.willMove(toParentViewController: nil)
+        self.hatInfoViewController?.view.removeFromSuperview()
+        self.hatInfoViewController?.removeFromParentViewController()
+        
+        self.darkView?.removeFromSuperview()
     }
 
     override func didReceiveMemoryWarning() {
@@ -140,7 +178,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+            
         // create page view controller
         let cell = collectionView.cellForItem(at: indexPath) as! OnboardingTileCollectionViewCell
         
@@ -168,6 +206,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         // save the sku
         sku = hatProviders[indexPath.row].sku
         hatImage = cell.hatProviderImage.image
+        hatDomain = hatProviders[indexPath.row].kind.domain
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

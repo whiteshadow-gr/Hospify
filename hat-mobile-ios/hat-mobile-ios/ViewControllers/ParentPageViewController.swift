@@ -22,6 +22,8 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
     /// the number of pages for this page view controller
     private let numberOfPages = [0, 1, 2, 3, 4, 5, 6]
     
+    private var currentIndex = 0
+    
     // MARK: - PageViewController delegate methods
     
     override func viewDidLoad() {
@@ -35,6 +37,7 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
         
         // change the color of the pagination dots at the bottom of the screen
         UIPageControl.appearance().pageIndicatorTintColor = UIColor.tealColor()
+        UIPageControl.appearance().currentPageIndicatorTintColor = .white
         
         // add notification observers for disabling and enabling page controll
         NotificationCenter.default.addObserver(self, selector: #selector(disablePageControll), name: Notification.Name("disablePageControll"), object: nil)
@@ -72,7 +75,7 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
         // check if we are out of bounds and return the view controller
         if itemController.itemIndex + 1 < numberOfPages.count {
             
-            return getItemController(itemIndex: itemController.itemIndex+1)
+            return getItemController(itemIndex: itemController.itemIndex + 1)
         }
         
         // reached final page return nil
@@ -86,7 +89,7 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
     
     func presentationIndex(for pageViewController: UIPageViewController) -> Int {
         
-        return 0
+        return self.currentIndex
     }
     
     override func viewDidLayoutSubviews() {
@@ -123,6 +126,7 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
     @objc private func enablePageControll(notification: Notification) {
         
         self.dataSource = self
+        _ = self.getItemController(itemIndex: 6)
         
         // change the color of the pagination dots at the bottom of the screen
         UIPageControl.appearance().pageIndicatorTintColor = UIColor.tealColor()
@@ -160,7 +164,10 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
             
             // create the view controller and return it
             let pageItemController = self.storyboard!.instantiateViewController(withIdentifier: "ItemController") as! PageViewController
+            
             pageItemController.itemIndex = itemIndex
+            self.currentIndex = itemIndex
+
             return pageItemController
         }
         

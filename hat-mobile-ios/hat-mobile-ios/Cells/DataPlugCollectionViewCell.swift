@@ -21,6 +21,7 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
     
     /// The image for the data plug
     @IBOutlet weak var dataPlugImage: UIImageView!
+    /// The checkmark image for the data plug. It's hidden if it's not active
     @IBOutlet weak var checkMarkImage: UIImageView!
     
     /// The title for the data plug

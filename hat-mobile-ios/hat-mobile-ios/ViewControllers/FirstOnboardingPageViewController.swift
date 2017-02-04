@@ -24,7 +24,8 @@ class FirstOnboardingPageViewController: UIPageViewController, UIPageViewControl
         // Do any additional setup after loading the view.
         self.createPageViewController()
         // change the color of the pagination dots at the bottom of the screen
-        UIPageControl.appearance().pageIndicatorTintColor = UIColor.tealColor()
+        UIPageControl.appearance().pageIndicatorTintColor = UIColor.rumpelLightGray()
+        UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.tealColor()
     }
 
     override func didReceiveMemoryWarning() {
@@ -60,9 +61,11 @@ class FirstOnboardingPageViewController: UIPageViewController, UIPageViewControl
         // if we have pages to show init them and add them to the page view controller
         if numberOfPages.count > 0 {
             
-            let firstController = getItemController(itemIndex: 0)!
-            let startingViewControllers = [firstController]
-            self.setViewControllers(startingViewControllers, direction: UIPageViewControllerNavigationDirection.forward, animated: false, completion: nil)
+            if let firstController = getItemController(itemIndex: 0) {
+                
+                let startingViewControllers = [firstController]
+                self.setViewControllers(startingViewControllers, direction: UIPageViewControllerNavigationDirection.forward, animated: false, completion: nil)
+            }
         }
     }
     
@@ -78,9 +81,12 @@ class FirstOnboardingPageViewController: UIPageViewController, UIPageViewControl
         if itemIndex < numberOfPages.count {
             
             // create the view controller and return it
-            let pageItemController = self.storyboard!.instantiateViewController(withIdentifier: "firstOnboardingViewController") as! FirstOnboardingViewController
-            pageItemController.pageIndex = itemIndex
-            return pageItemController
+            if let viewController = self.storyboard?.instantiateViewController(withIdentifier: "firstOnboardingViewController") as? FirstOnboardingViewController {
+                
+                let pageItemController = viewController
+                pageItemController.pageIndex = itemIndex
+                return pageItemController
+            }
         }
         
         return nil

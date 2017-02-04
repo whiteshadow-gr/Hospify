@@ -14,7 +14,7 @@ import UIKit
 
 // MARK: Class
 
-/// The collection view cell class
+/// The Social Image collection view cell class. Used in notables table view to show in which social networks is this note posted
 class SocialImageCollectionViewCell: UICollectionViewCell {
     
     // MARK: - IBOutlets

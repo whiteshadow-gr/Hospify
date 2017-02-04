@@ -69,12 +69,21 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
         // set cell's info label
         if hatProvider.price == 0 {
             
-            cell.infoLabel.text = String(hatProvider.purchased) + " of " + String(hatProvider.available) + " remaining"
+            if hatProvider.available - hatProvider.purchased != 0 {
+                
+                cell.infoLabel.text = String(hatProvider.purchased) + " of " + String(hatProvider.available) + " remaining"
+            } else {
+                
+                cell.infoLabel.text = "Coming soon"
+            }
+        } else if hatProvider.kind.kind == "External" {
+            
+            cell.infoLabel.text = "Coming soon"
         } else {
             
             let price: Double = Double(Double(hatProvider.price)/100.0)
             
-            cell.infoLabel.text = String(price) + " £"
+            cell.infoLabel.text = "£ " + String(price)
         }
         
         // get image from url and set it to the image view

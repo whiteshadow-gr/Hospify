@@ -116,23 +116,23 @@ struct LearnMoreObject {
         } else if pageNumber == 20 {
             
             title = "Welcome to Rumpel Lite!"
-            info = "Your HAT dashboard"
+            info = "\nThe dashboard for all your HAT data"
             image = UIImage(named: "Rumpel")!
         } else if pageNumber == 21 {
             
-            title = "Your HAT is your personal data container, accessible only by you"
-            info = "Claim, control and utilise the data you generate such as your location"
-            image = UIImage(named: "Data store")!
+            title = "Your HAT is your personal data container"
+            info = "Claim, control and utilise the data you generate. Only you can access your HAT data, with complete control over who you share it with"
+            image = UIImage(named: "TealBinary")!
         } else if pageNumber == 22 {
             
-            title = "The HAT stores your data in a way that allows you to be in complete control of who accesses it"
-            info = "Add data straight to your HAT by writing notes with Rumpel's own notable tool. \nUse Rumpel to post on social media and set for it to be deleted, while keeping it on your HAT. \n(More data for you to claim will be coming soon.)"
-            image = UIImage(named: "Individual")!
+            title = "Control your data"
+            info = "Collect your data, such as your locations and social media posts, and create new data with Rumpel's Notables tool – completely privately"
+            image = UIImage(named: "TealFingerprint")!
         } else if pageNumber == 23 {
             
             title = "Head to your profile to set up your PHATA(Personal HAT Address) page"
             info = ""
-            image = UIImage(named: "Stands for")!
+            image = UIImage(named: "TealDevices")!
         }
     }
 }

@@ -18,7 +18,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// The class responsible for buying stuff via Stripe
-class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
     
     // MARK: - Variables
     
@@ -84,7 +84,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
      */
     @IBAction func termsAndConditionsButtonAction(_ sender: Any) {
         
-        self.fileURL = (Bundle.main.url(forResource: "2.1 HATTermsofService v1.0", withExtension: "pdf", subdirectory: nil, localization: nil)?.absoluteString)!
+        //self.fileURL = (Bundle.main.url(forResource: "2.1 HATTermsofService v1.0", withExtension: "pdf", subdirectory: nil, localization: nil)?.absoluteString)!
         self.performSegue(withIdentifier: "termsSegue", sender: self)
     }
     
@@ -197,6 +197,9 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                     self?.createHatButton.setTitle("Create HAT", for: .normal)
                 }
             })
+        } else {
+            
+            self.createClassicOKAlertWith(alertMessage: "Please check your information again", alertTitle: "Information missing", okTitle: "OK", proceedCompletion: {() -> Void in return})
         }
     }
     
@@ -236,8 +239,10 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         }
         countryTextField.text = "United Kingdom"
         
-        personalHATAddressTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        self.personalHATAddressTextField.delegate = self
         
+        personalHATAddressTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+
         if self.domain == "" || self.domain == "." {
             
             self.domain = ".hubofallthings.net"
@@ -420,5 +425,10 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         
         return true
     }
-
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        
+        textField.text = textField.text?.replacingOccurrences(of: domain, with: "")
+        self.textFieldDidChange()
+    }
 }

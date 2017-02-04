@@ -47,9 +47,9 @@ class TwitterDataPlugService: NSObject {
             
             switch r {
                 
-            case .isSuccess(let isSuccess, _, let result):
+            case .isSuccess(_, let statusCode, _):
                 
-                if isSuccess && result[0]["successful"].boolValue == true {
+                if statusCode == 200 {
                     
                     successful()
                 } else {
@@ -75,7 +75,7 @@ class TwitterDataPlugService: NSObject {
             
             let result = arrayToReturn.contains(where: {(tweet: TwitterSocialFeedObject) -> Bool in
                 
-                if object.tryingLastUpdate == tweet.tryingLastUpdate {
+                if object.data.tweets.id == tweet.data.tweets.id {
                     
                     return true
                 }
@@ -86,6 +86,31 @@ class TwitterDataPlugService: NSObject {
             if !result {
                 
                 arrayToReturn.append(object)
+            }
+        }
+        
+        return arrayToReturn
+    }
+    
+    class func removeDuplicatesFrom(array: [TwitterSocialFeedObject]) -> [TwitterSocialFeedObject] {
+        
+        var arrayToReturn: [TwitterSocialFeedObject] = []
+        
+        for tweet in array {
+            
+            let result = arrayToReturn.contains(where: {(tweeter: TwitterSocialFeedObject) -> Bool in
+                
+                if tweet.data.tweets.id == tweeter.data.tweets.id {
+                    
+                    return true
+                }
+                
+                return false
+            })
+            
+            if !result {
+                
+                arrayToReturn.append(tweet)
             }
         }
         

@@ -17,12 +17,14 @@ struct HATProviderKindObject {
     var kind: String = ""
     var domain: String = ""
     var country: String = ""
+    var link: String = ""
     
     init() {
         
         kind = ""
         domain = ""
         country = ""
+        link = ""
     }
     
     init(from dictionary: Dictionary<String, JSON>) {
@@ -40,6 +42,10 @@ struct HATProviderKindObject {
         if let tempCountry = dictionary["country"]?.stringValue {
             
             country = tempCountry
+        }
+        if let tempLink = dictionary["link"]?.stringValue {
+            
+            link = tempLink
         }
     }
 }

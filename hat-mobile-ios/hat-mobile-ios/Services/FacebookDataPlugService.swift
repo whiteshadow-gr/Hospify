@@ -82,9 +82,9 @@ class FacebookDataPlugService: NSObject {
             
             let object = FacebookSocialFeedObject(from: dictionary.dictionaryValue)
             
-            let result = arrayToReturn.contains(where: {(tweet: FacebookSocialFeedObject) -> Bool in
+            let result = arrayToReturn.contains(where: {(post: FacebookSocialFeedObject) -> Bool in
                 
-                if object.tryingLastUpdate == tweet.tryingLastUpdate {
+                if object.data.posts.id == post.data.posts.id {
                     
                     return true
                 }
@@ -95,6 +95,31 @@ class FacebookDataPlugService: NSObject {
             if !result {
                 
                 arrayToReturn.append(object)
+            }
+        }
+        
+        return arrayToReturn
+    }
+    
+    class func removeDuplicatesFrom(array: [FacebookSocialFeedObject]) -> [FacebookSocialFeedObject] {
+        
+        var arrayToReturn: [FacebookSocialFeedObject] = []
+        
+        for facebookPost in array {
+            
+            let result = arrayToReturn.contains(where: {(post: FacebookSocialFeedObject) -> Bool in
+                
+                if facebookPost.data.posts.id == post.data.posts.id {
+                    
+                    return true
+                }
+                
+                return false
+            })
+            
+            if !result {
+                
+                arrayToReturn.append(facebookPost)
             }
         }
         

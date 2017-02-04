@@ -12,17 +12,14 @@
 
 import UIKit
 import SwiftyJSON
-import SafariServices
 
 // MARK: - Notables ViewController
 
 /// The notables view controller
-class NotablesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, SFSafariViewControllerDelegate {
+class NotablesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
     // MARK: - Variables
     
-    /// an array of the notes to display
-    private var notesArray: [NotesData] = []
     /// a cached array of the notes to display
     private var cachedNotesArray: [NotesData] = []
     /// the cells of the table
@@ -30,12 +27,17 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     /// the kind of the note to create
     private var kind: String = ""
-    
-    /// The safari view controller variable to hold reference for later use
-    private var safariDelegate: SFSafariViewController? = nil
+
     private var notablesFetchLimit: String = "50"
     private var notablesFetchEndDate: String? = nil
     private var token: String = ""
+    private var parameters: Dictionary<String, String> = ["starttime" : "0",
+                                                  "limit" : "50"]
+    
+    /// SafariViewController variable
+    private var pageViewController: FirstOnboardingPageViewController = FirstOnboardingPageViewController()
+    /// a dark view pop up to hide the background
+    private var darkView: UIView? = nil
 
     // MARK: - IBOutlets
 
@@ -126,9 +128,10 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         self.view.bringSubview(toFront: createNewNoteView)
         
         // register observers for a notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: "refreshTable"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.openSafari), name: NSNotification.Name(rawValue: "safari"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.hideTable), name: NSNotification.Name(rawValue: "NetworkMessage"), object: nil)
+        // add a notification observer in order to hide the second page view controller
+        NotificationCenter.default.addObserver(self, selector: #selector(removePageController), name: Notification.Name("hideNewbiePageViewContoller"), object: nil)
         
         // add gesture recognizer in the labels
         let newNoteTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newNoteButton(_:)))
@@ -148,7 +151,9 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         super.viewWillAppear(animated)
         
-        self.connectToServerToGetNotes()
+        self.cachedNotesArray.removeAll()
+        
+        self.connectToServerToGetNotes()        
     }
 
     override func didReceiveMemoryWarning() {
@@ -166,24 +171,20 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     private func showReceivedNotesFrom(array: [JSON]) {
         
-        // delete the notes array
-        self.notesArray.removeAll()
-
-        // for each dictionary parse it and add it to the array
-        for dict in array {
+        DispatchQueue.global().async {
             
-            self.notesArray.append(NotesData.init(dict: dict.dictionary!))
-        }
-        
-        if self.notesArray.count == 0 {
+            // for each dictionary parse it and add it to the array
+            for dict in array {
+                
+                self.cachedNotesArray.append(NotesData.init(dict: dict.dictionary!))
+            }
             
-            self.showEmptyTableLabelWith(message: "No notables. Keep your words on your HAT. Create your first notable!")
+            DispatchQueue.main.async {
+                
+                // update UI
+                self.updateUI()
+            }
         }
-        
-        self.cachedNotesArray = self.notesArray
-        
-        // update UI
-        self.updateUI()
     }
     
     /**
@@ -193,14 +194,10 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     @objc private func refreshData(notification: Notification) {
         
-        // delete the notes array
-        self.notesArray.removeAll()
+        self.cachedNotesArray.removeAll()
         
         // get notes
         self.connectToServerToGetNotes()
-        
-        // reload table
-        self.tableView.reloadData()
     }
     
     /**
@@ -210,27 +207,49 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     private func showNotables(array: [JSON]) {
         
-        if array.count >= Int(self.notablesFetchLimit)! {
+        if self.isViewLoaded && (self.view.window != nil) {
             
-            self.notablesFetchLimit = "500"
-
-            let object = NotesData(dict: (array.last?.dictionaryValue)!)
-            let elapse = object.data.createdTime.timeIntervalSince1970
-            
-            let temp = String(elapse)
-            
-            let array2 = temp.components(separatedBy: ".")
-            
-            self.notablesFetchEndDate = array2[0]
-            
-            let parameters: Dictionary<String, String> = ["starttime" : "0",
-                                                          "endtime" : self.notablesFetchEndDate!,
-                                                          "limit" : self.notablesFetchLimit]
-            
-            NotablesService.fetchNotables(authToken: self.token, parameters: parameters, success: self.showNotables, failure: {() -> Void in return})
+            DispatchQueue.global().async {
+                
+                if array.count >= Int(self.notablesFetchLimit)! {
+                    
+                    // increase limit
+                    self.notablesFetchLimit = "500"
+                    
+                    // init object
+                    let object = NotesData(dict: (array.last?.dictionaryValue)!)
+                    
+                    // get unixt date
+                    let elapse = object.lastUpdated.timeIntervalSince1970
+                    
+                    let temp = String(elapse)
+                    
+                    let array2 = temp.components(separatedBy: ".")
+                    
+                    // set unix date
+                    self.notablesFetchEndDate = array2[0]
+                    
+                    print("Unix time" + String(describing: self.notablesFetchEndDate))
+                    print("notes received:" + String(array.count))
+                    
+                    // change parameters
+                    self.parameters = ["starttime" : "0",
+                                       "endtime" : self.notablesFetchEndDate!,
+                                       "limit" : self.notablesFetchLimit]
+                    
+                    // fetch notes
+                    NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: {() -> Void in return})
+                } else {
+                    
+                    // revert parameters to initial values
+                    self.notablesFetchEndDate = nil
+                    self.parameters = ["starttime" : "0",
+                                       "limit" : self.notablesFetchLimit]
+                }
+                
+                self.showReceivedNotesFrom(array: array)
+            }
         }
-        
-        self.showReceivedNotesFrom(array: array)
     }
 
     // MARK: - Table View Methods
@@ -303,6 +322,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         // get token and refresh view
         self.token = HatAccountService.getUsersTokenFromKeychain()
+        
         if token == "" {
             
             let loginPageView =  self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
@@ -310,9 +330,8 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         } else {
             
             self.showEmptyTableLabelWith(message: "Accessing your HAT...")
-            let parameters: Dictionary<String, String> = ["starttime" : "0",
-                                                          "limit" : "50"]
-            NotablesService.fetchNotables(authToken: self.token, parameters: parameters, success: self.showNotables, failure: showNewbieScreens)
+            
+            NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: showNewbieScreens)
         }
     }
     
@@ -333,38 +352,12 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 let cellIndexPath = self.tableView.indexPath(for: sender as! UITableViewCell)
                 destinationVC?.receivedNote = self.cachedNotesArray[(cellIndexPath?.row)!]
                 destinationVC?.isEditingExistingNote = true
+                //destinationVC?.usersNotesCount = self.notesArray.count
             } else {
                 
                 destinationVC?.kind = self.kind
             }
         }
-    }
-    
-    // MARK: - Safari View Controller delegate
-    
-    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        
-        controller.dismiss(animated: true, completion: nil)
-    }
-    
-    /**
-     Opens safari view controller to authorize facebook
-     */
-    @objc private func openSafari() -> Void {
-        
-        let userDomain = HatAccountService.TheUserHATDomain()
-        let link = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=https://social-plug.hubofallthings.com/hat/authenticate"
-        
-        guard let urlLink = URL(string: link) else {
-            
-            return
-        }
-        // open the log in procedure in safari
-        self.safariDelegate = SFSafariViewController(url: urlLink)
-        safariDelegate?.delegate = self
-        
-        // present safari view controller
-        self.present(self.safariDelegate!, animated: true, completion: nil)
     }
     
     // MARK: - Update UI
@@ -389,24 +382,27 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     private func showEmptyTableLabelWith(message: String) {
         
-        if self.notesArray.count == 0 {
+        DispatchQueue.main.async {
             
-            var stringMessage = message
-            
-            if stringMessage == "The Internet connection appears to be offline." {
+            if self.cachedNotesArray.count == 0 {
                 
-                self.retryConnectingButton.isHidden = false
-                stringMessage = "No Internet connection. Please retry"
-            } else {
+                var stringMessage = message
                 
-                self.retryConnectingButton.isHidden = true
+                if stringMessage == "The Internet connection appears to be offline." {
+                    
+                    self.retryConnectingButton.isHidden = false
+                    stringMessage = "No Internet connection. Please retry"
+                } else {
+                    
+                    self.retryConnectingButton.isHidden = true
+                }
+                
+                self.eptyTableInfoLabel.isHidden = false
+                
+                self.eptyTableInfoLabel.text = stringMessage
+                
+                self.tableView.isHidden = true
             }
-            
-            self.eptyTableInfoLabel.isHidden = false
-            
-            self.eptyTableInfoLabel.text = stringMessage
-            
-            self.tableView.isHidden = true
         }
     }
     
@@ -415,37 +411,64 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     private func updateUI() {
         
-        if self.notesArray.count > 0 {
+        DispatchQueue.main.async {
             
-            self.eptyTableInfoLabel.isHidden = true
-
-            self.tableView.isHidden = false
-            
-            // reload table
-            self.tableView.reloadData()
-        } else {
-            
-            self.eptyTableInfoLabel.isHidden = false
-            
-            self.tableView.isHidden = true
+            if self.cachedNotesArray.count > 0 {
+                
+                self.eptyTableInfoLabel.isHidden = true
+                
+                self.tableView.isHidden = false
+                
+                // reload table
+                self.tableView.reloadData()
+            } else if self.cachedNotesArray.count == 0 {
+                
+                self.showEmptyTableLabelWith(message: "No notables. Keep your words on your HAT. Create your first notable!")
+            } else {
+                
+                self.eptyTableInfoLabel.isHidden = false
+                
+                self.tableView.isHidden = true
+            }
         }
     }
     
     private func showNewbieScreens() -> Void {
         
-        let result = KeychainHelper.GetKeychainValue(key: "hasOnboardingCompleted")
+        // set up the created page view controller
+        self.pageViewController = self.storyboard!.instantiateViewController(withIdentifier: "firstTimeOnboarding") as! FirstOnboardingPageViewController
+        self.pageViewController.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.x + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30)
+        self.pageViewController.view.layer.cornerRadius = 15
         
-        if result != "yes" {
-            
-            // set up the created page view controller
-            let pageViewController = self.storyboard!.instantiateViewController(withIdentifier: "firstTimeOnboarding") as! FirstOnboardingPageViewController
-            pageViewController.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.x + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30)
-            pageViewController.view.layer.cornerRadius = 15
-            
-            // add the page view controller to self
-            self.addChildViewController(pageViewController)
-            self.view.addSubview(pageViewController.view)
-            pageViewController.didMove(toParentViewController: self)
-        }
+        // present a dark pop up view
+        self.darkView = UIView(frame: CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.width, height: self.view.frame.height))
+        self.darkView?.backgroundColor = UIColor.darkGray
+        self.darkView?.alpha = 0.6
+        self.view.addSubview((self.darkView)!)
+        
+        // add the page view controller to self
+        self.addChildViewController(self.pageViewController)
+        self.view.addSubview(self.pageViewController.view)
+        self.pageViewController.didMove(toParentViewController: self)
+        
+        self.updateUI()
+    }
+    
+    // MARK: - Remove second PageViewController
+    
+    /**
+     Removes the second pageviewcontroller on demand when receivd the notification
+     
+     - parameter notification: The Notification object send with this notification
+     */
+    @objc private func removePageController(notification: Notification) {
+        
+        // if view is found remove it
+        
+        self.pageViewController.willMove(toParentViewController: nil)
+        self.pageViewController.view.removeFromSuperview()
+        self.pageViewController.removeFromParentViewController()
+        
+        self.darkView?.removeFromSuperview()
     }
 }

@@ -314,7 +314,6 @@ class DataPlugsService: NSObject {
                         
                         succesfulCallBack(result["dataDebitId"].stringValue)
                     }
-                    // else show message to do
                 }
             }
         })
@@ -354,18 +353,6 @@ class DataPlugsService: NSObject {
                 
                 if isSuccess {
                     
-                    // show message
-                    if var topController = UIApplication.shared.keyWindow?.rootViewController {
-                        
-                        while let presentedViewController = topController.presentedViewController {
-                            
-                            topController = presentedViewController
-                        }
-                        
-                        // topController should now be your topmost view controller
-                        topController.createClassicOKAlertWith(alertMessage: "Data debits and social data plugs are enabled", alertTitle: "Success", okTitle: "OK", proceedCompletion: {() -> Void in return})
-                    // else another scenario data debit not being enabled
-                    }
                 }
             }
         })

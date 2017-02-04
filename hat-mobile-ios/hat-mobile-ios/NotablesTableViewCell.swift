@@ -169,7 +169,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         let textAttributes = [
             NSForegroundColorAttributeName: UIColor.tealColor(),
             NSStrokeColorAttributeName: UIColor.tealColor(),
-            NSFontAttributeName: UIFont(name: "Open Sans", size: 11)!,
+            NSFontAttributeName: UIFont(name: "OpenSans", size: 11)!,
             NSStrokeWidthAttributeName: -1.0
             ] as [String : Any]
         

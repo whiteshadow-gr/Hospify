@@ -10,11 +10,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import SwiftyJSON
     
 // MARK: Class
 
+/// The social feed collection view cell class
 class SocialFeedCollectionViewCell: UICollectionViewCell {
     
     // MARK: - IBOutlets
@@ -70,7 +70,7 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
             
             cell.profileNameLabel.text = post.data.tweets.user.name
             cell.messageLabel.text = post.data.tweets.text
-            cell.postTypeLabel.text = "Tweet"
+            cell.postTypeLabel.text = "tweet"
             
             if post.data.tweets.createdAt != nil {
                 

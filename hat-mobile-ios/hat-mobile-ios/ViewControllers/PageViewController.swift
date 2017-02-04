@@ -74,6 +74,9 @@ class PageViewController: UIViewController {
         // init a LearnMoreObject
         var pageObject: LearnMoreObject = LearnMoreObject()
         
+        UIPageControl.appearance().pageIndicatorTintColor = UIColor.rumpelLightGray()
+        UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.tealColor()
+        
         // check if we are out of bounds
         if (itemIndex >= 0 && itemIndex <= 6 ) {
             
@@ -94,7 +97,7 @@ class PageViewController: UIViewController {
             let textAttributes = [
                 NSForegroundColorAttributeName: UIColor.tealColor(),
                 NSStrokeColorAttributeName: UIColor.tealColor(),
-                NSFontAttributeName: UIFont(name: "Open Sans", size: 36)!,
+                NSFontAttributeName: UIFont(name: "OpenSans", size: 36)!,
                 NSStrokeWidthAttributeName: -1.0
                 ] as [String : Any]
             
@@ -125,7 +128,7 @@ class PageViewController: UIViewController {
         }
         
         // add a notification observer in order to hide the second page view controller
-        NotificationCenter.default.addObserver(self, selector: #selector(removeSecondPageController), name: Notification.Name("hidePageViewContoller"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(removeSecondPageController), name: Notification.Name("hideCapabilitiesPageViewContoller"), object: nil)
     }
     
     override func didReceiveMemoryWarning() {

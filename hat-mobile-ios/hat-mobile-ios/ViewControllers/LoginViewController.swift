@@ -12,16 +12,15 @@
 
 import UIKit
 import SafariServices
+import MessageUI
 
 // MARK: - Class
 
 /// The Login View Controller
-class LoginViewController: UIViewController, UITextFieldDelegate {
+class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate {
     
     // MARK: - IBOutlets
-    
-    /// An IBOutlet for handling the useWithoutHATButton
-    @IBOutlet weak var useWithoutHATButton: UIButton!
+
     /// An IBOutlet for handling the learnMoreButton
     @IBOutlet weak var learnMoreButton: UIButton!
     /// An IBOutlet for handling the getAHATButton
@@ -54,11 +53,26 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     /// SafariViewController variable
     private var safariVC: SFSafariViewController?
     
-    /// SafariViewController variable
-    private var pageViewController: FirstOnboardingPageViewController = FirstOnboardingPageViewController()
-    
     // MARK: - IBActions
     
+
+    @IBAction func contactUsActionButton(_ sender: Any) {
+        
+        let mailVC = MFMailComposeViewController()
+        mailVC.mailComposeDelegate = self
+        mailVC.setToRecipients(["contact@hatdex.org"])
+        
+        self.present(mailVC, animated: true, completion: nil)
+    }
+    
+    @IBAction func joinOurCommunityButtonAction(_ sender: Any) {
+        
+        let urlStr = "http://hubofallthings.com/main/the-mad-hatters/"
+        if let url = URL(string: urlStr) {
+            
+            UIApplication.shared.openURL(url)
+        }
+    }
     /**
      An action executed when the logon button is pressed
      
@@ -88,11 +102,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         // disable the navigation back button
         self.navigationItem.setHidesBackButton(true, animated:false)
         
-        // add borders to the buttons
-        self.getAHATButton.addBorderToButton(width: 1, color: .white)
-        self.learnMoreButton.addBorderToButton(width: 1, color: .white)
-        self.useWithoutHATButton.addBorderToButton(width: 1, color: .white)
-        
         // set title
         self.title = NSLocalizedString("logon_label", comment:  "logon title")
         
@@ -100,14 +109,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         let textAttributesTitle = [
             NSForegroundColorAttributeName: UIColor.white,
             NSStrokeColorAttributeName: UIColor.white,
-            NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!,
+            NSFontAttributeName: UIFont(name: "OpenSans", size: 32)!,
             NSStrokeWidthAttributeName: -1.0
             ] as [String : Any]
         
         let textAttributes = [
             NSForegroundColorAttributeName: UIColor.tealColor(),
             NSStrokeColorAttributeName: UIColor.tealColor(),
-            NSFontAttributeName: UIFont(name: "Open Sans", size: 32)!,
+            NSFontAttributeName: UIFont(name: "OpenSans", size: 32)!,
             NSStrokeWidthAttributeName: -1.0
             ] as [String : Any]
         
@@ -143,7 +152,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
 
         // Setup the buttons to be put in the system.
         let autofillButton = UIBarButtonItem(title: barButtonTitle, style: .done, target: self, action: #selector(self.autofillPHATA))
-        autofillButton.setTitleTextAttributes([NSFontAttributeName: UIFont(name: "Open Sans", size: 17.0)!, NSForegroundColorAttributeName: UIColor.white], for: .normal)
+        autofillButton.setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans", size: 17.0)!, NSForegroundColorAttributeName: UIColor.white], for: .normal)
         toolbar.barTintColor = .black
         toolbar.setItems([autofillButton], animated: true)
 
@@ -161,8 +170,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         // add notification observer for the login in
         NotificationCenter.default.addObserver(self, selector: #selector(self.hatLoginAuth), name: NSNotification.Name(rawValue: Constants.Auth.NotificationHandlerName), object: nil)
-        // add a notification observer in order to hide the second page view controller
-        NotificationCenter.default.addObserver(self, selector: #selector(removePageController), name: Notification.Name("hidePageViewContoller"), object: nil)
         
         // set tint color, if translucent and the bar tint color of navigation bar
         self.navigationController?.navigationBar.tintColor = UIColor.white
@@ -191,6 +198,13 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
         
         return true
+    }
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        // Check the result or perform other tasks.
+        
+        // Dismiss the mail compose view controller.
+        controller.dismiss(animated: true, completion: nil)
     }
     
     // MARK: - Accesory Input View Method
@@ -269,21 +283,5 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     override func keyboardWillShow(sender: NSNotification) {
         
         self.showKeyboardInView(self.view, scrollView: self.scrollView, sender: sender)
-    }
-    
-    // MARK: - Remove second PageViewController
-    
-    /**
-     Removes the second pageviewcontroller on demand when receivd the notification
-     
-     - parameter notification: The Notification object send with this notification
-     */
-    @objc private func removePageController(notification: Notification) {
-        
-        // if view is found remove it
-        
-            self.pageViewController.willMove(toParentViewController: nil)
-            self.pageViewController.view.removeFromSuperview()
-            self.pageViewController.removeFromParentViewController()
     }
 }

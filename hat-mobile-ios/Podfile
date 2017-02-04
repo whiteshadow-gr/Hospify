@@ -17,10 +17,22 @@ target 'hat-mobile-ios' do
     pod 'Fabric'
     pod 'Crashlytics'
     pod 'BEMCheckBox'
-end
+    
+    target 'hat-mobile-iosTests' do
 
-target 'hat-mobile-iosTests' do
-
+        pod 'Alamofire'
+        pod 'RealmSwift'
+        pod 'SwiftyJSON'
+        pod 'FBAnnotationClusteringSwift', git: 'https://github.com/ribl/FBAnnotationClusteringSwift/', branch: 'master'
+        pod 'Toaster'
+        pod 'JWTDecode'
+        pod 'SwiftyRSA'
+        pod 'KeychainSwift'
+        pod 'Stripe'
+        pod 'Fabric'
+        pod 'Crashlytics'
+        pod 'BEMCheckBox'
+    end
 end
 
 target 'hat-mobile-iosUITests' do

@@ -21,18 +21,18 @@ extension UIViewController {
     /**
      Hides keyboard when tap anywhere in the screen except keyboard
      */
-    func hideKeyboardWhenTappedAround() {
+    public func hideKeyboardWhenTappedAround() {
         
         // create tap gesture
-        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
+        let gesture: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
         // add gesture to view
-        view.addGestureRecognizer(tap)
+        view.addGestureRecognizer(gesture)
     }
     
     /**
      Hides keyboard
      */
-    func dismissKeyboard() {
+    public func dismissKeyboard() {
         
         view.endEditing(true)
     }
@@ -40,7 +40,7 @@ extension UIViewController {
     /**
      Adds keyboard handling to UIViewControllers via the common and standard Notifications
      */
-    func addKeyboardHandling() {
+    public func addKeyboardHandling() {
         
         // create 2 notification observers for listening to the keyboard
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name:.UIKeyboardWillShow, object: nil);
@@ -52,7 +52,7 @@ extension UIViewController {
      
      - parameter sender: The object that called this method
      */
-    func keyboardWillShow(sender: NSNotification) {
+    public func keyboardWillShow(sender: NSNotification) {
         
         if let keyboardSize = (sender.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             

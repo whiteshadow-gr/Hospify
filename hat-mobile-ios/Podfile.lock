@@ -14,7 +14,7 @@ PODS:
     - Realm (= 2.4.2)
   - Stripe (9.3.0)
   - SwiftyJSON (3.1.4)
-  - SwiftyRSA (0.5.0)
+  - SwiftyRSA (1.0.0)
   - Toaster (2.0.1)
 
 DEPENDENCIES:
@@ -53,9 +53,9 @@ SPEC CHECKSUMS:
   RealmSwift: 9556c0fe0f0cfecacfb755ae9e68ff379fc6bead
   Stripe: 0f41a33a6fa3ac76ee668d7df3e2680c28b8ab1a
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
-  SwiftyRSA: e73c44402451ad74c603cc87f7cd8a6d6f418138
+  SwiftyRSA: 3ec69b6a1bd2edf2b8fcb2fcdfd63e00b971e5eb
   Toaster: be65cd48e93a525b2a9cc4bd25a2bfc900e02d9f
 
-PODFILE CHECKSUM: 6aa3b6c1db6562cdb8c2c05d472b6891b85583d6
+PODFILE CHECKSUM: 469a6a76d07ccc7948566d02095dab131b200c60
 
 COCOAPODS: 1.2.0

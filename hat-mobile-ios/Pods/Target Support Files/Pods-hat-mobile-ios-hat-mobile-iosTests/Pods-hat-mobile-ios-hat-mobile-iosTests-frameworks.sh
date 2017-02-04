@@ -87,6 +87,33 @@ strip_invalid_archs() {
   fi
 }
 
+
+if [[ "$CONFIGURATION" == "Debug" ]]; then
+  install_framework "$BUILT_PRODUCTS_DIR/Alamofire/Alamofire.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/BEMCheckBox/BEMCheckBox.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/FBAnnotationClusteringSwift/FBAnnotationClusteringSwift.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/JWTDecode/JWTDecode.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/KeychainSwift/KeychainSwift.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/Realm/Realm.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/RealmSwift/RealmSwift.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/Stripe/Stripe.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/SwiftyJSON/SwiftyJSON.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/SwiftyRSA/SwiftyRSA.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/Toaster/Toaster.framework"
+fi
+if [[ "$CONFIGURATION" == "Release" ]]; then
+  install_framework "$BUILT_PRODUCTS_DIR/Alamofire/Alamofire.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/BEMCheckBox/BEMCheckBox.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/FBAnnotationClusteringSwift/FBAnnotationClusteringSwift.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/JWTDecode/JWTDecode.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/KeychainSwift/KeychainSwift.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/Realm/Realm.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/RealmSwift/RealmSwift.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/Stripe/Stripe.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/SwiftyJSON/SwiftyJSON.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/SwiftyRSA/SwiftyRSA.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/Toaster/Toaster.framework"
+fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
   wait
 fi

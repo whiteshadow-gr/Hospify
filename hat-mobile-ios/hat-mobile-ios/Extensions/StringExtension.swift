@@ -25,7 +25,7 @@ extension String {
      
      returns: A Base64 String
      */
-    func fromBase64URLToBase64(s: String) -> String {
+    public func fromBase64URLToBase64(s: String) -> String {
         
         var s = s;
         if (s.characters.count % 4 == 2 ) {

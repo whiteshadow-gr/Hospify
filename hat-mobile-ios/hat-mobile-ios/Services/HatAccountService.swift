@@ -608,20 +608,26 @@ class HatAccountService {
                                 // data to be verified header.payload
                                 let headerAndPayload = header + "." + payload
                                 
-                                // SwiftyRSA.verifySignatureString
-                                let result: VerificationResult = SwiftyRSA.verifySignatureString(headerAndPayload, signature: decodedSig, publicKeyPEM: result, digestMethod: .SHA256)
-                                
-                                /*
-                                 if successful ,we performSegue to the map view
-                                 else, we display a message
-                                 */
-                                if (result.isSuccessful) {
+                                do {
                                     
-                                    weakSelf.authoriseAppToWriteToCloud(hatDomain, HATDomainFromToken)
-                                } else {
+                                    let signature = try Signature(base64Encoded: decodedSig)
+                                    let privateKey = try PublicKey(pemEncoded: result)
+                                    let clear = try ClearMessage(string: headerAndPayload, using: .utf8)
+                                    let isSuccessful = try clear.verify(with: privateKey, signature: signature, digestType: .sha256)
                                     
-                                    weakSelf.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_invalid_token", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                    if (isSuccessful.isSuccessful) {
+                                        
+                                        weakSelf.authoriseAppToWriteToCloud(hatDomain, HATDomainFromToken)
+                                    } else {
+                                        
+                                        weakSelf.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_invalid_token", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                    }
+                                    
+                                } catch {
+                                    
+                                    return
                                 }
+                                
                             } else {
                                 
                                 // alamo fire http fail

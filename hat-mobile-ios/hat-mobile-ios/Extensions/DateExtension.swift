@@ -25,19 +25,19 @@ extension Date {
      
      - returns: a formatted string of time-ago
      */
-    func TimeAgoSinceDate() -> String {
+    public func TimeAgoSinceDate() -> String {
         
         // get calendar and now date
         let calendar = Calendar.current
-        let now = Date()
+        let dateNow = Date()
         
         // calculate the earliest
-        let earliest = (now as NSDate).earlierDate(self)
+        let earliestDate = (dateNow as NSDate).earlierDate(self)
         // calculate the latest
-        let latest = (earliest == now) ? self : now
+        let latestDate = (earliestDate == dateNow) ? self : dateNow
         
         // set up the componenets
-        let components: DateComponents = (calendar as NSCalendar).components([NSCalendar.Unit.minute, NSCalendar.Unit.hour, NSCalendar.Unit.day, NSCalendar.Unit.weekOfYear, NSCalendar.Unit.month, NSCalendar.Unit.year, NSCalendar.Unit.second], from: earliest, to: latest, options: NSCalendar.Options())
+        let components: DateComponents = (calendar as NSCalendar).components([NSCalendar.Unit.minute, NSCalendar.Unit.hour, NSCalendar.Unit.day, NSCalendar.Unit.weekOfYear, NSCalendar.Unit.month, NSCalendar.Unit.year, NSCalendar.Unit.second], from: earliestDate, to: latestDate, options: NSCalendar.Options())
         
         // check the components and return the correct string
         if (components.year! >= 2) {

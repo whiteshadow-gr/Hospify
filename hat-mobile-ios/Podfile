@@ -1,6 +1,6 @@
 # Uncomment this line to define a global platform for your project
 platform :ios, '9.0'
-
+inhibit_all_warnings!
 # Uncomment this line if you're using Swift
 use_frameworks!
 
@@ -20,6 +20,7 @@ target 'hat-mobile-ios' do
     
     target 'hat-mobile-iosTests' do
 
+        inherit! :search_paths
         pod 'Alamofire'
         pod 'RealmSwift'
         pod 'SwiftyJSON'

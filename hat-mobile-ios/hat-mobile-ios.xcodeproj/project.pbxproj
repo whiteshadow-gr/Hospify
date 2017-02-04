@@ -872,7 +872,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-hat-mobile-ios-hat-mobile-iosTests/Pods-hat-mobile-ios-hat-mobile-iosTests-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-hat-mobile-iosTests/Pods-hat-mobile-iosTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		40B79DC0A6DE23583D6D78B8 /* [CP] Copy Pods Resources */ = {
@@ -945,7 +945,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-hat-mobile-ios-hat-mobile-iosTests/Pods-hat-mobile-ios-hat-mobile-iosTests-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-hat-mobile-iosTests/Pods-hat-mobile-iosTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		EA05168EA19ED911577A28BA /* [CP] Embed Pods Frameworks */ = {
@@ -1273,7 +1273,7 @@
 		};
 		B564E9911D19717900EDB8F1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 56B0860DE4E24AE394E8C5BE /* Pods-hat-mobile-ios-hat-mobile-iosTests.debug.xcconfig */;
+			baseConfigurationReference = 61FEF86F98CFF7E17DC9A675 /* Pods-hat-mobile-iosTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1294,7 +1294,7 @@
 		};
 		B564E9921D19717900EDB8F1 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C8C6F262CDD36353AFAAC0C7 /* Pods-hat-mobile-ios-hat-mobile-iosTests.release.xcconfig */;
+			baseConfigurationReference = 7F169C21E522510FBB67AA4C /* Pods-hat-mobile-iosTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";

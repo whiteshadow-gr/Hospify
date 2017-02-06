@@ -11,8 +11,9 @@
  */
 
 import XCTest
-@testable import hat_mobile_ios
 
+@testable import SwiftyJSON
+@testable import Pods_hat_mobile_ios
 class DataPlugCollectionViewCellTests: XCTestCase {
     
     override func setUp() {
@@ -65,7 +66,7 @@ class DataPlugCollectionViewCellTests: XCTestCase {
         
         note.data.shared = false
         
-        let cell = UITableViewCell()
+        _ = UITableViewCell()
         
         
     }

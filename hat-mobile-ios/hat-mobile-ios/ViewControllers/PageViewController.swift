@@ -21,6 +21,7 @@ class PageViewController: UIViewController {
     
     /// a variable to know the page number of the view
     var itemIndex: Int = 0
+    
     /// the second PegeViewController that appears when user has tapped the learn more on the first screen
     private var pageViewController: HATCapabilitiesPageViewController? = nil
     
@@ -74,6 +75,7 @@ class PageViewController: UIViewController {
         // init a LearnMoreObject
         var pageObject: LearnMoreObject = LearnMoreObject()
         
+        // change the color of the pagination dots at the bottom of the screen
         UIPageControl.appearance().pageIndicatorTintColor = UIColor.rumpelLightGray()
         UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.tealColor()
         

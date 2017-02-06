@@ -12,15 +12,33 @@
 
 import SwiftyJSON
 
+// MARK: Class
+
+/// A class representing the twitter social feed object
 class TwitterSocialFeedObject: SocialFeedObject {
     
-    internal var tryingLastUpdate: Date? = nil
+    // MARK: - Protocol's variables
     
+    internal var protocolLastUpdate: Date? = nil
+    
+    // MARK: - Class' variables
+    
+    /// The name of the record in database
     var name: String = ""
-    var data: TwitterDataSocialFeedObject = TwitterDataSocialFeedObject()
+    /// The id of the record
     var id: String = ""
+    
+    /// The actual data of the record
+    var data: TwitterDataSocialFeedObject = TwitterDataSocialFeedObject()
+    
+    /// The last updated field of the record
     var lastUpdated: Date? = nil
     
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         name = ""
@@ -29,6 +47,9 @@ class TwitterSocialFeedObject: SocialFeedObject {
         lastUpdated = nil
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()
@@ -48,7 +69,7 @@ class TwitterSocialFeedObject: SocialFeedObject {
         if let tempLastUpdated = dictionary["lastUpdated"]?.stringValue {
             
             lastUpdated = FormatterHelper.formatStringToDate(string: tempLastUpdated)
-            tryingLastUpdate = lastUpdated
+            protocolLastUpdate = lastUpdated
         }
     }
 }

@@ -19,6 +19,7 @@ class CompletePurchaseViewController: UIViewController {
     
     // MARK: - Variables
     
+    /// The UIImage to show the user, passed from the previous view controller
     var image: UIImage? = nil
     
     // MARK: - IBOutlets
@@ -69,6 +70,7 @@ class CompletePurchaseViewController: UIViewController {
         // add border to home button
         self.homeButton.addBorderToButton(width: 1, color: UIColor.rumpelDarkGray())
         
+        // check if the image is nil, if not assign it to the imageview
         if image != nil {
             
             self.hatProviderImage.image = image

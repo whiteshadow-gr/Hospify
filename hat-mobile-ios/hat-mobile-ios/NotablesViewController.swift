@@ -22,20 +22,26 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     /// a cached array of the notes to display
     private var cachedNotesArray: [NotesData] = []
+    
     /// the cells of the table
     private var cells: [NotablesTableViewCell] = []
     
     /// the kind of the note to create
     private var kind: String = ""
-
+    /// the notables fetch items limit
     private var notablesFetchLimit: String = "50"
+    /// the notables fetch end date
     private var notablesFetchEndDate: String? = nil
+    /// the app token for notables
     private var token: String = ""
+    
+    /// the paramaters to make the request for fetching the notes
     private var parameters: Dictionary<String, String> = ["starttime" : "0",
                                                   "limit" : "50"]
     
     /// SafariViewController variable
     private var pageViewController: FirstOnboardingPageViewController = FirstOnboardingPageViewController()
+    
     /// a dark view pop up to hide the background
     private var darkView: UIView? = nil
 
@@ -68,8 +74,12 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     @IBAction func refreshTableButtonAction(_ sender: Any) {
         
+        // hide retry connection button
         self.retryConnectingButton.isHidden = true
+        
+        // fetch notes
         self.connectToServerToGetNotes()
+        
         // FIXME: Do I need the bool result??
         let boolResult = { (bool: String) -> Void in
             
@@ -79,8 +89,10 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             }
         }
         
+        // if something wrong show error
         let failCallBack = { self.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {() -> Void in return}) }
         
+        // check if data plug is ready
         DataPlugsService.ensureDataPlugReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
     }
     
@@ -151,8 +163,10 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         super.viewWillAppear(animated)
         
+        // empty array
         self.cachedNotesArray.removeAll()
         
+        // fetch notes
         self.connectToServerToGetNotes()        
     }
 
@@ -194,6 +208,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     @objc private func refreshData(notification: Notification) {
         
+        // empty array
         self.cachedNotesArray.removeAll()
         
         // get notes
@@ -363,7 +378,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     // MARK: - Update UI
     
     /**
-     Hides table
+     Hides table and shows a label with a message
      */
     @objc private func hideTable(_ notif: Notification) {
         
@@ -433,6 +448,11 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
+    // MARK: - Show newbie screens
+    
+    /**
+     Shows newbie screens
+     */
     private func showNewbieScreens() -> Void {
         
         // set up the created page view controller

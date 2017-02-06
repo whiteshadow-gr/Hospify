@@ -14,6 +14,6 @@
 #ifndef HatMobile_Bridging_Header_h
 #define HatMobile_Bridging_Header_h
 
-#import <Stripe/Stripe.h>
+//#import <Stripe/Stripe.h>
 
 #endif /* HatMobile_Bridging_Header_h */

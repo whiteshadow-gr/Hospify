@@ -12,15 +12,29 @@
 
 import SwiftyJSON
 
-struct HATProviderPaymentObject {
+// MARK: Struct
 
+/// A class representing the hat provider payment object
+struct HATProviderPaymentObject {
+    
+    // MARK: - Variables
+
+    /// The subscription type, Monthly , yearly
     var subscription: Dictionary = ["period" : ""]
     
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         subscription = ["period" : ""]
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()

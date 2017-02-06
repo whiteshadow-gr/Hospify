@@ -12,11 +12,22 @@
 
 import UIKit
 
+// MARK: class
+
+/// The terms and conditions view controller class
 class TermsAndConditionsViewController: UIViewController {
     
+    // MARK: - Variables
+    
+    /// the path to the pdf file
     var filePathURL: String = ""
+    
+    // MARK: - IBOutlets
 
+    /// An IBOutlet to handle the webview
     @IBOutlet weak var webView: UIWebView!
+    
+    // MARK: - View controller methods
     
     override func viewDidLoad() {
         
@@ -24,6 +35,7 @@ class TermsAndConditionsViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         
+        // if url not nil load the file
         if let url = URL(string: self.filePathURL) {
             
             let request = NSURLRequest(url: url)

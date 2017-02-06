@@ -14,6 +14,7 @@ import CoreLocation
 
 // MARK: Struct
 
+/// A struct for working with the Maps
 struct MapsHelper {
     
     // MARK: - Maps settings
@@ -21,15 +22,17 @@ struct MapsHelper {
     /**
      Check the user preferences for accuracy setting
      
-     - returns: <#return value description#>
+     - returns: The defined accuracy set by the user
      */
     static func GetUserPreferencesAccuracy() -> CLLocationAccuracy {
         
         let preferences = UserDefaults.standard
         
         if preferences.object(forKey: Constants.Preferences.UserNewDefaultAccuracy) != nil {
+            
             // already done
         } else {
+            
             // if none, best or 10m we go to 100m accuracy instead
             let existingAccuracy:CLLocationAccuracy = preferences.object(forKey: Constants.Preferences.MapLocationAccuracy) as? CLLocationAccuracy ?? kCLLocationAccuracyHundredMeters
             
@@ -50,7 +53,7 @@ struct MapsHelper {
     /**
      Check the user preferences for distance setting
      
-     - returns: <#return value description#>
+     - returns: The defined desired distance set by the user
      */
     static func GetUserPreferencesDistance() -> CLLocationDistance {
         
@@ -71,7 +74,7 @@ struct MapsHelper {
     /**
      Check the user preferences for deferred distance
      
-     - returns: <#return value description#>
+     - returns: The defined desired deffered distance set by the user
      */
     static func GetUserPreferencesDeferredDistance() -> CLLocationDistance {
         
@@ -92,7 +95,7 @@ struct MapsHelper {
     /**
      Check the user preferences for accuracy setting
      
-     - returns: <#return value description#>
+     - returns: The desired time interval
      */
     static func GetUserPreferencesDeferredTimeout() -> TimeInterval {
         

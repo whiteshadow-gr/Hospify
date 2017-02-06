@@ -12,27 +12,58 @@
 
 import SwiftyJSON
 
-class FacebookDataPostsSocialFeedObject {
+// MARK: Class
 
-    var from: FacebookDataPostsFromSocialFeedObject = FacebookDataPostsFromSocialFeedObject()
-    var id: String = ""
-    var statusType: String = ""
-    var privacy: FacebookDataPostsPrivacySocialFeedObject = FacebookDataPostsPrivacySocialFeedObject()
-    var updatedTime: Date? = nil
-    var type: String = ""
-    var createdTime: Date? = nil
-    var message: String = ""
+/// A class representing the actual data of the post
+class FacebookDataPostsSocialFeedObject {
     
+    // MARK: - Variables
+
+    /// The user that made the post
+    var from: FacebookDataPostsFromSocialFeedObject = FacebookDataPostsFromSocialFeedObject()
+
+    /// The privacy settings for the post
+    var privacy: FacebookDataPostsPrivacySocialFeedObject = FacebookDataPostsPrivacySocialFeedObject()
+    
+    /// The updated time of the post
+    var updatedTime: Date? = nil
+    /// The created time of the post
+    var createdTime: Date? = nil
+    
+    /// The message of the post
+    var message: String = ""
+    /// The id of the post
+    var id: String = ""
+    /// The status type of the post
+    var statusType: String = ""
+    /// The type of the post, status, video, image, etc,
+    var type: String = ""
+
+    /// The full picture url
     var fullPicture: String = ""
+    /// If the post has a link to somewhere has the url
     var link: String = ""
+    /// The picture url
     var picture: String = ""
+    /// The story of the post
     var story: String = ""
+    /// The name of the post
     var name: String = ""
+    /// The description of the post
     var description: String = ""
+    /// The object id of the post
     var objectID: String = ""
-    var application: FacebookDataPostsApplicationSocialFeedObject = FacebookDataPostsApplicationSocialFeedObject()
+    /// The caption of the post
     var caption: String = ""
     
+    /// The application details of the post
+    var application: FacebookDataPostsApplicationSocialFeedObject = FacebookDataPostsApplicationSocialFeedObject()
+    
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         from = FacebookDataPostsFromSocialFeedObject()
@@ -55,6 +86,9 @@ class FacebookDataPostsSocialFeedObject {
         caption = ""
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()

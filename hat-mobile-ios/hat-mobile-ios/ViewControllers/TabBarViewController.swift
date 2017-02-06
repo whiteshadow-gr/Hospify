@@ -145,6 +145,9 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         self.performSegue(withIdentifier: "settingsSegue", sender: self)
     }
     
+    /**
+     Sends a notification to social feed to show the alert controller to select the filter
+     */
     func filterSocialFeed() {
         
         NotificationCenter.default.post(name: NSNotification.Name("filterSocialFeed"), object: nil)

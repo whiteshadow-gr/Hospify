@@ -12,25 +12,50 @@
 
 import UIKit
 
+// MARK: Class
+
+/// The first onboarding view controller class
 class FirstOnboardingViewController: UIViewController {
     
+    // MARK: - Variables
+    
+    /// The current page index, used to load the correct content
     var pageIndex = 0
+    
+    // MARK: - IBOutlets
 
+    /// An IBOutlet for handling the image view
     @IBOutlet weak var image: UIImageView!
     
+    /// An IBOutlet for handling the message label
     @IBOutlet weak var messages: UILabel!
     
+    /// An IBOutlet for handling the learn more button
     @IBOutlet weak var learnMoreButton: UIButton!
     
+    // MARK: - IBActions
+    
+    /**
+     Hides pop up screen
+     
+     - parameter sender: The object that called this method
+     */
     @IBAction func clearButtonAction(_ sender: Any) {
         
         NotificationCenter.default.post(name: NSNotification.Name("hideNewbiePageViewContoller"), object: nil)
     }
     
+    /**
+     Hides pop up screen
+     
+     - parameter sender: The object that called this method
+     */
     @IBAction func learnMoreButtonAction(_ sender: Any) {
         
         NotificationCenter.default.post(name: NSNotification.Name("hideNewbiePageViewContoller"), object: nil)
     }
+    
+    // MARK: - View controller methods
     
     override func viewDidLoad() {
         
@@ -38,8 +63,10 @@ class FirstOnboardingViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         
+        // init the content we want based on the page index
         let learnMoreObject = LearnMoreObject(pageNumber: 20 + pageIndex)
         
+        // format the label based on the page index
         if pageIndex == 0 {
             
             // format title label

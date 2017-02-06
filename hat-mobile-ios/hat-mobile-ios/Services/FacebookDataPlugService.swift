@@ -13,8 +13,20 @@
 import SwiftyJSON
 import Alamofire
 
+// MARK: Class
+
+/// The facebook data plug service class
 class FacebookDataPlugService: NSObject {
     
+    // MARK: - Fetch facebook profile photo
+    
+    /**
+     Fetches the facebook profile image of the user
+     
+     - parameter authToken: The authorisation token to authenticate with the hat
+     - parameter parameters: The parameters to use in the request
+     - parameter success: An @escaping (_ array: [JSON]) -> Void) method executed on a successful response
+     */
     class func fetchProfileFacebookPhoto(authToken: String, parameters: Dictionary<String, String>,success: @escaping (_ array: [JSON]) -> Void) -> Void {
         
         HatAccountService.checkHatTableExists(tableName: "profile_picture",
@@ -24,6 +36,15 @@ class FacebookDataPlugService: NSObject {
                                               errorCallback: {() -> Void in return})
     }
     
+    // MARK: - Facebook data plug
+    
+    /**
+     Fetched the user's posts from facebook
+     
+     - parameter authToken: The authorisation token to authenticate with the hat
+     - parameter parameters: The parameters to use in the request
+     - parameter success: An @escaping (_ array: [JSON]) -> Void) method executed on a successful response
+     */
     class func facebookDataPlug(authToken: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void) -> Void {
         
         HatAccountService.checkHatTableExists(tableName: "posts",
@@ -32,28 +53,25 @@ class FacebookDataPlugService: NSObject {
                                               successCallback: getPosts(token: authToken, parameters: parameters, success: success),
                                               errorCallback: {() -> Void in return})
     }
-
-    private class func getPosts(token: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void) -> (_ tableID: NSNumber) -> Void  {
-        
-        return {(tableID: NSNumber) -> Void in
-            
-            HatAccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: success, errorCallback: {() -> Void in return})
-        }
-    }
     
-    class func getAppTokenForFacebook(successful: @escaping (String) -> Void, failed: @escaping (Void) -> Void) {
-        
-        DataPlugsService.getApplicationTokenFor(serviceName: "Facebook", resource: "https://social-plug.hubofallthings.com", succesfulCallBack: successful, failCallBack: failed)
-    }
-    
+    /**
+     Checks if facebook plug is active
+     
+     - parameter token: The authorisation token to authenticate with the hat
+     - parameter successful: An @escaping (Void) -> Void method executed on a successful response
+     - parameter failed: An @escaping (Void) -> Void) method executed on a failed response
+     */
     class func isFacebookDataPlugActive(token: String, successful: @escaping (Void) -> Void, failed: @escaping (Void) -> Void) {
         
+        // construct the url, set parameters and headers for the request
         let url = "https://social-plug.hubofallthings.com/api/user/token/status"
         let parameters: Dictionary<String, String> = [:]
         let headers = ["X-Auth-Token" : token]
         
+        // make the request
         NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: {(r : NetworkHelper.ResultType) -> Void in
             
+            // act upon response
             switch r {
                 
             case .isSuccess(let isSuccess, _, let result):
@@ -74,14 +92,56 @@ class FacebookDataPlugService: NSObject {
         })
     }
     
+    // MARK: - Get posts
+
+    /**
+     Gets the facebook posts from database
+     
+     - parameter authToken: The authorisation token to authenticate with the hat
+     - parameter parameters: The parameters to use in the request
+     - parameter success: An @escaping (_ array: [JSON]) -> Void) method executed on a successful response
+     */
+    private class func getPosts(token: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void) -> (_ tableID: NSNumber) -> Void  {
+        
+        return {(tableID: NSNumber) -> Void in
+            
+            HatAccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: success, errorCallback: {() -> Void in return})
+        }
+    }
+    
+    // MARK: - Get app token
+    
+    /**
+     Gets application token for facebook
+     
+     - parameter successful: An @escaping (String) -> Void method executed on a successful response
+     - parameter failed: An @escaping (Void) -> Void) method executed on a failed response
+     */
+    class func getAppTokenForFacebook(successful: @escaping (String) -> Void, failed: @escaping (Void) -> Void) {
+        
+        DataPlugsService.getApplicationTokenFor(serviceName: "Facebook", resource: "https://social-plug.hubofallthings.com", succesfulCallBack: successful, failCallBack: failed)
+    }
+    
+    // MARK: - Remove duplicates
+    
+    /**
+     Removes duplicates from a json file and returns the corresponding objects
+     
+     - parameter array: The JSON array
+     - returns: An array of FacebookSocialFeedObject
+     */
     class func removeDuplicatesFrom(array: [JSON]) -> [FacebookSocialFeedObject] {
         
+        // the array to return
         var arrayToReturn: [FacebookSocialFeedObject] = []
         
+        // go through each dictionary object in the array
         for dictionary in array {
             
+            // transform it to an FacebookSocialFeedObject
             let object = FacebookSocialFeedObject(from: dictionary.dictionaryValue)
             
+            // check if the arrayToReturn it contains that value and if not add it
             let result = arrayToReturn.contains(where: {(post: FacebookSocialFeedObject) -> Bool in
                 
                 if object.data.posts.id == post.data.posts.id {
@@ -101,12 +161,21 @@ class FacebookDataPlugService: NSObject {
         return arrayToReturn
     }
     
+    /**
+     Removes duplicates from an array of FacebookSocialFeedObject and returns the corresponding objects in an array
+     
+     - parameter array: The FacebookSocialFeedObject array
+     - returns: An array of FacebookSocialFeedObject
+     */
     class func removeDuplicatesFrom(array: [FacebookSocialFeedObject]) -> [FacebookSocialFeedObject] {
         
+        // the array to return
         var arrayToReturn: [FacebookSocialFeedObject] = []
         
+        // go through each post object in the array
         for facebookPost in array {
             
+            // check if the arrayToReturn it contains that value and if not add it
             let result = arrayToReturn.contains(where: {(post: FacebookSocialFeedObject) -> Bool in
                 
                 if facebookPost.data.posts.id == post.data.posts.id {

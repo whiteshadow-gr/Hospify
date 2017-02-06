@@ -25,14 +25,21 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     private var sku: String = ""
     /// Stripe token for this purchase
     private var token: String = ""
-    private var hatImage: UIImage? = nil
+    /// The hat domain
     private var hatDomain: String = ""
+    
+    /// The hat image
+    private var hatImage: UIImage? = nil
+
+    /// Device's orientation
     private var orientation: UIInterfaceOrientation = .portrait
     
     /// the available HAT providers fetched from HAT
     private var hatProviders: [HATProviderObject] = []
+    
     /// the pop up info view controller
     private var infoViewController: GetAHATInfoViewController? = nil
+    
     /// the pop up for hat info view controller
     private var hatInfoViewController: InfoHatProvidersViewController? = nil
     
@@ -41,7 +48,9 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
 
     // MARK: - IBOutlets
 
+    /// An IBOutlet for handling the learn more button
     @IBOutlet weak var learnMoreButton: UIButton!
+    
     /// An IBOutlet for handling the arrow bar on top of the view
     @IBOutlet weak var arrowBarImage: UIImageView!
     
@@ -92,23 +101,37 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         NotificationCenter.default.addObserver(self, selector: #selector(refreshCollectionView), name: NSNotification.Name("hatProviders"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(hideInfoViewController), name: NSNotification.Name("hideInfoHATProvider"), object: nil)
         
-        // getch available hat providers
+        // fetch available hat providers
         HATService.getAvailableHATProviders()
-    }
-    
-    func hideInfoViewController() {
-        
-        self.hatInfoViewController?.willMove(toParentViewController: nil)
-        self.hatInfoViewController?.view.removeFromSuperview()
-        self.hatInfoViewController?.removeFromParentViewController()
-        
-        self.darkView?.removeFromSuperview()
     }
 
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
+        
+        // save device orientation
+        self.orientation = toInterfaceOrientation
+        
+        // reload collection view controller to adjust to the new width of the screen
+        self.collectionView?.reloadData()
+    }
+    
+    // MARK: - Hide info view controller
+    
+    /**
+     Hide the pop up info view controller
+     */
+    @objc private func hideInfoViewController() {
+        
+        self.hatInfoViewController?.willMove(toParentViewController: nil)
+        self.hatInfoViewController?.view.removeFromSuperview()
+        self.hatInfoViewController?.removeFromParentViewController()
+        
+        self.darkView?.removeFromSuperview()
     }
     
     // MARK: - Refresh collection view
@@ -118,7 +141,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
      
      - parameter notification: The norification object that called this method
      */
-    func refreshCollectionView(notification: Notification) {
+    @objc private func refreshCollectionView(notification: Notification) {
         
         self.hatProviders = notification.object as! [HATProviderObject]
         self.collectionView.reloadData()
@@ -131,7 +154,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
      
      - parameter notification: The norification object that called this method
      */
-    func hidePopUpView(notification: Notification) {
+    @objc private func hidePopUpView(notification: Notification) {
         
         // if view is found remove it
         if let view = self.infoViewController {
@@ -167,8 +190,10 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
+        // create cell
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "onboardingTile", for: indexPath) as? OnboardingTileCollectionViewCell
         
+        // format cell
         return OnboardingTileCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, hatProvider: hatProviders[indexPath.row], orientation: self.orientation)
     }
 
@@ -187,7 +212,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         hatProviders[indexPath.row].hatProviderImage = cell.hatProviderImage.image
         pageItemController.hatProvider = hatProviders[indexPath.row]
         
-        // present a dark pop up view
+        // present a dark pop up view to darken the background view controller
         darkView = UIView(frame: CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.width, height: self.view.frame.height))
         darkView?.backgroundColor = UIColor.darkGray
         darkView?.alpha = 0.6
@@ -203,7 +228,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         self.view.addSubview(pageItemController.view)
         pageItemController.didMove(toParentViewController: self)
         
-        // save the sku
+        // save the data we need for later use
         sku = hatProviders[indexPath.row].sku
         hatImage = cell.hatProviderImage.image
         hatDomain = hatProviders[indexPath.row].kind.domain
@@ -211,19 +236,13 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
+        // if device in landscape show 3 tiles instead of 2
         if self.orientation == .landscapeLeft || self.orientation == .landscapeRight {
             
-            return CGSize(width: UIScreen.main.bounds.width/3, height: UIScreen.main.bounds.width/3)
+            return CGSize(width: UIScreen.main.bounds.width / 3, height: UIScreen.main.bounds.width / 3)
         }
         
-        return CGSize(width: UIScreen.main.bounds.width/2, height: UIScreen.main.bounds.width/2)
-    }
-    
-    override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
-        
-        self.orientation = toInterfaceOrientation
-        
-        self.collectionView?.reloadData()
+        return CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.width / 2)
     }
     
     // MARK: - Stripe methods

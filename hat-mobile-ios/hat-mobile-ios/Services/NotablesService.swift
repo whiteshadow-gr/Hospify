@@ -141,12 +141,23 @@ class NotablesService: NSObject {
         HatAccountService.checkHatTableExistsForUploading(tableName: "notablesv1", sourceName: "rumpel", authToken: userToken, successCallback: posting, errorCallback: errorCall)
     }
     
+    // MARK: - Remove duplicates
+    
+    /**
+     Removes duplicates from an array of NotesData and returns the corresponding objects in an array
+     
+     - parameter array: The NotesData array
+     - returns: An array of NotesData
+     */
     class func removeDuplicatesFrom(array: [NotesData]) -> [NotesData] {
         
+        // the array to return
         var arrayToReturn: [NotesData] = []
         
+        // go through each tweet object in the array
         for note in array {
             
+            // check if the arrayToReturn it contains that value and if not add it
             let result = arrayToReturn.contains(where: {(note2: NotesData) -> Bool in
                 
                 if note.id == note2.id {
@@ -166,6 +177,14 @@ class NotablesService: NSObject {
         return NotablesService.sortNotables(notes: arrayToReturn)
     }
     
+    // MARK: - Sort notables
+    
+    /**
+     Sorts notes based on updated time
+     
+     - parameter notes: The NotesData array
+     - returns: An array of NotesData
+     */
     class func sortNotables(notes: [NotesData]) -> [NotesData] {
         
         func sorting(a: NotesData, b: NotesData) -> Bool {

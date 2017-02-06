@@ -12,20 +12,43 @@
 
 import SwiftyJSON
 
-class TwitterDataTweetsSocialFeedObject {
+// MARK: Class
 
+/// A class representing the actual data of the tweet
+class TwitterDataTweetsSocialFeedObject {
+    
+    // MARK: - Variables
+
+    /// The source of the tweet
     var source: String = ""
+    /// Shows if the tweet is truncated or not
     var truncated: String = ""
+    /// Shows the retweet count
     var retweetCount: String = ""
+    /// Shows if the tweet has been retweeted
     var retweeted: String = ""
+    /// Shows the tweet's favourites count
     var favoriteCount: String = ""
+    /// Shows the tweet's id
     var id: String = ""
+    /// Shows the text of the tweet
     var text: String = ""
-    var createdAt: Date? = nil
+    /// Shows if the tweet is favourited or not
     var favorited: String = ""
+    /// Shows the language of the tweet
     var lang: String = ""
+    
+    /// Shows the date that the tweet has been created
+    var createdAt: Date? = nil
+
+    /// Shows the user's info
     var user: TwitterDataTweetsUsersSocialFeedObject = TwitterDataTweetsUsersSocialFeedObject()
     
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         source = ""
@@ -41,6 +64,9 @@ class TwitterDataTweetsSocialFeedObject {
         user = TwitterDataTweetsUsersSocialFeedObject()
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()

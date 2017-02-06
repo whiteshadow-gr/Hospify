@@ -12,13 +12,27 @@
 
 import SwiftyJSON
 
+// MARK: Struct
+
+/// A class representing the hat provider kind object
 struct HATProviderKindObject {
     
+    // MARK: - Variables
+    
+    /// The hat provider's kind type
     var kind: String = ""
+    /// The hat provider's kind domain
     var domain: String = ""
+    /// The hat provider's kind country
     var country: String = ""
+    /// The hat provider's kind link
     var link: String = ""
     
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         kind = ""
@@ -27,6 +41,9 @@ struct HATProviderKindObject {
         link = ""
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()

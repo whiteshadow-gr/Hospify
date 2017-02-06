@@ -12,18 +12,37 @@
 
 import SwiftyJSON
 
-class TwitterDataTweetsUsersSocialFeedObject {
+// MARK: Class
 
+/// A class representing the user's info of a tweet
+class TwitterDataTweetsUsersSocialFeedObject {
+    
+    // MARK: - Variables
+
+    /// The user's friend count
     var friendsCount: String = ""
+    /// The user's id
     var id: String = ""
+    /// The user's language
     var lang: String = ""
+    /// The user's listed count
     var listedCount: String = ""
+    /// The user's favourites count
     var favouritesCount: String = ""
+    /// The user's statuses count
     var statusesCount: String = ""
+    /// The user's screen name
     var screenName: String = ""
+    /// The user's name
     var name: String = ""
+    /// The user's followers count
     var followersCount: String = ""
     
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         friendsCount = ""
@@ -37,6 +56,9 @@ class TwitterDataTweetsUsersSocialFeedObject {
         followersCount = ""
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()

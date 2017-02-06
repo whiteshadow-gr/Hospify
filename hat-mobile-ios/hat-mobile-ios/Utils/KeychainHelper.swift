@@ -14,6 +14,7 @@ import KeychainSwift
 
 // MARK: Struct
 
+/// A struct for working with the keychain
 struct KeychainHelper {
 
     // MARK: - Keychain methods

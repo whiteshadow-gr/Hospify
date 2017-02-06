@@ -18,22 +18,23 @@ target 'hat-mobile-ios' do
     pod 'Crashlytics'
     pod 'BEMCheckBox'
     
-    target 'hat-mobile-iosTests' do
+end
 
-        inherit! :search_paths
-        pod 'Alamofire'
-        pod 'RealmSwift'
-        pod 'SwiftyJSON'
-        pod 'FBAnnotationClusteringSwift', git: 'https://github.com/ribl/FBAnnotationClusteringSwift/', branch: 'master'
-        pod 'Toaster'
-        pod 'JWTDecode'
-        pod 'SwiftyRSA'
-        pod 'KeychainSwift'
-        pod 'Stripe'
-        pod 'Fabric'
-        pod 'Crashlytics'
-        pod 'BEMCheckBox'
-    end
+target 'hat-mobile-iosTests' do
+    
+    inherit! :complete
+    pod 'Alamofire'
+    pod 'RealmSwift'
+    pod 'SwiftyJSON'
+    pod 'FBAnnotationClusteringSwift', git: 'https://github.com/ribl/FBAnnotationClusteringSwift/', branch: 'master'
+    pod 'Toaster'
+    pod 'JWTDecode'
+    pod 'SwiftyRSA'
+    pod 'KeychainSwift'
+    pod 'Stripe'
+    pod 'Fabric'
+    pod 'Crashlytics'
+    pod 'BEMCheckBox'
 end
 
 target 'hat-mobile-iosUITests' do

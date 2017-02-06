@@ -12,7 +12,13 @@
 
 import UIKit
 
-protocol SocialFeedObject {
+// MARK: Protocol
 
-    var tryingLastUpdate: Date? {get set}
+/// This protocol is used to compare the facebook and twitter objects for social feed
+protocol SocialFeedObject {
+    
+    // MARK: - Variable
+
+    /// The last date updated of the record
+    var protocolLastUpdate: Date? {get set}
 }

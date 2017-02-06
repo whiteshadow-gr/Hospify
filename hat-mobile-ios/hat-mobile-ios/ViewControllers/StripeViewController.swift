@@ -26,10 +26,13 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     var sku: String = ""
     /// Stripe token for this purchase
     var token: String = ""
-    var hatImage: UIImage? = nil
+    /// The domain of the selected hat
     var domain: String = ""
+    /// the file url
     private var fileURL: String = ""
     
+    /// the image of the selected hat
+    var hatImage: UIImage? = nil
     
     /// The purchase model to work on and push to the hat later
     private var purchaseModel: PurchaseModel = PurchaseModel()
@@ -42,6 +45,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     
     /// An IBOutlet for handling the arrow bar on top of the view
     @IBOutlet weak var arrowBarImage: UIImageView!
+    /// An IBOutlet for handling the hat provider image
     @IBOutlet weak var hatProviderImage: UIImageView!
     
     /// An IBOutlet for handling the first name textField
@@ -61,8 +65,9 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     
     /// An IBOutlet for handling the terms and conditions button
     @IBOutlet weak var termsAndConditionsButton: UIButton!
-    
+    /// An IBOutlet for handling the terms and conditions of rumpel lite button
     @IBOutlet weak var rumpelLiteTermsAndConditionsButton: UIButton!
+    /// An IBOutlet for handling create hat button
     @IBOutlet weak var createHatButton: UIButton!
     
     /// An IBOutlet for handling the data view
@@ -71,31 +76,33 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     /// An IBOutlet for handling the scrollView
     @IBOutlet weak var scrollView: UIScrollView!
     
+    /// An IBOutlet for handling the hat terms checkBox
     @IBOutlet weak var hatTermsCheckBox: BEMCheckBox!
-    
+    /// An IBOutlet for handling the rumpel lite checkBox
     @IBOutlet weak var rumpelLiteCheckBox: BEMCheckBox!
     
     // MARK: - IBActions
     
     /**
-     <#Function Details#>
+     Terms and conditions button action
      
      - parameter sender: The object called this method
      */
     @IBAction func termsAndConditionsButtonAction(_ sender: Any) {
         
-        //self.fileURL = (Bundle.main.url(forResource: "2.1 HATTermsofService v1.0", withExtension: "pdf", subdirectory: nil, localization: nil)?.absoluteString)!
+        // get the file url to the pdf and show it to the terms and conditions view controller
+        self.fileURL = (Bundle.main.url(forResource: "2.1 HATTermsofService v1.0", withExtension: "pdf", subdirectory: nil, localization: nil)?.absoluteString)!
         self.performSegue(withIdentifier: "termsSegue", sender: self)
     }
     
     /**
-     <#Function Details#>
+     Rumpel lite terms and conditions button action
      
-     - parameter <#Parameter#>: <#Parameter description#>
-     - returns: <#Returns#>
+     - parameter sender: The object called this method
      */
     @IBAction func rumpelLiteTermsAndConditionsButtonAction(_ sender: Any) {
         
+        // get the file url to the pdf and show it to the terms and conditions view controller
         self.fileURL = (Bundle.main.url(forResource: "Rumpel Lite iOS Application Terms of Service", withExtension: "pdf", subdirectory: nil, localization: nil)?.absoluteString)!
         self.performSegue(withIdentifier: "termsSegue", sender: self)
     }
@@ -107,9 +114,13 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
      */
     @IBAction func createHATButtonAction(_ sender: Any) {
         
+        // check if what user entered is ok
         let isDataOK = self.checkIfDataAreOK()
+        
+        // if it is
         if isDataOK {
             
+            // change create hat button accordingly
             self.createHatButton.setTitle("Authenticating... Please wait", for: .normal)
             self.createHatButton.isUserInteractionEnabled = false
             
@@ -143,6 +154,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                         
                         if let result = response.result.value {
                             
+                            // check json for errors from the server and show alerts for each one
                             let json = JSON(result)
                             
                             let errorCause = json["cause"].stringValue
@@ -177,28 +189,24 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                                 // generic error
                                 self?.createClassicOKAlertWith(alertMessage: "There was an error", alertTitle: "Please review your info", okTitle: "OK", proceedCompletion: {() -> Void in return})
                             }
-                            
-                            
                         }
-                        
-                        print("-----------JSON Starting-------------")
-                        print(json)
-                        print("-----------JSON Ending--------------")
                     case 200:
                         
-                        // everything ok
+                        // everything ok go to the next screen
                         self?.performSegue(withIdentifier: "completePurchaseSegue", sender: nil)
                     default:
                         
                         break
                     }
                     
+                    // return create hat button to its original state
                     self?.createHatButton.isUserInteractionEnabled = true
                     self?.createHatButton.setTitle("Create HAT", for: .normal)
                 }
             })
         } else {
             
+            // if something wrong show message
             self.createClassicOKAlertWith(alertMessage: "Please check your information again", alertTitle: "Information missing", okTitle: "OK", proceedCompletion: {() -> Void in return})
         }
     }
@@ -233,16 +241,21 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         // add handling for taps
         self.hideKeyboardWhenTappedAround()
         
+        // check for image
         if self.hatImage != nil {
             
             self.hatProviderImage.image = hatImage
         }
+        // one country for now
         countryTextField.text = "United Kingdom"
         
+        // add delegate for the text field to control it
         self.personalHATAddressTextField.delegate = self
         
+        // add a target if user is editing the text field
         personalHATAddressTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
 
+        // check domain if empty or ., if it is then default to .hubofallthings.net
         if self.domain == "" || self.domain == "." {
             
             self.domain = ".hubofallthings.net"
@@ -251,6 +264,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     
     func textFieldDidChange() {
         
+        // add the domain to what user is entering
         personalHATAddressTextField.text = personalHATAddressTextField.text!.replacingOccurrences(of: self.domain, with: "") + self.domain
         
         // only if there is a currently selected range
@@ -358,6 +372,13 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         }
     }
     
+    // MARK: - Check data OK
+    
+    /**
+     Checks if user has entered correct data in the text fields
+     
+     - returns: A bool, true if ok, false if error
+     */
     private func checkIfDataAreOK() -> Bool {
     
         if firstNameTextField.text == "" {
@@ -426,8 +447,11 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         return true
     }
     
+    // MARK: - Text field delegate
+    
     func textFieldDidBeginEditing(_ textField: UITextField) {
         
+        // delete the domain every time user taps on it
         textField.text = textField.text?.replacingOccurrences(of: domain, with: "")
         self.textFieldDidChange()
     }

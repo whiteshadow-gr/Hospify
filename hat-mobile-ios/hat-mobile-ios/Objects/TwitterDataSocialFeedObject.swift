@@ -12,15 +12,29 @@
 
 import SwiftyJSON
 
-class TwitterDataSocialFeedObject {
+// MARK: Class
 
+/// A class representing the data of the tweet
+class TwitterDataSocialFeedObject {
+    
+    // MARK: - Variables
+
+    /// The tweet data
     var tweets: TwitterDataTweetsSocialFeedObject = TwitterDataTweetsSocialFeedObject()
     
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         tweets = TwitterDataTweetsSocialFeedObject()
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()

@@ -12,14 +12,29 @@
 
 import SwiftyJSON
 
-class FacebookDataPostsPrivacySocialFeedObject {
+// MARK: Class
 
+/// A class representing the privacy settings of the post
+class FacebookDataPostsPrivacySocialFeedObject {
+    
+    // MARK: - Variables
+
+    /// Is it friends only?
     var friends: String = ""
+    /// The value
     var value: String = ""
+    /// deny access?
     var deny: String = ""
+    /// The desctiption of the setting
     var description: String = ""
+    /// Allow?
     var allow: String = ""
     
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         friends = ""
@@ -29,6 +44,9 @@ class FacebookDataPostsPrivacySocialFeedObject {
         allow = ""
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()

@@ -12,15 +12,34 @@
 
 import SwiftyJSON
 
+// MARK: Class
+
+/// A class representing the facebook social feed object
 class FacebookSocialFeedObject: SocialFeedObject {
     
-    internal var tryingLastUpdate: Date?
+    // MARK: - Protocol's variables
+    
+    internal var protocolLastUpdate: Date?
+    
+    // MARK: - Class' variables
 
+    /// The name of the record in database
     var name: String = ""
+    
+    /// The actual data of the record
     var data: FacebookDataSocialFeedObject = FacebookDataSocialFeedObject()
+    
+    /// The id of the record
     var id: Int = -1
+    
+    /// The last updated field of the record
     var lastUpdated: Date? = nil
     
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         name = ""
@@ -29,7 +48,10 @@ class FacebookSocialFeedObject: SocialFeedObject {
         lastUpdated = nil
     }
     
-        convenience init(from dict: Dictionary<String, JSON>) {
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
+    convenience init(from dict: Dictionary<String, JSON>) {
         
         self.init()
         
@@ -48,7 +70,7 @@ class FacebookSocialFeedObject: SocialFeedObject {
         if let tempLastUpdated = dict["lastUpdated"]?.stringValue {
             
             lastUpdated = FormatterHelper.formatStringToDate(string: tempLastUpdated)
-            tryingLastUpdate = lastUpdated
+            protocolLastUpdate = lastUpdated
         }
     }
 }

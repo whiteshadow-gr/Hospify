@@ -12,17 +12,32 @@
 
 import UIKit
 
+// MARK: Class
+
+/// The class responsible for showing info about hat providers
 class InfoHatProvidersViewController: UIViewController {
     
+    // MARK: - IBOutlets
 
+    /// An IBOutlet for handling the textLabel we want to show
     @IBOutlet weak var textLabel: UILabel!
     
+    // MARK: - IBActions
+    
+    /**
+     Hides the pop up info view controller via a notification
+     
+     - parameter sender: The object called this method
+     */
     @IBAction func cancelButtonAction(_ sender: Any) {
         
         NotificationCenter.default.post(name: NSNotification.Name("hideInfoHATProvider"), object: nil)
     }
     
+    // MARK: - View controller methods
+    
     override func viewDidLoad() {
+        
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
@@ -30,6 +45,7 @@ class InfoHatProvidersViewController: UIViewController {
     }
 
     override func didReceiveMemoryWarning() {
+        
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }

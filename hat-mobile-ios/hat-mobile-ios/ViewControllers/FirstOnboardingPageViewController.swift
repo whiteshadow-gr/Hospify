@@ -12,10 +12,17 @@
 
 import UIKit
 
+// MARK: Class
+
+/// The first onboarding page view controller class
 class FirstOnboardingPageViewController: UIPageViewController, UIPageViewControllerDataSource {
+    
+    // MARK: - Variables
 
     /// the number of pages array.
     private let numberOfPages = [0, 1, 2]
+    
+    // MARK: - View controller methods
     
     override func viewDidLoad() {
         
@@ -23,6 +30,7 @@ class FirstOnboardingPageViewController: UIPageViewController, UIPageViewControl
 
         // Do any additional setup after loading the view.
         self.createPageViewController()
+        
         // change the color of the pagination dots at the bottom of the screen
         UIPageControl.appearance().pageIndicatorTintColor = UIColor.rumpelLightGray()
         UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.tealColor()

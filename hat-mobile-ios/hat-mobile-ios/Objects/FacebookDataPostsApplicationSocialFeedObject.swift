@@ -12,14 +12,29 @@
 
 import SwiftyJSON
 
-class FacebookDataPostsApplicationSocialFeedObject {
+// MARK: Class
 
+/// A class representing the application that this post came from
+class FacebookDataPostsApplicationSocialFeedObject {
+    
+    // MARK: - Variables
+
+    /// The id of the application
     var id: String = ""
+    /// The namespace of the application
     var namespace: String = ""
+    /// The name of the application
     var name: String = ""
+    /// The category of the application
     var category: String = ""
+    /// The link of the application
     var link: String = ""
     
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         id = ""
@@ -29,6 +44,9 @@ class FacebookDataPostsApplicationSocialFeedObject {
         link = ""
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()

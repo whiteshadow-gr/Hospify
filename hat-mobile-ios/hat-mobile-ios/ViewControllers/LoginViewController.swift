@@ -14,7 +14,7 @@ import UIKit
 import SafariServices
 import MessageUI
 
-// MARK: - Class
+// MARK: Class
 
 /// The Login View Controller
 class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate {
@@ -55,16 +55,27 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     
     // MARK: - IBActions
     
-
+    /**
+     A button launching email view controller
+     
+     - parameter sender: The object that called this method
+     */
     @IBAction func contactUsActionButton(_ sender: Any) {
         
+        // create mail view controler
         let mailVC = MFMailComposeViewController()
         mailVC.mailComposeDelegate = self
         mailVC.setToRecipients(["contact@hatdex.org"])
         
+        // present view controller
         self.present(mailVC, animated: true, completion: nil)
     }
     
+    /**
+     A button opening safari to redirect user to mad hatters
+     
+     - parameter sender: The object that called this method
+     */
     @IBAction func joinOurCommunityButtonAction(_ sender: Any) {
         
         let urlStr = "http://hubofallthings.com/main/the-mad-hatters/"
@@ -200,6 +211,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         return true
     }
     
+    // MARK: - Mail View controller
+    
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         // Check the result or perform other tasks.
         
@@ -212,7 +225,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     /**
      Fills the domain text field with the user's domain
      */
-    func autofillPHATA() {
+    @objc private func autofillPHATA() {
         
         if let result = KeychainHelper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
             
@@ -259,6 +272,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             vc.dismiss(animated: true, completion: nil)
         }
         
+        // authorize with hat
         HatAccountService.loginToHATAuthorization(userDomain: self.inputUserHATDomain.text!, url: url, selfViewController: self)
     }
     

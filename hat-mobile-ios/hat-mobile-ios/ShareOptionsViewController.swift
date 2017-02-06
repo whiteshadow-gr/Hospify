@@ -18,10 +18,11 @@ import SafariServices
 /// The share options view controller
 class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafariViewControllerDelegate {
     
-    // MARK: - Private variables
+    // MARK: - Variables
     
     /// An array of strings holding the selected social networks to share the note
     private var shareOnSocial: [String] = []
+    
     /// An array of strings holding the selected social networks to share the note
     private var dataPlugs: [DataPlugObject] = []
     
@@ -30,6 +31,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     
     /// the received note to edit from notables view controller
     var receivedNote: NotesData? = nil
+    
     /// Total notes user has, need this to show a message on the first time
     var usersNotesCount: Int? = nil
     
@@ -39,6 +41,9 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     var isEditingExistingNote: Bool = false
     /// a flag to define if the keyboard is visible
     private var isKeyboardVisible: Bool = false
+    
+    /// A reference to safari view controller in order to show or hide it
+    private var safariVC: SFSafariViewController? = nil
     
     // MARK: - IBOutlets
     
@@ -84,14 +89,20 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     /// An IBOutlet for handling the textViewAspectRationConstraint NSLayoutConstraint
     @IBOutlet weak var textViewAspectRationConstraint: NSLayoutConstraint!
     
-    private var safariVC: SFSafariViewController? = nil
-    
     // MARK: - IBActions
     
+    /**
+     This function is called when the user touches the twitter button
+     
+     - parameter sender: The object that called this function
+     */
     @IBAction func twitterButtonAction(_ sender: Any) {
         
+        // change publish button settings
         self.publishButton.isUserInteractionEnabled = false
         self.publishButton.setTitle("Please Wait..", for: .normal)
+        
+        // check if twitter is enabled
         self.isTwitterEnabled()
         
         // if button is enabled
@@ -114,75 +125,17 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         }
     }
     
-    private func isTwitterEnabled() {
-        
-        func checkDataPlug(appToken: String) {
-            
-            func dataPlugIsEnabled() {
-                
-                self.publishButton.setTitle("Save", for: .normal)
-                self.publishButton.isUserInteractionEnabled = true
-            }
-            
-            func dataPugIsNotEnabled() {
-                
-                func noAction() {
-                    
-                    // if button was selected deselect it and remove the button from the array
-                    if self.twitterButton.alpha == 1 {
-                        
-                        self.twitterButton.alpha = 0.4
-                        self.removeFromArray(string: "twitter")
-                        // else select it and add it to the array
-                    } else {
-                        
-                        self.twitterButton.alpha = 1
-                        self.shareOnSocial.append("twitter")
-                        
-                        // construct string from the array and save it
-                        self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
-                    }
-                }
-                
-                func yesAction() {
-                    
-                    func successfullCallBack(data: [DataPlugObject]) {
-                        
-                        for i in 0 ... data.count - 1 {
-                            
-                            if data[i].name == "twitter" {
-                                
-                                let userDomain = HatAccountService.TheUserHATDomain()
-                                
-                                let url = "https://" + userDomain + "/hatlogin?name=Twitter&redirect=" + data[i].url + "/authenticate/hat"
-                                
-                                self.safariVC = SFSafariViewController(url: URL(string: url)!)
-                                self.present(self.safariVC!, animated: true, completion: nil)
-                                self.claimOffer()
-                            }
-                        }
-                    }
-                    
-                    DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {() -> Void in return})
-                }
-                
-                self.createClassicAlertWith(alertMessage: "You have to enable Twitter data plug before sharing on Twitter, do you want to enable now?", alertTitle: "Data plug not enabled", cancelTitle: "No", proceedTitle: "Yes", proceedCompletion: yesAction, cancelCompletion: noAction)
-            }
-            TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: dataPlugIsEnabled, failed: dataPugIsNotEnabled)
-        }
-        
-        TwitterDataPlugService.getAppTokenForTwitter(successful: checkDataPlug, failed: {() -> Void in
-            
-            self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
-            
-            self.turnUIElementsOn()
-        })
-    }
-    
+    /**
+     This function is called when the user touches the duration button
+     
+     - parameter sender: The object that called this function
+     */
     @IBAction func shareForDurationAction(_ sender: Any) {
         
+        // create alert controller
         let alertController = UIAlertController(title: "Share for...", message: "Select the duration you want this note to be shared for", preferredStyle: .actionSheet)
         
+        // create alert actions
         let oneDayAction = UIAlertAction(title: "1 day", style: .default, handler: { (action) -> Void in
             
             self.durationSharedForLabel.text = "1 day"
@@ -220,6 +173,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
+        // add those actions to the alert controller
         alertController.addAction(oneDayAction)
         alertController.addAction(sevenDaysAction)
         alertController.addAction(fourteenDaysAction)
@@ -227,12 +181,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         alertController.addAction(forEverAction)
         alertController.addAction(cancelButton)
         
+        // if user is on ipad show as a pop up
         if UI_USER_INTERFACE_IDIOM() == .pad {
             
             alertController.popoverPresentationController?.sourceRect = self.durationSharedForLabel.frame
             alertController.popoverPresentationController?.sourceView = self.shareForView;
         }
         
+        // present alert controller
         self.navigationController!.present(alertController, animated: true, completion: nil)
     }
     
@@ -269,11 +225,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     
         func defaultCancelAction() {
             
+            // change publish button back to default state
             self.publishButton.setTitle(previousButtonTitle, for: .normal)
             self.publishButton.isUserInteractionEnabled = true
             self.publishButton.alpha = 1
         }
         
+        // if note is shared and users have not selected any social networks to share show alert message
         if (self.receivedNote?.data.shared)! && ((self.receivedNote?.data.sharedOn)! == "") {
             
             self.createClassicOKAlertWith(alertMessage: "Please select at least one shared destination", alertTitle: "", okTitle: "OK", proceedCompletion: defaultCancelAction)
@@ -287,10 +245,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // save text
                 self.receivedNote?.data.message = self.textView.text!
                 
+                // post note
                 NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
                     
+                    // reload notables table
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
+                    // trigger update
                     HatAccountService.triggerHatUpdate()
+                    // go back
                     _ = self.navigationController?.popViewController(animated: true)
                 })
             }
@@ -310,19 +272,26 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // save text
                 receivedNote?.data.message = self.textView.text!
                 
+                // delete note
                 NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+                // post note
                 NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
                     
+                    // reload notables table
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: self.receivedNote)
+                    // trigger update
                     HatAccountService.triggerHatUpdate()
+                    // go back
                     _ = self.navigationController?.popViewController(animated: true)
                 })
             }
             
+            // if note is shared and user has changed the text show alert message
             if cachedIsNoteShared && (receivedNote?.data.message != self.textView.text!) {
                 
                 self.createClassicAlertWith(alertMessage: "Your post would not be edited at the destination.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "OK", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
 
+            // if note is shared show message
             } else if (receivedNote?.data.shared)! {
                 
                 self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
@@ -345,12 +314,17 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             
             func proceedCompletion() {
                 
+                // get user's token
                 let token = HatAccountService.getUsersTokenFromKeychain()
+                
+                // delete note
                 NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
                 
+                //go back
                 _ = self.navigationController?.popViewController(animated: true)
             }
             
+            // if note shared show message
             if cachedIsNoteShared {
                 
                 self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
@@ -537,6 +511,92 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         }
     }
     
+    // MARK: - Check if twitter is available
+    
+    /**
+     Check if twitter data plug is enabled
+     */
+    private func isTwitterEnabled() {
+        
+        // check data plug
+        func checkDataPlug(appToken: String) {
+            
+            // data plug enabled, set up publish button accordingly
+            func dataPlugIsEnabled() {
+                
+                self.publishButton.setTitle("Save", for: .normal)
+                self.publishButton.isUserInteractionEnabled = true
+            }
+            
+            // data plug not enabled
+            func dataPugIsNotEnabled() {
+                
+                // reset twitter button
+                func noAction() {
+                    
+                    // if button was selected deselect it and remove the button from the array
+                    if self.twitterButton.alpha == 1 {
+                        
+                        self.twitterButton.alpha = 0.4
+                        self.removeFromArray(string: "twitter")
+                        // else select it and add it to the array
+                    } else {
+                        
+                        self.twitterButton.alpha = 1
+                        self.shareOnSocial.append("twitter")
+                        
+                        // construct string from the array and save it
+                        self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
+                    }
+                }
+                
+                // set up data plug
+                func yesAction() {
+                    
+                    func successfullCallBack(data: [DataPlugObject]) {
+                        
+                        for i in 0 ... data.count - 1 {
+                            
+                            if data[i].name == "twitter" {
+                                
+                                // construct twitter
+                                let userDomain = HatAccountService.TheUserHATDomain()
+                                
+                                let url = "https://" + userDomain + "/hatlogin?name=Twitter&redirect=" + data[i].url + "/authenticate/hat"
+                                
+                                // open safari
+                                self.safariVC = SFSafariViewController(url: URL(string: url)!)
+                                self.present(self.safariVC!, animated: true, completion: nil)
+                                
+                                // claim offer
+                                self.claimOffer()
+                            }
+                        }
+                    }
+                    
+                    // get available data plugs
+                    DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {() -> Void in return})
+                }
+                
+                // show an alert
+                self.createClassicAlertWith(alertMessage: "You have to enable Twitter data plug before sharing on Twitter, do you want to enable now?", alertTitle: "Data plug not enabled", cancelTitle: "No", proceedTitle: "Yes", proceedCompletion: yesAction, cancelCompletion: noAction)
+            }
+            
+            // check if twitter data plug is active
+            TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: dataPlugIsEnabled, failed: dataPugIsNotEnabled)
+        }
+        
+        // get app token for twitter
+        TwitterDataPlugService.getAppTokenForTwitter(successful: checkDataPlug, failed: {() -> Void in
+            
+            // if something wrong show error
+            self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            
+            // reset ui
+            self.turnUIElementsOn()
+        })
+    }
+    
     // MARK: - Remove from array
     
     /**
@@ -663,8 +723,10 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.deleteButtonOutlet.isHidden = true
         }
         
+        // save kind of note
         self.receivedNote?.data.kind = self.kind
         
+        // add notification observers
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow2), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide2), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
         
@@ -675,8 +737,10 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         super.viewWillAppear(animated)
         
+        // add keyboard handling
         self.hideKeyboardWhenTappedAround()
         
+        // if no text add a placeholder
         if (textView.text == "") {
             
             self.textView.textColor = .lightGray
@@ -694,6 +758,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         super.viewDidLayoutSubviews()
         
+        // resize text ficiew
         let contentSize = self.textView.sizeThatFits(self.textView.bounds.size)
         var frame = self.textView.frame
         frame.size.height = contentSize.height
@@ -701,12 +766,17 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         textViewAspectRationConstraint = NSLayoutConstraint(item: self.textView, attribute: .height, relatedBy: .equal, toItem: self.textView, attribute: .width, multiplier: textView.bounds.height/textView.bounds.width, constant: 1)
         self.textView.addConstraint(textViewAspectRationConstraint!)
+        
         self.view.layoutSubviews()
+        
         self.scrollView.setNeedsLayout()
     }
     
+    // MARK: - Safari View controller notification
+    
     func showAlertForDataPlug(notif: Notification) {
         
+        // if safari view controller not nil, hide it
         if safariVC != nil {
             
             safariVC?.dismiss(animated: true, completion: nil)
@@ -914,6 +984,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         self.textView.becomeFirstResponder()
     }
     
+    // MARK: - Claim offer
+    
+    /**
+     Claims offer for data plug
+     */
     private func claimOffer() {
         
         func failCallback() {

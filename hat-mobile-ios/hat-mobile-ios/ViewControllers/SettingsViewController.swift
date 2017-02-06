@@ -75,6 +75,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         
         super.viewWillAppear(animated)
         
+        // add notification observer
         NotificationCenter.default.addObserver(self, selector:#selector(keyboardWillDisappear(notification:)),
                                                name:Notification.Name.UIKeyboardDidHide, object:nil)
     }

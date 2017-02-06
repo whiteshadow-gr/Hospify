@@ -16,10 +16,12 @@ import RealmSwift
 
 // MARK: Class
 
+/// The sync data helper class
 class SyncDataHelper {
     
     // MARK: - Variables
-        
+    
+    /// The data sync delegate variable
     var dataSyncDelegate: DataSyncDelegate? = nil
     
     // MARK: - Sync functions

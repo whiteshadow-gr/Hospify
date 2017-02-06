@@ -10,14 +10,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
+import Foundation
 
 // MARK: Struct
 
 /// A struct for everything that formats something
 struct FormatterHelper {
     
-    // MARK: - Date formaters
+    // MARK: - Date to string formaters
     
     /**
      Formats a date to ISO 8601 format
@@ -35,6 +35,59 @@ struct FormatterHelper {
     }
     
     /**
+     Formats a date to the user's defined date as a string
+     
+     - parameter date: The date to localize
+     - parameter dateStyle: The date style to return
+     - parameter timeStyle: The time style to return
+     - returns: A String representing the formatted date
+     */
+    static func formatDateStringToUsersDefinedDate(date: Date, dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = dateStyle
+        dateFormatter.timeStyle = timeStyle
+        
+        let dateString = dateFormatter.string(from: date)
+        
+        return dateString.replacingOccurrences(of: ",", with: " -")
+    }
+    
+    /**
+     Returns a string from UTC formatted date in with full date and medium time styles
+     
+     - parameter datetime: The date to convert to string
+     - returns: A String representing the date passed as a parameter
+     */
+    static func getDateString(_ datetime : Date) -> String {
+        
+        let formatter = DateFormatter()
+        formatter.dateStyle = DateFormatter.Style.full
+        formatter.timeStyle = DateFormatter.Style.medium
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
+        
+        return formatter.string(from: datetime)
+    }
+    
+    /**
+     Returns a string from a UTC formatted date with the specified date format
+     
+     - parameter datetime: The date to convert to string
+     - parameter format: The format of the date
+     - returns: A String representing the date passed as a parameter
+     */
+    static func getDateString(_ datetime : Date, format: String) -> String {
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = format
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
+        
+        return formatter.string(from: datetime)
+    }
+    
+    // MARK: - String to Date formaters
+    
+    /**
      Formats a string into a Date
      
      - parameter string: The string to format to a Date
@@ -45,7 +98,6 @@ struct FormatterHelper {
         // check if the string to format is empty
         if string == "" {
             
-            // TODO: Return other date when string is empty
             return nil
         }
         
@@ -72,52 +124,18 @@ struct FormatterHelper {
     }
     
     /**
-     Formats a date to the user's defined date as a string
+     Returns a Date string from a string representing a UTC date
      
-     - parameter date: The date to localize
-     - returns: String
+     - parameter dateString: The string to convert into date
+     - returns: The date that the string was representing
      */
-    static func formatDateStringToUsersDefinedDate(date: Date, dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = dateStyle
-        dateFormatter.timeStyle = timeStyle
-        
-        let dateString = dateFormatter.string(from: date)
-        
-        return dateString.replacingOccurrences(of: ",", with: " -")
-    }
-    
     static func getDateFromString(_ dateString : String) -> Date! {
         
         let formatter = DateFormatter()
         formatter.dateFormat = Constants.DateFormats.UTC
         formatter.timeZone = TimeZone(abbreviation: "UTC")
-        let date = formatter.date(from: dateString)
         
-        return date
+        return formatter.date(from: dateString)
     }
-    
-    static func getDateString(_ datetime : Date) -> String {
-        
-        let formatter = DateFormatter()
-        formatter.dateStyle = DateFormatter.Style.full
-        formatter.timeStyle = DateFormatter.Style.medium
-        formatter.timeZone = TimeZone(abbreviation: "UTC")
-        
-        let date = formatter.string(from: datetime)
-        
-        return date
-    }
-    
-    static func getDateString(_ datetime : Date, format: String) -> String {
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = format
-        formatter.timeZone = TimeZone(abbreviation: "UTC")
-        
-        let date = formatter.string(from: datetime)
-        
-        return date
-    }
+
 }

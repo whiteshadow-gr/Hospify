@@ -22,6 +22,7 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
     /// the number of pages for this page view controller
     private let numberOfPages = [0, 1, 2, 3, 4, 5, 6]
     
+    /// The current page index
     private var currentIndex = 0
     
     // MARK: - PageViewController delegate methods
@@ -43,6 +44,7 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
         NotificationCenter.default.addObserver(self, selector: #selector(disablePageControll), name: Notification.Name("disablePageControll"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(enablePageControll), name: Notification.Name("enablePageControll"), object: nil)
         
+        // change background color
         self.view.backgroundColor = UIColor.tealColor()
     }
 
@@ -51,6 +53,22 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    override func viewDidLayoutSubviews() {
+        
+        super.viewDidLayoutSubviews()
+        
+        //corrects scrollview frame to allow for full-screen view controller pages
+        for subView in self.view.subviews {
+            
+            if subView is UIScrollView {
+                
+                subView.frame = self.view.bounds
+            }
+        }
+    }
+    
+    // MARK: - Page view controller methods
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         
@@ -90,20 +108,6 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
     func presentationIndex(for pageViewController: UIPageViewController) -> Int {
         
         return self.currentIndex
-    }
-    
-    override func viewDidLayoutSubviews() {
-        
-        super.viewDidLayoutSubviews()
-        
-        //corrects scrollview frame to allow for full-screen view controller pages
-        for subView in self.view.subviews {
-            
-            if subView is UIScrollView {
-                
-                subView.frame = self.view.bounds
-            }
-        }
     }
     
     // MARK: - Handle page control

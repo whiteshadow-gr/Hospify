@@ -12,15 +12,29 @@
 
 import SwiftyJSON
 
-class FacebookDataSocialFeedObject {
+// MARK: Class
 
+/// A class representing the data of facebook
+class FacebookDataSocialFeedObject {
+    
+    // MARK: - Variables
+
+    /// The post data
     var posts: FacebookDataPostsSocialFeedObject = FacebookDataPostsSocialFeedObject()
     
+    // MARK: - Initialisers
+    
+    /**
+     The default initialiser. Initialises everything to default values.
+     */
     init() {
         
         posts = FacebookDataPostsSocialFeedObject()
     }
     
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
     init(from dictionary: Dictionary<String, JSON>) {
         
         if let tempPosts = dictionary["posts"]?.dictionaryValue {

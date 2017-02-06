@@ -2,7 +2,7 @@
 iOS Swift App for HAT-Mobile
 
 #### Requirements
-Xcode build 7.3.1+. Requires iOS SDK 8.0+
+Xcode build 8+. Requires iOS SDK 9.0+ and Swift 3.0+
 
 ### Installing and Running the Demo app
 #### Install

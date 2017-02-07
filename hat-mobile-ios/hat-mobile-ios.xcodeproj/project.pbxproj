@@ -48,6 +48,7 @@
 		603D3A711DE7B66800C973D8 /* FontAwesome.otf in Resources */ = {isa = PBXBuildFile; fileRef = 603D3A701DE7B66800C973D8 /* FontAwesome.otf */; };
 		603D3A731DE879E600C973D8 /* SocialImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D3A721DE879E600C973D8 /* SocialImageCollectionViewCell.swift */; };
 		603FDD511E43E7840086559B /* InfoHatProvidersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603FDD501E43E7840086559B /* InfoHatProvidersViewController.swift */; };
+		6041B2041E49CECA00534955 /* Launch Screen2.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6041B2031E49CECA00534955 /* Launch Screen2.storyboard */; };
 		6041B20D1DD4AC040018CC31 /* NotablesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6041B20B1DD4AC040018CC31 /* NotablesViewController.swift */; };
 		6041B20E1DD4AC040018CC31 /* ShareOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6041B20C1DD4AC040018CC31 /* ShareOptionsViewController.swift */; };
 		6041B2101DD4AC190018CC31 /* NotablesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6041B20F1DD4AC190018CC31 /* NotablesTableViewCell.swift */; };
@@ -125,7 +126,6 @@
 		B564E9691D19717900EDB8F1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B564E9681D19717900EDB8F1 /* AppDelegate.swift */; };
 		B564E96E1D19717900EDB8F1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B564E96C1D19717900EDB8F1 /* Main.storyboard */; };
 		B564E9701D19717900EDB8F1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B564E96F1D19717900EDB8F1 /* Assets.xcassets */; };
-		B564E9731D19717900EDB8F1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B564E9711D19717900EDB8F1 /* LaunchScreen.storyboard */; };
 		B564E97E1D19717900EDB8F1 /* DataPlugCollectionViewCellTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B564E97D1D19717900EDB8F1 /* DataPlugCollectionViewCellTests.swift */; };
 		B564E9891D19717900EDB8F1 /* hat_mobile_iosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B564E9881D19717900EDB8F1 /* hat_mobile_iosUITests.swift */; };
 		B564E9971D1984CF00EDB8F1 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B564E9961D1984CF00EDB8F1 /* MapKit.framework */; };
@@ -191,6 +191,7 @@
 		603D3A701DE7B66800C973D8 /* FontAwesome.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome.otf; sourceTree = "<group>"; };
 		603D3A721DE879E600C973D8 /* SocialImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SocialImageCollectionViewCell.swift; path = Cells/SocialImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		603FDD501E43E7840086559B /* InfoHatProvidersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InfoHatProvidersViewController.swift; path = ViewControllers/InfoHatProvidersViewController.swift; sourceTree = "<group>"; };
+		6041B2031E49CECA00534955 /* Launch Screen2.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen2.storyboard"; sourceTree = "<group>"; };
 		6041B20B1DD4AC040018CC31 /* NotablesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotablesViewController.swift; sourceTree = "<group>"; };
 		6041B20C1DD4AC040018CC31 /* ShareOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareOptionsViewController.swift; sourceTree = "<group>"; };
 		6041B20F1DD4AC190018CC31 /* NotablesTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotablesTableViewCell.swift; sourceTree = "<group>"; };
@@ -273,7 +274,6 @@
 		B564E9681D19717900EDB8F1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = "hat-mobile-ios/AppDelegate.swift"; sourceTree = "<group>"; };
 		B564E96D1D19717900EDB8F1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B564E96F1D19717900EDB8F1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = "hat-mobile-ios/Assets.xcassets"; sourceTree = "<group>"; };
-		B564E9721D19717900EDB8F1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B564E9741D19717900EDB8F1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = "hat-mobile-ios/Info.plist"; sourceTree = "<group>"; };
 		B564E9791D19717900EDB8F1 /* hat-mobile-iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "hat-mobile-iosTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B564E97D1D19717900EDB8F1 /* DataPlugCollectionViewCellTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPlugCollectionViewCellTests.swift; sourceTree = "<group>"; };
@@ -518,7 +518,7 @@
 				B564E96F1D19717900EDB8F1 /* Assets.xcassets */,
 				B564E9741D19717900EDB8F1 /* Info.plist */,
 				B564E9981D19862200EDB8F1 /* Localizable.strings */,
-				B564E9711D19717900EDB8F1 /* LaunchScreen.storyboard */,
+				6041B2031E49CECA00534955 /* Launch Screen2.storyboard */,
 				B564E96C1D19717900EDB8F1 /* Main.storyboard */,
 				B564E97C1D19717900EDB8F1 /* hat-mobile-iosTests */,
 				B564E9871D19717900EDB8F1 /* hat-mobile-iosUITests */,
@@ -800,7 +800,6 @@
 				6000CE611DE728580076E173 /* OpenSans-Italic.ttf in Resources */,
 				6000CE5E1DE728580076E173 /* OpenSans-BoldItalic.ttf in Resources */,
 				6000CE6B1DE728640076E173 /* OpenSans-CondLight.ttf in Resources */,
-				B564E9731D19717900EDB8F1 /* LaunchScreen.storyboard in Resources */,
 				6000CE651DE728580076E173 /* OpenSans-Semibold.ttf in Resources */,
 				6000CE5F1DE728580076E173 /* OpenSans-ExtraBold.ttf in Resources */,
 				603D3A711DE7B66800C973D8 /* FontAwesome.otf in Resources */,
@@ -818,6 +817,7 @@
 				6097C0661E3273E9000E771A /* 2.1 HATTermsofService v1.0.pdf in Resources */,
 				6000CE641DE728580076E173 /* OpenSans-Regular.ttf in Resources */,
 				6000CE601DE728580076E173 /* OpenSans-ExtraBoldItalic.ttf in Resources */,
+				6041B2041E49CECA00534955 /* Launch Screen2.storyboard in Resources */,
 				6000CE6C1DE728640076E173 /* OpenSans-CondLightItalic.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1140,15 +1140,6 @@
 				B564E96D1D19717900EDB8F1 /* Base */,
 			);
 			name = Main.storyboard;
-			path = "hat-mobile-ios";
-			sourceTree = "<group>";
-		};
-		B564E9711D19717900EDB8F1 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B564E9721D19717900EDB8F1 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
 			path = "hat-mobile-ios";
 			sourceTree = "<group>";
 		};

@@ -120,14 +120,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         let textAttributesTitle = [
             NSForegroundColorAttributeName: UIColor.white,
             NSStrokeColorAttributeName: UIColor.white,
-            NSFontAttributeName: UIFont(name: "OpenSans", size: 32)!,
+            NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 36)!,
             NSStrokeWidthAttributeName: -1.0
             ] as [String : Any]
         
         let textAttributes = [
             NSForegroundColorAttributeName: UIColor.tealColor(),
             NSStrokeColorAttributeName: UIColor.tealColor(),
-            NSFontAttributeName: UIFont(name: "OpenSans", size: 32)!,
+            NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 36)!,
             NSStrokeWidthAttributeName: -1.0
             ] as [String : Any]
         

@@ -1040,7 +1040,7 @@
                                         <rect key="frame" x="0.0" y="28" width="288" height="93"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LdH-ds-X5d" id="LQv-MZ-c2s">
-                                            <rect key="frame" x="0.0" y="0.0" width="288" height="92"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="288" height="92.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="date added" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bdm-HJ-FXz">
@@ -1294,7 +1294,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="45 of 100 remaining" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GnN-qq-yd7">
-                                                    <rect key="frame" x="32" y="131" width="97.5" height="21"/>
+                                                    <rect key="frame" x="31.5" y="131" width="97.5" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="bOz-Tp-KHz"/>
                                                     </constraints>
@@ -2013,7 +2013,7 @@
                                         <rect key="frame" x="0.0" y="28" width="320" height="139"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TjC-3X-AF5" id="nFU-b5-3He">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="138"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="138.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile" translatesAutoresizingMaskIntoConstraints="NO" id="Yq4-hO-i78">
@@ -2070,7 +2070,7 @@
                                                     </collectionViewFlowLayout>
                                                     <cells>
                                                         <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="center" reuseIdentifier="socialCell" id="8Km-R0-gpQ" customClass="SocialImageCollectionViewCell" customModule="hat_mobile_ios" customModuleProvider="target">
-                                                            <rect key="frame" x="0.0" y="3" width="22" height="22"/>
+                                                            <rect key="frame" x="0.0" y="2.5" width="22" height="22"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                                                 <rect key="frame" x="0.0" y="0.0" width="22" height="22"/>
@@ -2724,7 +2724,7 @@
                                         </constraints>
                                         <size key="customSize" width="320" height="95"/>
                                         <connections>
-                                            <outlet property="messageLabel" destination="d4a-t6-t5P" id="E12-8O-SL4"/>
+                                            <outlet property="messageTextView" destination="d4a-t6-t5P" id="KJg-Ym-moG"/>
                                             <outlet property="postInfoLabel" destination="YeI-mF-MeP" id="YuJ-KE-ZOE"/>
                                             <outlet property="postTypeLabel" destination="HxR-8z-Yp4" id="xzT-Cj-A62"/>
                                             <outlet property="profileImage" destination="66o-cq-trd" id="nja-77-5Ve"/>
@@ -2840,7 +2840,7 @@
                                         <size key="customSize" width="320" height="230"/>
                                         <connections>
                                             <outlet property="image" destination="byx-rv-2Zj" id="csT-hf-0do"/>
-                                            <outlet property="messageLabel" destination="aqg-KA-g1Q" id="mFJ-sw-fyB"/>
+                                            <outlet property="messageTextView" destination="aqg-KA-g1Q" id="yic-c3-Cxu"/>
                                             <outlet property="postInfoLabel" destination="H8v-VD-ggL" id="DJJ-8s-AhW"/>
                                             <outlet property="postTypeLabel" destination="AsQ-7x-fzX" id="Ai4-ws-Xn0"/>
                                             <outlet property="profileImage" destination="Afn-m2-nUV" id="So7-3p-ftZ"/>

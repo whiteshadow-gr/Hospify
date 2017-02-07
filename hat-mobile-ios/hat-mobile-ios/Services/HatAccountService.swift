@@ -475,7 +475,7 @@ class HatAccountService {
      */
     class func verifyDomain(_ domain: String) -> Bool {
         
-        if domain == "hubofallthings.net" || domain == "warwickhat.net" {
+        if domain == "hubofallthings.net" || domain == "warwickhat.net" || domain == "hubat.net" {
             
             return true
         }

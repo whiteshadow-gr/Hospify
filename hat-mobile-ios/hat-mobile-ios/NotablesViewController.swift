@@ -37,7 +37,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     /// the paramaters to make the request for fetching the notes
     private var parameters: Dictionary<String, String> = ["starttime" : "0",
-                                                  "limit" : "50"]
+                                                          "limit" : "50"]
     
     /// SafariViewController variable
     private var pageViewController: FirstOnboardingPageViewController = FirstOnboardingPageViewController()

@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import MapKit
 
 // MARK: Class
@@ -38,6 +37,27 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     @IBOutlet weak var textFieldDeferredTime: UITextField!
     /// An IBOutlet for handling the deferred distance UITextField
     @IBOutlet weak var textFieldDeferredDistance: UITextField!
+    
+    /// An IBOutlet for handling the location UISwitch
+    @IBOutlet weak var locationSwitchOutlet: UISwitch!
+    
+    //MARK: - IBActions 
+    
+    /**
+     This method is called with the switch changes state
+     
+     - parameter sender: The object that called this method
+     */
+    @IBAction func locationSwitch(_ sender: Any) {
+        
+        if self.locationSwitchOutlet.isOn {
+            
+            _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "true")
+        } else {
+            
+            _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "false")
+        }
+    }
     
     // MARK: - Auto generated methods
     
@@ -69,6 +89,17 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         textFieldDistance.inputAccessoryView = keyboardToolbar
         textFieldDeferredTime.inputAccessoryView = keyboardToolbar
         textFieldDeferredDistance.inputAccessoryView = keyboardToolbar
+                
+        if let result = KeychainHelper.GetKeychainValue(key: "trackDevice") {
+            
+            if result == "true" {
+                
+                self.locationSwitchOutlet.isOn = true
+            } else {
+                
+                self.locationSwitchOutlet.isOn = false
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -180,6 +211,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     override func willMove(toParentViewController parent: UIViewController?) {
         
         super.willMove(toParentViewController: parent)
+        
         if parent == nil {
             
             // the back button was pressed.

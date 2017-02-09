@@ -152,25 +152,23 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
         // Create a button bar for the number pad
         let toolbar = UIToolbar()
-        toolbar.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 30)
-        
-        var barButtonTitle = ""
+        toolbar.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 35)
         
         if let result = KeychainHelper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
             
-            barButtonTitle = result
-        }
-
-        // Setup the buttons to be put in the system.
-        let autofillButton = UIBarButtonItem(title: barButtonTitle, style: .done, target: self, action: #selector(self.autofillPHATA))
-        autofillButton.setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans", size: 17.0)!, NSForegroundColorAttributeName: UIColor.white], for: .normal)
-        toolbar.barTintColor = .black
-        toolbar.setItems([autofillButton], animated: true)
-
-        if barButtonTitle != "" {
+            let barButtonTitle = result
             
-            self.inputUserHATDomain.inputAccessoryView = toolbar
-            self.inputUserHATDomain.inputAccessoryView?.backgroundColor = .black
+            // Setup the buttons to be put in the system.
+            let autofillButton = UIBarButtonItem(title: barButtonTitle, style: .done, target: self, action: #selector(self.autofillPHATA))
+            autofillButton.setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans", size: 16.0)!, NSForegroundColorAttributeName: UIColor.white], for: .normal)
+            toolbar.barTintColor = .black
+            toolbar.setItems([autofillButton], animated: true)
+            
+            if barButtonTitle != "" {
+                
+                self.inputUserHATDomain.inputAccessoryView = toolbar
+                self.inputUserHATDomain.inputAccessoryView?.backgroundColor = .black
+            }
         }
         
         // app version

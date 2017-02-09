@@ -560,7 +560,7 @@ class SyncDataHelper {
                                     
                                 if let dateUpdatedString: String = getLastUpdatedDate(array) {
                                     
-                                    if let dateUpdated:NSDate = FormatterHelper.getDateFromString(dateUpdatedString) as NSDate? {
+                                    if let dateUpdated: NSDate = FormatterHelper.getDateFromString(dateUpdatedString) as NSDate? {
                                             
                                         // if we get here, we can update our local DB with the last sync date
                                         RealmHelper.UpdateData(dataPoints, lastUpdated: dateUpdated as Date)

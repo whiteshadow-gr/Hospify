@@ -142,7 +142,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
      */
     func showSettingsViewController() {
         
-        self.performSegue(withIdentifier: "settingsSegue", sender: self)
+        NotificationCenter.default.post(name: NSNotification.Name("goToSettings"), object: nil)
     }
     
     /**

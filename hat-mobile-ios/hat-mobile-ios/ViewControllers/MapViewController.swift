@@ -99,6 +99,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         // add notification observer for refreshUI
         NotificationCenter.default.addObserver( self, selector: #selector(refreshUI),
             name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.addObserver( self, selector: #selector(goToSettings),
+                                                name: NSNotification.Name("goToSettings"), object: nil)
         
         // add gesture recognizers to today button
         let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.LongPressOnToday))
@@ -130,7 +132,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         }
     }
     
-    // MARK: - Refresh UI Notification
+    // MARK: - Notification methods
     
     /**
      Triggers a refresh in UI drawing the points on the map
@@ -139,6 +141,16 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         self.mapView(self.mapView, regionDidChangeAnimated: true)
     }
+    
+    /**
+     Presents the settings view controller
+     */
+    @objc private func goToSettings() {
+        
+        self.performSegue(withIdentifier: "SettingsSequeID", sender: self)
+    }
+    
+    // MARK: - Show last data point time
     
     /**
      Display the last entry from the map DataPoint
@@ -339,6 +351,15 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         // apply changes
         self.locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
         self.locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
+        
+        if let result = KeychainHelper.GetKeychainValue(key: "trackDevice") {
+            
+            if result == "true" {
+                
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.locationManager.startUpdatingLocation()
+            }
+        }
     }
 
     func onDataSyncFeedback(_ isSuccess: Bool, message: String) {

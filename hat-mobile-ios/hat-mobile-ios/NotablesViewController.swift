@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import SwiftyJSON
 
 // MARK: - Notables ViewController
@@ -22,6 +21,8 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     /// a cached array of the notes to display
     private var cachedNotesArray: [NotesData] = []
+    /// an array of the notes to work on without touching the cachedNotesArray
+    private var notesArray: [NotesData] = []
     
     /// the cells of the table
     private var cells: [NotablesTableViewCell] = []

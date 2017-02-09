@@ -256,8 +256,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
          */
         if let manager:CLLocationManager = locationManager {
             
-            manager.startUpdatingLocation()
-            NSLog("Delegate startUpdatingLocation");
+            if let result = KeychainHelper.GetKeychainValue(key: "trackDevice") {
+                
+                if result == "true" {
+                    
+                    manager.startUpdatingLocation()
+                    NSLog("Delegate startUpdatingLocation");
+                }
+            } else {
+                
+                _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "true")
+                manager.startUpdatingLocation()
+                NSLog("Delegate startUpdatingLocation");
+            }
         }
     }
     

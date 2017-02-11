@@ -58,21 +58,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     /// The error message, if any
     private var lastErrorMessage: String = ""
     
-    /// Create and setup the LocationManager for handling the location updates
-    private lazy var locationManager: CLLocationManager! = {
-        
-        let locationManager = CLLocationManager()
-        locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
-        locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
-        locationManager.delegate = self
-        locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.requestAlwaysAuthorization()
-        locationManager.pausesLocationUpdatesAutomatically = false
-        locationManager.activityType = CLActivityType.other /* see https://developer.apple.com/reference/corelocation/clactivitytype */
-        
-        return locationManager
-    }()
-    
     // MARK: - Auto generated methods
     
     override func viewDidLoad() {
@@ -345,19 +330,22 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     func onChanged() {
         
         // restart LocationManager and apply changes
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         
-        // Location stop
-        self.locationManager.stopUpdatingLocation()
         // apply changes
-        self.locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
-        self.locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
+        appDelegate.locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
+        appDelegate.locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
         
         if let result = KeychainHelper.GetKeychainValue(key: "trackDevice") {
             
             if result == "true" {
                 
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 appDelegate.locationManager.startUpdatingLocation()
+            } else {
+                
+                // Location stop
+                appDelegate.locationManager.stopUpdatingLocation()
+                appDelegate.locationManager = nil
             }
         }
     }

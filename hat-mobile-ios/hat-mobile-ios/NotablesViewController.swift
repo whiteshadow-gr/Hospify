@@ -24,13 +24,15 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     /// an array of the notes to work on without touching the cachedNotesArray
     private var notesArray: [NotesData] = []
     
+    private var selectedIndex: Int? = nil
+    
     /// the cells of the table
     private var cells: [NotablesTableViewCell] = []
     
     /// the kind of the note to create
     private var kind: String = ""
     /// the notables fetch items limit
-    private var notablesFetchLimit: String = "50"
+    private var notablesFetchLimit: String = "5"
     /// the notables fetch end date
     private var notablesFetchEndDate: String? = nil
     /// the app token for notables
@@ -38,7 +40,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     /// the paramaters to make the request for fetching the notes
     private var parameters: Dictionary<String, String> = ["starttime" : "0",
-                                                          "limit" : "50"]
+                                                          "limit" : "5"]
     
     /// SafariViewController variable
     private var pageViewController: FirstOnboardingPageViewController = FirstOnboardingPageViewController()
@@ -164,9 +166,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         super.viewWillAppear(animated)
         
-        // empty array
-        self.cachedNotesArray.removeAll()
-        
         // fetch notes
         self.connectToServerToGetNotes()        
     }
@@ -191,7 +190,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             // for each dictionary parse it and add it to the array
             for dict in array {
                 
-                self.cachedNotesArray.append(NotesData.init(dict: dict.dictionary!))
+                self.notesArray.append(NotesData.init(dict: dict.dictionary!))
             }
             
             DispatchQueue.main.async {
@@ -209,11 +208,19 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     @objc private func refreshData(notification: Notification) {
         
-        // empty array
-        self.cachedNotesArray.removeAll()
-        
-        // get notes
-        self.connectToServerToGetNotes()
+        DispatchQueue.main.async {
+            
+            if self.selectedIndex != nil {
+                
+                self.cachedNotesArray.remove(at: self.selectedIndex!)
+                self.selectedIndex = nil
+            }
+            
+            if let note = notification.object as? NotesData {
+                
+                self.cachedNotesArray.insert(note, at: 0)
+            }
+        }
     }
     
     /**
@@ -230,7 +237,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 if array.count >= Int(self.notablesFetchLimit)! {
                     
                     // increase limit
-                    self.notablesFetchLimit = "500"
+                    self.notablesFetchLimit = "7"
                     
                     // init object
                     let object = NotesData(dict: (array.last?.dictionaryValue)!)
@@ -327,6 +334,8 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         // deselect selected row
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        self.selectedIndex = indexPath.row
     }
     
     // MARK: - Network functions
@@ -429,22 +438,34 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         DispatchQueue.main.async {
             
-            if self.cachedNotesArray.count > 0 {
+            if self.notesArray.count > 0 {
                 
                 self.eptyTableInfoLabel.isHidden = true
                 
                 self.tableView.isHidden = false
                 
+                var temp = self.cachedNotesArray
+                
+                for note in self.notesArray {
+                    
+                    temp.append(note)
+                }
+                
+                temp = NotablesService.removeDuplicatesFrom(array: temp)
+                temp = NotablesService.sortNotables(notes: temp)
+                
+                self.cachedNotesArray.removeAll()
+                
+                self.cachedNotesArray = temp
+                
+                self.notesArray.removeAll()
+                
                 // reload table
                 self.tableView.reloadData()
-            } else if self.cachedNotesArray.count == 0 {
+                
+            } else if self.notesArray.count == 0 {
                 
                 self.showEmptyTableLabelWith(message: "No notables. Keep your words on your HAT. Create your first notable!")
-            } else {
-                
-                self.eptyTableInfoLabel.isHidden = false
-                
-                self.tableView.isHidden = true
             }
         }
     }

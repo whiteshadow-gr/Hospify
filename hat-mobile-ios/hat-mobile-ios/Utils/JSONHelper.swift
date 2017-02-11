@@ -352,7 +352,7 @@ struct JSONHelper {
      
      - returns: JSON
      */
-    static func updateUpdatedOnDateOfNoteOnJSON(file: JSON, date: Date) -> JSON {
+    static func updateUpdatedOnDateOfNoteOnJSON(file: JSON) -> JSON {
         
         var jsonFile = file
         
@@ -360,7 +360,7 @@ struct JSONHelper {
             
             if jsonFile["values"][itemNumber]["field"]["name"] == "updated_time" {
                 
-                jsonFile["values"][itemNumber]["value"] = JSON(FormatterHelper.formatDateToISO(date: date))
+                jsonFile["values"][itemNumber]["value"] = JSON(FormatterHelper.formatDateToISO(date: Date()))
             }
         }
         
@@ -485,7 +485,7 @@ struct JSONHelper {
         //update kind
         jsonFile = JSONHelper.updateKindOfNoteOnJSON(file: jsonFile, messageKind: noteFile.data.kind)
         //update updated time
-        jsonFile = JSONHelper.updateUpdatedOnDateOfNoteOnJSON(file: jsonFile, date: noteFile.lastUpdated)
+        jsonFile = JSONHelper.updateUpdatedOnDateOfNoteOnJSON(file: jsonFile)
         //update created time
         jsonFile = JSONHelper.updateCreatedOnDateOfNoteOnJSON(file: jsonFile, date: noteFile.data.createdTime)
         //update share duration time

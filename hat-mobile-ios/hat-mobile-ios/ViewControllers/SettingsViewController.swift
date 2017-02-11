@@ -41,6 +41,8 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     /// An IBOutlet for handling the location UISwitch
     @IBOutlet weak var locationSwitchOutlet: UISwitch!
     
+    @IBOutlet weak var locationTrackingLabel: UILabel!
+    
     //MARK: - IBActions 
     
     /**
@@ -53,9 +55,11 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         if self.locationSwitchOutlet.isOn {
             
             _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "true")
+            self.locationTrackingLabel.text = "Location upload to HAT enabled"
         } else {
             
             _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "false")
+            self.locationTrackingLabel.text = "Location upload to HAT disabled"
         }
     }
     
@@ -95,9 +99,11 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
             if result == "true" {
                 
                 self.locationSwitchOutlet.isOn = true
+                self.locationTrackingLabel.text = "location upload to HAT enabled"
             } else {
                 
                 self.locationSwitchOutlet.isOn = false
+                self.locationTrackingLabel.text = "location upload to HAT disabled"
             }
         }
     }

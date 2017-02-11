@@ -380,11 +380,11 @@
 			children = (
 				603152911E0041F40005EB03 /* DataPlugsService.swift */,
 				60D3176C1E3622F9008E0A5F /* FacebookDataPlugService.swift */,
-				60D3176E1E362315008E0A5F /* TwitterDataPlugService.swift */,
 				6044B21A1DDB7138003A1263 /* HatAccountService.swift */,
 				60B4862E1E1D55AC00914AD2 /* HATService.swift */,
 				6090D4651E31316F004FD1E2 /* MarketSquareService.swift */,
 				608EAAA91DFED0F300234C60 /* NotablesService.swift */,
+				60D3176E1E362315008E0A5F /* TwitterDataPlugService.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -402,12 +402,12 @@
 		605198081E3655F700516D75 /* Facebook */ = {
 			isa = PBXGroup;
 			children = (
-				605197FE1E36552400516D75 /* FacebookSocialFeedObject.swift */,
-				605198001E36555F00516D75 /* FacebookDataSocialFeedObject.swift */,
-				605198021E36559C00516D75 /* FacebookDataPostsSocialFeedObject.swift */,
+				6051980A1E365CDC00516D75 /* FacebookDataPostsApplicationSocialFeedObject.swift */,
 				605198041E3655C100516D75 /* FacebookDataPostsFromSocialFeedObject.swift */,
 				605198061E3655E200516D75 /* FacebookDataPostsPrivacySocialFeedObject.swift */,
-				6051980A1E365CDC00516D75 /* FacebookDataPostsApplicationSocialFeedObject.swift */,
+				605198021E36559C00516D75 /* FacebookDataPostsSocialFeedObject.swift */,
+				605198001E36555F00516D75 /* FacebookDataSocialFeedObject.swift */,
+				605197FE1E36552400516D75 /* FacebookSocialFeedObject.swift */,
 			);
 			name = Facebook;
 			sourceTree = "<group>";
@@ -587,6 +587,7 @@
 				60236C741E1BA2A6003B4B92 /* GetAHATViewController.swift */,
 				604D68DD1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift */,
 				604D68DF1DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift */,
+				603FDD501E43E7840086559B /* InfoHatProvidersViewController.swift */,
 				6045FBBD1E2EDAE300086926 /* LearnMorePHATAViewController.swift */,
 				B51CC9271D1D7895000C9E48 /* LoginViewController.swift */,
 				B564E99F1D198C4D00EDB8F1 /* MapViewController.swift */,
@@ -599,7 +600,6 @@
 				6041B20C1DD4AC040018CC31 /* ShareOptionsViewController.swift */,
 				60D3176A1E35FF7F008E0A5F /* SocialFeedViewController.swift */,
 				6043F6D61E1D114D00C5BAD9 /* StripeViewController.swift */,
-				603FDD501E43E7840086559B /* InfoHatProvidersViewController.swift */,
 				6044B2171DDB3151003A1263 /* TabBarViewController.swift */,
 				6097C0681E327506000E771A /* TermsAndConditionsViewController.swift */,
 			);

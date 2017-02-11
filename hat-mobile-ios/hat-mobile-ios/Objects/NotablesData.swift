@@ -105,6 +105,15 @@ struct NotablesData {
                 createdTime = returnedDate!
             }
         }
+        
+        if let tempCreatedTime = dict["updated_time"]?.string {
+            
+            let returnedDate = FormatterHelper.formatStringToDate(string: tempCreatedTime)
+            if returnedDate != nil {
+                
+                updatedTime = returnedDate!
+            }
+        }
 
         if let tempDict = dict["shared"]?.string {
             

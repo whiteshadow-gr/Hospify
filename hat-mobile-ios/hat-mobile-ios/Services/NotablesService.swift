@@ -160,7 +160,7 @@ class NotablesService: NSObject {
             // check if the arrayToReturn it contains that value and if not add it
             let result = arrayToReturn.contains(where: {(note2: NotesData) -> Bool in
                 
-                if note.id == note2.id {
+                if (note.data.createdTime == note2.data.createdTime) && (note.data.message == note.data.message) {
                     
                     return true
                 }
@@ -186,12 +186,7 @@ class NotablesService: NSObject {
      - returns: An array of NotesData
      */
     class func sortNotables(notes: [NotesData]) -> [NotesData] {
-        
-        func sorting(a: NotesData, b: NotesData) -> Bool {
-                    
-            return a.data.updatedTime < b.data.updatedTime
-        }
                 
-        return notes.sorted(by: sorting)
+        return notes.sorted{ $0.data.updatedTime > $1.data.updatedTime }
     }
 }

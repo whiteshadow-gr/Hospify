@@ -146,6 +146,10 @@ class FacebookDataPostsSocialFeedObject {
             
             description = tempDescription
         }
+        if let tempName = dictionary["name"]?.stringValue {
+            
+            name = tempName
+        }
         if let tempObjectID = dictionary["object_id"]?.stringValue {
             
             objectID = tempObjectID

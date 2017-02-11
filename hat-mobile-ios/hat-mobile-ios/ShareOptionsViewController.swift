@@ -248,8 +248,10 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // post note
                 NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
                     
+                    self.receivedNote?.lastUpdated = Date()
+                    self.receivedNote?.data.updatedTime = Date()
                     // reload notables table
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: self.receivedNote)
                     // trigger update
                     HatAccountService.triggerHatUpdate()
                     // go back
@@ -277,6 +279,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // post note
                 NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
                     
+                    self.receivedNote?.lastUpdated = Date()
+                    self.receivedNote?.data.updatedTime = Date()
                     // reload notables table
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: self.receivedNote)
                     // trigger update
@@ -661,12 +665,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         // Do any additional setup after loading the view.
         
         // set title in the navigation bar
-        let font = UIFont(name: "SSGlyphish-Outlined", size: 21)
-        let attributedString = NSMutableAttributedString(string: "\u{2B07}", attributes: [NSFontAttributeName: font!])
-        let combination = NSMutableAttributedString()
-        combination.append(NSAttributedString(string: self.kind.capitalized))
-        combination.append(attributedString)
-        self.navigationItem.title = combination.string
+        self.navigationItem.title = self.kind.capitalized
         
         // set image fonts
         self.publicImageLabel.attributedText = NSAttributedString(string: "\u{1F512}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])

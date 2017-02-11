@@ -32,7 +32,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     /// the kind of the note to create
     private var kind: String = ""
     /// the notables fetch items limit
-    private var notablesFetchLimit: String = "5"
+    private var notablesFetchLimit: String = "50"
     /// the notables fetch end date
     private var notablesFetchEndDate: String? = nil
     /// the app token for notables
@@ -40,7 +40,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     /// the paramaters to make the request for fetching the notes
     private var parameters: Dictionary<String, String> = ["starttime" : "0",
-                                                          "limit" : "5"]
+                                                          "limit" : "50"]
     
     /// SafariViewController variable
     private var pageViewController: FirstOnboardingPageViewController = FirstOnboardingPageViewController()
@@ -237,7 +237,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 if array.count >= Int(self.notablesFetchLimit)! {
                     
                     // increase limit
-                    self.notablesFetchLimit = "7"
+                    self.notablesFetchLimit = "500"
                     
                     // init object
                     let object = NotesData(dict: (array.last?.dictionaryValue)!)

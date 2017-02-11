@@ -1,8 +1,14 @@
 ## Overview
-iOS Swift App for HAT-Mobile
+Rumpel Lite is the dashboard for your HAT on iOS. What you can do with Rumpel Lite:
+
+• Download and configure a HAT - private, personal data containers for storing consumer information generated on the internet
+• Securely store and maintain your own personal information
+• Gather and capture information that's created about you by internet services like Facebook and Twitter
+• Monitor and retain iOS sensor data about your location
+• Store and publish text-based notes and updates
 
 #### Requirements
-Xcode build 7.3.1+. Requires iOS SDK 8.0+
+Xcode build 8+. Requires iOS SDK 9.0+ and Swift 3.0+
 
 ### Installing and Running the Demo app
 #### Install

@@ -71,7 +71,7 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
             
             if hatProvider.available - hatProvider.purchased != 0 {
                 
-                cell.infoLabel.text = String(hatProvider.purchased) + " of " + String(hatProvider.available) + " remaining"
+                cell.infoLabel.text = String(hatProvider.available - hatProvider.purchased) + " of " + String(hatProvider.available) + " remaining"
             } else {
                 
                 cell.infoLabel.text = "Coming soon"

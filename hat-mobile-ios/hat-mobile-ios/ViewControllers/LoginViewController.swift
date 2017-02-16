@@ -271,7 +271,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         }
         
         // authorize with hat
-        HatAccountService.loginToHATAuthorization(userDomain: self.inputUserHATDomain.text!, url: url, selfViewController: self)
+        HatAccountService.loginToHATAuthorization(userDomain: self.inputUserHATDomain.text!, url: url, selfViewController: self, completion: nil)
     }
     
     /**

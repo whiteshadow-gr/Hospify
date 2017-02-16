@@ -170,6 +170,13 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         
         return { [unowned self](Void) -> Void in
             
+            func twitterDataPlug() {
+                
+                // try to access twitter plug
+                let token = HatAccountService.getUsersTokenFromKeychain()
+
+                TwitterDataPlugService.twitterDataPlug(authToken: token, parameters: parameters, success: (self.showTweets))
+            }
             // show message that the social feed is downloading
             self.showEptyLabelWith(text: "Fetching social feed...")
             // change flag
@@ -177,8 +184,28 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             
             // get user's token
             let token = HatAccountService.getUsersTokenFromKeychain()
-            // try to access twitter plug
-            TwitterDataPlugService.twitterDataPlug(authToken: token, parameters: parameters, success: (self.showTweets))
+            
+            func success(token: String) {
+                
+                // try to access twitter plug
+                TwitterDataPlugService.twitterDataPlug(authToken: token, parameters: parameters, success: (self.showTweets))
+            }
+            
+            func failed() {
+                
+                let authoriseVC = AuthoriseUserViewController()
+                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                authoriseVC.view.layer.cornerRadius = 15
+                authoriseVC.completionFunc = twitterDataPlug
+                
+                // add the page view controller to self
+                self.addChildViewController(authoriseVC)
+                self.view.addSubview(authoriseVC.view)
+                authoriseVC.didMove(toParentViewController: self)
+            }
+            
+            // delete data from hat and remove from table
+            HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
         }
     }
     
@@ -285,38 +312,63 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             
             // get user's token
             let token = HatAccountService.getUsersTokenFromKeychain()
-            // try to access facebook plug
-            FacebookDataPlugService.facebookDataPlug(authToken: token, parameters: parameters, success: self.showPosts)
             
-            // switch to another thread
-            DispatchQueue.global().async { [unowned self] () -> Void in
+            func fetchPostsCurryingFunc() {
                 
-                // if no facebook profile image download onw
-                if self.facebookProfileImage == nil {
+                // try to access facebook plug
+                FacebookDataPlugService.facebookDataPlug(authToken: token, parameters: parameters, success: self.showPosts)
+                
+                // switch to another thread
+                DispatchQueue.global().async { [unowned self] () -> Void in
                     
-                    // the returned array for the request
-                    func success(array: [JSON]) -> Void {
+                    // if no facebook profile image download onw
+                    if self.facebookProfileImage == nil {
                         
-                        if array.count > 0 {
+                        // the returned array for the request
+                        func success(array: [JSON]) -> Void {
                             
-                            self.facebookProfileImage = UIImageView()
-                            
-                            // extract image
-                            if let url = URL(string: array[0]["data"]["profile_picture"]["url"].stringValue) {
+                            if array.count > 0 {
                                 
-                                // download image
-                                self.facebookProfileImage?.downloadedFrom(url: url)
-                            } else {
+                                self.facebookProfileImage = UIImageView()
                                 
-                                // set image to nil
-                                self.facebookProfileImage = nil
+                                // extract image
+                                if let url = URL(string: array[0]["data"]["profile_picture"]["url"].stringValue) {
+                                    
+                                    // download image
+                                    self.facebookProfileImage?.downloadedFrom(url: url)
+                                } else {
+                                    
+                                    // set image to nil
+                                    self.facebookProfileImage = nil
+                                }
                             }
                         }
+                        // fetch facebook image
+                        FacebookDataPlugService.fetchProfileFacebookPhoto(authToken: token, parameters: [:], success: success)
                     }
-                    // fetch facebook image
-                    FacebookDataPlugService.fetchProfileFacebookPhoto(authToken: token, parameters: [:], success: success)
                 }
             }
+            
+            func success(token: String) {
+                
+                fetchPostsCurryingFunc()
+            }
+            
+            func failed() {
+                
+                let authoriseVC = AuthoriseUserViewController()
+                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                authoriseVC.view.layer.cornerRadius = 15
+                authoriseVC.completionFunc = fetchPostsCurryingFunc
+                
+                // add the page view controller to self
+                self.addChildViewController(authoriseVC)
+                self.view.addSubview(authoriseVC.view)
+                authoriseVC.didMove(toParentViewController: self)
+            }
+            
+            // delete data from hat and remove from table
+            HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
         }
     }
     

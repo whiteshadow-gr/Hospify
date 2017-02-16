@@ -11,6 +11,7 @@
  */
 
 import SwiftyJSON
+import SafariServices
 
 // MARK: - Notables ViewController
 
@@ -215,11 +216,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 self.cachedNotesArray.remove(at: self.selectedIndex!)
                 self.selectedIndex = nil
             }
-            
-            if let note = notification.object as? NotesData {
-                
-                self.cachedNotesArray.insert(note, at: 0)
-            }
         }
     }
     
@@ -311,12 +307,31 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             
             func proceedCompletion() {
                 
-                // delete data from hat and remove from table
                 let token = HatAccountService.getUsersTokenFromKeychain()
-                NotablesService.deleteNoteWithKeychain(id: self.cachedNotesArray[indexPath.row].id, tkn: token)
-                self.cachedNotesArray.remove(at: indexPath.row)
-                tableView.deleteRows(at: [indexPath], with: .fade)
-                self.updateUI()
+
+                func success(token: String) {
+                    
+                    NotablesService.deleteNoteWithKeychain(id: self.cachedNotesArray[indexPath.row].id, tkn: token)
+                    self.cachedNotesArray.remove(at: indexPath.row)
+                    tableView.deleteRows(at: [indexPath], with: .fade)
+                    self.updateUI()
+                }
+                
+                func failed() {
+                    
+                    let authoriseVC = AuthoriseUserViewController()
+                    authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                    authoriseVC.view.layer.cornerRadius = 15
+                    authoriseVC.completionFunc = proceedCompletion
+                    
+                    // add the page view controller to self
+                    self.addChildViewController(authoriseVC)
+                    self.view.addSubview(authoriseVC.view)
+                    authoriseVC.didMove(toParentViewController: self)
+                }
+                
+                // delete data from hat and remove from table
+                HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
             }
             
             // if it is shared show message else delete the row
@@ -354,9 +369,29 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             self.navigationController?.pushViewController(loginPageView, animated: false)
         } else {
             
-            self.showEmptyTableLabelWith(message: "Accessing your HAT...")
+            func success(token: String) {
+                
+                self.showEmptyTableLabelWith(message: "Accessing your HAT...")
+                
+                NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: showNewbieScreens)
+            }
             
-            NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: showNewbieScreens)
+            func failed() {
+                
+                let authoriseVC = AuthoriseUserViewController()
+                authoriseVC.view.backgroundColor = .clear
+                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                authoriseVC.view.layer.cornerRadius = 15
+                authoriseVC.completionFunc = connectToServerToGetNotes
+                
+                // add the page view controller to self
+                self.addChildViewController(authoriseVC)
+                self.view.addSubview(authoriseVC.view)
+                authoriseVC.didMove(toParentViewController: self)
+            }
+            
+            // delete data from hat and remove from table
+            HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
         }
     }
     

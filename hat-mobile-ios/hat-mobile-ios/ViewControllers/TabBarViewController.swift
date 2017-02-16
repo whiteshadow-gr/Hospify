@@ -170,6 +170,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             
             // delete keys from keychain
             let clearUserToken = KeychainHelper.ClearKeychainKey(key: "UserToken")
+            _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
             
             if (!clearUserToken) {
                 

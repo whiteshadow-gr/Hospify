@@ -96,7 +96,7 @@ class NotablesService: NSObject {
      - parameter token: The token returned from the hat
      - parameter json: The json file as a Dictionary<String, Any>
      */
-    class func postNote(token: String, note: NotesData, successCallBack: @escaping () -> Void) -> Void {
+    class func postNote(token: String, note: NotesData, successCallBack: @escaping () -> Void, errorCallback: @escaping () -> Void) -> Void {
         
         let userToken = HatAccountService.getUsersTokenFromKeychain()
         
@@ -118,27 +118,27 @@ class NotablesService: NSObject {
                 // handle result
                 switch r {
                     
-                case .isSuccess(let isSuccess, _, _):
+                case .isSuccess(let isSuccess, let statusCode, _):
                     
                     if isSuccess {
                         
                         // reload table
                         successCallBack()
+                    } else if statusCode == 401 {
+                        
+                        errorCallback()
                     }
                     
                 case .error(let error, let statusCode):
                     
                     print("error res: \(error)")
+                    errorCallback()
                     Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "status code: " : "\(statusCode)"])
                 }
             })
         }
         
-        func errorCall() {
-            
-        }
-        
-        HatAccountService.checkHatTableExistsForUploading(tableName: "notablesv1", sourceName: "rumpel", authToken: userToken, successCallback: posting, errorCallback: errorCall)
+        HatAccountService.checkHatTableExistsForUploading(tableName: "notablesv1", sourceName: "rumpel", authToken: userToken, successCallback: posting, errorCallback: errorCallback)
     }
     
     // MARK: - Remove duplicates

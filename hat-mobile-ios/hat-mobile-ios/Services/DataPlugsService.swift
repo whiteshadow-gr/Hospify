@@ -71,7 +71,7 @@ class DataPlugsService: NSObject {
         
         // setup parameters and headers
         let parameters = ["name" : serviceName, "resource" : resource]
-        var headers = ["" : ""]
+        var headers: Dictionary<String, String> = [:]
     
         // get token
         if let token = KeychainHelper.GetKeychainValue(key: "UserToken") {

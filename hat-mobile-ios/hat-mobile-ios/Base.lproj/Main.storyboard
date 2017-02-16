@@ -702,7 +702,7 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jMl-CA-z2m">
-                                <rect key="frame" x="29" y="175" width="261" height="284"/>
+                                <rect key="frame" x="29" y="175" width="261" height="283.5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="261" id="Ehi-1C-twa"/>
                                 </constraints>
@@ -712,7 +712,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o14-3b-ert">
-                                <rect key="frame" x="29" y="467" width="260" height="30"/>
+                                <rect key="frame" x="29" y="466.5" width="260" height="30"/>
                                 <color key="backgroundColor" red="0.0" green="0.58628696199999997" blue="0.53447610140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="Vy7-Jo-0zE"/>
@@ -832,6 +832,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ASk-sP-hTq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-489" y="2482"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="r9j-4X-IXS">
+            <objects>
+                <viewController storyboardIdentifier="authoriseUserViewController" id="tFz-0s-xa6" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="IT0-yq-43Q"/>
+                        <viewControllerLayoutGuide type="bottom" id="uGA-WH-uIZ"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Yvw-80-3sz">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="r7p-zA-ynF" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="486" y="-1512"/>
         </scene>
         <!--Location-->
         <scene sceneID="xFw-eM-6lT">

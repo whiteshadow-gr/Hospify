@@ -104,6 +104,8 @@
 		60DDE16D1E30E19300AB9E18 /* CompletePurchaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DDE16C1E30E19300AB9E18 /* CompletePurchaseViewController.swift */; };
 		60DDE16F1E30FCD200AB9E18 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DDE16E1E30FCD200AB9E18 /* KeychainHelper.swift */; };
 		60DDE1711E31006600AB9E18 /* MapsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DDE1701E31006600AB9E18 /* MapsHelper.swift */; };
+		60E2679C1E55B67300B6D626 /* UIApplicationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E2679B1E55B67300B6D626 /* UIApplicationExtension.swift */; };
+		60E2679E1E55B9B900B6D626 /* AuthoriseUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E2679D1E55B9B800B6D626 /* AuthoriseUserViewController.swift */; };
 		60E7539A1DE46202001C85E7 /* NotesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E753991DE46202001C85E7 /* NotesData.swift */; };
 		60E753A01DE468A5001C85E7 /* NotablesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E7539F1DE468A5001C85E7 /* NotablesData.swift */; };
 		60E753A21DE468E9001C85E7 /* AuthorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60E753A11DE468E9001C85E7 /* AuthorData.swift */; };
@@ -250,6 +252,8 @@
 		60DDE16C1E30E19300AB9E18 /* CompletePurchaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CompletePurchaseViewController.swift; path = ViewControllers/CompletePurchaseViewController.swift; sourceTree = "<group>"; };
 		60DDE16E1E30FCD200AB9E18 /* KeychainHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = KeychainHelper.swift; path = Utils/KeychainHelper.swift; sourceTree = "<group>"; };
 		60DDE1701E31006600AB9E18 /* MapsHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MapsHelper.swift; path = Utils/MapsHelper.swift; sourceTree = "<group>"; };
+		60E2679B1E55B67300B6D626 /* UIApplicationExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIApplicationExtension.swift; path = Extensions/UIApplicationExtension.swift; sourceTree = "<group>"; };
+		60E2679D1E55B9B800B6D626 /* AuthoriseUserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthoriseUserViewController.swift; path = ViewControllers/AuthoriseUserViewController.swift; sourceTree = "<group>"; };
 		60E753991DE46202001C85E7 /* NotesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotesData.swift; path = Objects/NotesData.swift; sourceTree = "<group>"; };
 		60E7539F1DE468A5001C85E7 /* NotablesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotablesData.swift; path = Objects/NotablesData.swift; sourceTree = "<group>"; };
 		60E753A11DE468E9001C85E7 /* AuthorData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthorData.swift; path = Objects/AuthorData.swift; sourceTree = "<group>"; };
@@ -432,6 +436,7 @@
 				604237DE1E114F2D00E19109 /* UIColorExtension.swift */,
 				60B486301E1D6E7B00914AD2 /* UIImageViewExtension.swift */,
 				608EAAA71DFEA8AD00234C60 /* ViewControllerExtension.swift */,
+				60E2679B1E55B67300B6D626 /* UIApplicationExtension.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -601,6 +606,7 @@
 				60D3176A1E35FF7F008E0A5F /* SocialFeedViewController.swift */,
 				6043F6D61E1D114D00C5BAD9 /* StripeViewController.swift */,
 				6044B2171DDB3151003A1263 /* TabBarViewController.swift */,
+				60E2679D1E55B9B800B6D626 /* AuthoriseUserViewController.swift */,
 				6097C0681E327506000E771A /* TermsAndConditionsViewController.swift */,
 			);
 			name = ViewControllers;
@@ -1030,12 +1036,14 @@
 				60FAC7691E223A1D00532C01 /* DataPlugsCollectionViewController.swift in Sources */,
 				605198051E3655C100516D75 /* FacebookDataPostsFromSocialFeedObject.swift in Sources */,
 				604237DF1E114F2D00E19109 /* UIColorExtension.swift in Sources */,
+				60E2679E1E55B9B900B6D626 /* AuthoriseUserViewController.swift in Sources */,
 				605198131E366CFE00516D75 /* TwitterDataTweetsUsersSocialFeedObject.swift in Sources */,
 				6051980B1E365CDC00516D75 /* FacebookDataPostsApplicationSocialFeedObject.swift in Sources */,
 				60DD7F6A1E27C719000C1B1E /* ProfileCollectionViewController.swift in Sources */,
 				6079AC8C1E3FE9810097A3E4 /* SocialFeedObject.swift in Sources */,
 				607C107B1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift in Sources */,
 				60E7539A1DE46202001C85E7 /* NotesData.swift in Sources */,
+				60E2679C1E55B67300B6D626 /* UIApplicationExtension.swift in Sources */,
 				B51CC9241D1D5749000C9E48 /* SettingsViewController.swift in Sources */,
 				601FFD791E3A7E3600441EAD /* FirstOnboardingViewController.swift in Sources */,
 				605198111E366CE800516D75 /* TwitterDataTweetsSocialFeedObject.swift in Sources */,

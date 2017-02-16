@@ -132,6 +132,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     @IBAction func shareForDurationAction(_ sender: Any) {
         
+        self.textView.resignFirstResponder()
         // create alert controller
         let alertController = UIAlertController(title: "Share for...", message: "Select the duration you want this note to be shared for", preferredStyle: .actionSheet)
         
@@ -209,101 +210,133 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     @IBAction func shareButton(_ sender: Any) {
         
-        // hide keyboard
-        self.textView.resignFirstResponder()
-        
-        let previousButtonTitle = self.publishButton.titleLabel?.text
-        
-        // change button title to saving
-        self.publishButton.setTitle("Saving....", for: .normal)
-        self.publishButton.isUserInteractionEnabled = false
-        self.publishButton.alpha = 0.5
-        
-        // start the procedure to upload the note to the hat
-        let token = HatAccountService.getUsersTokenFromKeychain()
-        // if user is note editing an existing note post as a new note
-    
-        func defaultCancelAction() {
+        func post() {
             
-            // change publish button back to default state
-            self.publishButton.setTitle(previousButtonTitle, for: .normal)
-            self.publishButton.isUserInteractionEnabled = true
-            self.publishButton.alpha = 1
-        }
-        
-        // if note is shared and users have not selected any social networks to share show alert message
-        if (self.receivedNote?.data.shared)! && ((self.receivedNote?.data.sharedOn)! == "") {
+            // hide keyboard
+            self.textView.resignFirstResponder()
             
-            self.createClassicOKAlertWith(alertMessage: "Please select at least one shared destination", alertTitle: "", okTitle: "OK", proceedCompletion: defaultCancelAction)
-        }
-        
-        // not editing note
-        if !isEditingExistingNote {
+            let previousButtonTitle = self.publishButton.titleLabel?.text
             
-            func proceedCompletion() {
+            // change button title to saving
+            self.publishButton.setTitle("Saving....", for: .normal)
+            self.publishButton.isUserInteractionEnabled = false
+            self.publishButton.alpha = 0.5
+            
+            // start the procedure to upload the note to the hat
+            let token = HatAccountService.getUsersTokenFromKeychain()
+            // if user is note editing an existing note post as a new note
+        
+            func defaultCancelAction() {
                 
-                // save text
-                self.receivedNote?.data.message = self.textView.text!
-                
-                // post note
-                NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
-                    
-                    self.receivedNote?.lastUpdated = Date()
-                    self.receivedNote?.data.updatedTime = Date()
-                    // reload notables table
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: self.receivedNote)
-                    // trigger update
-                    HatAccountService.triggerHatUpdate()
-                    // go back
-                    _ = self.navigationController?.popViewController(animated: true)
-                })
+                // change publish button back to default state
+                self.publishButton.setTitle(previousButtonTitle, for: .normal)
+                self.publishButton.isUserInteractionEnabled = true
+                self.publishButton.alpha = 1
             }
             
-            if (receivedNote?.data.shared)! {
+            // if note is shared and users have not selected any social networks to share show alert message
+            if (self.receivedNote?.data.shared)! && ((self.receivedNote?.data.sharedOn)! == "") {
                 
-                self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
+                self.createClassicOKAlertWith(alertMessage: "Please select at least one shared destination", alertTitle: "", okTitle: "OK", proceedCompletion: defaultCancelAction)
+            }
+            
+            // not editing note
+            if !isEditingExistingNote {
+                
+                func proceedCompletion() {
+                    
+                    // save text
+                    self.receivedNote?.data.message = self.textView.text!
+                    
+                    // post note
+                    NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
+                        
+                        self.receivedNote?.lastUpdated = Date()
+                        self.receivedNote?.data.updatedTime = Date()
+                        // reload notables table
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: self.receivedNote)
+                        // trigger update
+                        HatAccountService.triggerHatUpdate()
+                        // go back
+                        _ = self.navigationController?.popViewController(animated: true)
+                    }, errorCallback: {() -> Void in
+                    
+                        defaultCancelAction()   
+                    })
+                }
+                
+                if (receivedNote?.data.shared)! {
+                    
+                    self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
+                } else {
+                    
+                    proceedCompletion()
+                }
+            // else delete the existing note and post a new one
             } else {
                 
-                proceedCompletion()
-            }
-        // else delete the existing note and post a new one
-        } else {
-            
-            func proceedCompletion() {
-                
-                // save text
-                receivedNote?.data.message = self.textView.text!
-                
-                // delete note
-                NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
-                // post note
-                NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
+                func proceedCompletion() {
                     
-                    self.receivedNote?.lastUpdated = Date()
-                    self.receivedNote?.data.updatedTime = Date()
-                    // reload notables table
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: self.receivedNote)
-                    // trigger update
-                    HatAccountService.triggerHatUpdate()
-                    // go back
-                    _ = self.navigationController?.popViewController(animated: true)
-                })
-            }
-            
-            // if note is shared and user has changed the text show alert message
-            if cachedIsNoteShared && (receivedNote?.data.message != self.textView.text!) {
+                    // save text
+                    receivedNote?.data.message = self.textView.text!
+                    
+                    // delete note
+                    NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+                    // post note
+                    NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
+                        
+                        self.receivedNote?.lastUpdated = Date()
+                        self.receivedNote?.data.updatedTime = Date()
+                        // reload notables table
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: self.receivedNote)
+                        // trigger update
+                        HatAccountService.triggerHatUpdate()
+                        // go back
+                        _ = self.navigationController?.popViewController(animated: true)
+                    }, errorCallback: {() -> Void in
+                        
+                        defaultCancelAction()
+                    })
+                }
                 
-                self.createClassicAlertWith(alertMessage: "Your post would not be edited at the destination.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "OK", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
+                // if note is shared and user has changed the text show alert message
+                if cachedIsNoteShared && (receivedNote?.data.message != self.textView.text!) {
+                    
+                    self.createClassicAlertWith(alertMessage: "Your post would not be edited at the destination.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "OK", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
 
-            // if note is shared show message
-            } else if (receivedNote?.data.shared)! {
-                
-                self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
-            } else {
-                
-                proceedCompletion()
+                // if note is shared show message
+                } else if (receivedNote?.data.shared)! {
+                    
+                    self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
+                } else {
+                    
+                    proceedCompletion()
+                }
             }
+            
         }
+        
+        func success(token: String) {
+            
+            post()
+        }
+        
+        func failed() {
+            
+            let authoriseVC = AuthoriseUserViewController()
+            authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+            authoriseVC.view.layer.cornerRadius = 15
+            authoriseVC.completionFunc = post
+            
+            // add the page view controller to self
+            self.addChildViewController(authoriseVC)
+            self.view.addSubview(authoriseVC.view)
+            authoriseVC.didMove(toParentViewController: self)
+        }
+        
+        let token = HatAccountService.getUsersTokenFromKeychain()
+        // delete data from hat and remove from table
+        HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
     }
     
     /**
@@ -313,30 +346,56 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     @IBAction func deleteButton(_ sender: Any) {
         
-        // if not a previous note then nothing to delete
-        if isEditingExistingNote {
-            
-            func proceedCompletion() {
+        func delete() {
+         
+            // if not a previous note then nothing to delete
+            if isEditingExistingNote {
                 
-                // get user's token
-                let token = HatAccountService.getUsersTokenFromKeychain()
+                func proceedCompletion() {
+                    
+                    // get user's token
+                    let token = HatAccountService.getUsersTokenFromKeychain()
+                    
+                    // delete note
+                    NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+                    
+                    //go back
+                    _ = self.navigationController?.popViewController(animated: true)
+                }
                 
-                // delete note
-                NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
-                
-                //go back
-                _ = self.navigationController?.popViewController(animated: true)
-            }
-            
-            // if note shared show message
-            if cachedIsNoteShared {
-                
-                self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
-            } else {
-                
-                proceedCompletion()
+                // if note shared show message
+                if cachedIsNoteShared {
+                    
+                    self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+                } else {
+                    
+                    proceedCompletion()
+                }
             }
         }
+        
+        func success(token: String) {
+            
+            delete()
+        }
+        
+        func failed() {
+            
+            let authoriseVC = AuthoriseUserViewController()
+            authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+            authoriseVC.view.layer.cornerRadius = 15
+            authoriseVC.completionFunc = delete
+            
+            // add the page view controller to self
+            self.addChildViewController(authoriseVC)
+            self.view.addSubview(authoriseVC.view)
+            authoriseVC.didMove(toParentViewController: self)
+        }
+        
+        let token = HatAccountService.getUsersTokenFromKeychain()
+        
+        // delete data from hat and remove from table
+        HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
     }
     
     /**
@@ -458,8 +517,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                             self.claimOffer()
                                         }
                                     }
-                                    
-                                    
                                 }
                                 
                                 DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {() -> Void in return})
@@ -727,6 +784,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         // add notification observers
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow2), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name:NSNotification.Name.UIKeyboardDidShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide2), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(showAlertForDataPlug), name: Notification.Name("dataPlugMessage"), object: nil)
@@ -930,15 +988,29 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     func keyboardWillShow2(notification:NSNotification){
         
         var userInfo = notification.userInfo!
-        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+
+        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         keyboardFrame = self.view.convert(keyboardFrame, from: nil)
         
         self.scrollView.contentInset.bottom = keyboardFrame.size.height
+        print(String(describing: keyboardFrame.size.height))
         
         let desiredOffset = CGPoint(x: 0, y: self.scrollView.contentInset.top)
         self.scrollView.setContentOffset(desiredOffset, animated: true)
-        self.actionsView.frame.origin.y = self.view.frame.height - keyboardFrame.size.height - self.actionsView.frame.size.height
         self.isKeyboardVisible = true
+    }
+    
+    func keyboardDidShow(notification:NSNotification){
+        
+        var userInfo = notification.userInfo!
+        
+        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        keyboardFrame = self.view.convert(keyboardFrame, from: nil)
+        
+        UIView.animate(withDuration: 0.3, animations: {() -> Void in
+        
+            self.actionsView.frame.origin.y = keyboardFrame.origin.y - self.actionsView.frame.height
+        })
     }
     
     func keyboardWillHide2(notification:NSNotification){

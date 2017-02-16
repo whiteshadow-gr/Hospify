@@ -170,8 +170,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             if urlHost == Constants.Auth.LocalAuthHost {
                 
-                let notification = Notification.Name(Constants.Auth.NotificationHandlerName)
-                NotificationCenter.default.post(name: notification, object: url)
+                let result = KeychainHelper.GetKeychainValue(key: "logedIn")
+                if result != nil {
+                    
+                    NotificationCenter.default.post(name: Notification.Name("reauthorisedUser"), object: url)
+                } else {
+                  
+                    let notification = Notification.Name(Constants.Auth.NotificationHandlerName)
+                    NotificationCenter.default.post(name: notification, object: url)
+                    _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "true")
+                }
             } else if urlHost == "dataplugsapphost" {
                 
                 let notification = Notification.Name("dataPlugMessage")

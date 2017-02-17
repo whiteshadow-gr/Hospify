@@ -248,13 +248,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // post note
                 NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
                     
-                    self.receivedNote?.lastUpdated = Date()
-                    self.receivedNote?.data.updatedTime = Date()
-                    // reload notables table
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: self.receivedNote)
-                    // trigger update
-                    HatAccountService.triggerHatUpdate()
-                    // go back
                     _ = self.navigationController?.popViewController(animated: true)
                 })
             }
@@ -279,13 +272,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // post note
                 NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
                     
-                    self.receivedNote?.lastUpdated = Date()
-                    self.receivedNote?.data.updatedTime = Date()
-                    // reload notables table
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: self.receivedNote)
-                    // trigger update
-                    HatAccountService.triggerHatUpdate()
-                    // go back
                     _ = self.navigationController?.popViewController(animated: true)
                 })
             }
@@ -425,6 +411,9 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                             
                             func noAction() {
                                 
+                                self.publishButton.setTitle("Save", for: .normal)
+                                self.publishButton.isUserInteractionEnabled = true
+                                
                                 // if button was selected deselect it and remove the button from the array
                                 if self.facebookButton.alpha == 1 {
                                     
@@ -537,6 +526,9 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 
                 // reset twitter button
                 func noAction() {
+                    
+                    self.publishButton.setTitle("Save", for: .normal)
+                    self.publishButton.isUserInteractionEnabled = true
                     
                     // if button was selected deselect it and remove the button from the array
                     if self.twitterButton.alpha == 1 {

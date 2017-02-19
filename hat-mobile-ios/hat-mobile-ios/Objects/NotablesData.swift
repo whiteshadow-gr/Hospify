@@ -15,7 +15,39 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A struct representing the notables table received from JSON
-struct NotablesData {
+class NotablesData: Equatable {
+    
+    // MARK: - Comparable protocol
+    
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func ==(lhs: NotablesData, rhs: NotablesData) -> Bool {
+        
+        return (lhs.authorData == rhs.authorData && lhs.photoData == rhs.photoData && lhs.locationData == rhs.locationData
+            && lhs.createdTime == rhs.createdTime && lhs.publicUntil == rhs.publicUntil && lhs.updatedTime == rhs.updatedTime && lhs.shared == rhs.shared && lhs.sharedOn == rhs.sharedOn && lhs.message == rhs.message && lhs.kind == rhs.kind)
+    }
+    
+    
+    /// Returns a Boolean value indicating whether the value of the first
+    /// argument is less than that of the second argument.
+    ///
+    /// This function is the only requirement of the `Comparable` protocol. The
+    /// remainder of the relational operator functions are implemented by the
+    /// standard library for any type that conforms to `Comparable`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func <(lhs: NotablesData, rhs: NotablesData) -> Bool {
+        
+        return lhs.updatedTime < rhs.updatedTime
+    }
     
     // MARK: - Variables
     
@@ -67,7 +99,7 @@ struct NotablesData {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    init(dict: Dictionary<String, JSON>) {
+    convenience init(dict: Dictionary<String, JSON>) {
 
         // the tables are optional fields in the json so init them and check if they exist in our json
         self.init()

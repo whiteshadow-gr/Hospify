@@ -124,6 +124,7 @@ class NotablesService: NSObject {
                         
                         // reload table
                         successCallBack()
+                        HatAccountService.triggerHatUpdate()
                     } else if statusCode == 401 {
                         
                         errorCallback()
@@ -160,7 +161,7 @@ class NotablesService: NSObject {
             // check if the arrayToReturn it contains that value and if not add it
             let result = arrayToReturn.contains(where: {(note2: NotesData) -> Bool in
                 
-                if (note.data.createdTime == note2.data.createdTime) && (note.data.message == note.data.message) {
+                if (note.data.createdTime == note2.data.createdTime) && (note.data.message == note2.data.message) {
                     
                     return true
                 }
@@ -171,6 +172,29 @@ class NotablesService: NSObject {
             if !result {
                 
                 arrayToReturn.append(note)
+            }
+        }
+        
+        for (outterIndex, note) in arrayToReturn.enumerated() {
+            
+            for (innerIndex, innerNote) in arrayToReturn.enumerated() {
+                
+                if outterIndex != innerIndex {
+                    
+                    if innerNote.data.createdTime == note.data.createdTime {
+                    
+                        if innerNote.lastUpdated != note.lastUpdated {
+
+                            if innerNote.lastUpdated > note.lastUpdated {
+                                
+                                arrayToReturn.remove(at: outterIndex)
+                            } else {
+                                
+                                arrayToReturn.remove(at: innerIndex)
+                            }
+                        }
+                    }
+                }
             }
         }
         

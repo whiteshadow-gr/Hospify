@@ -50,6 +50,9 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
         if dataPlug.showCheckMark == true {
             
             cell.checkMarkImage.isHidden = false
+        } else {
+            
+            cell.checkMarkImage.isHidden = true
         }
         
         // check if device is in portrait mode, 3 tiles per row vs 2

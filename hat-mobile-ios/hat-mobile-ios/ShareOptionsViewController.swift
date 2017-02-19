@@ -250,14 +250,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     
                     // post note
                     NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
-                        
-                        self.receivedNote?.lastUpdated = Date()
-                        self.receivedNote?.data.updatedTime = Date()
-                        // reload notables table
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: self.receivedNote)
-                        // trigger update
-                        HatAccountService.triggerHatUpdate()
-                        // go back
+
                         _ = self.navigationController?.popViewController(animated: true)
                     }, errorCallback: {() -> Void in
                     
@@ -285,12 +278,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     // post note
                     NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
                         
-                        self.receivedNote?.lastUpdated = Date()
-                        self.receivedNote?.data.updatedTime = Date()
-                        // reload notables table
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadTable"), object: self.receivedNote)
-                        // trigger update
-                        HatAccountService.triggerHatUpdate()
                         // go back
                         _ = self.navigationController?.popViewController(animated: true)
                     }, errorCallback: {() -> Void in
@@ -332,6 +319,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.addChildViewController(authoriseVC)
             self.view.addSubview(authoriseVC.view)
             authoriseVC.didMove(toParentViewController: self)
+            
+            self.publishButton.setTitle("Please try again", for: .normal)
         }
         
         let token = HatAccountService.getUsersTokenFromKeychain()
@@ -390,10 +379,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.addChildViewController(authoriseVC)
             self.view.addSubview(authoriseVC.view)
             authoriseVC.didMove(toParentViewController: self)
+            
+            self.deleteButtonOutlet.setTitle("Please try again", for: .normal)
         }
         
         let token = HatAccountService.getUsersTokenFromKeychain()
-        
         // delete data from hat and remove from table
         HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
     }

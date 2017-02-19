@@ -13,7 +13,37 @@
 // MARK: Struct
 
 /// A struct representing the location table received from JSON
-struct PhotoData {
+class PhotoData: Equatable {
+    
+    // MARK: - Comparable protocol
+    
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func ==(lhs: PhotoData, rhs: PhotoData) -> Bool {
+        
+        return (lhs.link == rhs.link && lhs.source == rhs.source && lhs.caption == rhs.caption && lhs.shared == rhs.shared)
+    }
+    
+    /// Returns a Boolean value indicating whether the value of the first
+    /// argument is less than that of the second argument.
+    ///
+    /// This function is the only requirement of the `Comparable` protocol. The
+    /// remainder of the relational operator functions are implemented by the
+    /// standard library for any type that conforms to `Comparable`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func <(lhs: PhotoData, rhs: PhotoData) -> Bool {
+        
+        return lhs.source < rhs.source
+    }
     
     // MARK: - Variables
 
@@ -43,7 +73,7 @@ struct PhotoData {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    init(dict: Dictionary<String, String>) {
+    convenience init(dict: Dictionary<String, String>) {
         
         self.init()
         

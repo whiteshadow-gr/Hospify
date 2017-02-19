@@ -171,7 +171,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             if urlHost == Constants.Auth.LocalAuthHost {
                 
                 let result = KeychainHelper.GetKeychainValue(key: "logedIn")
-                if result != nil {
+                if result == "true" {
                     
                     NotificationCenter.default.post(name: Notification.Name("reauthorisedUser"), object: url)
                 } else {

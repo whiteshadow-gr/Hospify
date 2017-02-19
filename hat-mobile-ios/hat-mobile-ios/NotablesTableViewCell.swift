@@ -69,7 +69,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         // if the note is shared get the shared on string as well
         if note.data.shared {
             
-            newCell.sharedOn = note.data.sharedOn.stringToArray()
+            newCell.sharedOn = note.data.sharedOn.stringToArray().sorted()
             self.sharedOn = newCell.sharedOn
         }
         

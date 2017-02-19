@@ -61,7 +61,12 @@ class AuthoriseUserViewController: UIViewController {
         // authorize with hat
         HatAccountService.loginToHATAuthorization(userDomain: userDomain, url: url, selfViewController: nil, completion: completionFunc)
         
-        self.dismiss(animated: true, completion: nil)
+        _ = self.removeFromParentViewController
+        self.willMove(toParentViewController: nil)
+        self.view.removeFromSuperview()
+        self.removeFromParentViewController()
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name("reauthorisedUser"), object: nil)
     }
 
     override func didReceiveMemoryWarning() {

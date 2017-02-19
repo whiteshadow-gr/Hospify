@@ -15,7 +15,37 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A struct representing the author table received from JSON
-struct AuthorData {
+class AuthorData: Equatable {
+    
+    // MARK: - Comparable protocol
+    
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func ==(lhs: AuthorData, rhs: AuthorData) -> Bool {
+        
+        return (lhs.nickName == rhs.nickName && lhs.name == rhs.name && lhs.photoURL == rhs.photoURL && lhs.phata == rhs.phata && lhs.id == rhs.id)
+    }
+    
+    /// Returns a Boolean value indicating whether the value of the first
+    /// argument is less than that of the second argument.
+    ///
+    /// This function is the only requirement of the `Comparable` protocol. The
+    /// remainder of the relational operator functions are implemented by the
+    /// standard library for any type that conforms to `Comparable`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func <(lhs: AuthorData, rhs: AuthorData) -> Bool {
+        
+        return lhs.name < rhs.name
+    }
     
     // MARK: - Variables
     
@@ -48,7 +78,7 @@ struct AuthorData {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    init(dict: Dictionary<String, JSON>) {
+    convenience init(dict: Dictionary<String, JSON>) {
         
         // init optional JSON fields to default values
         self.init()

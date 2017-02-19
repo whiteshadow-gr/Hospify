@@ -181,10 +181,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             self.showEptyLabelWith(text: "Fetching social feed...")
             // change flag
             self.isTwitterAvailable = true
-            
-            // get user's token
-            let token = HatAccountService.getUsersTokenFromKeychain()
-            
+
             func success(token: String) {
                 
                 // try to access twitter plug
@@ -204,6 +201,8 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                 authoriseVC.didMove(toParentViewController: self)
             }
             
+            // get user's token
+            let token = HatAccountService.getUsersTokenFromKeychain()
             // delete data from hat and remove from table
             HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
         }

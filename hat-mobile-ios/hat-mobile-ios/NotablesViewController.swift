@@ -48,6 +48,9 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     /// a dark view pop up to hide the background
     private var darkView: UIView? = nil
+    
+    /// a dark view pop up to hide the background
+    private var authorise: AuthoriseUserViewController? = nil
 
     // MARK: - IBOutlets
 
@@ -167,8 +170,43 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         super.viewWillAppear(animated)
         
-        // fetch notes
-        self.connectToServerToGetNotes()        
+        func success(token: String) {
+            
+            if self.authorise != nil {
+                
+                self.authorise = nil
+            }
+            // fetch notes
+            self.connectToServerToGetNotes()
+        }
+        
+        func failed() {
+            
+            if self.authorise == nil {
+                
+                self.authorise = AuthoriseUserViewController()
+                self.authorise!.view.backgroundColor = .clear
+                self.authorise!.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                self.authorise!.view.layer.cornerRadius = 15
+                self.authorise!.completionFunc = connectToServerToGetNotes
+                
+                // add the page view controller to self
+                self.addChildViewController(self.authorise!)
+                self.view.addSubview(self.authorise!.view)
+                self.authorise!.didMove(toParentViewController: self)
+            }
+        }
+
+        // get notes
+        self.token = HatAccountService.getUsersTokenFromKeychain()
+        HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+        super.viewDidAppear(animated)
+        
+        self.token = HatAccountService.getUsersTokenFromKeychain()
     }
 
     override func didReceiveMemoryWarning() {
@@ -315,19 +353,24 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     self.cachedNotesArray.remove(at: indexPath.row)
                     tableView.deleteRows(at: [indexPath], with: .fade)
                     self.updateUI()
+                    
+                    self.authorise = nil
                 }
                 
                 func failed() {
                     
-                    let authoriseVC = AuthoriseUserViewController()
-                    authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
-                    authoriseVC.view.layer.cornerRadius = 15
-                    authoriseVC.completionFunc = proceedCompletion
-                    
-                    // add the page view controller to self
-                    self.addChildViewController(authoriseVC)
-                    self.view.addSubview(authoriseVC.view)
-                    authoriseVC.didMove(toParentViewController: self)
+                    if self.authorise != nil {
+                        
+                        self.authorise! = AuthoriseUserViewController()
+                        self.authorise!.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                        self.authorise!.view.layer.cornerRadius = 15
+                        self.authorise!.completionFunc = proceedCompletion
+                        
+                        // add the page view controller to self
+                        self.addChildViewController(self.authorise!)
+                        self.view.addSubview(self.authorise!.view)
+                        self.authorise!.didMove(toParentViewController: self)
+                    }
                 }
                 
                 // delete data from hat and remove from table
@@ -369,29 +412,9 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             self.navigationController?.pushViewController(loginPageView, animated: false)
         } else {
             
-            func success(token: String) {
-                
-                self.showEmptyTableLabelWith(message: "Accessing your HAT...")
-                
-                NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: showNewbieScreens)
-            }
+            self.showEmptyTableLabelWith(message: "Accessing your HAT...")
             
-            func failed() {
-                
-                let authoriseVC = AuthoriseUserViewController()
-                authoriseVC.view.backgroundColor = .clear
-                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
-                authoriseVC.view.layer.cornerRadius = 15
-                authoriseVC.completionFunc = connectToServerToGetNotes
-                
-                // add the page view controller to self
-                self.addChildViewController(authoriseVC)
-                self.view.addSubview(authoriseVC.view)
-                authoriseVC.didMove(toParentViewController: self)
-            }
-            
-            // delete data from hat and remove from table
-            HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+            NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: showNewbieScreens)
         }
     }
     
@@ -487,7 +510,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 }
                 
                 temp = NotablesService.removeDuplicatesFrom(array: temp)
-                temp = NotablesService.sortNotables(notes: temp)
                 
                 self.cachedNotesArray.removeAll()
                 

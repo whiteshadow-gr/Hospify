@@ -175,9 +175,9 @@ class NotablesService: NSObject {
             }
         }
         
-        for (outterIndex, note) in arrayToReturn.enumerated() {
+        for (outterIndex, note) in arrayToReturn.enumerated().reversed() {
             
-            for (innerIndex, innerNote) in arrayToReturn.enumerated() {
+            for (innerIndex, innerNote) in arrayToReturn.enumerated().reversed() {
                 
                 if outterIndex != innerIndex {
                     

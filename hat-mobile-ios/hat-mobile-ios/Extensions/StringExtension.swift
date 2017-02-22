@@ -27,7 +27,7 @@ extension String {
      */
     public func fromBase64URLToBase64(s: String) -> String {
         
-        var s = s;
+        var s = s
         if (s.characters.count % 4 == 2 ) {
             
             s = s + "=="

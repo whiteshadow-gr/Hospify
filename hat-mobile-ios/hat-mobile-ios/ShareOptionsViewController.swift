@@ -186,7 +186,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         if UI_USER_INTERFACE_IDIOM() == .pad {
             
             alertController.popoverPresentationController?.sourceRect = self.durationSharedForLabel.frame
-            alertController.popoverPresentationController?.sourceView = self.shareForView;
+            alertController.popoverPresentationController?.sourceView = self.shareForView
         }
         
         // present alert controller

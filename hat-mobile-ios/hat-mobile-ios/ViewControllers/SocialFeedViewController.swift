@@ -750,7 +750,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         if UI_USER_INTERFACE_IDIOM() == .pad {
             
             alert.popoverPresentationController?.barButtonItem = self.navigationItem.leftBarButtonItem
-            alert.popoverPresentationController?.sourceView = self.view;
+            alert.popoverPresentationController?.sourceView = self.view
         }
         
         // present alert view controller

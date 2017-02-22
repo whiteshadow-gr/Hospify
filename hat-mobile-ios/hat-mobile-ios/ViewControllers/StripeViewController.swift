@@ -235,8 +235,8 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         self.countryTextField.inputView = self.privatePicker
         
         // create 2 notification observers for listening to the keyboard
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHandling(sender:)), name:.UIKeyboardWillShow, object: nil);
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHandling(sender:)), name:.UIKeyboardWillHide, object: nil);
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHandling(sender:)), name:.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHandling(sender:)), name:.UIKeyboardWillHide, object: nil)
         
         // add handling for taps
         self.hideKeyboardWhenTappedAround()

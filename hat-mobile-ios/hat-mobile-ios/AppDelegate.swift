@@ -24,8 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     // MARK: - Variables
     
     var window: UIWindow?
-    var deferringUpdates: Bool = false
-    var lastPos: CLLocation = CLLocation(latitude: 0, longitude: 0)
+    private var region: CLCircularRegion? = nil
     
     /// Load the LocationManager
     lazy var locationManager: CLLocationManager! = {
@@ -36,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         locationManager.delegate = self
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.requestAlwaysAuthorization()
-        locationManager.pausesLocationUpdatesAutomatically = false
+        locationManager.disallowDeferredLocationUpdates()
         locationManager.activityType = CLActivityType.otherNavigation /* see https://developer.apple.com/reference/corelocation/clactivitytype */
         return locationManager
     }()
@@ -50,15 +49,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         STPPaymentConfiguration.shared().publishableKey = "pk_live_IkuCnCV8N48VKdcMfbfb1Mp7"
         STPPaymentConfiguration.shared().appleMerchantIdentifier = "merchant.com.hubofallthings.rumpellocationtracker"
-
+        
         // if app was closed by iOS (low mem, etc), then receives a location update, and respawns your app, letting it know it respawned due to a location service
         if launchOptions?[UIApplicationLaunchOptionsKey.location] != nil {
             
-            //return true
+            self.startUpdatingLocation()
         }
-        startUpdatingLocation()
+        self.startUpdatingLocation()
         
-        // change tab bar item font        
+        // change tab bar item font
         UITabBarItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "Open Sans Condensed", size: 11)!], for: UIControlState.normal)
         
         // change bar button item font
@@ -71,43 +70,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         let notificationSettings = UIUserNotificationSettings(types: [.alert, .sound], categories: nil)
         UIApplication.shared.registerUserNotificationSettings(notificationSettings)
         
+        let result = KeychainHelper.GetKeychainValue(key: "logedIn")
         /* we already have a hat_domain, ie. can skip the login screen? */
-        if !HatAccountService.TheUserHATDomain().isEmpty {
+        if result == "true" {
             
             /* Go to the map screen. */
             let nav: UINavigationController = window?.rootViewController as! UINavigationController
             let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
             let tabController = storyboard.instantiateViewController(withIdentifier: "tabBarControllerID") as! UITabBarController
             nav.setViewControllers([tabController], animated: false)
-        } else {
-            /* Just fall through to go to the login screen as per the storyboard. */
         }
         
         self.window?.tintColor = Constants.Colours.AppBase
         
-        // the count delegate
-        //self.updateCountDelegate = self
+        let regions = self.locationManager.monitoredRegions
+        
+        for region in regions {
+            
+            self.locationManager.stopMonitoring(for: region)
+        }
+        
+        self.locationManager.requestLocation()
         
         return true
     }
     
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         
-        if (lastPos.horizontalAccuracy <= locationManager.desiredAccuracy) {
+        let taskID = beginBackgroundUpdateTask()
+        let syncHelper = SyncDataHelper()
+        if syncHelper.CheckNextBlockToSync() == true {
             
-            let taskID = beginBackgroundUpdateTask()
-            let syncHelper = SyncDataHelper()
-            if syncHelper.CheckNextBlockToSync() == true {
-                
-                // we probably need something like syncHelper.CheckNextBlockToSync(self.endBackgroundUpdateTask(taskID: taskID))
-                // do things in the background fetch
-                completionHandler(.newData)
-            } else {
-                
-                completionHandler(.noData)
-            }
-            self.endBackgroundUpdateTask(taskID: taskID)
+            completionHandler(.newData)
+        } else {
+            
+            completionHandler(.noData)
         }
+        self.endBackgroundUpdateTask(taskID: taskID)
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
@@ -123,10 +122,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         UIApplication.shared.cancelAllLocalNotifications()
         
         // date
-        let timeInterval:TimeInterval = FutureTimeInterval.init(days: Double(3), timeType: TimeType.future).interval
+        let timeInterval: TimeInterval = FutureTimeInterval.init(days: Double(3), timeType: TimeType.future).interval
         let futureDate = Date().addingTimeInterval(timeInterval) // e.g. 3 days from now
+        
         // add new
-        let localNotification:UILocalNotification = UILocalNotification()
+        let localNotification: UILocalNotification = UILocalNotification()
         localNotification.alertAction = NSLocalizedString("sync_reminder_title", comment: "title")
         localNotification.alertBody = NSLocalizedString("sync_reminder_message", comment: "message")
         localNotification.fireDate = futureDate
@@ -134,29 +134,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         localNotification.soundName = UILocalNotificationDefaultSoundName
         
         UIApplication.shared.scheduleLocalNotification(localNotification)
+        
+        locationManager.stopUpdatingLocation()
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+        
+        locationManager.requestLocation()
+        self.startUpdatingLocation()
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         
         // purge old data
-        purgeUsingPredicate()
-        
-        // stopUpdatingLocation
-//        if let _:CLLocationManager = locationManager {
-//            
-//            manager.stopUpdatingLocation()
-//            NSLog("Delegate stopUpdatingLocation");
-//        }
+        self.purgeUsingPredicate()
+        self.startUpdatingLocation()
+        self.endBackgroundUpdateTask(taskID: UIBackgroundTaskIdentifier.init())
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
         
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        locationManager.stopUpdatingLocation()
+        _ = self.beginBackgroundUpdateTask()
     }
     
     // MARK: - oAuth handler function
@@ -171,11 +173,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             if urlHost == Constants.Auth.LocalAuthHost {
                 
                 let result = KeychainHelper.GetKeychainValue(key: "logedIn")
-                if result == "true" {
+                if (result == "true" && !HatAccountService.TheUserHATDomain().isEmpty) {
                     
                     NotificationCenter.default.post(name: Notification.Name("reauthorisedUser"), object: url)
                 } else {
-                  
+                    
                     let notification = Notification.Name(Constants.Auth.NotificationHandlerName)
                     NotificationCenter.default.post(name: notification, object: url)
                     _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "true")
@@ -194,7 +196,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     /**
      Check if we need to purge old data. 7 Days
      */
-    func purgeUsingPredicate() -> Void {
+    private func purgeUsingPredicate() -> Void {
         
         let lastWeek = Date().addingTimeInterval(FutureTimeInterval.init(days: Constants.PurgeData.OlderThan, timeType: TimeType.past).interval)
         let predicate = NSPredicate(format: "dateAdded <= %@", lastWeek as CVarArg)
@@ -214,45 +216,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
      */
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        //get last location
-        let latestLocation: CLLocation = locations[locations.count - 1]
-        var dblocation: CLLocation? = nil
-        var timeInterval: TimeInterval = TimeInterval()
-
-        if let dbLastPoint = RealmHelper.GetLastDataPoint() {
-
-            dblocation = CLLocation(latitude: (dbLastPoint.lat), longitude: (dbLastPoint.lng))
-            let lastRecordedDate = dbLastPoint.dateAdded
-            timeInterval = Date().timeIntervalSince(lastRecordedDate)
-        }
-
-        // test that the horizontal accuracy does not indicate an invalid measurement
-        if (latestLocation.horizontalAccuracy < 0) {
-
-            return
-        }
+        MapsHelper.addLocationsToDatabase(locationManager: manager, locations: locations)
         
-        // check we have a measurement that meets our requirements,
-        if ((latestLocation.horizontalAccuracy <= locationManager.desiredAccuracy)) || !(timeInterval.isLess(than: 3600)) {
-
-            if (dblocation != nil) {
-
-                //calculate distance from previous spot
-                let distance = latestLocation.distance(from: dblocation!)
-                if !distance.isLess(than: locationManager.distanceFilter - (latestLocation.horizontalAccuracy + dblocation!.horizontalAccuracy)) {
-
-                    // add data
-                    _ = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
-                    let syncHelper = SyncDataHelper()
-                    _ = syncHelper.CheckNextBlockToSync()
-                }
-            } else {
-
-                // add data
-                _ = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
-                let syncHelper = SyncDataHelper()
-                _ = syncHelper.CheckNextBlockToSync()
-            }
+        self.stopRegionTracking()
+        
+        self.region = CLCircularRegion(center: locations[locations.count - 1].coordinate, radius: 150, identifier: "UpdateCircle")
+        
+        self.region!.notifyOnExit = true
+        locationManager.stopUpdatingLocation()
+        locationManager.startMonitoring(for: region!)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        
+        if region is CLCircularRegion {
+            
+            self.locationManager.requestLocation()
         }
     }
     
@@ -262,29 +241,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
          If not authorised, we can ignore.
          Onve user us logged in and has accepted the authorization, this will always be true
          */
-        if let manager:CLLocationManager = locationManager {
+        if let manager: CLLocationManager = locationManager {
             
             if let result = KeychainHelper.GetKeychainValue(key: "trackDevice") {
                 
                 if result == "true" {
                     
-                    manager.startUpdatingLocation()
-                    NSLog("Delegate startUpdatingLocation");
+                    manager.requestLocation()
+                    NSLog("Delegate startUpdatingLocation")
                 }
             } else {
                 
                 _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "true")
-                manager.startUpdatingLocation()
-                NSLog("Delegate startUpdatingLocation");
+                self.stopRegionTracking()
+                self.locationManager.stopUpdatingLocation()
+                self.locationManager = nil
+                NSLog("Delegate startUpdatingLocation")
             }
         }
     }
     
-    //didFinishDeferredUpdatesWithError:
-    func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
+    private func stopRegionTracking() {
         
-        // Stop deferring updates
-        self.deferringUpdates = false
+        if self.region != nil {
+            
+            self.locationManager.stopMonitoring(for: self.region!)
+            self.region = nil
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+        
+        print("Monitoring failed for region with identifier: \(region!.identifier)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        
+        print("Location Manager failed with the following error: \(error)")
     }
     
     // MARK: - Background Task Functions

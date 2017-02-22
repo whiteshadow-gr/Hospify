@@ -68,7 +68,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         super.title = "Location"
 
         // hide back button
-        self.navigationItem.setHidesBackButton(true, animated: false);
+        self.navigationItem.setHidesBackButton(true, animated: false)
         
         // user HAT domain
         self.labelUserHATDomain.text = HatAccountService.TheUserHATDomain()
@@ -336,18 +336,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         appDelegate.locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
         appDelegate.locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
         
-        if let result = KeychainHelper.GetKeychainValue(key: "trackDevice") {
-            
-            if result == "true" {
-                
-                appDelegate.locationManager.startUpdatingLocation()
-            } else {
-                
-                // Location stop
-                appDelegate.locationManager.stopUpdatingLocation()
-                appDelegate.locationManager = nil
-            }
-        }
+        appDelegate.startUpdatingLocation()
     }
 
     func onDataSyncFeedback(_ isSuccess: Bool, message: String) {
@@ -355,12 +344,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         // if not a success show message and update UI
         if !isSuccess {
             
-            lastErrorMessage = message;
-            labelLastSyncInformation.textColor = UIColor.red;
+            lastErrorMessage = message
+            labelLastSyncInformation.textColor = UIColor.red
         } else {
             
-            lastErrorMessage = "";
-            labelLastSyncInformation.textColor = UIColor.white;
+            lastErrorMessage = ""
+            labelLastSyncInformation.textColor = UIColor.white
         }
     }
     

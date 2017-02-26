@@ -10,14 +10,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import SafariServices
 import MessageUI
 
 // MARK: Class
 
 /// The Login View Controller
-class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate {
+class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate, UIPopoverPresentationControllerDelegate {
     
     // MARK: - IBOutlets
 
@@ -27,6 +26,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     @IBOutlet weak var getAHATButton: UIButton!
     /// An IBOutlet for handling the buttonLogon
     @IBOutlet weak var buttonLogon: UIButton!
+    /// An IBOutlet for handling the joinCommunityButton
+    @IBOutlet weak var joinCommunityButton: UIButton!
+    @IBOutlet weak var domainButton: UIButton!
     
     /// An IBOutlet for handling the inputUserHATDomain
     @IBOutlet weak var inputUserHATDomain: UITextField!
@@ -53,7 +55,56 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     /// SafariViewController variable
     private var safariVC: SFSafariViewController?
     
+    private let controller = AvailableHATDomainsTableViewController()
+        
     // MARK: - IBActions
+    
+    @IBAction func domainButtonAction(_ sender: Any) {
+        
+//        let alert = UIAlertController(title: "Select domain", message: nil, preferredStyle: .actionSheet)
+//        
+//        let hubofallthingsAction = UIAlertAction(title: ".hubofallthings.net", style: .default, handler: {(alert: UIAlertAction) -> Void in
+//            
+//        })
+//        
+//        let bsafeAction = UIAlertAction(title: ".bsafe.org", style: .default, handler: {(alert: UIAlertAction) -> Void in
+//            
+//        })
+//        
+//        let hubatAction = UIAlertAction(title: ".hubat.net", style: .default, handler: {(alert: UIAlertAction) -> Void in
+//            
+//        })
+//        
+//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {(alert: UIAlertAction) -> Void in
+//            
+//        })
+//        
+//        alert.addAction(hubofallthingsAction)
+//        alert.addAction(bsafeAction)
+//        alert.addAction(hubatAction)
+//        alert.addAction(cancelAction)
+//        
+//        // if user is on ipad show as a pop up
+//        if UI_USER_INTERFACE_IDIOM() == .pad {
+//            
+//            alert.popoverPresentationController?.sourceRect = self.domainButton.frame
+//            alert.popoverPresentationController?.sourceView = self.domainButton
+//        }
+//        
+//        // present alert controller
+//        self.navigationController!.present(alert, animated: true, completion: nil)
+        
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: "availableDomainsTableViewController") as! UITableViewController
+        controller.modalPresentationStyle = .popover
+        controller.preferredContentSize = CGSize(width: self.view.bounds.width, height: 130)
+        
+        controller.popoverPresentationController?.sourceRect = CGRect(x: self.domainButton.bounds.origin.x, y: 30, width: 100, height: 0)
+        controller.popoverPresentationController?.sourceView = self.domainButton
+        controller.popoverPresentationController?.delegate = self
+        controller.popoverPresentationController?.permittedArrowDirections = .up
+        
+        present(controller, animated: true, completion: nil)
+    }
     
     /**
      A button launching email view controller
@@ -184,6 +235,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         self.navigationController?.navigationBar.tintColor = UIColor.white
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = UIColor.tealColor()
+        
+        self.joinCommunityButton.addBorderToButton(width: 1, color: .white)
+        self.getAHATButton.addBorderToButton(width: 1, color: .white)
+        self.learnMoreButton.addBorderToButton(width: 1, color: .white)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -207,6 +262,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         }
         
         return true
+    }
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        
+        return .none
     }
     
     // MARK: - Mail View controller

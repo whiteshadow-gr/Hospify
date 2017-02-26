@@ -61,11 +61,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     @IBOutlet weak var createNewNoteView: UIView!
     
     /// An IBOutlet for handling the create new note button
-    @IBOutlet weak var createNewNoteLabel: UILabel!
-    /// An IBOutlet for handling the create new list button
-    @IBOutlet weak var createNewListLabel: UILabel!
-    /// An IBOutlet for handling the create new blog button
-    @IBOutlet weak var createNewBlogLabel: UILabel!
+    @IBOutlet weak var createNewNoteButton: UIButton!
     /// An IBOutlet for handling the info label when table view is empty or an error has occured
     @IBOutlet weak var eptyTableInfoLabel: UILabel!
     
@@ -73,6 +69,32 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     @IBOutlet weak var retryConnectingButton: UIButton!
 
     // MARK: - IBActions
+    
+    @IBAction func settingsButtonAction(_ sender: Any) {
+        
+        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
+        
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            TabBarViewController.logoutUser(from: self)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(logOutAction)
+        alertController.addAction(cancelAction)
+        
+        // if user is on ipad show as a pop up
+        if UI_USER_INTERFACE_IDIOM() == .pad {
+            
+            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
+            alertController.popoverPresentationController?.sourceView = self.view
+        }
+        
+        // present alert controller
+        self.navigationController!.present(alertController, animated: true, completion: nil)
+    }
     
     /**
      Try to reconnect to get notes
@@ -114,34 +136,15 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         self.performSegue(withIdentifier: "optionsSegue", sender: self)
     }
     
-    /**
-     Go to New note and create a blog
-     
-     - parameter sender: The object that calls this function
-     */
-    @IBAction func newBlogButton(_ sender: Any) {
-        
-        kind = "blog"
-        self.performSegue(withIdentifier: "optionsSegue", sender: self)
-    }
-    
-    /**
-     Go to New note and create a list
-     
-     - parameter sender: The object that calls this function
-     */
-    @IBAction func newListButton(_ sender: Any) {
-        
-        kind = "list"
-        self.performSegue(withIdentifier: "optionsSegue", sender: self)
-    }
-    
     // MARK: - View Methods
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        // view controller title
+        self.title = "Notes"
         
         // keep the green bar at the top
         self.view.bringSubview(toFront: createNewNoteView)
@@ -151,19 +154,8 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         NotificationCenter.default.addObserver(self, selector: #selector(self.hideTable), name: NSNotification.Name(rawValue: "NetworkMessage"), object: nil)
         // add a notification observer in order to hide the second page view controller
         NotificationCenter.default.addObserver(self, selector: #selector(removePageController), name: Notification.Name("hideNewbiePageViewContoller"), object: nil)
-        
-        // add gesture recognizer in the labels
-        let newNoteTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newNoteButton(_:)))
-        self.createNewNoteLabel.addGestureRecognizer(newNoteTapGestureRecognizer)
-        self.createNewNoteLabel.isUserInteractionEnabled = true
-        
-        let newListTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newListButton(_:)))
-        self.createNewListLabel.addGestureRecognizer(newListTapGestureRecognizer)
-        self.createNewListLabel.isUserInteractionEnabled = true
-        
-        let newBlogTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newBlogButton(_:)))
-        self.createNewBlogLabel.addGestureRecognizer(newBlogTapGestureRecognizer)
-        self.createNewBlogLabel.isUserInteractionEnabled = true
+                
+        self.createNewNoteButton.addBorderToButton(width: 0.5, color: .white)
     }
     
     override func viewWillAppear(_ animated: Bool) {

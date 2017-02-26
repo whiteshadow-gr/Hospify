@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import CoreLocation
 import Fabric
 import Crashlytics
@@ -248,7 +247,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 if result == "true" {
                     
                     manager.requestLocation()
-                    NSLog("Delegate startUpdatingLocation")
                 }
             } else {
                 
@@ -256,7 +254,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 self.stopRegionTracking()
                 self.locationManager.stopUpdatingLocation()
                 self.locationManager = nil
-                NSLog("Delegate startUpdatingLocation")
             }
         }
     }

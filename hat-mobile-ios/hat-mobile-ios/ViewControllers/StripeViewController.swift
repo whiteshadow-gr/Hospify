@@ -52,8 +52,6 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     @IBOutlet weak var firstNameTextField: UITextField!
     /// An IBOutlet for handling the last name textField
     @IBOutlet weak var lastNameTextField: UITextField!
-    /// An IBOutlet for handling the nickname textField
-    @IBOutlet weak var nicknameTextField: UITextField!
     /// An IBOutlet for handling the email textField
     @IBOutlet weak var emailTextField: UITextField!
     /// An IBOutlet for handling the personal HAT address textField
@@ -130,7 +128,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
             purchaseModel.email = self.emailTextField.text!
             purchaseModel.firstName = self.firstNameTextField.text!
             purchaseModel.lastName = self.lastNameTextField.text!
-            purchaseModel.nick = self.nicknameTextField.text!
+            purchaseModel.nick = purchaseModel.address
             purchaseModel.password = self.passwordTextField.text!
             
             purchaseModel.sku = self.sku
@@ -391,13 +389,6 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         if lastNameTextField.text == "" {
             
             self.createClassicOKAlertWith(alertMessage: "Please fill your last name", alertTitle: "Last Name field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
-            
-            return false
-        }
-        
-        if nicknameTextField.text == "" {
-            
-            self.createClassicOKAlertWith(alertMessage: "Please fill your nickname", alertTitle: "Nickname field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
             
             return false
         }

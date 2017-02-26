@@ -56,7 +56,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         didSet {
             
             // reload collection view with the saved filter
-            self.reloadCollectionView(with: self.filterBy)
+            //self.reloadCollectionView(with: self.filterBy)
             
             // fetch data from facebook with the saved token
             self.fetchTwitterData(appToken: self.twitterAppToken)
@@ -77,7 +77,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         didSet {
             
             // reload collection view with the saved filter
-            self.reloadCollectionView(with: self.filterBy)
+            //self.reloadCollectionView(with: self.filterBy)
             
             // fetch data from facebook with the saved token
             self.fetchFacebookData(appToken: self.facebookAppToken)
@@ -86,14 +86,47 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
 
     // MARK: - View Controller methods
     
+    @IBAction func settingsButtonAction(_ sender: Any) {
+        
+        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
+        
+        let filterByAction = UIAlertAction(title: "Filter by", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            self.filterSocialNetworksButtonAction()
+        })
+        
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            TabBarViewController.logoutUser(from: self)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(filterByAction)
+        alertController.addAction(logOutAction)
+        alertController.addAction(cancelAction)
+        
+        // if user is on ipad show as a pop up
+        if UI_USER_INTERFACE_IDIOM() == .pad {
+            
+            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
+            alertController.popoverPresentationController?.sourceView = self.view
+        }
+        
+        // present alert controller
+        self.navigationController!.present(alertController, animated: true, completion: nil)
+    }
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         
-        // add notification observers
-        NotificationCenter.default.addObserver(self, selector: #selector(filterSocialNetworksButtonAction), name: NSNotification.Name("filterSocialFeed"), object: nil)
+        // view controller title
+        self.title = "Social Data"
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -111,6 +144,8 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         // set datasource and delegate to self
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
+        
+        self.hidesBottomBarWhenPushed = false
     }
 
     override func didReceiveMemoryWarning() {
@@ -125,7 +160,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         self.collectionView.reloadData()
     }
     
-    // MARK: Fetch twitter data
+    // MARK: - Fetch twitter data
     
     /**
      Fetch twitter data
@@ -234,6 +269,11 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                     self.tweets.append(tweets)
                 }
                 
+                if self.twitterEndTime == nil {
+                    
+                    self.reloadCollectionView(with: self.filterBy)
+                }
+                
                 // if the returned array is equal or bigger than the defined limit make a new request with more data while this thread will continue to show that data
                 if array.count == Int(self.twitterLimitParameter) {
                     
@@ -249,6 +289,12 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                     
                     // increase the limit
                     self.twitterLimitParameter = "500"
+                    
+                    // removes duplicates
+                    self.removeDuplicates()
+                    
+                    // rebuild data
+                    self.rebuildDataArray(filter: self.filterBy)
                 // else nil the flags we use and reload collection view with the saved filter
                 } else {
                     
@@ -398,6 +444,12 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                         self.posts.append(posts)
                     }
                     
+                    if self.facebookEndTime == nil {
+                        
+                        // removes duplicates
+                        self.reloadCollectionView(with: self.filterBy)
+                    }
+                    
                     // if the returned array is equal or bigger than the defined limit make a new request with more data while this thread will continue to show that data
                     if array.count == Int(self.facebookLimitParameter) {
                         
@@ -413,10 +465,17 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                         
                         // increase the limit
                         self.facebookLimitParameter = "500"
+                        
+                        // removes duplicates
+                        self.removeDuplicates()
+                        
+                        // rebuild data
+                        self.rebuildDataArray(filter: self.filterBy)
                     // else nil the flags we use and reload collection view with the saved filter
                     } else {
                         
                         self.facebookEndTime = nil
+                        // removes duplicates
                         self.reloadCollectionView(with: self.filterBy)
                     }
                 }
@@ -493,7 +552,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                 }
                 
                 // calculate size of content
-                let size = self.calculateCellHeight(text: text, width: self.collectionView.frame.width - 16)
+                let size = self.calculateCellHeight(text: text, width: self.collectionView.frame.width - 20)
                 
                 // calculate size of image based on the image ratio
                 let imageHeight = collectionView.frame.width / 2.46
@@ -504,18 +563,18 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             
             // else return size of text plus the cell
             let text = post.data.posts.description + "\n\n" + post.data.posts.link
-            let size = self.calculateCellHeight(text: text, width: self.collectionView.frame.width - 16)
+            let size = self.calculateCellHeight(text: text, width: self.collectionView.frame.width - 20)
             
             return CGSize(width: collectionView.frame.width, height: 85 + size.height)
-        }else {
+        } else {
             
             //return size of text plus the cell
             let tweet = self.cachedDataArray[indexPath.row] as! TwitterSocialFeedObject
             
             let text = tweet.data.tweets.text
-            let size = self.calculateCellHeight(text: text, width: self.collectionView.frame.width - 16)
+            let size = self.calculateCellHeight(text: text, width: self.collectionView.frame.width - 20)
             
-            return CGSize(width: collectionView.frame.width, height: 95 + size.height)
+            return CGSize(width: collectionView.frame.width, height: 100 + size.height)
         }
     }
     
@@ -530,7 +589,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      */
     private func calculateCellHeight(text: String, width: CGFloat) -> CGSize {
         
-        return text.boundingRect( with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: nil, context: nil).size
+        return text.boundingRect(with: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: nil, context: nil).size
     }
     
     // MARK: - Sort array
@@ -670,7 +729,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      
      - parameter notification: The notification object
      */
-    @objc private func filterSocialNetworksButtonAction(notification: NSNotification) {
+    @objc private func filterSocialNetworksButtonAction() {
         
         // create alert
         let alert = UIAlertController(title: "Filter by:", message: "", preferredStyle: .actionSheet)

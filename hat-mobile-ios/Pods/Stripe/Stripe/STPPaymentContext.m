@@ -8,19 +8,21 @@
 
 #import <PassKit/PassKit.h>
 #import <objc/runtime.h>
+
 #import "PKPaymentAuthorizationViewController+Stripe_Blocks.h"
-#import "UIViewController+Stripe_ParentViewController.h"
-#import "STPPromise.h"
+#import "STPAddCardViewController+Private.h"
 #import "STPCardTuple.h"
-#import "STPPaymentMethodTuple.h"
-#import "STPPaymentContext+Private.h"
-#import "UIViewController+Stripe_Promises.h"
-#import "UINavigationController+Stripe_Completion.h"
-#import "STPPaymentConfiguration+Private.h"
-#import "STPWeakStrongMacros.h"
-#import "STPPaymentContextAmountModel.h"
 #import "STPDispatchFunctions.h"
+#import "STPPaymentConfiguration+Private.h"
+#import "STPPaymentContext+Private.h"
+#import "STPPaymentContextAmountModel.h"
+#import "STPPaymentMethodTuple.h"
+#import "STPPromise.h"
 #import "STPShippingMethodsViewController.h"
+#import "STPWeakStrongMacros.h"
+#import "UINavigationController+Stripe_Completion.h"
+#import "UIViewController+Stripe_ParentViewController.h"
+#import "UIViewController+Stripe_Promises.h"
 
 #define FAUXPAS_IGNORED_IN_METHOD(...)
 
@@ -407,6 +409,7 @@
             STPAddCardViewController *addCardViewController = [[STPAddCardViewController alloc] initWithConfiguration:self.configuration theme:self.theme];
             addCardViewController.delegate = self;
             addCardViewController.prefilledInformation = self.prefilledInformation;
+            addCardViewController.shippingAddress = self.shippingAddress;
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:addCardViewController];
             navigationController.navigationBar.stp_theme = self.theme;
             navigationController.modalPresentationStyle = self.modalPresentationStyle;

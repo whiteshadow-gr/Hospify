@@ -27,6 +27,22 @@ extension UIColor {
     }
     
     /**
+     Returns a lighter teal color
+     */
+    public class func tealDarkerColor() -> UIColor {
+        
+        return UIColor.init(colorLiteralRed: 2/255, green: 107/255, blue: 97/255, alpha: 1)
+    }
+    
+    /**
+     Returns a darker teal color
+     */
+    public class func tealLighterColor() -> UIColor {
+        
+        return UIColor.init(colorLiteralRed: 21/255, green: 130/255, blue: 120/255, alpha: 1)
+    }
+    
+    /**
      Returns the light gray color used in rumpel
      */
     public class func rumpelLightGray() -> UIColor {
@@ -40,6 +56,14 @@ extension UIColor {
     public class func rumpelDarkGray() -> UIColor {
         
         return UIColor.init(colorLiteralRed: 29/255, green: 49/255, blue: 53/255, alpha: 1)
+    }
+    
+    /**
+     Returns a lighter dark gray color used in rumpel
+     */
+    public class func rumpelLighterDarkGray() -> UIColor {
+        
+        return UIColor.init(colorLiteralRed: 39/255, green: 72/255, blue: 80/255, alpha: 1)
     }
     
     /**

@@ -264,9 +264,9 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         // in case of landscape show 3 tiles instead of 2
         if self.orientation == .landscapeLeft || self.orientation == .landscapeRight {
             
-            return CGSize(width: UIScreen.main.bounds.width/3, height: UIScreen.main.bounds.width/3)
+            return CGSize(width: UIScreen.main.bounds.width / 3, height: UIScreen.main.bounds.width / 3)
         }
         
-        return CGSize(width: UIScreen.main.bounds.width/2, height: UIScreen.main.bounds.width/2)
+        return CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.width / 2)
     }
 }

@@ -10,19 +10,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import SafariServices
 
+// MARK: Class
+
+/// Authorise view controller, really a blank view controller needed to present the safari view controller
 class AuthoriseUserViewController: UIViewController {
     
+    // MARK: - Variables
+    
+    /// The func to execute after completing the authorisation
     var completionFunc: ((Void) -> Void)? = nil
 
+    /// The safari view controller that opened to authorise user again
     private var safari: SFSafariViewController? = nil
+    
+    // MARK: - View Controller methods
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        
+    
+        // add notif observer
         NotificationCenter.default.addObserver(self, selector: #selector(dismissView), name: NSNotification.Name("reauthorisedUser"), object: nil)
     }
     
@@ -31,6 +40,7 @@ class AuthoriseUserViewController: UIViewController {
         super.viewDidAppear(animated)
         
         // Do any additional setup after loading the view.
+        
         let userDomain = HatAccountService.TheUserHATDomain()
         // build up the hat domain auth url
         let hatDomainURL = "https://" + userDomain + "/hatlogin?name=" + Constants.Auth.ServiceName + "&redirect=" +
@@ -43,7 +53,20 @@ class AuthoriseUserViewController: UIViewController {
             self.present(safari!, animated: true, completion: nil)
         }
     }
+
+    override func didReceiveMemoryWarning() {
+        
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
     
+    // MARK: - Dismiss view controller
+    
+    /**
+     Dismisses view controller from view hierarchy
+     
+     - parameter notif: A Notification object that called this function
+     */
     func dismissView(notif: Notification) {
         
         // get the url form the auth callback
@@ -68,22 +91,5 @@ class AuthoriseUserViewController: UIViewController {
         
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name("reauthorisedUser"), object: nil)
     }
-
-    override func didReceiveMemoryWarning() {
-        
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

@@ -13,6 +13,7 @@
 import MapKit
 import FBAnnotationClusteringSwift
 import RealmSwift
+import Crashlytics
 
 // MARK: Class
 
@@ -40,6 +41,49 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     /// An IBOutlet for handling the buttonLastWeek UIButton
     @IBOutlet weak var buttonLastWeek: UIButton!
     
+    // MARK: - IBActions
+    
+    @IBAction func settingsButtonAction(_ sender: Any) {
+        
+        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
+        
+        let dataAction = UIAlertAction(title: "Show Data", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            self.performSegue(withIdentifier: "dataSegue", sender: self)
+            
+        })
+        
+        let settingsAction = UIAlertAction(title: "Location Settings", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            self.performSegue(withIdentifier: "settingsSegue", sender: self)
+        })
+        
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            TabBarViewController.logoutUser(from: self)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(dataAction)
+        alertController.addAction(settingsAction)
+        alertController.addAction(logOutAction)
+        alertController.addAction(cancelAction)
+        
+        // if user is on ipad show as a pop up
+        if UI_USER_INTERFACE_IDIOM() == .pad {
+            
+            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
+            alertController.popoverPresentationController?.sourceView = self.view
+        }
+        
+        // present alert controller
+        self.navigationController!.present(alertController, animated: true, completion: nil)
+    }
+    
     // MARK: - Variables
     
     /// The FBClusteringManager object constant
@@ -65,10 +109,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         super.viewDidLoad()
 
         // view controller title
-        super.title = "Location"
-
-        // hide back button
-        self.navigationItem.setHidesBackButton(true, animated: false)
+        self.title = "Location"
         
         // user HAT domain
         self.labelUserHATDomain.text = HatAccountService.TheUserHATDomain()
@@ -274,6 +315,24 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
                 self.clusteringManager.display(annotations: annotationArray, onMapView: self.mapView)
             })
         })
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        
+        Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: manager.monitoredRegions)])
+    }
+    
+    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+    
+        Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: region)])
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
+        
+        if error != nil {
+            
+            Crashlytics.sharedInstance().recordError(error!, withAdditionalUserInfo: ["error" : error!.localizedDescription, "statusCode: " : String(describing: manager.monitoredRegions)])
+        }
     }
     
     /**

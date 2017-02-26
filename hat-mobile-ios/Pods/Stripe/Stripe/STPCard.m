@@ -7,9 +7,10 @@
 //
 
 #import "STPCard.h"
+
 #import "NSDictionary+Stripe.h"
-#import "STPImageLibrary.h"
 #import "STPImageLibrary+Private.h"
+#import "STPImageLibrary.h"
 
 @interface STPCard ()
 
@@ -140,6 +141,21 @@
     }
     
     return [self.cardId isEqualToString:other.cardId];
+}
+
+- (STPAddress *)address {
+    if (self.name || self.addressLine1 || self.addressLine2 || self.addressZip || self.addressCity || self.addressState || self.addressCountry) {
+        STPAddress *address = [STPAddress new];
+        address.name = self.name;
+        address.line1 = self.addressLine1;
+        address.line2 = self.addressLine2;
+        address.postalCode = self.addressZip;
+        address.city = self.addressCity;
+        address.state = self.addressState;
+        address.country = self.addressCountry;
+        return address;
+    }
+    return nil;
 }
 
 #pragma mark STPAPIResponseDecodable

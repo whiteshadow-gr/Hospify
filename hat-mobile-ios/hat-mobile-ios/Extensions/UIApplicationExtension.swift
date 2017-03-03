@@ -19,7 +19,7 @@ extension UIApplication {
     // MARK: - Get top view controller
     
     /**
-     <#Function Details#>
+     Returns the top View controller currently in stack
      
      - parameter controller: The controller to search on
      - returns: The top UIViewController

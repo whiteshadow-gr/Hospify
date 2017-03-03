@@ -195,4 +195,14 @@ extension UIViewController {
         
         return UIStoryboard.init(name: "Main", bundle: nil)
     }
+    
+    // MARK: - Remove view controller
+    
+    func removeViewController(viewController: UIViewController) {
+        
+        _ = viewController.removeFromParentViewController
+        viewController.willMove(toParentViewController: nil)
+        viewController.view.removeFromSuperview()
+        viewController.removeFromParentViewController()
+    }
 }

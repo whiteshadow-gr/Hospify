@@ -15,7 +15,7 @@ import UIKit
 // MARK: Struct
 
 /// LearnMoreObject used in learn more button in the login screen
-struct LearnMoreObject {
+class LearnMoreObject {
     
     // MARK: - Variables
 
@@ -29,7 +29,7 @@ struct LearnMoreObject {
     /// The image
     var image: UIImage
     
-    // MARK: - Inits
+    // MARK: - Initialisers
     
     /**
      Inits with default values
@@ -47,7 +47,7 @@ struct LearnMoreObject {
      
      - parameter pageNumber: The number of the page to create
      */
-    init(pageNumber: Int) {
+    convenience init(pageNumber: Int) {
         
         self.init()
         
@@ -113,6 +113,7 @@ struct LearnMoreObject {
             title = "Get smart"
             info = "Gain insights from your data to help you with buying, nutrition and many life decisions!"
             image = UIImage(named: "Get Smart")!
+            
         } else if pageNumber == 20 {
             
             title = "Welcome to Rumpel Lite!"

@@ -33,6 +33,42 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     /// An IBOutlet for handling the collection view
     @IBOutlet weak var collectionView: UICollectionView!
     
+    /// An IBOutlet for handling the hello label on the top of the screen
+    @IBOutlet weak var helloLabel: UILabel!
+    
+    // MARK: - IBActions
+    
+    /**
+     Shows a pop up with the available settings
+     
+     - parameter sender: The object that called this method
+     */
+    @IBAction func SettingsButtonAction(_ sender: Any) {
+        
+        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
+        
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            TabBarViewController.logoutUser(from: self)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(logOutAction)
+        alertController.addAction(cancelAction)
+        
+        // if user is on ipad show as a pop up
+        if UI_USER_INTERFACE_IDIOM() == .pad {
+            
+            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
+            alertController.popoverPresentationController?.sourceView = self.view
+        }
+        
+        // present alert controller
+        self.navigationController!.present(alertController, animated: true, completion: nil)
+    }
+    
     // MARK: - Collection View methods
     
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -68,7 +104,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
                                                                          withReuseIdentifier: "homeHeader",
                                                                          for: indexPath) as! HomeHeaderCollectionReusableView
-        headerView.headerTitle.text = "All Data Services"
+        headerView.headerTitle.text = "Data Services"
         
         return headerView
     }
@@ -90,13 +126,14 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     // MARK: - View controller methods
 
     override func viewDidLoad() {
+        
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         let notables = HomeScreenObject(name: "Notes", description: "Take notes, write lists or create life logs", image: UIImage(named: "notes")!)
         let locations = HomeScreenObject(name: "Locations", description: "Track your movements over the day or week", image: UIImage(named: "gps outlined")!)
-        let socialData = HomeScreenObject(name: "Social Data", description: "All your social media posts collected and stored in your HAT", image: UIImage(named: "SocialFeed")!)
-        let chat = HomeScreenObject(name: "Chat", description: "Coming Soon", image: UIImage(named: "SocialFeed")!)
+        let socialData = HomeScreenObject(name: "Social Data", description: "Social media posts stored in your HAT", image: UIImage(named: "SocialFeed")!)
+        let chat = HomeScreenObject(name: "Chat", description: "Coming Soon", image: UIImage(named: "Chat")!)
         self.tiles = [notables, locations, socialData, chat]
     }
     
@@ -129,8 +166,31 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         }
         
         // get notes
-        let token = HatAccountService.getUsersTokenFromKeychain()
-        HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+        // reset the stack to avoid allowing back
+        let result = KeychainHelper.GetKeychainValue(key: "logedIn")
+        let userDomain = HatAccountService.TheUserHATDomain()
+        /* we already have a hat_domain, ie. can skip the login screen? */
+        if result != "true" && userDomain == "" {
+            
+            let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+            let loginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+            self.navigationController?.title = ""
+            let navigation = self.navigationController
+            _ = navigation?.popToRootViewController(animated: false)
+            navigation?.pushViewController(loginViewController, animated: false)
+        } else {
+            
+            /* we already have a hat_domain, ie. can skip the login screen? */
+
+            let array = userDomain.components(separatedBy: ".")
+            self.helloLabel.text = "Hello " + array[0] + "!"
+            
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            appDelegate.locationManager.requestAlwaysAuthorization()
+            
+            let token = HatAccountService.getUsersTokenFromKeychain()
+            HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+        }
     }
     
     override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
@@ -143,6 +203,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
 
     override func didReceiveMemoryWarning() {
+        
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }

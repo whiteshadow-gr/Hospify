@@ -70,6 +70,11 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
 
     // MARK: - IBActions
     
+    /**
+     Shows a pop up with the available settings
+     
+     - parameter sender: The object that calls this function
+     */
     @IBAction func settingsButtonAction(_ sender: Any) {
         
         let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)

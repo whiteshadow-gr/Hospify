@@ -28,6 +28,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     @IBOutlet weak var buttonLogon: UIButton!
     /// An IBOutlet for handling the joinCommunityButton
     @IBOutlet weak var joinCommunityButton: UIButton!
+    /// An IBOutlet for handling the domainButton
     @IBOutlet weak var domainButton: UIButton!
     
     /// An IBOutlet for handling the inputUserHATDomain
@@ -41,6 +42,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     /// An IBOutlet for handling the labelSubTitle
     @IBOutlet weak var labelSubTitle: UITextView!
     
+    @IBOutlet weak var testImage: UIImageView!
     /// An IBOutlet for handling the ivLogo
     @IBOutlet weak var ivLogo: UIImageView!
     
@@ -54,56 +56,44 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
    
     /// SafariViewController variable
     private var safariVC: SFSafariViewController?
-    
-    private let controller = AvailableHATDomainsTableViewController()
         
     // MARK: - IBActions
     
     @IBAction func domainButtonAction(_ sender: Any) {
         
-//        let alert = UIAlertController(title: "Select domain", message: nil, preferredStyle: .actionSheet)
-//        
-//        let hubofallthingsAction = UIAlertAction(title: ".hubofallthings.net", style: .default, handler: {(alert: UIAlertAction) -> Void in
-//            
-//        })
-//        
-//        let bsafeAction = UIAlertAction(title: ".bsafe.org", style: .default, handler: {(alert: UIAlertAction) -> Void in
-//            
-//        })
-//        
-//        let hubatAction = UIAlertAction(title: ".hubat.net", style: .default, handler: {(alert: UIAlertAction) -> Void in
-//            
-//        })
-//        
-//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: {(alert: UIAlertAction) -> Void in
-//            
-//        })
-//        
-//        alert.addAction(hubofallthingsAction)
-//        alert.addAction(bsafeAction)
-//        alert.addAction(hubatAction)
-//        alert.addAction(cancelAction)
-//        
-//        // if user is on ipad show as a pop up
-//        if UI_USER_INTERFACE_IDIOM() == .pad {
-//            
-//            alert.popoverPresentationController?.sourceRect = self.domainButton.frame
-//            alert.popoverPresentationController?.sourceView = self.domainButton
-//        }
-//        
-//        // present alert controller
-//        self.navigationController!.present(alert, animated: true, completion: nil)
+        let alert = UIAlertController(title: "Select domain", message: nil, preferredStyle: .actionSheet)
         
-        let controller = self.storyboard?.instantiateViewController(withIdentifier: "availableDomainsTableViewController") as! UITableViewController
-        controller.modalPresentationStyle = .popover
-        controller.preferredContentSize = CGSize(width: self.view.bounds.width, height: 130)
+        let hubofallthingsAction = UIAlertAction(title: ".hubofallthings.net", style: .default, handler: {(alert: UIAlertAction) -> Void in
+            
+            self.domainButton.setTitle(".hubofallthings.net", for: .normal)
+        })
         
-        controller.popoverPresentationController?.sourceRect = CGRect(x: self.domainButton.bounds.origin.x, y: 30, width: 100, height: 0)
-        controller.popoverPresentationController?.sourceView = self.domainButton
-        controller.popoverPresentationController?.delegate = self
-        controller.popoverPresentationController?.permittedArrowDirections = .up
+        let bsafeAction = UIAlertAction(title: ".bsafe.org", style: .default, handler: {(alert: UIAlertAction) -> Void in
+            
+            self.domainButton.setTitle(".bsafe.org", for: .normal)
+        })
         
-        present(controller, animated: true, completion: nil)
+        let hubatAction = UIAlertAction(title: ".hubat.net", style: .default, handler: {(alert: UIAlertAction) -> Void in
+            
+            self.domainButton.setTitle(".hubat.net", for: .normal)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alert.addAction(hubofallthingsAction)
+        alert.addAction(bsafeAction)
+        alert.addAction(hubatAction)
+        alert.addAction(cancelAction)
+        
+        // if user is on ipad show as a pop up
+        if UI_USER_INTERFACE_IDIOM() == .pad {
+            
+            alert.popoverPresentationController?.sourceRect = self.domainButton.frame
+            alert.popoverPresentationController?.sourceView = self.domainButton
+        }
+        
+        // present alert controller
+        self.navigationController!.present(alert, animated: true, completion: nil)
     }
     
     /**
@@ -113,13 +103,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
      */
     @IBAction func contactUsActionButton(_ sender: Any) {
         
-        // create mail view controler
-        let mailVC = MFMailComposeViewController()
-        mailVC.mailComposeDelegate = self
-        mailVC.setToRecipients(["contact@hatdex.org"])
-        
-        // present view controller
-        self.present(mailVC, animated: true, completion: nil)
+        if MFMailComposeViewController.canSendMail() {
+            
+            // create mail view controler
+            let mailVC = MFMailComposeViewController()
+            mailVC.mailComposeDelegate = self
+            mailVC.setToRecipients(["contact@hatdex.org"])
+            
+            // present view controller
+            self.present(mailVC, animated: true, completion: nil)
+        } else {
+            
+            self.createClassicOKAlertWith(alertMessage: "This device has not been configured to send emails", alertTitle: "Email services disabled", okTitle: "ok", proceedCompletion: {})
+        }
     }
     
     /**
@@ -147,9 +143,29 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             self.createClassicOKAlertWith(alertMessage: "Please check your personal hat address again", alertTitle: "Wrong domain!", okTitle: "OK", proceedCompletion: {() -> Void in return})
         }
         
-        HatAccountService.logOnToHAT(userHATDomain: inputUserHATDomain.text!, successfulVerification: self.authoriseUser, failedVerification: failed)
+        let filteredDomain = self.removeDomainFromUserEnteredText(domain: inputUserHATDomain.text!)
+        HatAccountService.logOnToHAT(userHATDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, successfulVerification: self.authoriseUser, failedVerification: failed)
     }
     
+    // MARK: - Remove domain from entered text
+    
+    /**
+     Removes domain from entered text
+     
+     - parameter domain: The user entered text
+     - returns: The filtered text
+     */
+    private func removeDomainFromUserEnteredText(domain: String) -> String {
+        
+        let array = domain.components(separatedBy: ".")
+        
+        if array.count > 0 {
+            
+            return array[0]
+        }
+        
+        return domain
+    }
     // MARK: - View Controller functions
     
     override func viewDidLoad() {
@@ -231,11 +247,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         // add notification observer for the login in
         NotificationCenter.default.addObserver(self, selector: #selector(self.hatLoginAuth), name: NSNotification.Name(rawValue: Constants.Auth.NotificationHandlerName), object: nil)
         
-        // set tint color, if translucent and the bar tint color of navigation bar
-        self.navigationController?.navigationBar.tintColor = UIColor.white
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = UIColor.tealColor()
-        
         self.joinCommunityButton.addBorderToButton(width: 1, color: .white)
         self.getAHATButton.addBorderToButton(width: 1, color: .white)
         self.learnMoreButton.addBorderToButton(width: 1, color: .white)
@@ -247,21 +258,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
         // when the view appears clear the text field. The user might pressed sing out, this field must not contain the previous address
         self.inputUserHATDomain.text = ""
-    }
-
-    /*
-        Override and return false
-        We have a segue in the storyboard, mainly for visual 
-        We openSeque... after validation
-    */
-    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any!) -> Bool {
-        
-        if identifier == "ShowTabBarController" {
-            
-            return false
-        }
-        
-        return true
     }
     
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
@@ -287,7 +283,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
         if let result = KeychainHelper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
             
-            self.inputUserHATDomain.text = result
+            let domain = result.components(separatedBy: ".")
+            self.inputUserHATDomain.text = domain[0]
+            self.domainButton.setTitle("." + domain[1] + "." + domain[2], for: .normal)
         }
     }
     
@@ -331,7 +329,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         }
         
         // authorize with hat
-        HatAccountService.loginToHATAuthorization(userDomain: self.inputUserHATDomain.text!, url: url, selfViewController: self, completion: nil)
+        let filteredDomain = self.removeDomainFromUserEnteredText(domain: inputUserHATDomain.text!)
+        HatAccountService.loginToHATAuthorization(userDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, url: url, selfViewController: self, completion: nil)
     }
     
     /**

@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import SafariServices
 
 // MARK: Class
@@ -30,6 +29,39 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
     private var loadingView: UIView = UIView()
     /// A reference to safari view controller in order to be able to show or hide it
     private var safariVC: SFSafariViewController? = nil
+    
+    // MARK: - IBActions
+    
+    /**
+     Shows a pop up with the available settings
+     
+     - parameter sender: The object that calls this function
+     */
+    @IBAction func settingsButtonAction(_ sender: Any) {
+        
+        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
+        
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            TabBarViewController.logoutUser(from: self)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(logOutAction)
+        alertController.addAction(cancelAction)
+        
+        // if user is on ipad show as a pop up
+        if UI_USER_INTERFACE_IDIOM() == .pad {
+            
+            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
+            alertController.popoverPresentationController?.sourceView = self.view
+        }
+        
+        // present alert controller
+        self.navigationController!.present(alertController, animated: true, completion: nil)
+    }
     
     // MARK: - View controller methods
 
@@ -59,11 +91,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
             // we want only facebook and twitter, so keep those
             for i in 0 ... data.count - 1 {
                 
-                if data[i].name == "twitter" {
-                    
-                    self.dataPlugs.append(data[i])
-                }
-                if data[i].name == "facebook" {
+                if data[i].name == "twitter" || data[i].name == "facebook" {
                     
                     self.dataPlugs.append(data[i])
                 }
@@ -140,37 +168,33 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
      */
     private func checkDataPlugsIfActive() {
         
+        func setupCheckMark(on: String, value: Bool) {
+            
+            // search in data plugs array for facebook and enable the checkmark
+            for i in 0 ... dataPlugs.count - 1 {
+                
+                if dataPlugs[i].name == on {
+                    
+                    self.dataPlugs[i].showCheckMark = value
+                    self.collectionView?.reloadData()
+                    self.loadingView.removeFromSuperview()
+                }
+            }
+        }
+        
         /// Check if facebook is active
         func checkIfFacebookIsActive(appToken: String) {
             
             /// if facebook active, enable the checkmark
             func enableCheckMarkOnFacebook() {
                 
-                // search in data plugs array for facebook and enable the checkmark
-                for i in 0 ... dataPlugs.count - 1 {
-                    
-                    if dataPlugs[i].name == "facebook" {
-                        
-                        self.dataPlugs[i].showCheckMark = true
-                        self.collectionView?.reloadData()
-                        self.loadingView.removeFromSuperview()
-                    }
-                }
+                setupCheckMark(on: "facebook", value: true)
             }
             
             /// if facebook inactive, disable the checkmark
             func disableCheckMarkOnFacebook() {
                 
-                // search in data plugs array for facebook and disable the checkmark
-                for i in 0 ... dataPlugs.count - 1 {
-                    
-                    if dataPlugs[i].name == "facebook" {
-                        
-                        self.dataPlugs[i].showCheckMark = false
-                        self.collectionView?.reloadData()
-                        self.loadingView.removeFromSuperview()
-                    }
-                }
+                setupCheckMark(on: "facebook", value: false)
             }
             
             // check if facebook active
@@ -183,31 +207,13 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
             /// if twitter active, enable the checkmark
             func enableCheckMarkOnTwitter() {
                 
-                // search in data plugs array for twitter and enable the checkmark
-                for i in 0 ... dataPlugs.count - 1 {
-                    
-                    if dataPlugs[i].name == "twitter" {
-                        
-                        self.dataPlugs[i].showCheckMark = true
-                        self.collectionView?.reloadData()
-                        self.loadingView.removeFromSuperview()
-                    }
-                }
+                setupCheckMark(on: "twitter", value: true)
             }
             
             /// if twitter inactive, disable the checkmark
             func disableCheckMarkOnTwitter() {
                 
-                // search in data plugs array for twitter and disable the checkmark
-                for i in 0 ... dataPlugs.count - 1 {
-                    
-                    if dataPlugs[i].name == "twitter" {
-                        
-                        self.dataPlugs[i].showCheckMark = false
-                        self.collectionView?.reloadData()
-                        self.loadingView.removeFromSuperview()
-                    }
-                }
+                setupCheckMark(on: "twitter", value: false)
             }
             
             // check if twitter active

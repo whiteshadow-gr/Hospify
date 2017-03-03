@@ -113,6 +113,14 @@ struct MapsHelper {
         return newTime
     }
     
+    // MARK: - Add locations to database
+    
+    /**
+     Adds the locations passed to database
+     
+     - parameter locationManager: The location manager used
+     - parameter locations: The locations to add
+     */
     static func addLocationsToDatabase(locationManager: CLLocationManager, locations: [CLLocation]) {
         
         //get last location

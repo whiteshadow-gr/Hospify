@@ -32,25 +32,26 @@ class AuthoriseUserViewController: UIViewController {
         super.viewDidLoad()
     
         // add notif observer
-        NotificationCenter.default.addObserver(self, selector: #selector(dismissView), name: NSNotification.Name("reauthorisedUser"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(dismissView), name: NSNotification.Name(Constants.NotificationNames.reauthorised.rawValue), object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         
         super.viewDidAppear(animated)
         
-        // Do any additional setup after loading the view.
-        
-        let userDomain = HatAccountService.TheUserHATDomain()
         // build up the hat domain auth url
+        let userDomain = HatAccountService.TheUserHATDomain()
         let hatDomainURL = "https://" + userDomain + "/hatlogin?name=" + Constants.Auth.ServiceName + "&redirect=" +
             Constants.Auth.URLScheme + "://" + Constants.Auth.LocalAuthHost
         
         if let authURL = URL(string: hatDomainURL) {
             
             // open the log in procedure in safari
-            safari = SFSafariViewController(url: authURL)
-            self.present(safari!, animated: true, completion: nil)
+            self.safari = SFSafariViewController(url: authURL)
+            if self.safari != nil {
+                
+                self.present(self.safari!, animated: true, completion: nil)
+            }
         }
     }
 
@@ -67,29 +68,27 @@ class AuthoriseUserViewController: UIViewController {
      
      - parameter notif: A Notification object that called this function
      */
-    func dismissView(notif: Notification) {
+    @objc private func dismissView(notif: Notification) {
         
         // get the url form the auth callback
-        let url = notif.object as! NSURL
-        
-        // first of all, we close the safari vc
-        if let vc: SFSafariViewController = safari {
+        if let url = notif.object as? NSURL {
             
-            vc.dismiss(animated: true, completion: nil)
-            vc.removeFromParentViewController()
+            // first of all, we close the safari vc
+            if let vc: SFSafariViewController = safari {
+                
+                vc.dismiss(animated: true, completion: nil)
+                vc.removeFromParentViewController()
+            }
+            
+            let userDomain = HatAccountService.TheUserHATDomain()
+            
+            // authorize with hat
+            HatAccountService.loginToHATAuthorization(userDomain: userDomain, url: url, selfViewController: nil, completion: self.completionFunc)
+            
+            self.removeViewController(viewController: self)
+            
+            NotificationCenter.default.removeObserver(self, name: NSNotification.Name(Constants.NotificationNames.reauthorised.rawValue), object: nil)
         }
-        
-        let userDomain = HatAccountService.TheUserHATDomain()
-        
-        // authorize with hat
-        HatAccountService.loginToHATAuthorization(userDomain: userDomain, url: url, selfViewController: nil, completion: completionFunc)
-        
-        _ = self.removeFromParentViewController
-        self.willMove(toParentViewController: nil)
-        self.view.removeFromSuperview()
-        self.removeFromParentViewController()
-        
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name("reauthorisedUser"), object: nil)
     }
 
 }

@@ -34,11 +34,6 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         self.tabBar.tintColor = UIColor.tealColor()
         // set delete to self in order to receive the calls from tab bar controller
         self.delegate = self
-
-        // set tint color, if translucent and the bar tint color of navigation bar
-        self.navigationController?.navigationBar.tintColor = UIColor.white
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = UIColor.tealColor()
         
         // change navigation bar title
         self.navigationController?.navigationBar.titleTextAttributes =
@@ -48,9 +43,9 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(TabBarViewController.logoutUser), name: NSNotification.Name("signOut"), object: nil)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         
-        super.viewWillAppear(animated)
+        super.viewDidAppear(animated)
         
         // create bar button in navigation bar
         self.createBarButtonsFor(viewController: self.selectedViewController)
@@ -76,89 +71,46 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
      */
     func createBarButtonsFor(viewController: UIViewController?) {
         
-        // remove buttons on the left and right of the navigation bar
-        self.navigationItem.leftBarButtonItems = nil
-        self.navigationItem.rightBarButtonItems = nil
-        
-        if viewController is MapViewController {
+        if viewController != nil {
             
-            // set title in navigation bar
-            self.navigationItem.title = "Location"
-        } else if viewController is SocialFeedViewController {
+            // remove buttons on the left and right of the navigation bar
+            viewController!.navigationItem.leftBarButtonItems = nil
+            viewController!.navigationItem.rightBarButtonItems = nil
             
-            // set title in navigation bar
-            self.navigationItem.title = "Social Data"
-        } else if viewController is DataPlugsCollectionViewController {
+            let button = UIBarButtonItem(image: UIImage(named: "Settings"), style: .plain, target: self, action: #selector(setUpActionViewController))
             
-            // set title in navigation bar
-            self.navigationItem.title = "Data Plugs"
-        } else {
-            
-            // change title in navigation bar
-            self.navigationItem.title = "Home"
+            // add buttons to navigation bar
+            viewController!.navigationItem.rightBarButtonItem = button
         }
-        
-        let button = UIBarButtonItem(image: UIImage(named: "Settings"), style: .plain, target: self, action: #selector(setUpActionViewController))
-        
-        // add buttons to navigation bar
-        self.navigationItem.rightBarButtonItem = button
     }
     
+    /**
+     Set's up the bar buttons for tab bar
+     */
     func setUpActionViewController() {
         
-        if let viewController = self.selectedViewController {
+        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
+        
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
             
-            let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
+            in
+            TabBarViewController.logoutUser(from: self)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(logOutAction)
+        alertController.addAction(cancelAction)
+        
+        // if user is on ipad show as a pop up
+        if UI_USER_INTERFACE_IDIOM() == .pad {
             
-            if viewController is MapViewController {
-                
-                let dataAction = UIAlertAction(title: "Data", style: .default, handler: {(alert: UIAlertAction) -> Void
-                    
-                    in
-                    self.showDataViewController()
-                })
-                
-                let settingsAction = UIAlertAction(title: "Location Settings", style: .default, handler: {(alert: UIAlertAction) -> Void
-                    
-                    in
-                    self.showSettingsViewController()
-                })
-                
-                alertController.addAction(dataAction)
-                alertController.addAction(settingsAction)
-                
-            } else if viewController is SocialFeedViewController {
-                
-                let filterAction = UIAlertAction(title: "Filter by", style: .default, handler: {(alert: UIAlertAction) -> Void
-                    
-                    in
-                    self.filterSocialFeed()
-                })
-                
-                alertController.addAction(filterAction)
-            }
-            
-            let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
-                
-                in
-                TabBarViewController.logoutUser(from: self)
-            })
-            
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-            
-            alertController.addAction(logOutAction)
-            alertController.addAction(cancelAction)
-            
-            // if user is on ipad show as a pop up
-            if UI_USER_INTERFACE_IDIOM() == .pad {
-                
-                alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
-                alertController.popoverPresentationController?.sourceView = self.view
-            }
-            
-            // present alert controller
-            self.navigationController!.present(alertController, animated: true, completion: nil)
+            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
+            alertController.popoverPresentationController?.sourceView = self.view
         }
+        
+        // present alert controller
+        self.navigationController!.present(alertController, animated: true, completion: nil)
     }
     
     /**

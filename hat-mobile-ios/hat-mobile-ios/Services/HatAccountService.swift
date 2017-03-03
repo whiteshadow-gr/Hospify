@@ -14,8 +14,6 @@ import KeychainSwift
 import Alamofire
 import SwiftyJSON
 import Crashlytics
-import JWTDecode
-import SwiftyRSA
 
 // MARK: Class
 
@@ -207,6 +205,7 @@ class HatAccountService {
                     } else if statusCode == 401 {
                         
                         errorCallback()
+                        _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
                     } else {
                         
                         Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
@@ -350,7 +349,7 @@ class HatAccountService {
         // get user domain
         let userDomain = HatAccountService.TheUserHATDomain()
         // define the url to connect to
-        let url = "https://notables.hubofallthings.com/api/bulletin/tickle?"
+        let url = "https://notables.hubofallthings.com/api/bulletin/tickle"
         
         // make the request
         Alamofire.request(url, method: .get, parameters: ["phata": userDomain], encoding: Alamofire.URLEncoding.default, headers: nil).responseString { response in
@@ -372,6 +371,10 @@ class HatAccountService {
         
         // check for numerous errors
         var statusCode = response.response?.statusCode
+        if statusCode != nil {
+            
+            print(statusCode!)
+        }
         if let error = response.result.error as? AFError {
             
             statusCode = error._code // statusCode private
@@ -438,8 +441,6 @@ class HatAccountService {
                 Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Unknown error:" : "\(error)"])
             }
         }
-        
-        print(statusCode!) // the status code
     }
     
     // MARK: - Verify domain
@@ -524,130 +525,70 @@ class HatAccountService {
         
         // get token out
         if let token = NetworkHelper.GetQueryStringParameter(url: url.absoluteString, param: Constants.Auth.TokenParamName) {
-            
-            // save token in keychain
-            let savedSuccesfully = KeychainHelper.SetKeychainValue(key: "UserToken", value: token)
-            
-            if savedSuccesfully {
                 
-                // make asynchronous call
-                // parameters..
-                let parameters = ["": ""]
-                // auth header
-                let headers = ["Accept": Constants.ContentType.Text, "Content-Type": Constants.ContentType.Text]
-                // HAT domain
-                let hatDomain = userDomain.TrimString()
+            // make asynchronous call
+            // parameters..
+            let parameters = ["": ""]
+            // auth header
+            let headers = ["Accept": Constants.ContentType.Text, "Content-Type": Constants.ContentType.Text]
+            // HAT domain
+            let hatDomain = userDomain.TrimString()
+            
+            if let url = HatAccountService.TheUserHATDOmainPublicKeyURL(hatDomain) {
                 
-                if let url = HatAccountService.TheUserHATDOmainPublicKeyURL(hatDomain) {
+                //. application/json
+                NetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { [weak selfViewController](r: NetworkHelper.ResultTypeString) -> Void in
                     
-                    //. application/json
-                    NetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { [weak selfViewController](r: NetworkHelper.ResultTypeString) -> Void in
+                    switch r {
+                    case .isSuccess(let isSuccess, _, let result):
                         
-                        switch r {
-                        case .isSuccess(let isSuccess, _, let result):
+                        if isSuccess {
                             
-                            if isSuccess {
+                            let result = AuthenticationHelper.decodeToken(token: token, networkResponse: result)
+                            
+                            if (result.message == "success") {
                                 
-                                // decode the token and get the iss out
-                                let jwt = try! decode(jwt: token)
-                                
-                                // guard for the issuer check, “iss” (Issuer)
-                                guard let HATDomainFromToken = jwt.issuer else {
+                                if result.token != "" {
                                     
-                                    if selfViewController != nil {
-                                        
-                                        selfViewController!.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_general", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
-                                    }
+                                    _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: result.token!)
+                                }
+                                if selfViewController != nil {
                                     
-                                    return
+                                    selfViewController!.authoriseAppToWriteToCloud(hatDomain, result.domain!)
+                                } else {
+                                    
+                                    HatAccountService.authoriseAppToWriteToCloud(hatDomain, result.domain!, viewController: nil)
                                 }
                                 
-                                /*
-                                 The token will consist of header.payload.signature
-                                 To verify the token we use header.payload hashed with signature in base64 format
-                                 The public PEM string is used to verify also
-                                 */
-                                let tokenAttr: [String] = token.components(separatedBy: ".")
-                                
-                                // guard for the attr length. Should be 3 [header, payload, signature]
-                                guard tokenAttr.count == 3 else {
+                                if completion != nil {
                                     
-                                    if selfViewController != nil {
-                                        
-                                        selfViewController!.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_general", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
-                                    }
-                                    return
+                                    completion!()
                                 }
-                                
-                                // And then to access the individual parts of token
-                                let header: String = tokenAttr[0]
-                                let payload: String = tokenAttr[1]
-                                let signature: String = tokenAttr[2]
-                                
-                                // decode signature from baseUrl64 to base64
-                                let decodedSig = signature.fromBase64URLToBase64(s: signature)
-                                
-                                // data to be verified header.payload
-                                let headerAndPayload = header + "." + payload
-                                
-                                do {
-                                    
-                                    let signature = try Signature(base64Encoded: decodedSig)
-                                    let privateKey = try PublicKey(pemEncoded: result)
-                                    let clear = try ClearMessage(string: headerAndPayload, using: .utf8)
-                                    let isSuccessful = try clear.verify(with: privateKey, signature: signature, digestType: .sha256)
-                                    
-                                    if (isSuccessful.isSuccessful) {
-                                        
-                                        if selfViewController != nil {
-                                            
-                                            selfViewController!.authoriseAppToWriteToCloud(hatDomain, HATDomainFromToken)
-                                        } else {
-                                            
-                                            HatAccountService.authoriseAppToWriteToCloud(hatDomain, HATDomainFromToken, viewController: nil)
-                                        }
-                                        
-                                        if completion != nil {
-                                            
-                                            completion!()
-                                        }
-                                    } else {
-                                        
-                                        if selfViewController != nil {
-                                            
-                                            selfViewController!.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_invalid_token", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
-                                        }
-                                    }
-                                    
-                                } catch {
-                                    
-                                    return
-                                }
-                                
                             } else {
                                 
                                 if selfViewController != nil {
                                     
-                                    // alamo fire http fail
-                                    selfViewController!.createClassicOKAlertWith(alertMessage: result, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                    selfViewController!.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_invalid_token", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
                                 }
                             }
                             
-                        case .error(let error, let statusCode):
+                        } else {
                             
                             if selfViewController != nil {
                                 
-                                let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                                selfViewController!.createClassicOKAlertWith(alertMessage: msg, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                // alamo fire http fail
+                                selfViewController!.createClassicOKAlertWith(alertMessage: result, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
                             }
                         }
+                        
+                    case .error(let error, let statusCode):
+                        
+                        if selfViewController != nil {
+                            
+                            let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                            selfViewController!.createClassicOKAlertWith(alertMessage: msg, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                        }
                     }
-                }
-            } else {
-                
-                if selfViewController != nil {
-                    
-                    selfViewController!.createClassicOKAlertWith(alertMessage: "Could not save in keychain", alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
                 }
             }
         } else {
@@ -692,7 +633,13 @@ class HatAccountService {
                             
                             if viewController != nil {
                                 
-                                viewController!.performSegue(withIdentifier: "ShowTabBarController", sender: viewController)
+                                // setting image to nil and everything to clear color because animation was laggy
+                                viewController?.testImage.image = nil
+                                viewController?.testImage.backgroundColor = .clear
+                                viewController?.scrollView.backgroundColor = .clear
+                                viewController?.view.backgroundColor = .clear
+                                
+                                _ = viewController!.navigationController?.popToRootViewController(animated: false)
                             }
                         // else show error in the saving in keychain
                         } else {

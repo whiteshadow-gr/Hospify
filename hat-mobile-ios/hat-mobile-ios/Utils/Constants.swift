@@ -54,6 +54,16 @@ class Constants {
         static let allValues = [Latitude, Longitude, Accuracy, Timestamp]
     }
     
+    /**
+     The possible notification names, stored in convenience in one place
+     
+     - reauthorised: reauthorised
+     */
+    enum NotificationNames: String {
+        
+        case reauthorised = "reauthorised"
+    }
+    
     // MARK: - Structs
     
     /**

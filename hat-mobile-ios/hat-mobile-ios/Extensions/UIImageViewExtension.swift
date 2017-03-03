@@ -38,10 +38,13 @@ extension UIImageView {
                 else { return }
             
             // set image on the main thread
-            DispatchQueue.main.async() { [unowned self]
+            DispatchQueue.main.async() { [weak self]
                 () -> Void in
                 
-                self.image = image
+                if let weakSelf = self {
+                    
+                    weakSelf.image = image
+                }
             }
         }.resume()
     }

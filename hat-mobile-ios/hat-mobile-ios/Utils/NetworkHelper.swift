@@ -163,9 +163,19 @@ class NetworkHelper {
                 switch response.result {
                 case .success(_):
                     
+                    let headers = response.response?.allHeaderFields
+                    if let tokenHeader = headers?["X-Auth-Token"] as? String {
+                        
+                        let result = AuthenticationHelper.decodeToken(token: tokenHeader, networkResponse: "")
+                        if result.message == "refreshToken" && result.scope == "owner" {
+                            
+                            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: tokenHeader)
+                        }
+                    }
+                    
                     // check if we have a value and return it
                     if let value = response.result.value {
-                        
+                    
                         let json = JSON(value)
                         completion(NetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json))
                     // else return isSuccess: false and nil for value
@@ -183,9 +193,7 @@ class NetworkHelper {
                     } else if response.response?.statusCode == 401 {
                         
                          NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "Unauthorized. Please sign out and try again.")
-                        
-                        // post a notification to log user out
-                        //NotificationCenter.default.post(name: NSNotification.Name("signOut"), object: nil)
+                        _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
                     }
                     
                     completion(NetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
@@ -233,6 +241,16 @@ class NetworkHelper {
                 
                 switch response.result {
                 case .success(_):
+                    
+                    let headers = response.response?.allHeaderFields
+                    if let tokenHeader = headers?["X-Auth-Token"] as? String {
+                        
+                        let result = AuthenticationHelper.decodeToken(token: tokenHeader, networkResponse: "")
+                        if result.message == "refreshToken" && result.scope == "owner" {
+                            
+                            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: tokenHeader)
+                        }
+                    }
                     
                     // check if we have a value and return it
                     if let value = response.result.value {
@@ -293,6 +311,16 @@ class NetworkHelper {
             .responseJSON { response in
                 switch response.result {
                 case .success(_):
+                    
+                    let headers = response.response?.allHeaderFields
+                    if let tokenHeader = headers?["X-Auth-Token"] as? String {
+                        
+                        let result = AuthenticationHelper.decodeToken(token: tokenHeader, networkResponse: "")
+                        if result.message == "refreshToken" && result.scope == "owner" {
+                            
+                            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: tokenHeader)
+                        }
+                    }
                     
                     // check if we have a value and return it
                     if let value = response.result.value {

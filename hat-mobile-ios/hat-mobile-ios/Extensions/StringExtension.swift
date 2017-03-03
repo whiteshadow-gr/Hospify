@@ -72,4 +72,18 @@ extension String {
         
         return self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
     }
+    
+    // MARK: - Text Attributes
+    
+    func createTextAttributes(foregroundColor: UIColor, strokeColor: UIColor, font: UIFont) -> NSAttributedString {
+        
+        let textAttributes = [
+            NSForegroundColorAttributeName: foregroundColor,
+            NSStrokeColorAttributeName: strokeColor,
+            NSFontAttributeName: font,
+            NSStrokeWidthAttributeName: -1.0
+            ] as [String : Any]
+        
+        return NSAttributedString(string: self + "\n", attributes: textAttributes)
+    }
 }

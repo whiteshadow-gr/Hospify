@@ -28,7 +28,6 @@ class HATCapabilitiesPageViewController: UIPageViewController, UIPageViewControl
         
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
         // create page view controller
         self.createPageViewController()
         

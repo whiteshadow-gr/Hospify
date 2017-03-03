@@ -37,8 +37,6 @@ class HATCapabilitiesViewController: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // init the data object and refresh the labels and imageView
         let dataObject = LearnMoreObject(pageNumber: pageIndex + 10)

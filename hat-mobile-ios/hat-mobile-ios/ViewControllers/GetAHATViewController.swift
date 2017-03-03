@@ -58,6 +58,11 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     
     // MARK: - IBActions
     
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     */
     @IBAction func learnMoreInfoButtonAction(_ sender: Any) {
         
         // set up page controller
@@ -84,8 +89,6 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         self.orientation = UIInterfaceOrientation(rawValue: UIDevice.current.orientation.rawValue)!
         

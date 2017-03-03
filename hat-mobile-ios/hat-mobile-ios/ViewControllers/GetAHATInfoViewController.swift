@@ -41,6 +41,11 @@ class GetAHATInfoViewController: UIViewController {
     
     // MARK: - IBActions
     
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     */
     @IBAction func signUpAction(_ sender: Any) {
         
         if self.hatProvider?.name == "HALL Free HAT" {
@@ -61,6 +66,11 @@ class GetAHATInfoViewController: UIViewController {
         }
     }
     
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     */
     @IBAction func cancelButtonAction(_ sender: Any) {
         
         NotificationCenter.default.post(name: NSNotification.Name("hideView"), object: nil)
@@ -71,8 +81,6 @@ class GetAHATInfoViewController: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // set up cancel button
         cancelButton.imageView?.image = cancelButton.imageView?.image?.withRenderingMode(.alwaysTemplate)

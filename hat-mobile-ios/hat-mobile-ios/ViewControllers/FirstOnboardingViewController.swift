@@ -42,7 +42,7 @@ class FirstOnboardingViewController: UIViewController {
      */
     @IBAction func clearButtonAction(_ sender: Any) {
         
-        NotificationCenter.default.post(name: NSNotification.Name("hideNewbiePageViewContoller"), object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideNewbie.rawValue), object: nil)
     }
     
     /**
@@ -52,7 +52,7 @@ class FirstOnboardingViewController: UIViewController {
      */
     @IBAction func learnMoreButtonAction(_ sender: Any) {
         
-        NotificationCenter.default.post(name: NSNotification.Name("hideNewbiePageViewContoller"), object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideNewbie.rawValue), object: nil)
     }
     
     // MARK: - View controller methods
@@ -60,8 +60,6 @@ class FirstOnboardingViewController: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // init the content we want based on the page index
         let learnMoreObject = LearnMoreObject(pageNumber: 20 + pageIndex)
@@ -69,94 +67,33 @@ class FirstOnboardingViewController: UIViewController {
         // format the label based on the page index
         if pageIndex == 0 {
             
-            // format title label
-            let textAttributesTitle = [
-                NSForegroundColorAttributeName: UIColor.tealColor(),
-                NSStrokeColorAttributeName: UIColor.tealColor(),
-                NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 30)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
-            let textAttributes = [
-                NSForegroundColorAttributeName: UIColor.darkGray,
-                NSStrokeColorAttributeName: UIColor.darkGray,
-                NSFontAttributeName: UIFont(name: "OpenSans", size: 20)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
+            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: "OpenSans-CondensedLight", size: 30)!)
+            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: "OpenSans", size: 20)!)
             
-            let partOne = NSAttributedString(string: learnMoreObject.title + "\n", attributes: textAttributesTitle)
-            let partTwo = NSAttributedString(string: learnMoreObject.info, attributes: textAttributes)
-            let combination = NSMutableAttributedString()
-            
-            combination.append(partOne)
-            combination.append(partTwo)
-            
-            self.messages.attributedText = combination
+            self.messages.attributedText = partOne.combineWith(attributedText: partTwo)
             self.learnMoreButton.isHidden = true
             self.image.image = learnMoreObject.image
         } else if pageIndex == 1 {
             
-            // format title label
-            let textAttributesTitle = [
-                NSForegroundColorAttributeName: UIColor.tealColor(),
-                NSStrokeColorAttributeName: UIColor.tealColor(),
-                NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 30)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
-            let textAttributes = [
-                NSForegroundColorAttributeName: UIColor.darkGray,
-                NSStrokeColorAttributeName: UIColor.darkGray,
-                NSFontAttributeName: UIFont(name: "OpenSans", size: 16)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
+            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: "OpenSans-CondensedLight", size: 30)!)
+            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: "OpenSans", size: 16)!)
             
-            let partOne = NSAttributedString(string: learnMoreObject.title + "\n", attributes: textAttributesTitle)
-            let partTwo = NSAttributedString(string: learnMoreObject.info, attributes: textAttributes)
-            let combination = NSMutableAttributedString()
-            
-            combination.append(partOne)
-            combination.append(partTwo)
-            
-            self.messages.attributedText = combination
+            self.messages.attributedText = partOne.combineWith(attributedText: partTwo)
             self.learnMoreButton.isHidden = true
             self.image.image = learnMoreObject.image
         } else if pageIndex == 2 {
             
-            // format title label
-            let textAttributesTitle = [
-                NSForegroundColorAttributeName: UIColor.tealColor(),
-                NSStrokeColorAttributeName: UIColor.tealColor(),
-                NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 30)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
-            let textAttributes = [
-                NSForegroundColorAttributeName: UIColor.darkGray,
-                NSStrokeColorAttributeName: UIColor.darkGray,
-                NSFontAttributeName: UIFont(name: "OpenSans", size: 16)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
+            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: "OpenSans", size: 16)!)
+            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: "OpenSans", size: 16)!)
             
-            let partOne = NSAttributedString(string: learnMoreObject.title + "\n", attributes: textAttributesTitle)
-            let partTwo = NSAttributedString(string: learnMoreObject.info + "\n", attributes: textAttributes)
-            let combination = NSMutableAttributedString()
-            
-            combination.append(partOne)
-            combination.append(partTwo)
-            
-            self.messages.attributedText = combination
+            self.messages.attributedText = partOne.combineWith(attributedText: partTwo)
             self.learnMoreButton.isHidden = false
             self.learnMoreButton.setTitle("GET STARTED", for: .normal)
             self.image.image = learnMoreObject.image
         } else if pageIndex == 3 {
             
             // format title label
-            let textAttributesTitle = [
-                NSForegroundColorAttributeName: UIColor.white,
-                NSStrokeColorAttributeName: UIColor.white,
-                NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 30)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
-            
-            self.messages.attributedText = NSAttributedString(string: learnMoreObject.title + "\n", attributes: textAttributesTitle)
+            self.messages.attributedText = learnMoreObject.title.createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: "OpenSans-CondensedLight", size: 30)!)
             self.learnMoreButton.isHidden = false
             self.learnMoreButton.setTitle("SET UP MY PHATA", for: .normal)
             self.learnMoreButton.addBorderToButton(width: 1, color: .white)

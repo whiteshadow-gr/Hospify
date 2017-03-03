@@ -58,10 +58,24 @@ class Constants {
      The possible notification names, stored in convenience in one place
      
      - reauthorised: reauthorised
+     - dataPlug: dataPlugMessage
+     - hideNewbie: hideNewbiePageViewContoller
      */
     enum NotificationNames: String {
         
         case reauthorised = "reauthorised"
+        case dataPlug = "dataPlugMessage"
+        case hideNewbie = "hideNewbiePageViewContoller"
+    }
+    
+    /**
+     The possible reuse identifiers of the cells
+     
+     - dataplug: dataPlugCell
+     */
+    enum CellReuseIDs: String {
+        
+        case dataplug = "dataPlugCell"
     }
     
     // MARK: - Structs

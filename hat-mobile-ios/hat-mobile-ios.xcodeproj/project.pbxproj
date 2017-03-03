@@ -51,6 +51,10 @@
 		603CE74E1DF85E1600421429 /* LearnMoreObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603CE74D1DF85E1600421429 /* LearnMoreObject.swift */; };
 		603D3A711DE7B66800C973D8 /* FontAwesome.otf in Resources */ = {isa = PBXBuildFile; fileRef = 603D3A701DE7B66800C973D8 /* FontAwesome.otf */; };
 		603D3A731DE879E600C973D8 /* SocialImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D3A721DE879E600C973D8 /* SocialImageCollectionViewCell.swift */; };
+		603D55BD1E69861D00CCEBEB /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D55BC1E69861D00CCEBEB /* UIViewExtension.swift */; };
+		603D55BF1E69879300CCEBEB /* LabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D55BE1E69879300CCEBEB /* LabelExtension.swift */; };
+		603D55C11E69962E00CCEBEB /* UIPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D55C01E69962E00CCEBEB /* UIPageViewController.swift */; };
+		603D55C41E69ADBB00CCEBEB /* NSAttributedStringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D55C31E69ADBB00CCEBEB /* NSAttributedStringExtension.swift */; };
 		603FDD511E43E7840086559B /* InfoHatProvidersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603FDD501E43E7840086559B /* InfoHatProvidersViewController.swift */; };
 		6041B2041E49CECA00534955 /* Launch Screen2.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6041B2031E49CECA00534955 /* Launch Screen2.storyboard */; };
 		6041B20D1DD4AC040018CC31 /* NotablesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6041B20B1DD4AC040018CC31 /* NotablesViewController.swift */; };
@@ -204,6 +208,10 @@
 		603CE74D1DF85E1600421429 /* LearnMoreObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LearnMoreObject.swift; path = Objects/LearnMoreObject.swift; sourceTree = "<group>"; };
 		603D3A701DE7B66800C973D8 /* FontAwesome.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome.otf; sourceTree = "<group>"; };
 		603D3A721DE879E600C973D8 /* SocialImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SocialImageCollectionViewCell.swift; path = Cells/SocialImageCollectionViewCell.swift; sourceTree = "<group>"; };
+		603D55BC1E69861D00CCEBEB /* UIViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIViewExtension.swift; path = Extensions/UIViewExtension.swift; sourceTree = "<group>"; };
+		603D55BE1E69879300CCEBEB /* LabelExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LabelExtension.swift; sourceTree = "<group>"; };
+		603D55C01E69962E00CCEBEB /* UIPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIPageViewController.swift; path = Objects/UIPageViewController.swift; sourceTree = "<group>"; };
+		603D55C31E69ADBB00CCEBEB /* NSAttributedStringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NSAttributedStringExtension.swift; path = Extensions/NSAttributedStringExtension.swift; sourceTree = "<group>"; };
 		603FDD501E43E7840086559B /* InfoHatProvidersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InfoHatProvidersViewController.swift; path = ViewControllers/InfoHatProvidersViewController.swift; sourceTree = "<group>"; };
 		6041B2031E49CECA00534955 /* Launch Screen2.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen2.storyboard"; sourceTree = "<group>"; };
 		6041B20B1DD4AC040018CC31 /* NotablesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotablesViewController.swift; sourceTree = "<group>"; };
@@ -455,12 +463,16 @@
 			isa = PBXGroup;
 			children = (
 				606435DA1E1B196F001A5D14 /* DateExtension.swift */,
+				603D55BE1E69879300CCEBEB /* LabelExtension.swift */,
 				608EAAA51DFEA7ED00234C60 /* StringExtension.swift */,
+				603D55C31E69ADBB00CCEBEB /* NSAttributedStringExtension.swift */,
+				60E2679B1E55B67300B6D626 /* UIApplicationExtension.swift */,
 				6044931A1DE9FE5C00B2FE7B /* UIButtonExtension.swift */,
 				604237DE1E114F2D00E19109 /* UIColorExtension.swift */,
 				60B486301E1D6E7B00914AD2 /* UIImageViewExtension.swift */,
+				603D55C01E69962E00CCEBEB /* UIPageViewController.swift */,
+				603D55BC1E69861D00CCEBEB /* UIViewExtension.swift */,
 				608EAAA71DFEA8AD00234C60 /* ViewControllerExtension.swift */,
-				60E2679B1E55B67300B6D626 /* UIApplicationExtension.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -1044,6 +1056,7 @@
 				60B486271E1D51A300914AD2 /* HATProviderObject.swift in Sources */,
 				601142771E5F877500A9D982 /* HomeViewController.swift in Sources */,
 				606435DB1E1B196F001A5D14 /* DateExtension.swift in Sources */,
+				603D55C41E69ADBB00CCEBEB /* NSAttributedStringExtension.swift in Sources */,
 				60E753A61DE47F5E001C85E7 /* LocationData.swift in Sources */,
 				B56E2FAC1D23DED900546C7E /* DataSyncDelegate.swift in Sources */,
 				607C107D1E1BCC7D001D1E8E /* GetAHATInfoViewController.swift in Sources */,
@@ -1110,10 +1123,12 @@
 				60F1D7E71E6828DA0009CF1F /* AuthenticationHelper.swift in Sources */,
 				603CE74A1DF6FA7400421429 /* PageViewController.swift in Sources */,
 				B5138ACE1D1ECA2C00CD1530 /* NetworkHelper.swift in Sources */,
+				603D55BD1E69861D00CCEBEB /* UIViewExtension.swift in Sources */,
 				6090D4681E3140D4004FD1E2 /* FutureTimeIntervalObject.swift in Sources */,
 				60DDE16D1E30E19300AB9E18 /* CompletePurchaseViewController.swift in Sources */,
 				B564E9691D19717900EDB8F1 /* AppDelegate.swift in Sources */,
 				60D3176D1E3622F9008E0A5F /* FacebookDataPlugService.swift in Sources */,
+				603D55BF1E69879300CCEBEB /* LabelExtension.swift in Sources */,
 				60FAC76B1E223AA700532C01 /* DataPlugCollectionViewCell.swift in Sources */,
 				B59136881D19DC2700E9EDD0 /* DataPoint.swift in Sources */,
 				60B486251E1D341000914AD2 /* PurchaseModel.swift in Sources */,
@@ -1123,6 +1138,7 @@
 				604D68E01DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift in Sources */,
 				6043F6D71E1D114D00C5BAD9 /* StripeViewController.swift in Sources */,
 				605197FF1E36552400516D75 /* FacebookSocialFeedObject.swift in Sources */,
+				603D55C11E69962E00CCEBEB /* UIPageViewController.swift in Sources */,
 				60B4862F1E1D55AC00914AD2 /* HATService.swift in Sources */,
 				B51CC9281D1D7895000C9E48 /* LoginViewController.swift in Sources */,
 				6051980F1E366CB600516D75 /* TwitterDataSocialFeedObject.swift in Sources */,

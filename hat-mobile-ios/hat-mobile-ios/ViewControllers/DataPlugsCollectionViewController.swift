@@ -19,8 +19,6 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
     
     // MARK: - Variables
     
-    /// Cell's reuse identifier
-    private let reuseIdentifier = "dataPlugCell"
     /// An array with the available data plugs
     private var dataPlugs: [DataPlugObject] = []
     /// Device's orientation, used to format the collection view cell according to width of the screen
@@ -68,11 +66,9 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // add notification observer for response from server
-        NotificationCenter.default.addObserver(self, selector: #selector(showAlertForDataPlug), name: Notification.Name("dataPlugMessage"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(showAlertForDataPlug), name: Notification.Name(Constants.NotificationNames.dataPlug.rawValue), object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -98,7 +94,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
             }
             
             // check if dataplugs are active
-            checkDataPlugsIfActive()
+            self.checkDataPlugsIfActive()
         }
         
         /// method to execute on a failed callback
@@ -108,23 +104,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
             self.loadingView.removeFromSuperview()
         }
         
-        // init loading view
-        loadingView = UIView(frame: CGRect(x: (self.collectionView?.frame.midX)! - 60, y: (self.collectionView?.frame.midY)! - 15, width: 120, height: 30))
-        loadingView.backgroundColor = UIColor.tealColor()
-        loadingView.layer.cornerRadius = 15
-        
-        // create label to show in loading view
-        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 120, height: 30))
-        label.text = "Getting data plugs..."
-        label.textColor = .white
-        label.font = UIFont(name: "OpenSans", size: 12)
-        label.textAlignment = NSTextAlignment.center
-        
-        // add label to loading view
-        loadingView.addSubview(label)
-        
-        // present loading view
-        self.view.addSubview(loadingView)
+        self.createLoadingView()
         
         // get available data plugs from server
         DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: failureCallBack)
@@ -221,9 +201,9 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         }
         
         // get token for facebook and twitter and check if they are active
-        FacebookDataPlugService.getAppTokenForFacebook(successful: checkIfFacebookIsActive, failed: {() -> Void in return})
+        FacebookDataPlugService.getAppTokenForFacebook(successful: checkIfFacebookIsActive, failed: {})
 
-        TwitterDataPlugService.getAppTokenForTwitter(successful: checkIfTwitterIsActive, failed: {() -> Void in return})
+        TwitterDataPlugService.getAppTokenForTwitter(successful: checkIfTwitterIsActive, failed: {})
     }
 
     // MARK: - UICollectionView methods
@@ -240,29 +220,21 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.reuseIdentifier, for: indexPath) as? DataPlugCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.CellReuseIDs.dataplug.rawValue, for: indexPath) as? DataPlugCollectionViewCell
     
         return DataPlugCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, dataPlug: self.dataPlugs[indexPath.row], orientation: self.orientation)
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        // set up the url to open safari to
-        let userDomain: String = HatAccountService.TheUserHATDomain()
-        let name: String = self.dataPlugs[indexPath.row].name
-        var url: String = ""
+        let url = self.createURLBasedOn(row: indexPath.row)
         
-        if name == "twitter" {
+        if url != nil && safariVC != nil {
             
-            url = "https://" + userDomain + "/hatlogin?name=Twitter&redirect=" + self.dataPlugs[indexPath.row].url + "/authenticate/hat"
-        } else if name == "facebook" {
-            
-            url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + self.dataPlugs[indexPath.row].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
+            // open safari view controller
+            self.safariVC = SFSafariViewController(url: url!)
+            self.present(self.safariVC!, animated: true, completion: nil)
         }
-        
-        // open safari view controller
-        self.safariVC = SFSafariViewController(url: URL(string: url)!)
-        self.present(self.safariVC!, animated: true, completion: nil)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -274,5 +246,51 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         }
         
         return CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.width / 2)
+    }
+    
+    // MARK: - Create URL
+    
+    /**
+     Creates the url to connect to
+     
+     - parameter row: The row of the index path
+     - returns: A ready URL if everything ok else nil
+     */
+    private func createURLBasedOn(row: Int) -> URL? {
+        
+        // set up the url to open safari to
+        let userDomain: String = HatAccountService.TheUserHATDomain()
+        let name: String = self.dataPlugs[row].name
+        var url: String = ""
+        
+        if name == "twitter" {
+            
+            url = "https://" + userDomain + "/hatlogin?name=Twitter&redirect=" + self.dataPlugs[row].url + "/authenticate/hat"
+        } else if name == "facebook" {
+            
+            url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + self.dataPlugs[row].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
+        }
+        
+        return URL(string: url)
+    }
+    
+    // MARK: - Create floating view
+    
+    /**
+     Adds a floating view while fetching the data plugs
+     */
+    private func createLoadingView() {
+        
+        // init loading view
+        self.loadingView.createFloatingView(frame: CGRect(x: (self.collectionView?.frame.midX)! - 60, y: (self.collectionView?.frame.midY)! - 15, width: 120, height: 30), color: .tealColor(), cornerRadius: 15)
+        
+        var label = UILabel()
+        label = label.createLabel(frame: CGRect(x: 0, y: 0, width: 120, height: 30), text: "Getting data plugs...", textColor: .white, textAlignment: .center, font: UIFont(name: "OpenSans", size: 12))
+        
+        // add label to loading view
+        loadingView.addSubview(label)
+        
+        // present loading view
+        self.view.addSubview(loadingView)
     }
 }

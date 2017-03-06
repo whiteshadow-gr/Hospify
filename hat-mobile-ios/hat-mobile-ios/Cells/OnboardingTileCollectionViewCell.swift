@@ -105,20 +105,20 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
             // set the color of the cell accordingly based on the indexPath.row
             if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
                 
-                return UIColor.rumpelVeryLightGray()
+                return .rumpelVeryLightGray()
             } else {
                 
-                return UIColor.white
+                return .white
             }
         } else {
             
             // set the color of the cell accordingly based on the indexPath.row
             if (indexPath.row % 2 == 0) {
                 
-                return UIColor.rumpelVeryLightGray()
+                return .rumpelVeryLightGray()
             } else {
                 
-                return UIColor.white
+                return .white
             }
         }
     }

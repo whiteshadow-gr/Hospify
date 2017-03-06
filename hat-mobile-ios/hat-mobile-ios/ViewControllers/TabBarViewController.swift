@@ -22,8 +22,6 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // disable left navigation button
         self.navigationItem.leftBarButtonItems = nil
@@ -151,7 +149,6 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             if (!clearUserToken) {
                 
                 // show alert that the log out was not completed for some reason
-                // MARK: TODO
             }
             
             // reset the stack to avoid allowing back

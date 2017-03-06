@@ -215,7 +215,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return dataPlugs.count
+        return self.dataPlugs.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -229,7 +229,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         
         let url = self.createURLBasedOn(row: indexPath.row)
         
-        if url != nil && safariVC != nil {
+        if url != nil && self.safariVC != nil {
             
             // open safari view controller
             self.safariVC = SFSafariViewController(url: url!)
@@ -284,13 +284,12 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         // init loading view
         self.loadingView.createFloatingView(frame: CGRect(x: (self.collectionView?.frame.midX)! - 60, y: (self.collectionView?.frame.midY)! - 15, width: 120, height: 30), color: .tealColor(), cornerRadius: 15)
         
-        var label = UILabel()
-        label = label.createLabel(frame: CGRect(x: 0, y: 0, width: 120, height: 30), text: "Getting data plugs...", textColor: .white, textAlignment: .center, font: UIFont(name: "OpenSans", size: 12))
+        let label = UILabel().createLabel(frame: CGRect(x: 0, y: 0, width: 120, height: 30), text: "Getting data plugs...", textColor: .white, textAlignment: .center, font: UIFont(name: "OpenSans", size: 12))
         
         // add label to loading view
-        loadingView.addSubview(label)
+        self.loadingView.addSubview(label)
         
         // present loading view
-        self.view.addSubview(loadingView)
+        self.view.addSubview(self.loadingView)
     }
 }

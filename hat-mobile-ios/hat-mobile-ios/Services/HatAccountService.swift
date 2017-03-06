@@ -205,7 +205,7 @@ class HatAccountService {
                     } else if statusCode == 401 {
                         
                         errorCallback()
-                        _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
+                        _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "expired")
                     } else {
                         
                         Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
@@ -638,6 +638,7 @@ class HatAccountService {
                                 viewController?.testImage.backgroundColor = .clear
                                 viewController?.scrollView.backgroundColor = .clear
                                 viewController?.view.backgroundColor = .clear
+                                viewController?.hidePopUpLabel()
                                 
                                 _ = viewController!.navigationController?.popToRootViewController(animated: false)
                             }

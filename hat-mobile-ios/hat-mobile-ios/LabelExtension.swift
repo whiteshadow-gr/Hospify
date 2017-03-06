@@ -12,8 +12,22 @@
 
 import UIKit
 
+// MARK: Extension
+
 extension UILabel {
     
+    // MARK: Create label
+    
+    /**
+     Creates an UILabel according to the parameters passed
+     
+     - parameter frame: The desired frame of the UILabel
+     - parameter text: The text to display on the UILabel
+     - parameter textColor: The color of the text
+     - parameter textAlignment: The alignment of the text
+     - parameter font: The desired font for the text
+     - returns: A formatted UILabel according to the parameters passed
+     */
     func createLabel(frame: CGRect, text: String, textColor: UIColor, textAlignment: NSTextAlignment, font: UIFont?) -> UILabel {
         
         // create label to show in loading view

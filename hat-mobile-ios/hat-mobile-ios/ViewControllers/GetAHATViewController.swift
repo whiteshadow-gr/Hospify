@@ -59,9 +59,9 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     // MARK: - IBActions
     
     /**
-     <#Function Details#>
+     Presents a pop up view showing the user more information about HAT
      
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter sender: The object that called this method
      */
     @IBAction func learnMoreInfoButtonAction(_ sender: Any) {
         
@@ -69,19 +69,23 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         self.hatInfoViewController = self.storyboard!.instantiateViewController(withIdentifier: "HATInfo") as? InfoHatProvidersViewController
         
         // present a dark pop up view
-        darkView = UIView(frame: CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.width, height: self.view.frame.height))
-        darkView?.backgroundColor = UIColor.darkGray
-        darkView?.alpha = 0.6
-        self.view.addSubview((darkView)!)
+        if self.darkView == nil {
+            
+            self.darkView = UIView()
+        }
+        self.darkView?.createFloatingView(frame: CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.width, height: self.view.frame.height), color: .darkGray, cornerRadius: 0)
+        self.darkView?.alpha = 0.6
+        self.view.addSubview((self.darkView)!)
         
         // set up the created page view controller
-        self.hatInfoViewController!.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.bounds.origin.y + 15, width: self.view.frame.width - 30, height: self.view.bounds.height - 30)
-        self.hatInfoViewController!.view.layer.cornerRadius = 15
+        if self.hatInfoViewController == nil {
+            
+            self.hatInfoViewController = InfoHatProvidersViewController()
+        }
+        self.hatInfoViewController?.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.view.bounds.origin.y + 15, width: self.view.frame.width - 30, height: self.view.bounds.height - 30), color: .white, cornerRadius: 15)
         
         // add the page view controller to self
-        self.addChildViewController(self.hatInfoViewController!)
-        self.view.addSubview((self.hatInfoViewController?.view!)!)
-        self.hatInfoViewController!.didMove(toParentViewController: self)
+        self.addViewController(self.hatInfoViewController!)
     }
     
     // MARK: - UIViewController delegate methods
@@ -93,15 +97,15 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         self.orientation = UIInterfaceOrientation(rawValue: UIDevice.current.orientation.rawValue)!
         
         // config the arrowBar
-        arrowBarImage.image = arrowBarImage.image!.withRenderingMode(.alwaysTemplate)
-        arrowBarImage.tintColor = UIColor.rumpelDarkGray()
+        self.arrowBarImage.image = self.arrowBarImage.image!.withRenderingMode(.alwaysTemplate)
+        self.arrowBarImage.tintColor = .rumpelDarkGray()
         
         self.learnMoreButton.addBorderToButton(width: 1, color: UIColor.tealColor())
         
         // add notification observers
-        NotificationCenter.default.addObserver(self, selector: #selector(hidePopUpView), name: NSNotification.Name("hideView"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshCollectionView), name: NSNotification.Name("hatProviders"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(hideInfoViewController), name: NSNotification.Name("hideInfoHATProvider"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(hidePopUpView), name: NSNotification.Name(Constants.NotificationNames.hideFirstOnboardingView.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshCollectionView), name: NSNotification.Name(Constants.NotificationNames.hatProviders.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(hideInfoViewController), name: NSNotification.Name(Constants.NotificationNames.hideInfoHATProvider.rawValue), object: nil)
         
         // fetch available hat providers
         HATService.getAvailableHATProviders()
@@ -129,10 +133,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
      */
     @objc private func hideInfoViewController() {
         
-        self.hatInfoViewController?.willMove(toParentViewController: nil)
-        self.hatInfoViewController?.view.removeFromSuperview()
-        self.hatInfoViewController?.removeFromParentViewController()
-        
+        self.hatInfoViewController?.removeViewController()
         self.darkView?.removeFromSuperview()
     }
     
@@ -161,9 +162,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         // if view is found remove it
         if let view = self.infoViewController {
             
-            view.willMove(toParentViewController: nil)
-            view.view.removeFromSuperview()
-            view.removeFromParentViewController()
+            view.removeViewController()
             
             // check if we have an object
             if (notification.object != nil) {
@@ -184,7 +183,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
             }
             
             // remove the dark view pop up
-            darkView?.removeFromSuperview()
+            self.darkView?.removeFromSuperview()
         }
     }
     
@@ -193,7 +192,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         // create cell
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "onboardingTile", for: indexPath) as? OnboardingTileCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.CellReuseIDs.onboardingTile.rawValue, for: indexPath) as? OnboardingTileCollectionViewCell
         
         // format cell
         return OnboardingTileCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, hatProvider: hatProviders[indexPath.row], orientation: self.orientation)
@@ -211,29 +210,27 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         
         // set up page controller
         let pageItemController = self.storyboard!.instantiateViewController(withIdentifier: "HATProviderInfo") as! GetAHATInfoViewController
-        hatProviders[indexPath.row].hatProviderImage = cell.hatProviderImage.image
-        pageItemController.hatProvider = hatProviders[indexPath.row]
+        self.hatProviders[indexPath.row].hatProviderImage = cell.hatProviderImage.image
+        pageItemController.hatProvider = self.hatProviders[indexPath.row]
         
         // present a dark pop up view to darken the background view controller
-        darkView = UIView(frame: CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.width, height: self.view.frame.height))
-        darkView?.backgroundColor = UIColor.darkGray
-        darkView?.alpha = 0.6
-        self.view.addSubview((darkView)!)
+        self.darkView = UIView()
+        self.darkView?.createFloatingView(frame: CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.width, height: self.view.frame.height), color: .darkGray, cornerRadius: 0)
+        self.darkView?.alpha = 0.6
+
+        self.view.addSubview((self.darkView)!)
         
         // set up the created page view controller
         self.infoViewController = pageItemController
-        pageItemController.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.bounds.origin.y + 15, width: self.view.frame.width - 30, height: self.view.bounds.height - 30)
-        pageItemController.view.layer.cornerRadius = 15
+        pageItemController.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.view.bounds.origin.y + 15, width: self.view.frame.width - 30, height: self.view.bounds.height - 30), color: .white, cornerRadius: 15)
         
         // add the page view controller to self
-        self.addChildViewController(pageItemController)
-        self.view.addSubview(pageItemController.view)
-        pageItemController.didMove(toParentViewController: self)
+        self.addViewController(pageItemController)
         
         // save the data we need for later use
-        sku = hatProviders[indexPath.row].sku
-        hatImage = cell.hatProviderImage.image
-        hatDomain = hatProviders[indexPath.row].kind.domain
+        self.sku = hatProviders[indexPath.row].sku
+        self.hatImage = cell.hatProviderImage.image
+        self.hatDomain = hatProviders[indexPath.row].kind.domain
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -265,9 +262,6 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
         
         if segue.identifier == "stripeSegue" {
             

@@ -128,7 +128,7 @@ class NotablesService: NSObject {
                     } else if statusCode == 401 {
                         
                         errorCallback()
-                        _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
+                        _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "expired")
                     }
                     
                 case .error(let error, let statusCode):

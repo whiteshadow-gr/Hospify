@@ -62,6 +62,8 @@ extension String {
         return array
     }
     
+    // MARK: - Trim string
+    
     /**
      Trims a given String
      
@@ -75,6 +77,14 @@ extension String {
     
     // MARK: - Text Attributes
     
+    /**
+     Creates an attributed string from the parameters passed
+     
+     - parameter foregroundColor: Foreground color of the string
+     - parameter strokeColor: stroke color of the string
+     - parameter font: the desired font for the string
+     - returns: An attributed string formatted according to the parameters
+     */
     func createTextAttributes(foregroundColor: UIColor, strokeColor: UIColor, font: UIFont) -> NSAttributedString {
         
         let textAttributes = [
@@ -86,4 +96,5 @@ extension String {
         
         return NSAttributedString(string: self + "\n", attributes: textAttributes)
     }
+    
 }

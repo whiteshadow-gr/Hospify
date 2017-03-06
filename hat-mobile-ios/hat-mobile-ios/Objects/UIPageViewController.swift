@@ -12,8 +12,15 @@
 
 import UIKit
 
+// MARK: Extension
+
 extension UIPageViewController {
     
+    // MARK: - Make page controller go Full Screen
+    
+    /**
+     Present the page controller full screen
+     */
     func makePageControllerFullScreen() {
         
         //corrects scrollview frame to allow for full-screen view controller pages
@@ -26,6 +33,14 @@ extension UIPageViewController {
         }
     }
     
+    // MARK: - Change colors of the paginator
+    
+    /**
+     Change pagination color of the page controller
+     
+     - parameter pageTintColor: The color of the pagination controller
+     - parameter pageCurrentTintColor: The color of the current pagination controller
+     */
     func changePaginationColors(pageTintColor: UIColor, pageCurrentTintColor: UIColor) {
         
         // change the color of the pagination dots at the bottom of the screen

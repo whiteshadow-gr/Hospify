@@ -12,8 +12,19 @@
 
 import UIKit
 
+// MARK: Extension
+
 extension UIView {
     
+    // MARK: - Create floating view
+    
+    /**
+     Creates a pop up view to present it to the view controller
+     
+     - parameter frame: The frame of the view
+     - parameter color: The background color of the view
+     - parameter cornerRadius: The corner radius of the view
+     */
     func createFloatingView(frame: CGRect, color: UIColor, cornerRadius: CGFloat) {
         
         // init loading view

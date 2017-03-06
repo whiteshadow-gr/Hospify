@@ -193,7 +193,7 @@ class NetworkHelper {
                     } else if response.response?.statusCode == 401 {
                         
                          NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "Unauthorized. Please sign out and try again.")
-                        _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
+                        _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "expired")
                     }
                     
                     completion(NetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))

@@ -198,11 +198,26 @@ extension UIViewController {
     
     // MARK: - Remove view controller
     
-    func removeViewController(viewController: UIViewController) {
+    /**
+     Removes the view controller that called this function of the superview and parent view controller
+     */
+    func removeViewController() {
         
-        _ = viewController.removeFromParentViewController
-        viewController.willMove(toParentViewController: nil)
-        viewController.view.removeFromSuperview()
-        viewController.removeFromParentViewController()
+        _ = self.removeFromParentViewController
+        self.willMove(toParentViewController: nil)
+        self.view.removeFromSuperview()
+        self.removeFromParentViewController()
+    }
+    
+    // MARK: - Add view controller
+    
+    /**
+     Adds the view controller passed in the parameter
+     */
+    func addViewController(_ viewController: UIViewController) {
+        
+        self.addChildViewController(viewController)
+        self.view.addSubview(viewController.view)
+        viewController.didMove(toParentViewController: self)
     }
 }

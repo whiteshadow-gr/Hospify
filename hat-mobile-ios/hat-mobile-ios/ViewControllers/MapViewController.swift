@@ -219,10 +219,16 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         if self.segmentControl.selectedSegmentIndex == 0 {
             
-            self.datePicker.setDate(self.filterDataPointsFrom!, animated: true)
+            if self.filterDataPointsFrom != nil {
+                
+                self.datePicker.setDate(self.filterDataPointsFrom!, animated: true)
+            }
         } else {
             
-            self.datePicker.setDate(self.filterDataPointsTo!, animated: true)
+            if self.filterDataPointsTo != nil {
+                
+                self.datePicker.setDate(self.filterDataPointsTo!, animated: true)
+            }
         }
     }
     
@@ -230,6 +236,15 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         self.textField.resignFirstResponder()
         let userToken = HatAccountService.getUsersTokenFromKeychain()
+        
+        let view = UIView()
+        view.createFloatingView(frame: CGRect(x: self.view.frame.midX - 60, y: self.view.frame.midY - 15, width: 120, height: 30), color: .tealColor(), cornerRadius: 15)
+        
+        let label = UILabel().createLabel(frame: CGRect(x: 0, y: 0, width: 120, height: 30), text: "Getting locations...", textColor: .white, textAlignment: .center, font: UIFont(name: "OpenSans", size: 12))
+        
+        view.addSubview(label)
+        
+        self.view.addSubview(view)
         
         func getLocationsFromTable(tableID: NSNumber) {
             
@@ -244,20 +259,26 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
                 
                 let pins = self.createAnnotationsFrom(objects: array)
                 self.addPointsToMap(annottationArray: pins)
+                
+                view.removeFromSuperview()
             }
             
             func requestLocations(token: String) {
                 
-                let starttime = FormatterHelper.formatDateToEpoch(date: self.filterDataPointsFrom!)
-                let endtime = FormatterHelper.formatDateToEpoch(date: self.filterDataPointsTo!)
-                let parameters: Dictionary<String, String> = ["starttime" : starttime, "endtime" : endtime, "limit" : "2000"]
-                HatAccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: receivedLocations, errorCallback: errorCallBack)
+                if self.filterDataPointsFrom != nil && self.filterDataPointsTo != nil {
+                    
+                    let starttime = FormatterHelper.formatDateToEpoch(date: self.filterDataPointsFrom!)
+                    let endtime = FormatterHelper.formatDateToEpoch(date: self.filterDataPointsTo!)
+                    let parameters: Dictionary<String, String> = ["starttime" : starttime, "endtime" : endtime, "limit" : "2000"]
+                    HatAccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: receivedLocations, errorCallback: errorCallBack)
+                }
             }
             DataPlugsService.getApplicationTokenFor(serviceName: "locations", resource: "iphone", succesfulCallBack: requestLocations, failCallBack: errorCallBack)
         }
         
         func errorCallBack() {
             
+            view.removeFromSuperview()
         }
         
         HatAccountService.checkHatTableExists(tableName: "locations", sourceName: "iphone", authToken: userToken, successCallback: getLocationsFromTable, errorCallback: errorCallBack)
@@ -276,10 +297,17 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         if self.segmentControl.selectedSegmentIndex == 0 {
             
-            self.filterDataPointsFrom = self.datePicker.date
+            self.filterDataPointsFrom = self.datePicker.date.startOfTheDay()
+            if let endOfDay = self.datePicker.date.endOfTheDay() {
+                
+                self.filterDataPointsTo = endOfDay
+            }
         } else {
             
-            self.filterDataPointsTo = self.datePicker.date
+            if let endOfDay = self.datePicker.date.endOfTheDay() {
+                
+                self.filterDataPointsTo = endOfDay
+            }
         }
     }
     
@@ -288,8 +316,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     func selectDatesToViewLocations(gesture: UITapGestureRecognizer) {
         
         self.textField.becomeFirstResponder()
-        self.filterDataPointsFrom = Date()
-        self.filterDataPointsTo = Date()
+        self.filterDataPointsFrom = Date().startOfTheDay()
+        if let endOfDay = Date().endOfTheDay() {
+            
+            self.filterDataPointsTo = endOfDay
+        }
     }
     
     // MARK: - Navigation

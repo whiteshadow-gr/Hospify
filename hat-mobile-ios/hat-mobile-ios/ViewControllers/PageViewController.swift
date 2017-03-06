@@ -52,16 +52,13 @@ class PageViewController: UIViewController {
         
         // set up the created page view controller
         self.pageViewController = pageItemController
-        pageItemController.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.x + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30)
-        pageItemController.view.layer.cornerRadius = 15
+        pageItemController.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.x + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30), color: .white, cornerRadius: 15)
         
         // add the page view controller to self
-        self.addChildViewController(pageItemController)
-        self.view.addSubview(pageItemController.view)
-        pageItemController.didMove(toParentViewController: self)
+        self.addViewController(pageItemController)
         
         // notify parent page view controller for disabling the scrolling between pages
-        NotificationCenter.default.post(name: NSNotification.Name("disablePageControll"), object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.disablePageControll.rawValue), object: nil)
     }
     
     // MARK: - ViewController delegate methods
@@ -69,15 +66,12 @@ class PageViewController: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // init a LearnMoreObject
         var pageObject: LearnMoreObject = LearnMoreObject()
         
         // change the color of the pagination dots at the bottom of the screen
-        UIPageControl.appearance().pageIndicatorTintColor = UIColor.rumpelLightGray()
-        UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.tealColor()
+        self.pageViewController?.changePaginationColors(pageTintColor: .white, pageCurrentTintColor: .tealColor())
         
         // check if we are out of bounds
         if (itemIndex >= 0 && itemIndex <= 6 ) {
@@ -89,27 +83,10 @@ class PageViewController: UIViewController {
         if itemIndex == 6 {
             
             // format main label
-            let textAttributesTitle = [
-                NSForegroundColorAttributeName: UIColor.white,
-                NSStrokeColorAttributeName: UIColor.white,
-                NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 36)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
+            let partOne = "Because we think YOU should be at the ".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 36)!)
+            let partTwo = "hub of all things".createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 36)!)
             
-            let textAttributes = [
-                NSForegroundColorAttributeName: UIColor.tealColor(),
-                NSStrokeColorAttributeName: UIColor.tealColor(),
-                NSFontAttributeName: UIFont(name: "OpenSans", size: 36)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
-            
-            let partOne = NSAttributedString(string: "Because we think YOU should be at the ", attributes: textAttributesTitle)
-            let partTwo = NSAttributedString(string: "hub of all things", attributes: textAttributes)
-            let combination = NSMutableAttributedString()
-            
-            combination.append(partOne)
-            combination.append(partTwo)
-            mainLabel.attributedText = combination
+            mainLabel.attributedText = partOne.combineWith(attributedText: partTwo)
         } else {
             
             mainLabel.text = pageObject.info
@@ -130,7 +107,7 @@ class PageViewController: UIViewController {
         }
         
         // add a notification observer in order to hide the second page view controller
-        NotificationCenter.default.addObserver(self, selector: #selector(removeSecondPageController), name: Notification.Name("hideCapabilitiesPageViewContoller"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(removeSecondPageController), name: Notification.Name(Constants.NotificationNames.hideCapabilitiesPageViewContoller.rawValue), object: nil)
     }
     
     override func didReceiveMemoryWarning() {
@@ -151,9 +128,7 @@ class PageViewController: UIViewController {
         // if view is found remove it
         if let view = self.pageViewController {
             
-            view.willMove(toParentViewController: nil)
-            view.view.removeFromSuperview()
-            view.removeFromParentViewController()
+            view.removeViewController()
         }
     }
 }

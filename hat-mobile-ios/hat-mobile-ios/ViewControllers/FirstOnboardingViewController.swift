@@ -62,43 +62,39 @@ class FirstOnboardingViewController: UIViewController {
         super.viewDidLoad()
         
         // init the content we want based on the page index
-        let learnMoreObject = LearnMoreObject(pageNumber: 20 + pageIndex)
+        let learnMoreObject = LearnMoreObject(pageNumber: 20 + self.pageIndex)
         
         // format the label based on the page index
-        if pageIndex == 0 {
+        if self.pageIndex == 0 {
             
-            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: "OpenSans-CondensedLight", size: 30)!)
-            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: "OpenSans", size: 20)!)
-            
-            self.messages.attributedText = partOne.combineWith(attributedText: partTwo)
-            self.learnMoreButton.isHidden = true
-            self.image.image = learnMoreObject.image
-        } else if pageIndex == 1 {
-            
-            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: "OpenSans-CondensedLight", size: 30)!)
-            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: "OpenSans", size: 16)!)
+            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
+            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 20)!)
             
             self.messages.attributedText = partOne.combineWith(attributedText: partTwo)
-            self.learnMoreButton.isHidden = true
-            self.image.image = learnMoreObject.image
-        } else if pageIndex == 2 {
+        } else if self.pageIndex == 1 {
             
-            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: "OpenSans", size: 16)!)
-            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: "OpenSans", size: 16)!)
+            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
+            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
+            
+            self.messages.attributedText = partOne.combineWith(attributedText: partTwo)
+        } else if self.pageIndex == 2 {
+            
+            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
+            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
             
             self.messages.attributedText = partOne.combineWith(attributedText: partTwo)
             self.learnMoreButton.isHidden = false
             self.learnMoreButton.setTitle("GET STARTED", for: .normal)
-            self.image.image = learnMoreObject.image
-        } else if pageIndex == 3 {
+        } else if self.pageIndex == 3 {
             
             // format title label
-            self.messages.attributedText = learnMoreObject.title.createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: "OpenSans-CondensedLight", size: 30)!)
+            self.messages.attributedText = learnMoreObject.title.createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
             self.learnMoreButton.isHidden = false
             self.learnMoreButton.setTitle("SET UP MY PHATA", for: .normal)
             self.learnMoreButton.addBorderToButton(width: 1, color: .white)
-            self.image.image = learnMoreObject.image
         }
+        
+        self.image.image = learnMoreObject.image
     }
 
     override func didReceiveMemoryWarning() {

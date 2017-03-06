@@ -85,10 +85,20 @@ class AuthoriseUserViewController: UIViewController {
             // authorize with hat
             HatAccountService.loginToHATAuthorization(userDomain: userDomain, url: url, selfViewController: nil, completion: self.completionFunc)
             
-            self.removeViewController(viewController: self)
+            self.removeViewController()
             
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name(Constants.NotificationNames.reauthorised.rawValue), object: nil)
         }
     }
 
+    class func setupAuthoriseViewController(view: UIView) -> AuthoriseUserViewController {
+        
+        let authorise = AuthoriseUserViewController()
+        authorise.view.backgroundColor = .clear
+        authorise.view.frame = CGRect(x: view.center.x - 50, y: view.center.y - 20, width: 100, height: 40)
+        authorise.view.layer.cornerRadius = 15
+        authorise.completionFunc = nil
+        
+        return authorise
+    }
 }

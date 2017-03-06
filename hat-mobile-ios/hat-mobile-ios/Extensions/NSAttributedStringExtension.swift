@@ -12,8 +12,18 @@
 
 import Foundation
 
+// MARK: Extension
+
 extension NSAttributedString {
     
+    // MARK: - Combine 2 attributed strings
+    
+    /**
+     Adds 2 attributed strings together
+     
+     - parameter attributedText: The second attributed string
+     - returns: An attributed string based on the string that called this method and the string passed as parameter
+     */
     func combineWith(attributedText: NSAttributedString) -> NSAttributedString {
         
         let combination = NSMutableAttributedString()

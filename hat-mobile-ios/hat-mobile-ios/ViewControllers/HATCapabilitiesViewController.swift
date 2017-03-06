@@ -40,9 +40,9 @@ class HATCapabilitiesViewController: UIViewController {
         
         // init the data object and refresh the labels and imageView
         let dataObject = LearnMoreObject(pageNumber: pageIndex + 10)
-        titleLabel.text = dataObject.title
-        infoLabel.text = dataObject.info
-        image.image = dataObject.image
+        self.titleLabel.text = dataObject.title
+        self.infoLabel.text = dataObject.info
+        self.image.image = dataObject.image
     }
 
     override func didReceiveMemoryWarning() {
@@ -60,7 +60,7 @@ class HATCapabilitiesViewController: UIViewController {
      */
     @IBAction func cancelButton(_ sender: Any) {
         
-        NotificationCenter.default.post(name: Notification.Name("enablePageControll"), object: nil)
-        NotificationCenter.default.post(name: Notification.Name("hideCapabilitiesPageViewContoller"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(Constants.NotificationNames.enablePageControll.rawValue), object: nil)
+        NotificationCenter.default.post(name: Notification.Name(Constants.NotificationNames.hideCapabilitiesPageViewContoller.rawValue), object: nil)
     }
 }

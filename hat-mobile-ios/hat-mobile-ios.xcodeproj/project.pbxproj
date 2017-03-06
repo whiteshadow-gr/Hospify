@@ -49,6 +49,8 @@
 		603CE74A1DF6FA7400421429 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603CE7491DF6FA7400421429 /* PageViewController.swift */; };
 		603CE74C1DF7091500421429 /* ParentPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603CE74B1DF7091500421429 /* ParentPageViewController.swift */; };
 		603CE74E1DF85E1600421429 /* LearnMoreObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603CE74D1DF85E1600421429 /* LearnMoreObject.swift */; };
+		603D08AF1E6D5CFF0077E90C /* RingProgressCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D08AE1E6D5CFE0077E90C /* RingProgressCircle.swift */; };
+		603D08B11E6D5E350077E90C /* AnimationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D08B01E6D5E340077E90C /* AnimationHelper.swift */; };
 		603D3A711DE7B66800C973D8 /* FontAwesome.otf in Resources */ = {isa = PBXBuildFile; fileRef = 603D3A701DE7B66800C973D8 /* FontAwesome.otf */; };
 		603D3A731DE879E600C973D8 /* SocialImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D3A721DE879E600C973D8 /* SocialImageCollectionViewCell.swift */; };
 		603D55BD1E69861D00CCEBEB /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D55BC1E69861D00CCEBEB /* UIViewExtension.swift */; };
@@ -206,6 +208,8 @@
 		603CE7491DF6FA7400421429 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PageViewController.swift; path = ViewControllers/PageViewController.swift; sourceTree = "<group>"; };
 		603CE74B1DF7091500421429 /* ParentPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ParentPageViewController.swift; path = ViewControllers/ParentPageViewController.swift; sourceTree = "<group>"; };
 		603CE74D1DF85E1600421429 /* LearnMoreObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LearnMoreObject.swift; path = Objects/LearnMoreObject.swift; sourceTree = "<group>"; };
+		603D08AE1E6D5CFE0077E90C /* RingProgressCircle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RingProgressCircle.swift; sourceTree = "<group>"; };
+		603D08B01E6D5E340077E90C /* AnimationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimationHelper.swift; sourceTree = "<group>"; };
 		603D3A701DE7B66800C973D8 /* FontAwesome.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome.otf; sourceTree = "<group>"; };
 		603D3A721DE879E600C973D8 /* SocialImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SocialImageCollectionViewCell.swift; path = Cells/SocialImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		603D55BC1E69861D00CCEBEB /* UIViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIViewExtension.swift; path = Extensions/UIViewExtension.swift; sourceTree = "<group>"; };
@@ -407,6 +411,7 @@
 			isa = PBXGroup;
 			children = (
 				6041DB0A1E2914EA00FF6D32 /* CustomSwitch.swift */,
+				603D08AE1E6D5CFE0077E90C /* RingProgressCircle.swift */,
 			);
 			name = "Custom Views";
 			sourceTree = "<group>";
@@ -664,6 +669,7 @@
 		B59136811D19D33400E9EDD0 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				603D08B01E6D5E340077E90C /* AnimationHelper.swift */,
 				60F1D7E61E6828DA0009CF1F /* AuthenticationHelper.swift */,
 				B59136841D19D3BB00E9EDD0 /* Constants.swift */,
 				60A727BC1DDF47EC008AF409 /* FormatterHelper.swift */,
@@ -1091,6 +1097,7 @@
 				60FAC7691E223A1D00532C01 /* DataPlugsCollectionViewController.swift in Sources */,
 				605198051E3655C100516D75 /* FacebookDataPostsFromSocialFeedObject.swift in Sources */,
 				60F1D7DF1E662FD10009CF1F /* LocationsObject.swift in Sources */,
+				603D08B11E6D5E350077E90C /* AnimationHelper.swift in Sources */,
 				604237DF1E114F2D00E19109 /* UIColorExtension.swift in Sources */,
 				60E2679E1E55B9B900B6D626 /* AuthoriseUserViewController.swift in Sources */,
 				605198131E366CFE00516D75 /* TwitterDataTweetsUsersSocialFeedObject.swift in Sources */,
@@ -1118,6 +1125,7 @@
 				603FDD511E43E7840086559B /* InfoHatProvidersViewController.swift in Sources */,
 				B59136851D19D3BB00E9EDD0 /* Constants.swift in Sources */,
 				60FAC76F1E2785BF00532C01 /* DataPlugOwnerObject.swift in Sources */,
+				603D08AF1E6D5CFF0077E90C /* RingProgressCircle.swift in Sources */,
 				608EAAA81DFEA8AD00234C60 /* ViewControllerExtension.swift in Sources */,
 				60A727BD1DDF47ED008AF409 /* FormatterHelper.swift in Sources */,
 				60F1D7E71E6828DA0009CF1F /* AuthenticationHelper.swift in Sources */,

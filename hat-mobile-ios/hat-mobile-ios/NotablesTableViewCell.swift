@@ -83,7 +83,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         // create this zebra like color based on the index of the cell
         if (indexPath.row % 2 == 1) {
             
-            newCell.contentView.backgroundColor = UIColor.rumpelLightGray()
+            newCell.contentView.backgroundColor = .rumpelLightGray()
         }
         
         // show the data in the cell's labels
@@ -109,7 +109,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         // set up cell from the reuse identifier
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "socialCell", for: indexPath) as!SocialImageCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.CellReuseIDs.socialCell.rawValue, for: indexPath) as!SocialImageCollectionViewCell
         
         // update the image of the cell accordingly
         if self.sharedOn[indexPath.row] == "facebook" {
@@ -149,7 +149,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         
         cell.collectionView.reloadData()
         
-        cell.contentView.backgroundColor = UIColor.rumpelDarkGray()
+        cell.contentView.backgroundColor = .rumpelDarkGray()
 
         return cell
     }
@@ -166,22 +166,12 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     private func formatInfoLabel(date: String, shared: Bool, publicUntil: Date?) -> NSAttributedString {
         
         // format the info label
-        let textAttributes = [
-            NSForegroundColorAttributeName: UIColor.tealColor(),
-            NSStrokeColorAttributeName: UIColor.tealColor(),
-            NSFontAttributeName: UIFont(name: "OpenSans", size: 11)!,
-            NSStrokeWidthAttributeName: -1.0
-            ] as [String : Any]
-        
         let string = "Posted " + date
-        var shareString: String = ""
+        var shareString: String = " Private Note"
         
-        if !shared {
+        if shared {
             
-            shareString = " Private Note"
-        } else {
-            
-           shareString = " Shared" 
+            shareString = " Shared"
         }
         
         if let unwrappedDate = publicUntil {
@@ -193,12 +183,8 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         } 
         
         let partOne = NSAttributedString(string: string)
-        let partTwo = NSAttributedString(string: shareString, attributes: textAttributes)
-        let combination = NSMutableAttributedString()
+        let partTwo = shareString.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 11)!)
         
-        combination.append(partOne)
-        combination.append(partTwo)
-        
-        return combination
+        return partOne.combineWith(attributedText: partTwo)
     }
 }

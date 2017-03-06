@@ -75,4 +75,31 @@ extension Date {
             return NSLocalizedString("Just now", comment: "")
         }
     }
+    
+    // MARK: - Get start of the day
+    
+    /**
+     Returns the start of the date
+     
+     - returns: The date called the method but with time 00:00:00
+     */
+    func startOfTheDay() -> Date {
+        
+        return NSCalendar.current.startOfDay(for: self)
+    }
+    
+    // MARK: - Get end of the day
+    
+    /**
+     Returns the end of the day
+     
+     - returns: The date called the method but with time 23:59.59
+     */
+    func endOfTheDay() -> Date? {
+        
+        var components = DateComponents()
+        components.day = 1
+        components.second = -1
+        return Calendar.current.date(byAdding: components, to: self.startOfTheDay())
+    }
 }

@@ -63,9 +63,30 @@ class Constants {
      */
     enum NotificationNames: String {
         
-        case reauthorised = "reauthorised"
+        case reauthorised = "reauthorisedUser"
         case dataPlug = "dataPlugMessage"
         case hideNewbie = "hideNewbiePageViewContoller"
+        case hideFirstOnboardingView = "hideView"
+        case hatProviders = "hatProviders"
+        case hideInfoHATProvider = "hideInfoHATProvider"
+        case enablePageControll = "enablePageControll"
+        case disablePageControll = "disablePageControll"
+        case hideCapabilitiesPageViewContoller = "hideCapabilitiesPageViewContoller"
+        case hideLearnMore = "HideLearnMore"
+    }
+    
+    /**
+     The possible notification names, stored in convenience in one place
+     
+     - reauthorised: reauthorised
+     - dataPlug: dataPlugMessage
+     - hideNewbie: hideNewbiePageViewContoller
+     */
+    enum fontNames: String {
+        
+        case openSansCondensedLight = "OpenSans-CondensedLight"
+        case openSans = "OpenSans"
+        case openSansBold = "OpenSans-Bold"
     }
     
     /**
@@ -76,6 +97,9 @@ class Constants {
     enum CellReuseIDs: String {
         
         case dataplug = "dataPlugCell"
+        case onboardingTile = "onboardingTile"
+        case homeHeader = "homeHeader"
+        case socialCell = "socialCell"
     }
     
     // MARK: - Structs

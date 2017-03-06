@@ -30,6 +30,9 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     
     // MARK: - IBOutlets
 
+    /// An IBOutlet for handling the circle progress bar view
+    @IBOutlet weak var ringProgressBar: RingProgressCircle!
+    
     /// An IBOutlet for handling the collection view
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -80,12 +83,12 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "homeScreenCell", for: indexPath) as? HomeCollectionViewCell
         
-        return HomeCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, object: tiles[indexPath.row], orientation: orientation)
+        return HomeCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, object: self.tiles[indexPath.row], orientation: orientation)
     }
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return tiles.count
+        return self.tiles.count
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -102,7 +105,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
-                                                                         withReuseIdentifier: "homeHeader",
+                                                                         withReuseIdentifier: Constants.CellReuseIDs.homeHeader.rawValue,
                                                                          for: indexPath) as! HomeHeaderCollectionReusableView
         headerView.headerTitle.text = "Data Services"
         
@@ -111,13 +114,13 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        if tiles[indexPath.row].serviceName == "Notes" {
+        if self.tiles[indexPath.row].serviceName == "Notes" {
             
             self.performSegue(withIdentifier: "notesSegue", sender: self)
-        } else if tiles[indexPath.row].serviceName == "Locations" {
+        } else if self.tiles[indexPath.row].serviceName == "Locations" {
             
             self.performSegue(withIdentifier: "locationsSegue", sender: self)
-        } else if tiles[indexPath.row].serviceName == "Social Data" {
+        } else if self.tiles[indexPath.row].serviceName == "Social Data" {
             
             self.performSegue(withIdentifier: "socialDataSegue", sender: self)
         }
@@ -135,11 +138,18 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         let socialData = HomeScreenObject(name: "Social Data", description: "Social media posts stored in your HAT", image: UIImage(named: "SocialFeed")!)
         let chat = HomeScreenObject(name: "Chat", description: "Coming Soon", image: UIImage(named: "Chat")!)
         self.tiles = [notables, locations, socialData, chat]
+        
+        self.ringProgressBar.ringColor = .white
+        self.ringProgressBar.ringRadius = 45
+        self.ringProgressBar.ringLineWidth = 4
+        self.ringProgressBar.endPoint = CGFloat(M_PI_2)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
+        
+        self.title = "Data Services"
         
         // check orientation
         self.orientation = UIInterfaceOrientation(rawValue: UIDevice.current.orientation.rawValue)!
@@ -152,45 +162,39 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             
             if self.authorise == nil {
                 
-                self.authorise = AuthoriseUserViewController()
-                self.authorise!.view.backgroundColor = .clear
-                self.authorise!.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
-                self.authorise!.view.layer.cornerRadius = 15
-                self.authorise!.completionFunc = nil
+                self.authorise = AuthoriseUserViewController.setupAuthoriseViewController(view: self.view)
                 
                 // add the page view controller to self
-                self.addChildViewController(self.authorise!)
-                self.view.addSubview(self.authorise!.view)
-                self.authorise!.didMove(toParentViewController: self)
+                self.addViewController(self.authorise!)
             }
         }
         
-        // get notes
         // reset the stack to avoid allowing back
         let result = KeychainHelper.GetKeychainValue(key: "logedIn")
         let userDomain = HatAccountService.TheUserHATDomain()
-        /* we already have a hat_domain, ie. can skip the login screen? */
-        if result != "true" && userDomain == "" {
+        let token = HatAccountService.getUsersTokenFromKeychain()
+        
+        if result == "false" || userDomain == "" || token == "" {
             
             let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
             let loginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
-            self.navigationController?.title = ""
             let navigation = self.navigationController
             _ = navigation?.popToRootViewController(animated: false)
             navigation?.pushViewController(loginViewController, animated: false)
+        // user logged in, set up view
         } else {
             
-            /* we already have a hat_domain, ie. can skip the login screen? */
-
+            // set up elements
             let array = userDomain.components(separatedBy: ".")
             self.helloLabel.text = "Hello " + array[0] + "!"
             
+            // request for location tracking
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.locationManager.requestAlwaysAuthorization()
             
-            let token = HatAccountService.getUsersTokenFromKeychain()
+            // check if the token has expired
             HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
-        }
+        } 
     }
     
     override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {

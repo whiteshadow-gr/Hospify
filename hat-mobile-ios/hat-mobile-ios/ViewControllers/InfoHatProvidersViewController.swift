@@ -31,7 +31,7 @@ class InfoHatProvidersViewController: UIViewController {
      */
     @IBAction func cancelButtonAction(_ sender: Any) {
         
-        NotificationCenter.default.post(name: NSNotification.Name("hideInfoHATProvider"), object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideInfoHATProvider.rawValue), object: nil)
     }
     
     // MARK: - View controller methods

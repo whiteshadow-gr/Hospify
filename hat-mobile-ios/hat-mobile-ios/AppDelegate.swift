@@ -55,6 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             self.startUpdatingLocation()
         }
         self.startUpdatingLocation()
+        self.locationManager.startMonitoringSignificantLocationChanges()
         
         // change tab bar item font
         UITabBarItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans", size: 11)!], for: UIControlState.normal)
@@ -168,7 +169,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             if urlHost == Constants.Auth.LocalAuthHost {
                 
                 let result = KeychainHelper.GetKeychainValue(key: "logedIn")
-                if (result == "true" && !HatAccountService.TheUserHATDomain().isEmpty) {
+                if (result == "expired") {
                     
                     NotificationCenter.default.post(name: Notification.Name("reauthorisedUser"), object: url)
                 } else {
@@ -250,6 +251,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 self.stopRegionTracking()
                 self.locationManager.stopUpdatingLocation()
                 self.locationManager = nil
+                self.locationManager.stopMonitoringSignificantLocationChanges()
             }
         }
     }

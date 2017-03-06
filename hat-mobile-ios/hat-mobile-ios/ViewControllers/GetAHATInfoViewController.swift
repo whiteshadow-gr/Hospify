@@ -42,9 +42,9 @@ class GetAHATInfoViewController: UIViewController {
     // MARK: - IBActions
     
     /**
-     <#Function Details#>
+     User taped on sign up button. Open URL or hide pop up view depending on the data
      
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter sender: The object that called this method
      */
     @IBAction func signUpAction(_ sender: Any) {
         
@@ -62,18 +62,18 @@ class GetAHATInfoViewController: UIViewController {
             }
         } else {
             
-            NotificationCenter.default.post(name: NSNotification.Name("hideView"), object: "1")
+            NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideFirstOnboardingView.rawValue), object: "1")
         }
     }
     
     /**
-     <#Function Details#>
+     User taped on cancel button, hide pop up view
      
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter sender: The object that called this method
      */
     @IBAction func cancelButtonAction(_ sender: Any) {
         
-        NotificationCenter.default.post(name: NSNotification.Name("hideView"), object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideFirstOnboardingView.rawValue), object: nil)
     }
     
     // MARK: - View Controller methods
@@ -83,60 +83,32 @@ class GetAHATInfoViewController: UIViewController {
         super.viewDidLoad()
         
         // set up cancel button
-        cancelButton.imageView?.image = cancelButton.imageView?.image?.withRenderingMode(.alwaysTemplate)
-        cancelButton.tintColor = UIColor.black
+        self.cancelButton.imageView?.image = cancelButton.imageView?.image?.withRenderingMode(.alwaysTemplate)
+        self.cancelButton.tintColor = UIColor.black
         
         // if we have a passed value from parent view controler, set up the view with this value
-        if (hatProvider != nil) {
+        if (self.hatProvider != nil) {
             
-            self.hatProviderImage.image = (hatProvider?.hatProviderImage)!
-            self.hatProviderTitle.text = hatProvider?.name
-            self.hatProviderInfo.text = hatProvider?.category.description
+            // assigning values to objects
+            self.hatProviderImage.image = self.hatProvider?.hatProviderImage!
+            self.hatProviderTitle.text = self.hatProvider?.name
+            self.hatProviderInfo.text = self.hatProvider?.category.description
             self.hatProviderInfo.layoutIfNeeded()
-            self.hatProviderDetailedInfo.text = hatProvider?.description
+            self.hatProviderDetailedInfo.text = self.hatProvider?.description
             self.hatProviderDetailedInfo.sizeToFit()
-            
-            let features: NSMutableAttributedString = NSMutableAttributedString(string: "")
-            for (index, string) in (hatProvider?.features)!.enumerated() {
-                
-                features.append(NSAttributedString(string: string))
-                
-                if (index < (hatProvider?.features.count)! - 1) {
-                    
-                    features.append(NSAttributedString(string: "\n" + "\u{2022}" + "\n"))
-                }
-            }
-                        
-            // format title label
-            let textAttributesTitle = [
-                NSForegroundColorAttributeName: UIColor.white,
-                NSStrokeColorAttributeName: UIColor.white,
-                NSFontAttributeName: UIFont(name: "OpenSans", size: 14)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
-            
-            let textAttributes = [
-                NSForegroundColorAttributeName: UIColor.white,
-                NSStrokeColorAttributeName: UIColor.white,
-                NSFontAttributeName: UIFont(name: "OpenSans-Bold", size: 14)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
             
             if (self.hatProvider?.price)! > 0 && self.hatProvider?.kind.kind != "External" {
                 
-                self.signUpButton.setAttributedTitle(NSAttributedString(string: "SIGN ME UP", attributes: textAttributesTitle), for: .normal)
+                self.signUpButton.setAttributedTitle("SIGN ME UP".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 14)!), for: .normal)
             } else if self.hatProvider?.kind.kind == "External" {
                 
                 let buttonName = "Learn more about " + (self.hatProvider?.name)!
-                self.signUpButton.setAttributedTitle(NSAttributedString(string: buttonName, attributes: textAttributesTitle), for: .normal)
+                self.signUpButton.setAttributedTitle(buttonName.createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 14)!), for: .normal)
             } else {
                 
-                let partOne = NSAttributedString(string: "SIGN ME UP ", attributes: textAttributesTitle)
-                let partTwo = NSAttributedString(string: "FREE", attributes: textAttributes)
-                let combination = NSMutableAttributedString()
-                
-                combination.append(partOne)
-                combination.append(partTwo)
+                let partOne = "SIGN ME UP".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 14)!)
+                let partTwo = "FREE".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSansBold.rawValue, size: 14)!)
+                let combination = partOne.combineWith(attributedText: partTwo)
                 
                 self.signUpButton.setAttributedTitle(combination, for: .normal)
             }

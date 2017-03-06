@@ -16,7 +16,7 @@ import UIKit
 
 extension UIImageView {
     
-    // MARK: - Methods
+    // MARK: - Download image
 
     /**
      Downloads an Image from a url and shows it in the imageview that called this method

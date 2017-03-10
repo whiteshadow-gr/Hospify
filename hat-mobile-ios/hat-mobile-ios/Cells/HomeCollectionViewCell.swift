@@ -74,10 +74,9 @@ class HomeCollectionViewCell: UICollectionViewCell {
             } else if (indexPath.row % 4 == 2) {
                 
                 return .tealLighterColor()
-            } else {
-                
-                return .tealDarkerColor()
             }
+            
+            return .tealDarkerColor()
         } else {
             
             // create this zebra like color based on the index of the cell
@@ -90,10 +89,9 @@ class HomeCollectionViewCell: UICollectionViewCell {
             } else if (indexPath.row % 6 == 2) {
                 
                 return .rumpelLighterDarkGray()
-            } else {
-                
-                return .tealColor()
             }
+            
+            return .tealColor()
         }
     }
 }

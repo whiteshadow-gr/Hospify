@@ -68,6 +68,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     @IBOutlet weak var deleteButtonOutlet: UIButton!
     /// An IBOutlet for handling the facebook button
     @IBOutlet weak var facebookButton: UIButton!
+    /// An IBOutlet for handling the twitter button
     @IBOutlet weak var twitterButton: UIButton!
     /// An IBOutlet for handling the marketsquare button
     @IBOutlet weak var marketsquareButton: UIButton!
@@ -307,19 +308,22 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             post()
         }
         
-        func failed() {
+        func failed(statusCode: Int) {
             
-            let authoriseVC = AuthoriseUserViewController()
-            authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
-            authoriseVC.view.layer.cornerRadius = 15
-            authoriseVC.completionFunc = post
+            if statusCode == 401 {
+                
+                let authoriseVC = AuthoriseUserViewController()
+                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                authoriseVC.view.layer.cornerRadius = 15
+                authoriseVC.completionFunc = post
+                
+                // add the page view controller to self
+                self.addChildViewController(authoriseVC)
+                self.view.addSubview(authoriseVC.view)
+                authoriseVC.didMove(toParentViewController: self)
             
-            // add the page view controller to self
-            self.addChildViewController(authoriseVC)
-            self.view.addSubview(authoriseVC.view)
-            authoriseVC.didMove(toParentViewController: self)
-            
-            self.publishButton.setTitle("Please try again", for: .normal)
+                self.publishButton.setTitle("Please try again", for: .normal)
+            }
         }
         
         let token = HatAccountService.getUsersTokenFromKeychain()
@@ -367,19 +371,22 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             delete()
         }
         
-        func failed() {
+        func failed(statusCode: Int) {
             
-            let authoriseVC = AuthoriseUserViewController()
-            authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
-            authoriseVC.view.layer.cornerRadius = 15
-            authoriseVC.completionFunc = delete
-            
-            // add the page view controller to self
-            self.addChildViewController(authoriseVC)
-            self.view.addSubview(authoriseVC.view)
-            authoriseVC.didMove(toParentViewController: self)
-            
-            self.deleteButtonOutlet.setTitle("Please try again", for: .normal)
+            if statusCode == 401 {
+                
+                let authoriseVC = AuthoriseUserViewController()
+                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                authoriseVC.view.layer.cornerRadius = 15
+                authoriseVC.completionFunc = delete
+                
+                // add the page view controller to self
+                self.addChildViewController(authoriseVC)
+                self.view.addSubview(authoriseVC.view)
+                authoriseVC.didMove(toParentViewController: self)
+                
+                self.deleteButtonOutlet.setTitle("Please try again", for: .normal)
+            }
         }
         
         let token = HatAccountService.getUsersTokenFromKeychain()
@@ -456,74 +463,70 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 self.removeFromArray(string: "facebook")
             // else select it and add it to the array
             } else {
-                
-                let result = KeychainHelper.GetKeychainValue(key: "facebookPlug")
-                
-                // check if user has been notified about the facebook plug
-                if (result == nil || result == "false") {
                     
-                    func facebookTokenReceived(token: String) {
+                func facebookTokenReceived(token: String) {
+                    
+                    func successfulCallback() {
                         
-                        func successfulCallback() {
-                            
-                            _ = KeychainHelper.SetKeychainValue(key: "facebookPlug", value: "true")
-                        }
-                        
-                        func failedCallback() {
-                            
-                            func noAction() {
-                                
-                                // if button was selected deselect it and remove the button from the array
-                                if self.facebookButton.alpha == 1 {
-                                    
-                                    self.facebookButton.alpha = 0.4
-                                    self.removeFromArray(string: "facebook")
-                                    // else select it and add it to the array
-                                } else {
-                                    
-                                    self.facebookButton.alpha = 1
-                                    self.shareOnSocial.append("facebook")
-                                    
-                                    // construct string from the array and save it
-                                    self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
-                                }
-                            }
-                            
-                            func yesAction() {
-                                
-                                func successfullCallBack(data: [DataPlugObject]) {
-                                    
-                                    for i in 0 ... data.count - 1 {
-                                        
-                                        if data[i].name == "facebook" {
-                                            
-                                            let userDomain = HatAccountService.TheUserHATDomain()
-                                            
-                                            let url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + data[i].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
-                                            
-                                            self.safariVC = SFSafariViewController(url: URL(string: url)!)
-                                            self.present(self.safariVC!, animated: true, completion: nil)
-                                            self.claimOffer()
-                                        }
-                                    }
-                                }
-                                
-                                DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {() -> Void in return})
-                            }
-                            
-                            self.createClassicAlertWith(alertMessage: "You have to enable Facebook data plug before sharing on Facebook, do you want to enable now?", alertTitle: "Data plug not enabled", cancelTitle: "No", proceedTitle: "Yes", proceedCompletion: yesAction, cancelCompletion: noAction)
-                        }
-                        
-                        FacebookDataPlugService.isFacebookDataPlugActive(token: token, successful: successfulCallback, failed: failedCallback)
-
                     }
                     
-                    FacebookDataPlugService.getAppTokenForFacebook(successful: facebookTokenReceived, failed: {() -> Void in
+                    func failedCallback() {
                         
-                        self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                        func noAction() {
+                            
+                            // if button was selected deselect it and remove the button from the array
+                            if self.facebookButton.alpha == 1 {
+                                
+                                self.facebookButton.alpha = 0.4
+                                self.removeFromArray(string: "facebook")
+                                // else select it and add it to the array
+                            } else {
+                                
+                                self.facebookButton.alpha = 1
+                                self.shareOnSocial.append("facebook")
+                                
+                                // construct string from the array and save it
+                                self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
+                            }
+                        }
+                        
+                        func yesAction() {
+                            
+                            func successfullCallBack(data: [DataPlugObject]) {
+                                
+                                for i in 0 ... data.count - 1 {
+                                    
+                                    if data[i].name == "facebook" {
+                                        
+                                        let userDomain = HatAccountService.TheUserHATDomain()
+                                        
+                                        let url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + data[i].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
+                                        
+                                        self.safariVC = SFSafariViewController(url: URL(string: url)!)
+                                        self.publishButton.setTitle("Save", for: .normal)
+                                        self.present(self.safariVC!, animated: true, completion: nil)
+                                        self.claimOffer()
+                                    }
+                                }
+                            }
+                            
+                            DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {() -> Void in return})
+                        }
+                        
+                        self.createClassicAlertWith(alertMessage: "You have to enable Facebook data plug before sharing on Facebook, do you want to enable now?", alertTitle: "Data plug not enabled", cancelTitle: "No", proceedTitle: "Yes", proceedCompletion: yesAction, cancelCompletion: noAction)
+                    }
                     
-                    })
+                    FacebookDataPlugService.isFacebookDataPlugActive(token: token, successful: successfulCallback, failed: failedCallback)
+
                 }
+                
+                self.publishButton.setTitle("Please Wait..", for: .normal)
+                FacebookDataPlugService.getAppTokenForFacebook(successful: facebookTokenReceived, failed: {() -> Void in
+                    
+                    self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                
+                })
+                
                 
                 self.facebookButton.alpha = 1
                 shareOnSocial.append("facebook")
@@ -545,15 +548,16 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         if self.marketsquareButton.isUserInteractionEnabled {
             
             // if button was selected deselect it and remove the button from the array
-            if self.marketsquareButton.alpha == 1{
+            if self.marketsquareButton.alpha == 1 {
                 
                 self.marketsquareButton.alpha = 0.4
                 self.removeFromArray(string: "marketsquare")
-            // else select it and add it to the array
+                // else select it and add it to the array
             } else {
                 
+                self.claimOffer()
                 self.marketsquareButton.alpha = 1
-                self.shareOnSocial.append("marketsquare")
+                shareOnSocial.append("marketsquare")
             }
             
             // construct string from the array and save it
@@ -616,6 +620,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                 
                                 // open safari
                                 self.safariVC = SFSafariViewController(url: URL(string: url)!)
+                                self.publishButton.setTitle("Save", for: .normal)
                                 self.present(self.safariVC!, animated: true, completion: nil)
                                 
                                 // claim offer
@@ -636,6 +641,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: dataPlugIsEnabled, failed: dataPugIsNotEnabled)
         }
         
+        self.publishButton.setTitle("Please Wait..", for: .normal)
         // get app token for twitter
         TwitterDataPlugService.getAppTokenForTwitter(successful: checkDataPlug, failed: {() -> Void in
             
@@ -719,11 +725,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         // setup text field
         self.textView.keyboardAppearance = .dark
-        
-        // add tap gesture to navigation bar title
-        let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(navigationTitleTap))
-        self.navigationController?.navigationBar.subviews[1].isUserInteractionEnabled = true
-        self.navigationController?.navigationBar.subviews[1].addGestureRecognizer(tapGesture)
         
         // add gesture recognizer to share For view
         let tapGestureToShareForAction = UITapGestureRecognizer(target: self, action:  #selector (self.shareForDurationAction(_:)))
@@ -956,14 +957,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         self.facebookButton.alpha = 0.4
         self.marketsquareButton.alpha = 0.4
         self.twitterButton.alpha = 0.4
-    }
-
-    /**
-     A funtion executed on tap of the navigation title
-     */
-    @objc private func navigationTitleTap() {
-        
-        
     }
     
     // MARK: - Keyboard handling

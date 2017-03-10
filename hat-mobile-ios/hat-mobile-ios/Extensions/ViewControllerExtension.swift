@@ -203,7 +203,6 @@ extension UIViewController {
      */
     func removeViewController() {
         
-        _ = self.removeFromParentViewController
         self.willMove(toParentViewController: nil)
         self.view.removeFromSuperview()
         self.removeFromParentViewController()

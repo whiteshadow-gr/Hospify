@@ -73,14 +73,14 @@ class HatAccountService {
         return ""
     }
     
-    class func checkIfTokenIsActive(token: String, success: @escaping (String) -> Void, failed: @escaping (Void) -> Void) {
+    class func checkIfTokenIsActive(token: String, success: @escaping (String) -> Void, failed: @escaping (Int) -> Void) {
         
         HatAccountService.checkHatTableExists(tableName: "notablesv1", sourceName: "rumpel", authToken: token, successCallback: {(_: NSNumber) -> Void in
             
             success(token)
-        }, errorCallback: {() -> Void in
+        }, errorCallback: {(statusCode) -> Void in
             
-            failed()
+            failed(statusCode)
         })
     }
     
@@ -176,7 +176,7 @@ class HatAccountService {
      - parameter successCallback: A callback called when successful of type @escaping (NSNumber) -> Void
      - parameter errorCallback: A callback called when failed of type @escaping (Void) -> Void)
      */
-    class func checkHatTableExists(tableName: String, sourceName: String, authToken: String, successCallback: @escaping (NSNumber) -> Void, errorCallback: @escaping (Void) -> Void) -> Void {
+    class func checkHatTableExists(tableName: String, sourceName: String, authToken: String, successCallback: @escaping (NSNumber) -> Void, errorCallback: @escaping (Int) -> Void) -> Void {
         
         // create the url
         let tableURL = HatAccountService.TheUserHATCheckIfTableExistsURL(tableName: tableName, sourceName: sourceName)
@@ -201,10 +201,10 @@ class HatAccountService {
                     
                     if statusCode == 404 {
                         
-                        errorCallback()
+                        errorCallback(statusCode!)
                     } else if statusCode == 401 {
                         
-                        errorCallback()
+                        errorCallback(statusCode!)
                         _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "expired")
                     } else {
                         
@@ -227,7 +227,7 @@ class HatAccountService {
                             //table not found
                         } else if statusCode == 404 {
                             
-                            errorCallback()
+                            errorCallback(statusCode!)
                         }
                     }
                 }
@@ -351,17 +351,19 @@ class HatAccountService {
         // define the url to connect to
         let url = "https://notables.hubofallthings.com/api/bulletin/tickle"
         
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
         // make the request
         Alamofire.request(url, method: .get, parameters: ["phata": userDomain], encoding: Alamofire.URLEncoding.default, headers: nil).responseString { response in
                 
-                HatAccountService.errorHandlingWith(response: response)
+            HatAccountService.errorHandlingWith(response: response)
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
         }
     }
     
     /**
-     <#Function Details#>
+     Logs any error found from triggering th update
      
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter response: The DataResponse object returned from alamofire
      */
     private class func errorHandlingWith(response: DataResponse<String>) {
         

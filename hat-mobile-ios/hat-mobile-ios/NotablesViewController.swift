@@ -43,9 +43,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     private var parameters: Dictionary<String, String> = ["starttime" : "0",
                                                           "limit" : "50"]
     
-    /// SafariViewController variable
-    private var pageViewController: FirstOnboardingPageViewController = FirstOnboardingPageViewController()
-    
     /// a dark view pop up to hide the background
     private var darkView: UIView? = nil
     
@@ -127,7 +124,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         let failCallBack = { self.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {() -> Void in return}) }
         
         // check if data plug is ready
-        DataPlugsService.ensureDataPlugReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
+        DataPlugsService.ensureOffersReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
     }
     
     /**
@@ -157,8 +154,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         // register observers for a notifications
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.hideTable), name: NSNotification.Name(rawValue: "NetworkMessage"), object: nil)
-        // add a notification observer in order to hide the second page view controller
-        NotificationCenter.default.addObserver(self, selector: #selector(removePageController), name: Notification.Name("hideNewbiePageViewContoller"), object: nil)
                 
         self.createNewNoteButton.addBorderToButton(width: 0.5, color: .white)
     }
@@ -177,9 +172,9 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             self.connectToServerToGetNotes()
         }
         
-        func failed() {
+        func failed(statusCode: Int) {
             
-            if self.authorise == nil {
+            if self.authorise == nil && statusCode == 401 {
                 
                 self.authorise = AuthoriseUserViewController()
                 self.authorise!.view.backgroundColor = .clear
@@ -191,6 +186,9 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 self.addChildViewController(self.authorise!)
                 self.view.addSubview(self.authorise!.view)
                 self.authorise!.didMove(toParentViewController: self)
+            } else if statusCode == 404 {
+                
+                self.connectToServerToGetNotes()
             }
         }
 
@@ -292,7 +290,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                                        "limit" : self.notablesFetchLimit]
                     
                     // fetch notes
-                    NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: {() -> Void in return})
+                    NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: {(statusCode) -> Void in return})
                 } else {
                     
                     // revert parameters to initial values
@@ -354,9 +352,9 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     self.authorise = nil
                 }
                 
-                func failed() {
+                func failed(statusCode: Int) {
                     
-                    if self.authorise != nil {
+                    if self.authorise != nil && statusCode == 401 {
                         
                         self.authorise! = AuthoriseUserViewController()
                         self.authorise!.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
@@ -411,7 +409,16 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             
             self.showEmptyTableLabelWith(message: "Accessing your HAT...")
             
-            NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: showNewbieScreens)
+            NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: { (statusCode) -> Void in
+                
+                if statusCode != 404 {
+                    
+                    self.showEmptyTableLabelWith(message: "There was an error fetching notes. Please try again later")
+                } else if statusCode == 404 {
+                    
+                    self.connectToServerToGetNotes()
+                }
+            })
         }
     }
     
@@ -522,49 +529,5 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 self.showEmptyTableLabelWith(message: "No notables. Keep your words on your HAT. Create your first notable!")
             }
         }
-    }
-    
-    // MARK: - Show newbie screens
-    
-    /**
-     Shows newbie screens
-     */
-    private func showNewbieScreens() -> Void {
-        
-        // set up the created page view controller
-        self.pageViewController = self.storyboard!.instantiateViewController(withIdentifier: "firstTimeOnboarding") as! FirstOnboardingPageViewController
-        self.pageViewController.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.x + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30)
-        self.pageViewController.view.layer.cornerRadius = 15
-        
-        // present a dark pop up view
-        self.darkView = UIView(frame: CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.width, height: self.view.frame.height))
-        self.darkView?.backgroundColor = UIColor.darkGray
-        self.darkView?.alpha = 0.6
-        self.view.addSubview((self.darkView)!)
-        
-        // add the page view controller to self
-        self.addChildViewController(self.pageViewController)
-        self.view.addSubview(self.pageViewController.view)
-        self.pageViewController.didMove(toParentViewController: self)
-        
-        self.updateUI()
-    }
-    
-    // MARK: - Remove second PageViewController
-    
-    /**
-     Removes the second pageviewcontroller on demand when receivd the notification
-     
-     - parameter notification: The Notification object send with this notification
-     */
-    @objc private func removePageController(notification: Notification) {
-        
-        // if view is found remove it
-        
-        self.pageViewController.willMove(toParentViewController: nil)
-        self.pageViewController.view.removeFromSuperview()
-        self.pageViewController.removeFromParentViewController()
-        
-        self.darkView?.removeFromSuperview()
     }
 }

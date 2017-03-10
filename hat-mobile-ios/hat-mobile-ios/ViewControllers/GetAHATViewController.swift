@@ -11,7 +11,6 @@
  */
 
 import Stripe
-import Alamofire
 
 // MARK: Class
 
@@ -29,21 +28,15 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     
     /// The hat image
     private var hatImage: UIImage? = nil
-
-    /// Device's orientation
-    private var orientation: UIInterfaceOrientation = .portrait
     
     /// the available HAT providers fetched from HAT
     private var hatProviders: [HATProviderObject] = []
     
-    /// the pop up info view controller
-    private var infoViewController: GetAHATInfoViewController? = nil
-    
-    /// the pop up for hat info view controller
-    private var hatInfoViewController: InfoHatProvidersViewController? = nil
-    
     /// a dark view pop up to hide the background
-    private var darkView: UIView? = nil
+    private var darkView: UIVisualEffectView? = nil
+    
+    /// the information of the hat provider cell that the user tapped
+    private var selectedHATProvider: HATProviderObject? = nil
 
     // MARK: - IBOutlets
 
@@ -66,26 +59,18 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBAction func learnMoreInfoButtonAction(_ sender: Any) {
         
         // set up page controller
-        self.hatInfoViewController = self.storyboard!.instantiateViewController(withIdentifier: "HATInfo") as? InfoHatProvidersViewController
-        
-        // present a dark pop up view
-        if self.darkView == nil {
+        if let popUp = InfoHatProvidersViewController.setUpInfoHatProviderViewControllerPopUp(from: self.storyboard!) {
             
-            self.darkView = UIView()
-        }
-        self.darkView?.createFloatingView(frame: CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.width, height: self.view.frame.height), color: .darkGray, cornerRadius: 0)
-        self.darkView?.alpha = 0.6
-        self.view.addSubview((self.darkView)!)
-        
-        // set up the created page view controller
-        if self.hatInfoViewController == nil {
+            self.darkView = AnimationHelper.addBlurToView(self.view)
+            AnimationHelper.animateView(popUp.view,
+                                        duration: 0.2,
+                                        animations: {
+                                            popUp.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.bounds.origin.y + 150, width: self.view.frame.width - 30, height: self.view.bounds.height)},
+                                        completion: {(bool) -> Void in return })
             
-            self.hatInfoViewController = InfoHatProvidersViewController()
+            // add the page view controller to self
+            self.addViewController(popUp)
         }
-        self.hatInfoViewController?.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.view.bounds.origin.y + 15, width: self.view.frame.width - 30, height: self.view.bounds.height - 30), color: .white, cornerRadius: 15)
-        
-        // add the page view controller to self
-        self.addViewController(self.hatInfoViewController!)
     }
     
     // MARK: - UIViewController delegate methods
@@ -94,13 +79,11 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         
         super.viewDidLoad()
         
-        self.orientation = UIInterfaceOrientation(rawValue: UIDevice.current.orientation.rawValue)!
-        
         // config the arrowBar
         self.arrowBarImage.image = self.arrowBarImage.image!.withRenderingMode(.alwaysTemplate)
         self.arrowBarImage.tintColor = .rumpelDarkGray()
         
-        self.learnMoreButton.addBorderToButton(width: 1, color: UIColor.tealColor())
+        self.learnMoreButton.addBorderToButton(width: 1, color: .tealColor())
         
         // add notification observers
         NotificationCenter.default.addObserver(self, selector: #selector(hidePopUpView), name: NSNotification.Name(Constants.NotificationNames.hideFirstOnboardingView.rawValue), object: nil)
@@ -119,9 +102,6 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     
     override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
         
-        // save device orientation
-        self.orientation = toInterfaceOrientation
-        
         // reload collection view controller to adjust to the new width of the screen
         self.collectionView?.reloadData()
     }
@@ -133,7 +113,6 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
      */
     @objc private func hideInfoViewController() {
         
-        self.hatInfoViewController?.removeViewController()
         self.darkView?.removeFromSuperview()
     }
     
@@ -159,13 +138,15 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
      */
     @objc private func hidePopUpView(notification: Notification) {
         
-        // if view is found remove it
-        if let view = self.infoViewController {
+        // check if we have an object
+        if (notification.object != nil) {
             
-            view.removeViewController()
-            
-            // check if we have an object
-            if (notification.object != nil) {
+            if self.selectedHATProvider?.price == 0 {
+                
+                self.token = ""
+                self.dismiss(animated: true, completion: nil)
+                self.performSegue(withIdentifier: "stripeSegue", sender: self)
+            } else {
                 
                 // config the STPPaymentConfiguration accordingly
                 let config = STPPaymentConfiguration.shared()
@@ -181,26 +162,28 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
                 let navigationController = UINavigationController(rootViewController: addCardViewController)
                 self.present(navigationController, animated: true, completion: nil)
             }
-            
-            // remove the dark view pop up
-            self.darkView?.removeFromSuperview()
         }
+        
+        // remove the dark view pop up
+        self.darkView?.removeFromSuperview()
     }
     
     // MARK: - UICollectionView methods
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
+    
         // create cell
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.CellReuseIDs.onboardingTile.rawValue, for: indexPath) as? OnboardingTileCollectionViewCell
         
+        let orientation = UIInterfaceOrientation(rawValue: UIDevice.current.orientation.rawValue)!
+        
         // format cell
-        return OnboardingTileCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, hatProvider: hatProviders[indexPath.row], orientation: self.orientation)
+        return OnboardingTileCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, hatProvider: self.hatProviders[indexPath.row], orientation: orientation)
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return hatProviders.count
+        return self.hatProviders.count
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -208,35 +191,36 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         // create page view controller
         let cell = collectionView.cellForItem(at: indexPath) as! OnboardingTileCollectionViewCell
         
-        // set up page controller
-        let pageItemController = self.storyboard!.instantiateViewController(withIdentifier: "HATProviderInfo") as! GetAHATInfoViewController
         self.hatProviders[indexPath.row].hatProviderImage = cell.hatProviderImage.image
-        pageItemController.hatProvider = self.hatProviders[indexPath.row]
+        self.selectedHATProvider = self.hatProviders[indexPath.row]
         
-        // present a dark pop up view to darken the background view controller
-        self.darkView = UIView()
-        self.darkView?.createFloatingView(frame: CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.width, height: self.view.frame.height), color: .darkGray, cornerRadius: 0)
-        self.darkView?.alpha = 0.6
-
-        self.view.addSubview((self.darkView)!)
-        
-        // set up the created page view controller
-        self.infoViewController = pageItemController
-        pageItemController.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.view.bounds.origin.y + 15, width: self.view.frame.width - 30, height: self.view.bounds.height - 30), color: .white, cornerRadius: 15)
-        
-        // add the page view controller to self
-        self.addViewController(pageItemController)
-        
-        // save the data we need for later use
-        self.sku = hatProviders[indexPath.row].sku
-        self.hatImage = cell.hatProviderImage.image
-        self.hatDomain = hatProviders[indexPath.row].kind.domain
+        // set up page controller
+        if let pageItemController = GetAHATInfoViewController.setUpInfoHatProviderViewControllerPopUp(from: self.storyboard!, hatProvider: self.hatProviders[indexPath.row]) {
+            
+            // present a dark pop up view to darken the background view controller
+            self.darkView = AnimationHelper.addBlurToView(self.view)
+            
+            AnimationHelper.animateView(pageItemController.view,
+                                        duration: 0.2,
+                                        animations: {pageItemController.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.bounds.origin.y + 150, width: self.view.frame.width - 30, height: self.view.bounds.height - 130)},
+                                        completion: {(bool) -> Void in return})
+            
+            // add the page view controller to self
+            self.addViewController(pageItemController)
+            
+            // save the data we need for later use
+            self.sku = hatProviders[indexPath.row].sku
+            self.hatImage = cell.hatProviderImage.image
+            self.hatDomain = hatProviders[indexPath.row].kind.domain
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
+        let orientation = UIInterfaceOrientation(rawValue: UIDevice.current.orientation.rawValue)!
+        
         // if device in landscape show 3 tiles instead of 2
-        if self.orientation == .landscapeLeft || self.orientation == .landscapeRight {
+        if orientation == .landscapeLeft || orientation == .landscapeRight {
             
             return CGSize(width: UIScreen.main.bounds.width / 3, height: UIScreen.main.bounds.width / 3)
         }

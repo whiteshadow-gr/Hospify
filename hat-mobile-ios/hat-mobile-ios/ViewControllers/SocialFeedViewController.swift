@@ -230,17 +230,20 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                     TwitterDataPlugService.twitterDataPlug(authToken: token, parameters: parameters, success: (weakSelf.showTweets))
                 }
                 
-                func failed() {
+                func failed(statusCode: Int) {
                     
-                    let authoriseVC = AuthoriseUserViewController()
-                    authoriseVC.view.frame = CGRect(x: weakSelf.view.center.x - 50, y: weakSelf.view.center.y - 20, width: 100, height: 40)
-                    authoriseVC.view.layer.cornerRadius = 15
-                    authoriseVC.completionFunc = twitterDataPlug
-                    
-                    // add the page view controller to self
-                    weakSelf.addChildViewController(authoriseVC)
-                    weakSelf.view.addSubview(authoriseVC.view)
-                    authoriseVC.didMove(toParentViewController: weakSelf)
+                    if statusCode == 401 {
+                        
+                        let authoriseVC = AuthoriseUserViewController()
+                        authoriseVC.view.frame = CGRect(x: weakSelf.view.center.x - 50, y: weakSelf.view.center.y - 20, width: 100, height: 40)
+                        authoriseVC.view.layer.cornerRadius = 15
+                        authoriseVC.completionFunc = twitterDataPlug
+                        
+                        // add the page view controller to self
+                        weakSelf.addChildViewController(authoriseVC)
+                        weakSelf.view.addSubview(authoriseVC.view)
+                        authoriseVC.didMove(toParentViewController: weakSelf)
+                    }
                 }
                 
                 // get user's token
@@ -415,17 +418,20 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                     fetchPostsCurryingFunc()
                 }
                 
-                func failed() {
+                func failed(statusCode: Int) {
                     
-                    let authoriseVC = AuthoriseUserViewController()
-                    authoriseVC.view.frame = CGRect(x: weakSelf.view.center.x - 50, y: weakSelf.view.center.y - 20, width: 100, height: 40)
-                    authoriseVC.view.layer.cornerRadius = 15
-                    authoriseVC.completionFunc = fetchPostsCurryingFunc
-                    
-                    // add the page view controller to self
-                    weakSelf.addChildViewController(authoriseVC)
-                    weakSelf.view.addSubview(authoriseVC.view)
-                    authoriseVC.didMove(toParentViewController: weakSelf)
+                    if statusCode == 401 {
+                        
+                        let authoriseVC = AuthoriseUserViewController()
+                        authoriseVC.view.frame = CGRect(x: weakSelf.view.center.x - 50, y: weakSelf.view.center.y - 20, width: 100, height: 40)
+                        authoriseVC.view.layer.cornerRadius = 15
+                        authoriseVC.completionFunc = fetchPostsCurryingFunc
+                        
+                        // add the page view controller to self
+                        weakSelf.addChildViewController(authoriseVC)
+                        weakSelf.view.addSubview(authoriseVC.view)
+                        authoriseVC.didMove(toParentViewController: weakSelf)
+                    }
                 }
                 
                 // delete data from hat and remove from table

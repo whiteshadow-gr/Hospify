@@ -50,4 +50,20 @@ class HomeScreenObject: NSObject {
         serviceDescription = description
         serviceImage = image
     }
+    
+    // MARK: - Return the 4 tiles we need for the home screen
+    
+    /**
+     Returns the 4 tiles we need for the Home Screen
+     
+     - returns: An array of 4 HomeScreenObject for display in home screen
+     */
+    class func setUpTilesForHomeScreen() -> [HomeScreenObject] {
+        
+        let notables = HomeScreenObject(name: "Notes", description: "Take notes, write lists or create life logs", image: UIImage(named: "notes")!)
+        let locations = HomeScreenObject(name: "Locations", description: "Track your movements over the day or week", image: UIImage(named: "gps outlined")!)
+        let socialData = HomeScreenObject(name: "Social Data", description: "Social media posts stored in your HAT", image: UIImage(named: "SocialFeed")!)
+        let chat = HomeScreenObject(name: "Chat", description: "Coming Soon", image: UIImage(named: "Chat")!)
+        return [notables, locations, socialData, chat]
+    }
 }

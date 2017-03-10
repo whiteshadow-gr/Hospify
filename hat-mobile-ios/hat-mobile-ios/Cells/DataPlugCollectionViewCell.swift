@@ -70,20 +70,18 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
             if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
                 
                 return .rumpelVeryLightGray()
-            } else {
-                
-                return .white
             }
+            
+            return .white
         } else {
             
             // create this zebra like color based on the index of the cell
             if (indexPath.row % 2 == 0 ) {
                 
                 return .rumpelVeryLightGray()
-            } else {
-                
-                return .white
             }
+            
+            return .white
         }
     }
 }

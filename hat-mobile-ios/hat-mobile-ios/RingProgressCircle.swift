@@ -161,7 +161,11 @@ import UIKit
         let mainArc = self.addOval(self.ringLineWidth, path: path, strokeStart: self.startPoint, strokeEnd: self.endPoint, strokeColor: self.ringColor, fillColor: self.ringFillColor, shadowRadius: self.ringShadowRadius, shadowOpacity: self.ringShadowOpacity, shadowOffset: self.ringShadowOffset)
         
         //animate main circle
-        let animation = AnimationHelper()
-        animation.animateCircle(TimeInterval(self.animationDuration), arc: mainArc)
+        AnimationHelper.animateCircle(TimeInterval(self.animationDuration), arc: mainArc)
+    }
+    
+    func update() {
+        
+        self.draw(self.frame)
     }
 }

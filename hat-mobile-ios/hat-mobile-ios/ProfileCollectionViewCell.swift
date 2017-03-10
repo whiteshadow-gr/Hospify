@@ -61,9 +61,8 @@ class ProfileCollectionViewCell: UICollectionViewCell {
         if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
             
             return .tealColor()
-        } else {
-            
-            return .rumpelDarkGray()
         }
+        
+        return .rumpelDarkGray()
     }
 }

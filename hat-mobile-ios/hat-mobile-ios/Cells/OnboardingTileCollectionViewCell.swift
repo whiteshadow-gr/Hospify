@@ -67,7 +67,7 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
      */
     private class func createInfoStringFromData(hatProvider: HATProviderObject) -> String {
         
-        // set cell's info label
+        // return the string to show to the info label according to the type of the hat provider
         if hatProvider.price == 0 {
             
             if hatProvider.available - hatProvider.purchased != 0 {
@@ -106,20 +106,18 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
             if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
                 
                 return .rumpelVeryLightGray()
-            } else {
-                
-                return .white
             }
+            
+            return .white
         } else {
             
             // set the color of the cell accordingly based on the indexPath.row
             if (indexPath.row % 2 == 0) {
                 
                 return .rumpelVeryLightGray()
-            } else {
-                
-                return .white
             }
+            
+            return .white
         }
     }
 }

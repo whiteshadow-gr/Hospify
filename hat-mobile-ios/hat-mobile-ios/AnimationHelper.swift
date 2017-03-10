@@ -30,7 +30,7 @@ struct AnimationHelper {
      - version: 1.0
      - copyright: Copyright © 2016 Marios-Andreas Tsekis. All rights reserved.
      */
-    func animateCircle(_ duration: TimeInterval, arc: CAShapeLayer) {
+    static func animateCircle(_ duration: TimeInterval, arc: CAShapeLayer) {
         
         // We want to animate the strokeEnd property of the circleLayer
         let animation = CABasicAnimation(keyPath: "strokeEnd")
@@ -49,7 +49,57 @@ struct AnimationHelper {
         // right value when the animation ends.
         arc.strokeEnd = 1.0
         
-        // Do the actual animation
-        arc.add(animation, forKey: "animateCircle")
+        DispatchQueue.main.async {
+            
+            // Do the actual animation
+            arc.add(animation, forKey: "animateCircle")
+        }
+    }
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     */
+    static func animateView(_ view: UIView?, duration: TimeInterval, animations: @escaping (Void) -> Void, completion: @escaping (Bool) -> Void) {
+        
+        if view != nil {
+            
+            DispatchQueue.main.async {
+                
+                UIView.animate(
+                    withDuration: duration,
+                    animations: {() -> Void in
+                        
+                        animations()
+                    },
+                    completion: {(bool: Bool) -> Void in
+                        
+                        completion(true)
+                })
+            }
+        }
+    }
+    
+    // MARK: - Add blur to view
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     - returns: <#Returns#>
+     */
+    static func addBlurToView(_ view: UIView) -> UIVisualEffectView {
+        
+        let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.dark)
+        let viewToReturn = UIVisualEffectView(effect: blurEffect)
+        viewToReturn.frame = view.bounds
+        viewToReturn.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(viewToReturn)
+        
+        return viewToReturn
     }
 }

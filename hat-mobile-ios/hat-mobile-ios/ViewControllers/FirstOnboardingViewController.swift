@@ -42,7 +42,17 @@ class FirstOnboardingViewController: UIViewController {
      */
     @IBAction func clearButtonAction(_ sender: Any) {
         
-        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideNewbie.rawValue), object: nil)
+        AnimationHelper.animateView(self.view,
+                                    duration: 0.2,
+                                    animations: {() -> Void in
+
+                                        self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.maxY, width: self.view.frame.width, height: self.view.frame.height)
+                                }, completion: {(bool: Bool) -> Void in
+
+                                        self.removeViewController()
+                                        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideNewbie.rawValue), object: nil)
+        })
+        
     }
     
     /**
@@ -65,34 +75,7 @@ class FirstOnboardingViewController: UIViewController {
         let learnMoreObject = LearnMoreObject(pageNumber: 20 + self.pageIndex)
         
         // format the label based on the page index
-        if self.pageIndex == 0 {
-            
-            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
-            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 20)!)
-            
-            self.messages.attributedText = partOne.combineWith(attributedText: partTwo)
-        } else if self.pageIndex == 1 {
-            
-            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
-            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
-            
-            self.messages.attributedText = partOne.combineWith(attributedText: partTwo)
-        } else if self.pageIndex == 2 {
-            
-            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
-            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
-            
-            self.messages.attributedText = partOne.combineWith(attributedText: partTwo)
-            self.learnMoreButton.isHidden = false
-            self.learnMoreButton.setTitle("GET STARTED", for: .normal)
-        } else if self.pageIndex == 3 {
-            
-            // format title label
-            self.messages.attributedText = learnMoreObject.title.createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
-            self.learnMoreButton.isHidden = false
-            self.learnMoreButton.setTitle("SET UP MY PHATA", for: .normal)
-            self.learnMoreButton.addBorderToButton(width: 1, color: .white)
-        }
+        self.messages.attributedText = LearnMoreObject.setUpTitleString(for: self.pageIndex, learnMoreObject: learnMoreObject, learnMoreButton: self.learnMoreButton)
         
         self.image.image = learnMoreObject.image
     }

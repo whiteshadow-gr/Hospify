@@ -16,7 +16,7 @@ import UIKit
 
 extension UILabel {
     
-    // MARK: Create label
+    // MARK: - Create label
     
     /**
      Creates an UILabel according to the parameters passed

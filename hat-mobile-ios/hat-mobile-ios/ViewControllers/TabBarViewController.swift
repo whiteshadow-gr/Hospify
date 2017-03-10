@@ -38,7 +38,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             [NSForegroundColorAttributeName: UIColor.white,
              NSFontAttributeName: UIFont(name: "OpenSans-Bold", size: 21)!]
         
-        NotificationCenter.default.addObserver(self, selector: #selector(TabBarViewController.logoutUser), name: NSNotification.Name("signOut"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(TabBarViewController.logoutUser), name: NSNotification.Name("signOut"), object: nil)        
     }
     
     override func viewDidAppear(_ animated: Bool) {

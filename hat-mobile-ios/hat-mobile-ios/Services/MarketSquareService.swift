@@ -56,4 +56,18 @@ struct MarketSquareService {
         
         return ""
     }
+    
+    // MARK: - Get app token
+    
+    /**
+     Gets application token for facebook
+     
+     - parameter successful: An @escaping (String) -> Void method executed on a successful response
+     - parameter failed: An @escaping (Void) -> Void) method executed on a failed response
+     */
+    static func getAppTokenForMarketsquare(successful: @escaping (String) -> Void, failed: @escaping (Void) -> Void) {
+        
+        DataPlugsService.getApplicationTokenFor(serviceName: "MarketSquare", resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: successful, failCallBack: failed)
+    }
+    
 }

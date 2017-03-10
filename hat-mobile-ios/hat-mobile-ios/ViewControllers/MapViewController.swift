@@ -188,10 +188,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
         spaceButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
         
-        segmentControl = UISegmentedControl(items: ["From", "To"])
-        segmentControl.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
-        segmentControl.selectedSegmentIndex = 0
-        segmentControl.addTarget(self, action: #selector(segmentedControlDidChange(sender:)), for: UIControlEvents.valueChanged)
+        self.segmentControl = UISegmentedControl(items: ["From", "To"])
+        self.segmentControl.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
+        self.segmentControl.selectedSegmentIndex = 0
+        self.segmentControl.addTarget(self, action: #selector(segmentedControlDidChange(sender:)), for: UIControlEvents.valueChanged)
+        self.segmentControl.tintColor = .tealColor()
+        
         let barButtonSegmentedControll = UIBarButtonItem(customView: segmentControl)
         
         let spaceButton2 = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
@@ -270,18 +272,13 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
                     let starttime = FormatterHelper.formatDateToEpoch(date: self.filterDataPointsFrom!)
                     let endtime = FormatterHelper.formatDateToEpoch(date: self.filterDataPointsTo!)
                     let parameters: Dictionary<String, String> = ["starttime" : starttime, "endtime" : endtime, "limit" : "2000"]
-                    HatAccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: receivedLocations, errorCallback: errorCallBack)
+                    HatAccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: receivedLocations, errorCallback: {view.removeFromSuperview()})
                 }
             }
-            DataPlugsService.getApplicationTokenFor(serviceName: "locations", resource: "iphone", succesfulCallBack: requestLocations, failCallBack: errorCallBack)
+            DataPlugsService.getApplicationTokenFor(serviceName: "locations", resource: "iphone", succesfulCallBack: requestLocations, failCallBack: {view.removeFromSuperview()})
         }
         
-        func errorCallBack() {
-            
-            view.removeFromSuperview()
-        }
-        
-        HatAccountService.checkHatTableExists(tableName: "locations", sourceName: "iphone", authToken: userToken, successCallback: getLocationsFromTable, errorCallback: errorCallBack)
+        HatAccountService.checkHatTableExists(tableName: "locations", sourceName: "iphone", authToken: userToken, successCallback: getLocationsFromTable, errorCallback: {_ in view.removeFromSuperview()})
     }
     
     func cancelPickerButton(sender: UIBarButtonItem) {
@@ -481,9 +478,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         if self.textField.isFirstResponder {
             
-            self.textField.resignFirstResponder()
-            self.filterDataPointsFrom = nil
-            self.filterDataPointsTo = nil
+            DispatchQueue.main.async {
+                
+                self.textField.resignFirstResponder()
+                self.filterDataPointsFrom = nil
+                self.filterDataPointsTo = nil
+            }
         }
         
         OperationQueue().addOperation({

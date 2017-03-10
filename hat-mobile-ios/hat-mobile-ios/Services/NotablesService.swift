@@ -26,13 +26,13 @@ class NotablesService: NSObject {
      
      - parameter authToken: The auth token from hat
      */
-    class func fetchNotables(authToken: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void, failure: @escaping () -> Void ) -> Void {
+    class func fetchNotables(authToken: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void, failure: @escaping (Int) -> Void ) -> Void {
         
-        func createNotablesTables() {
+        func createNotablesTables(statusCode: Int) {
             
             HatAccountService.createHatTable(token: authToken, notablesTableStructure: JSONHelper.createNotablesTableJSON())()
             
-            failure()
+            failure(statusCode)
         }
         
         HatAccountService.checkHatTableExists(tableName: "notablesv1", //posts // tweets

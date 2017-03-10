@@ -254,12 +254,23 @@ struct JSONHelper {
             "quantity": 1
         ] as [String : Any]
         
-        // purchase table dictionary
-        let purchase: Dictionary = [
-        
-            "stripePaymentToken" : purchaseModel.token,
-            "items" : [items]
-        ] as [String : Any]
+        var purchase: Dictionary<String, Any> = [:]
+        if purchaseModel.token != "" {
+            
+            // purchase table dictionary
+            purchase = [
+                
+                "stripePaymentToken" : purchaseModel.token,
+                "items" : [items]
+                ]
+        } else {
+            
+            // purchase table dictionary
+            purchase = [
+                
+                "items" : [items]
+                ]
+        }
         
         // the final JSON file to be returned
         let json: Dictionary = [

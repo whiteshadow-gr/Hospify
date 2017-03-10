@@ -62,6 +62,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
     // MARK: - IBActions
     
+    /**
+     A button showing the different HAT's to select in order to log in
+     
+     - parameter sender: The object that called this method
+     */
     @IBAction func domainButtonAction(_ sender: Any) {
         
         let alert = UIAlertController(title: "Select domain", message: nil, preferredStyle: .actionSheet)
@@ -134,6 +139,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             UIApplication.shared.openURL(url)
         }
     }
+    
     /**
      An action executed when the logon button is pressed
      
@@ -146,8 +152,15 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             self.createClassicOKAlertWith(alertMessage: "Please check your personal hat address again", alertTitle: "Wrong domain!", okTitle: "OK", proceedCompletion: {() -> Void in return})
         }
         
-        let filteredDomain = self.removeDomainFromUserEnteredText(domain: self.inputUserHATDomain.text!)
-        HatAccountService.logOnToHAT(userHATDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, successfulVerification: self.authoriseUser, failedVerification: failed)
+        if self.inputUserHATDomain.text != "" {
+            
+            _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
+            let filteredDomain = self.removeDomainFromUserEnteredText(domain: self.inputUserHATDomain.text!)
+            HatAccountService.logOnToHAT(userHATDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, successfulVerification: self.authoriseUser, failedVerification: failed)
+        } else {
+            
+            self.createClassicOKAlertWith(alertMessage: "Please input your HAT domain", alertTitle: "HAT domain is empty!", okTitle: "Ok", proceedCompletion: {})
+        }
     }
     
     // MARK: - Remove domain from entered text
@@ -169,12 +182,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
         return domain
     }
+    
     // MARK: - View Controller functions
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         
         // add keyboard handling
         self.addKeyboardHandling()
@@ -281,15 +294,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         // build up the hat domain auth url
         let hatDomainURL = "https://" + hatDomain + "/hatlogin?name=" + Constants.Auth.ServiceName + "&redirect=" +
             Constants.Auth.URLScheme + "://" + Constants.Auth.LocalAuthHost
-        
-        let authURL = NSURL(string: hatDomainURL)
-        
-        // open the log in procedure in safari
-        safariVC = SFSafariViewController(url: authURL as! URL)
-        if let vc: SFSafariViewController = self.safariVC {
-            
-            self.present(vc, animated: true, completion: nil)
-        }        
+              
+        self.safariVC = SFSafariViewController.openInSafari(url: hatDomainURL, on: self, animated: true, completion: nil)
     }
     
     /**
@@ -303,10 +309,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         let url = notification.object as! NSURL
         
         // first of all, we close the safari vc
-        if let vc: SFSafariViewController = self.safariVC {
-            
-            vc.dismiss(animated: true, completion: nil)
-        }
+        self.safariVC?.dismissSafari(animated: true, completion: nil)
         
         self.popUpView = UIView()
         popUpView!.createFloatingView(frame: CGRect(x: self.view.frame.midX - 60, y: self.view.frame.midY - 15, width: 120, height: 30), color: .tealColor(), cornerRadius: 15)
@@ -347,6 +350,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     
     // MARK: - Hide label 
     
+    /**
+     Hides the pop up, Authenticating..., label
+     */
     func hidePopUpLabel() {
         
         self.popUpView?.removeFromSuperview()

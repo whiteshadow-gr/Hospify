@@ -32,4 +32,26 @@ extension UIView {
         self.backgroundColor = color
         self.layer.cornerRadius = cornerRadius
     }
+    
+    // MARK: - Create floating view
+    
+    /**
+     Adds a floating view while fetching the data plugs
+     */
+    class func createLoadingView(with frame: CGRect, color: UIColor, cornerRadius: CGFloat, in view: UIView, with text: String, textColor: UIColor, font: UIFont) -> UIView {
+        
+        // init loading view
+        let tempView = UIView()
+        tempView.createFloatingView(frame: frame, color: color, cornerRadius: cornerRadius)
+        
+        let label = UILabel().createLabel(frame: CGRect(x: 8, y: 8, width: frame.width - 16, height: frame.height - 16), text: text, textColor: textColor, textAlignment: .center, font: font)
+        
+        // add label to loading view
+        tempView.addSubview(label)
+        
+        // present loading view
+        view.addSubview(tempView)
+        
+        return tempView
+    }
 }

@@ -21,7 +21,4 @@ class HomeHeaderCollectionReusableView: UICollectionReusableView {
     
     /// The header title
     @IBOutlet weak var headerTitle: UILabel!
-    
-    /// The header help image
-    @IBOutlet weak var headerHelpImage: UIImageView!
 }

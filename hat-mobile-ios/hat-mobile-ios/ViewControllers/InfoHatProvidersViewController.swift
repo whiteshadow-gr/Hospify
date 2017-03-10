@@ -31,7 +31,17 @@ class InfoHatProvidersViewController: UIViewController {
      */
     @IBAction func cancelButtonAction(_ sender: Any) {
         
-        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideInfoHATProvider.rawValue), object: nil)
+        AnimationHelper.animateView(
+            self.view,
+            duration: 0.2,
+            animations: {
+                
+                self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.maxY, width: self.view.frame.width, height: self.view.frame.height) },
+            completion: {(bool: Bool) -> Void in
+                
+                self.removeViewController()
+                NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideInfoHATProvider.rawValue), object: nil)
+        })
     }
     
     // MARK: - View controller methods
@@ -48,6 +58,24 @@ class InfoHatProvidersViewController: UIViewController {
         
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - Set up info view controller
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     - returns: <#Returns#>
+     */
+    class func setUpInfoHatProviderViewControllerPopUp(from storyBoard: UIStoryboard) -> InfoHatProvidersViewController? {
+        
+        // set up page controller
+        let view = storyBoard.instantiateViewController(withIdentifier: "HATInfo") as? InfoHatProvidersViewController
+        
+        view?.view.createFloatingView(frame: CGRect(x: view!.view.frame.origin.x + 15, y: view!.view.bounds.maxY, width: view!.view.frame.width - 30, height: view!.view.bounds.height), color: .white, cornerRadius: 15)
+        
+        return view
     }
 
 }

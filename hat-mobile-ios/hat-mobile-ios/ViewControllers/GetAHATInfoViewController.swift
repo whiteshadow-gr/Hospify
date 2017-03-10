@@ -26,13 +26,14 @@ class GetAHATInfoViewController: UIViewController {
     
     /// An IBOutlet for handling the hatProviderImage image view
     @IBOutlet weak var hatProviderImage: UIImageView!
-    
+
     /// An IBOutlet for handling the hatProviderDetailedInfo label
     @IBOutlet weak var hatProviderDetailedInfo: UITextView!
-    /// An IBOutlet for handling the hatProviderTitle label
-    @IBOutlet weak var hatProviderTitle: UILabel!
     /// An IBOutlet for handling the hatProviderInfo label
     @IBOutlet weak var hatProviderInfo: UITextView!
+    
+    /// An IBOutlet for handling the hatProviderTitle label
+    @IBOutlet weak var hatProviderTitle: UILabel!
 
     /// An IBOutlet for handling the signUpButton button
     @IBOutlet weak var signUpButton: UIButton!
@@ -62,7 +63,10 @@ class GetAHATInfoViewController: UIViewController {
             }
         } else {
             
-            NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideFirstOnboardingView.rawValue), object: "1")
+            self.dismissView {
+                
+                NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideFirstOnboardingView.rawValue), object: "1")
+            }
         }
     }
     
@@ -73,7 +77,10 @@ class GetAHATInfoViewController: UIViewController {
      */
     @IBAction func cancelButtonAction(_ sender: Any) {
         
-        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideFirstOnboardingView.rawValue), object: nil)
+        self.dismissView {
+            
+            NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideFirstOnboardingView.rawValue), object: nil)
+        }
     }
     
     // MARK: - View Controller methods
@@ -84,7 +91,7 @@ class GetAHATInfoViewController: UIViewController {
         
         // set up cancel button
         self.cancelButton.imageView?.image = cancelButton.imageView?.image?.withRenderingMode(.alwaysTemplate)
-        self.cancelButton.tintColor = UIColor.black
+        self.cancelButton.tintColor = .black
         
         // if we have a passed value from parent view controler, set up the view with this value
         if (self.hatProvider != nil) {
@@ -97,21 +104,8 @@ class GetAHATInfoViewController: UIViewController {
             self.hatProviderDetailedInfo.text = self.hatProvider?.description
             self.hatProviderDetailedInfo.sizeToFit()
             
-            if (self.hatProvider?.price)! > 0 && self.hatProvider?.kind.kind != "External" {
-                
-                self.signUpButton.setAttributedTitle("SIGN ME UP".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 14)!), for: .normal)
-            } else if self.hatProvider?.kind.kind == "External" {
-                
-                let buttonName = "Learn more about " + (self.hatProvider?.name)!
-                self.signUpButton.setAttributedTitle(buttonName.createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 14)!), for: .normal)
-            } else {
-                
-                let partOne = "SIGN ME UP".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 14)!)
-                let partTwo = "FREE".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSansBold.rawValue, size: 14)!)
-                let combination = partOne.combineWith(attributedText: partTwo)
-                
-                self.signUpButton.setAttributedTitle(combination, for: .normal)
-            }
+            let buttonTitle = HATProviderObject.setupLabelForInfoViewController(hatProvider: self.hatProvider!)
+            self.signUpButton.setAttributedTitle(buttonTitle, for: .normal)
         }
     }
 
@@ -119,5 +113,44 @@ class GetAHATInfoViewController: UIViewController {
         
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - Set up info view controller
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     - returns: <#Returns#>
+     */
+    class func setUpInfoHatProviderViewControllerPopUp(from storyBoard: UIStoryboard, hatProvider: HATProviderObject) -> GetAHATInfoViewController? {
+        
+        // set up page controller
+        let pageItemController = storyBoard.instantiateViewController(withIdentifier: "HATProviderInfo") as! GetAHATInfoViewController
+        
+        pageItemController.hatProvider = hatProvider
+        
+        pageItemController.view.createFloatingView(frame: CGRect(x: pageItemController.view.frame.origin.x + 15, y: pageItemController.view.bounds.maxY, width: pageItemController.view.frame.width - 30, height: pageItemController.view.bounds.height - 30), color: .white, cornerRadius: 15)
+        
+        return pageItemController
+    }
+    
+    // MARK: - Dismiss view controller
+    
+    /**
+     <#Function Details#>
+     */
+    private func dismissView(completion: @escaping (Void) -> Void) {
+        
+        AnimationHelper.animateView(self.view,
+                                    duration: 0.2,
+                                    animations: {
+                                        
+                                        self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.maxY, width: self.view.frame.width, height: self.view.frame.height) },
+                                    completion: {(bool) -> Void in
+                                        
+                                        self.removeViewController()
+                                        completion()
+        })
     }
 }

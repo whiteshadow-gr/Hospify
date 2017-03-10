@@ -25,6 +25,9 @@ class PageViewController: UIViewController {
     /// the second PegeViewController that appears when user has tapped the learn more on the first screen
     private var pageViewController: HATCapabilitiesPageViewController? = nil
     
+    /// A dark blured view covering the background view controller
+    private var darkView: UIVisualEffectView? = nil
+    
     // MARK: - IBOutlets
 
     /// An IBOutlet to handle the imageView
@@ -52,7 +55,12 @@ class PageViewController: UIViewController {
         
         // set up the created page view controller
         self.pageViewController = pageItemController
-        pageItemController.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.x + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30), color: .white, cornerRadius: 15)
+        self.darkView = AnimationHelper.addBlurToView(self.view)
+        pageItemController.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.maxY, width: self.view.frame.width - 30, height: self.view.frame.height - 30), color: .tealColor(), cornerRadius: 15)
+        AnimationHelper.animateView(pageItemController.view,
+                                    duration: 0.2,
+                                    animations: {pageItemController.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.y + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30)},
+                                    completion: {(bool) -> Void in return})
         
         // add the page view controller to self
         self.addViewController(pageItemController)
@@ -128,7 +136,14 @@ class PageViewController: UIViewController {
         // if view is found remove it
         if let view = self.pageViewController {
             
-            view.removeViewController()
+            AnimationHelper.animateView(view.view,
+                                        duration: 0.2,
+                                        animations: {view.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.maxY, width: self.view.frame.width - 30, height: self.view.frame.height - 30)},
+                                        completion: {(bool) -> Void in
+                                            
+                                            view.removeViewController()
+                                            self.darkView?.removeFromSuperview()
+            })
         }
     }
 }

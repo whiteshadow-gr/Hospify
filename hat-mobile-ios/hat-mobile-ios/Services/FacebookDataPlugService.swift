@@ -33,7 +33,7 @@ class FacebookDataPlugService: NSObject {
                                               sourceName: "facebook",
                                               authToken: authToken,
                                               successCallback: getPosts(token: authToken, parameters: parameters, success: success),
-                                              errorCallback: {() -> Void in return})
+                                              errorCallback: {(statusCode) -> Void in return})
     }
     
     // MARK: - Facebook data plug
@@ -51,7 +51,7 @@ class FacebookDataPlugService: NSObject {
                                               sourceName: "facebook",
                                               authToken: authToken,
                                               successCallback: getPosts(token: authToken, parameters: parameters, success: success),
-                                              errorCallback: {() -> Void in return})
+                                              errorCallback: {(statusCode) -> Void in return})
     }
     
     /**

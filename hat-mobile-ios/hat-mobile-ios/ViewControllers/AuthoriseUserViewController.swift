@@ -39,20 +39,8 @@ class AuthoriseUserViewController: UIViewController {
         
         super.viewDidAppear(animated)
         
-        // build up the hat domain auth url
-        let userDomain = HatAccountService.TheUserHATDomain()
-        let hatDomainURL = "https://" + userDomain + "/hatlogin?name=" + Constants.Auth.ServiceName + "&redirect=" +
-            Constants.Auth.URLScheme + "://" + Constants.Auth.LocalAuthHost
-        
-        if let authURL = URL(string: hatDomainURL) {
-            
-            // open the log in procedure in safari
-            self.safari = SFSafariViewController(url: authURL)
-            if self.safari != nil {
-                
-                self.present(self.safari!, animated: true, completion: nil)
-            }
-        }
+        // launch safari
+        self.launchSafari()
     }
 
     override func didReceiveMemoryWarning() {
@@ -74,23 +62,28 @@ class AuthoriseUserViewController: UIViewController {
         if let url = notif.object as? NSURL {
             
             // first of all, we close the safari vc
-            if let vc: SFSafariViewController = safari {
-                
-                vc.dismiss(animated: true, completion: nil)
-                vc.removeFromParentViewController()
-            }
+            self.safari?.dismissSafari(animated: true, completion: nil)
             
             let userDomain = HatAccountService.TheUserHATDomain()
             
             // authorize with hat
             HatAccountService.loginToHATAuthorization(userDomain: userDomain, url: url, selfViewController: nil, completion: self.completionFunc)
             
+            // remove authorise view controller, that means remove self and notify the view controllers listening
             self.removeViewController()
             
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name(Constants.NotificationNames.reauthorised.rawValue), object: nil)
         }
     }
+    
+    // MARK: - Set up view controller
 
+    /**
+     Sets up a new AuthoriseUserViewController in order to present it to one UIView
+     
+     - parameter view: The UIView to show the view controller
+     - returns: A ready to use AuthoriseUserViewController
+     */
     class func setupAuthoriseViewController(view: UIView) -> AuthoriseUserViewController {
         
         let authorise = AuthoriseUserViewController()
@@ -100,5 +93,20 @@ class AuthoriseUserViewController: UIViewController {
         authorise.completionFunc = nil
         
         return authorise
+    }
+    
+    // MARK: - Launch safari
+    
+    /**
+     Launches safari
+     */
+    private func launchSafari() {
+        
+        // build up the hat domain auth url
+        let userDomain = HatAccountService.TheUserHATDomain()
+        let hatDomainURL = "https://" + userDomain + "/hatlogin?name=" + Constants.Auth.ServiceName + "&redirect=" +
+            Constants.Auth.URLScheme + "://" + Constants.Auth.LocalAuthHost
+        
+        self.safari = SFSafariViewController.openInSafari(url: hatDomainURL, on: self, animated: true, completion: nil)
     }
 }

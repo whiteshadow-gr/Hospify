@@ -172,7 +172,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 if (result == "expired") {
                     
                     NotificationCenter.default.post(name: Notification.Name("reauthorisedUser"), object: url)
-                } else {
+                } else if (result == "false") {
                     
                     let notification = Notification.Name(Constants.Auth.NotificationHandlerName)
                     NotificationCenter.default.post(name: notification, object: url)

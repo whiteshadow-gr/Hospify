@@ -44,7 +44,7 @@ class DataViewController: UIViewController {
                                                                 self.dataTableView.reloadData()
                                                             }
                                                         },
-                                    cancelCompletion: {() -> Void in return})}
+                                    cancelCompletion: {})}
     
     // MARK: - View controller functions
     

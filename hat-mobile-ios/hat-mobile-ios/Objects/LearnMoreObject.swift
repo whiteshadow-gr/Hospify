@@ -136,4 +136,48 @@ class LearnMoreObject {
             image = UIImage(named: "TealDevices")!
         }
     }
+    
+    // MARK: - Set up title string
+    
+    /**
+     Returns the NSAttributedString based on title and info of the learn more object. Also if need be it modifies the button.
+     
+     - parameter pageIndex: The page number to set up the title for
+     - parameter learnMoreObject: The object from which to take the data
+     - parameter learnMoreButton: The button to modify according to the data if need be
+     - returns: An optional NSAttributedString. If page index is wrong it returns nil
+     */
+    class func setUpTitleString(for pageIndex: Int, learnMoreObject: LearnMoreObject, learnMoreButton: UIButton) -> NSAttributedString? {
+        
+        if pageIndex == 0 {
+            
+            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
+            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 20)!)
+            
+            return partOne.combineWith(attributedText: partTwo)
+        } else if pageIndex == 1 {
+            
+            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
+            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
+            
+            return partOne.combineWith(attributedText: partTwo)
+        } else if pageIndex == 2 {
+            
+            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
+            let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
+            
+            learnMoreButton.isHidden = false
+            learnMoreButton.setTitle("GET STARTED", for: .normal)
+            return partOne.combineWith(attributedText: partTwo)
+        } else if pageIndex == 3 {
+            
+            // format title label
+            learnMoreButton.isHidden = false
+            learnMoreButton.setTitle("SET UP MY PHATA", for: .normal)
+            learnMoreButton.addBorderToButton(width: 1, color: .white)
+            return learnMoreObject.title.createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
+        }
+        
+        return nil
+    }
 }

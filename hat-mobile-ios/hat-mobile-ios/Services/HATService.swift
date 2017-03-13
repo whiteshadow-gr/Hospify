@@ -23,7 +23,7 @@ struct HATService {
     /**
      Fetches the available HAT providers
      */
-    static func getAvailableHATProviders() {
+    static func getAvailableHATProviders(successCompletion: @escaping ([HATProviderObject]) -> Void) {
         
         let url = "https://hatters.hubofallthings.com/api/products/hat"
         
@@ -47,7 +47,7 @@ struct HATService {
                         arrayToSendBack.append(HATProviderObject(from: item.dictionaryValue))
                     }
                         
-                    NotificationCenter.default.post(name: NSNotification.Name("hatProviders"), object: arrayToSendBack)
+                    successCompletion(arrayToSendBack)
                 }
             }
         })

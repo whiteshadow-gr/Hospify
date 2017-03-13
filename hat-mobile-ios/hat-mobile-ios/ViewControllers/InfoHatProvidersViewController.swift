@@ -40,7 +40,7 @@ class InfoHatProvidersViewController: UIViewController {
             completion: {(bool: Bool) -> Void in
                 
                 self.removeViewController()
-                NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideInfoHATProvider.rawValue), object: nil)
+                NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideGetAHATPopUp.rawValue), object: nil)
         })
     }
     

@@ -468,6 +468,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     
                     func successfulCallback() {
                         
+                        self.publishButton.setTitle("Save", for: .normal)
+                        self.publishButton.isUserInteractionEnabled = true
                     }
                     
                     func failedCallback() {
@@ -488,6 +490,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                 // construct string from the array and save it
                                 self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
                             }
+                            
+                            self.publishButton.setTitle("Save", for: .normal)
                         }
                         
                         func yesAction() {
@@ -602,6 +606,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                         // construct string from the array and save it
                         self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
                     }
+                    
+                    self.publishButton.setTitle("Save", for: .normal)
                 }
                 
                 // set up data plug

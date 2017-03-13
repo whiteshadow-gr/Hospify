@@ -19,12 +19,8 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     
     // MARK: - Variables
     
-    /// the SKU determining the product user wants to buy
-    private var sku: String = ""
     /// Stripe token for this purchase
     private var token: String = ""
-    /// The hat domain
-    private var hatDomain: String = ""
     
     /// The hat image
     private var hatImage: UIImage? = nil
@@ -86,12 +82,10 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         self.learnMoreButton.addBorderToButton(width: 1, color: .tealColor())
         
         // add notification observers
-        NotificationCenter.default.addObserver(self, selector: #selector(hidePopUpView), name: NSNotification.Name(Constants.NotificationNames.hideFirstOnboardingView.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshCollectionView), name: NSNotification.Name(Constants.NotificationNames.hatProviders.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(hideInfoViewController), name: NSNotification.Name(Constants.NotificationNames.hideInfoHATProvider.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(hidePopUpView), name: NSNotification.Name(Constants.NotificationNames.hideGetAHATPopUp.rawValue), object: nil)
         
         // fetch available hat providers
-        HATService.getAvailableHATProviders()
+        HATService.getAvailableHATProviders(successCompletion: refreshCollectionView)
     }
 
     override func didReceiveMemoryWarning() {
@@ -106,26 +100,16 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         self.collectionView?.reloadData()
     }
     
-    // MARK: - Hide info view controller
-    
-    /**
-     Hide the pop up info view controller
-     */
-    @objc private func hideInfoViewController() {
-        
-        self.darkView?.removeFromSuperview()
-    }
-    
     // MARK: - Refresh collection view
     
     /**
      Refreshes the collection view when the right notification is received
      
-     - parameter notification: The norification object that called this method
+     - parameter dataReceived: A callback executed when data received
      */
-    @objc private func refreshCollectionView(notification: Notification) {
+    private func refreshCollectionView(dataReceived: [HATProviderObject]) {
         
-        self.hatProviders = notification.object as! [HATProviderObject]
+        self.hatProviders = dataReceived
         self.collectionView.reloadData()
     }
     
@@ -191,8 +175,10 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         // create page view controller
         let cell = collectionView.cellForItem(at: indexPath) as! OnboardingTileCollectionViewCell
         
+        // save the data we need for later use
         self.hatProviders[indexPath.row].hatProviderImage = cell.hatProviderImage.image
         self.selectedHATProvider = self.hatProviders[indexPath.row]
+        self.hatImage = cell.hatProviderImage.image
         
         // set up page controller
         if let pageItemController = GetAHATInfoViewController.setUpInfoHatProviderViewControllerPopUp(from: self.storyboard!, hatProvider: self.hatProviders[indexPath.row]) {
@@ -207,11 +193,6 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
             
             // add the page view controller to self
             self.addViewController(pageItemController)
-            
-            // save the data we need for later use
-            self.sku = hatProviders[indexPath.row].sku
-            self.hatImage = cell.hatProviderImage.image
-            self.hatDomain = hatProviders[indexPath.row].kind.domain
         }
     }
     
@@ -251,10 +232,10 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
             
             let controller = segue.destination as? StripeViewController
             
-            controller?.sku = self.sku
+            controller?.sku = (self.selectedHATProvider?.sku)!
             controller?.token = self.token
             controller?.hatImage = self.hatImage
-            controller?.domain = "." + self.hatDomain
+            controller?.domain = "." + (self.selectedHATProvider?.kind.domain)!
         }
     }
 }

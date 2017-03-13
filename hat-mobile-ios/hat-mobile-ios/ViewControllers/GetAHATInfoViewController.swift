@@ -65,7 +65,7 @@ class GetAHATInfoViewController: UIViewController {
             
             self.dismissView {
                 
-                NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideFirstOnboardingView.rawValue), object: "1")
+                NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideGetAHATPopUp.rawValue), object: "1")
             }
         }
     }
@@ -79,7 +79,7 @@ class GetAHATInfoViewController: UIViewController {
         
         self.dismissView {
             
-            NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideFirstOnboardingView.rawValue), object: nil)
+            NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideGetAHATPopUp.rawValue), object: nil)
         }
     }
     

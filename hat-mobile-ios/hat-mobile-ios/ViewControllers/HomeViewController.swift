@@ -112,10 +112,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
-        let headerView = collectionView.dequeueReusableSupplementaryView(
-            ofKind: kind,
-            withReuseIdentifier: Constants.CellReuseIDs.homeHeader.rawValue,
-            for: indexPath) as! HomeHeaderCollectionReusableView
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.CellReuseIDs.homeHeader.rawValue, for: indexPath) as! HomeHeaderCollectionReusableView
         
         headerView.headerTitle.text = "Data Services"
         

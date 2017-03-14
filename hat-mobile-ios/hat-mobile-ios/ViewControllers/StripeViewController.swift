@@ -61,6 +61,8 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     @IBOutlet weak var personalHATAddressTextField: UITextField!
     /// An IBOutlet for handling the password textField
     @IBOutlet weak var passwordTextField: UITextField!
+    /// An IBOutlet for handling the retype password textField
+    @IBOutlet weak var confirmPasswordTextField: UITextField!
     /// An IBOutlet for handling the country textField
     @IBOutlet weak var countryTextField: UITextField!
     
@@ -433,6 +435,17 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                 self.passwordTextField.resignFirstResponder()
             }
             self.createClassicOKAlertWith(alertMessage: "Please fill your password", alertTitle: "Password field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            
+            return false
+        }
+        
+        if self.passwordTextField.text != self.confirmPasswordTextField.text {
+            
+            if self.confirmPasswordTextField.isFirstResponder {
+                
+                self.confirmPasswordTextField.resignFirstResponder()
+            }
+            self.createClassicOKAlertWith(alertMessage: "Please type your password again", alertTitle: "Passwords don't match", okTitle: "OK", proceedCompletion: {() -> Void in return})
             
             return false
         }

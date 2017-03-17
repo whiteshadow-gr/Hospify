@@ -9,21 +9,22 @@
 #import "STPCustomer.h"
 
 #import "STPCard.h"
+#import "STPSource.h"
 #import "StripeError.h"
 
 @interface STPCustomer()
 
 @property(nonatomic, copy)NSString *stripeID;
-@property(nonatomic) id<STPSource> defaultSource;
-@property(nonatomic) NSArray<id<STPSource>> *sources;
+@property(nonatomic) id<STPSourceProtocol> defaultSource;
+@property(nonatomic) NSArray<id<STPSourceProtocol>> *sources;
 
 @end
 
 @implementation STPCustomer
 
 + (instancetype)customerWithStripeID:(NSString *)stripeID
-                       defaultSource:(id<STPSource>)defaultSource
-                             sources:(NSArray<id<STPSource>> *)sources {
+                       defaultSource:(id<STPSourceProtocol>)defaultSource
+                             sources:(NSArray<id<STPSourceProtocol>> *)sources {
     STPCustomer *customer = [self new];
     customer.stripeID = stripeID;
     customer.defaultSource = defaultSource;
@@ -82,12 +83,23 @@
             for (id contents in json[@"sources"][@"data"]) {
                 if ([contents isKindOfClass:[NSDictionary class]]) {
                     // eventually support other source types
-                    STPCard *card = [STPCard decodedObjectFromAPIResponse:contents];
-                    // ignore apple pay cards from the response
-                    if (card && !card.isApplePayCard) {
-                        [sources addObject:card];
-                        if (defaultSourceId && [card.stripeID isEqualToString:defaultSourceId]) {
-                            customer.defaultSource = card;
+                    if ([contents[@"object"] isEqualToString:@"card"]) {
+                        STPCard *card = [STPCard decodedObjectFromAPIResponse:contents];
+                        // ignore apple pay cards from the response
+                        if (card && !card.isApplePayCard) {
+                            [sources addObject:card];
+                            if (defaultSourceId && [card.stripeID isEqualToString:defaultSourceId]) {
+                                customer.defaultSource = card;
+                            }
+                        }
+                    }
+                    else if ([contents[@"object"] isEqualToString:@"source"]) {
+                        STPSource *source = [STPSource decodedObjectFromAPIResponse:contents];
+                        if (source) {
+                            [sources addObject:source];
+                            if (defaultSourceId && [source.stripeID isEqualToString:defaultSourceId]) {
+                                customer.defaultSource = source;
+                            }
                         }
                     }
                 }

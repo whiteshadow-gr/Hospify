@@ -7,12 +7,12 @@ PODS:
   - FBAnnotationClusteringSwift (2.0)
   - JWTDecode (2.0.0)
   - KeychainSwift (7.0.0)
-  - Realm (2.4.3):
-    - Realm/Headers (= 2.4.3)
-  - Realm/Headers (2.4.3)
-  - RealmSwift (2.4.3):
-    - Realm (= 2.4.3)
-  - Stripe (9.4.0)
+  - Realm (2.4.4):
+    - Realm/Headers (= 2.4.4)
+  - Realm/Headers (2.4.4)
+  - RealmSwift (2.4.4):
+    - Realm (= 2.4.4)
+  - Stripe (10.0.0)
   - SwiftyJSON (3.1.4)
   - SwiftyRSA (1.0.0)
   - Toaster (2.0.3)
@@ -51,9 +51,9 @@ SPEC CHECKSUMS:
   FBAnnotationClusteringSwift: 0698ddcee46d1c28f14336909b2b0af4906b213f
   JWTDecode: 178e47e5d28d3abcff778bacced8342858cd6cb5
   KeychainSwift: b6947435dd78cc442c64a84ae648dd0e871cf448
-  Realm: e08d60b0048ccccd3949c8c28a92c4db5712d7e9
-  RealmSwift: 30d49739ccb3385d201242736ca4dda56aec9dfc
-  Stripe: 0957cc85df5c3df153e6fb44d307ea4b778b6bd1
+  Realm: 5a280a1f5a9a3c267bebf4f41ee47911137703d7
+  RealmSwift: 0c02b9f2d4be4301c497ed10e53a0580584eb1dd
+  Stripe: abf87fc01f74a2143bba1b1798dd2e4d71fd2cb3
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
   SwiftyRSA: 3ec69b6a1bd2edf2b8fcb2fcdfd63e00b971e5eb
   Toaster: 77c0b03d78e680bbbab0071c9c7ee392b0034010
@@ -61,4 +61,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: f01ecd2070b95128b7a05c92ebbe8c11eeab9ee3
 
-COCOAPODS: 1.2.0
+COCOAPODS: 1.2.1.beta.1

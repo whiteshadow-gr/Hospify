@@ -456,7 +456,7 @@ class SyncDataHelper {
     }
     
     /**
-     <#Function Details#>
+     Posts data to HAT
      
      - parameter userHATAccessToken: The HAT access token
      - parameter hatDataSource: The Hat data source object
@@ -499,95 +499,87 @@ class SyncDataHelper {
         // construct url
         let url = HatAccountService.ThePOSTDataToHATURL()
         
-            // make asynchronous call to get token
-            NetworkHelper.AsynchronousRequestData(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: dataToPOSTToHAT.arrayObject! as [AnyObject], headers: headers, userHATAccessToken:  userHATAccessToken) { (r: NetworkHelper.ResultType) -> Void in
+        // make asynchronous call to get token
+        NetworkHelper.AsynchronousRequestData(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: dataToPOSTToHAT.arrayObject! as [AnyObject], headers: headers, userHATAccessToken:  userHATAccessToken) { (r: NetworkHelper.ResultType) -> Void in
+            
+            // the result from asynchronous call to login
+            
+            let checkResult: String = "record"
+            
+            switch r {
                 
-                // the result from asynchronous call to login
+            case .isSuccess(let isSuccess, let statusCode, let result):
                 
-                let checkResult: String = "record"
-                
-                switch r {
-                    
-                case .isSuccess(let isSuccess, let statusCode, let result):
-                    
-                    if isSuccess {
-                            
-                        // belt and braces.. check we have a record in the returned JSON
-                        if result[0][checkResult].exists() {
-                            
-                            // 2. Check if DateSource exists
+                if isSuccess {
+                        
+                    // belt and braces.. check we have a record in the returned JSON
+                    if result[0][checkResult].exists() {
+                        
+                        // 2. Check if DateSource exists
 
-                            if let array: [JSON] = result.array {
+                        if let array: [JSON] = result.array {
+                            
+                            // get last updtedate
+                            let recordsUpdated: Int = array.count
+
+                            // get lastUpdatedDate
+                            func getLastUpdatedDate(_ array: [JSON]) -> (String?) {
                                 
-                                // get last updtedate
-                                let recordsUpdated: Int = array.count
-
-                                // get lastUpdatedDate
-                                func getLastUpdatedDate(_ array: [JSON]) -> (String?) {
+                                // Find the latest date
+                                var result: String? = nil
+                                for item in array {
                                     
-                                    // Find the latest date
-                                    var result: String? = nil
-                                    for item in array {
+                                    if let dateString = item["record"]["lastUpdated"].string {
                                         
-                                        if let dateString = item["record"]["lastUpdated"].string {
+                                        if let r = result {
                                             
-                                            if let r = result {
-                                                
-                                                // Is our latest date newer? Use it if so
-                                                let currentDate: NSDate? = FormatterHelper.getDateFromString(r) as NSDate?
-                                                let potentialDate: NSDate? = FormatterHelper.getDateFromString(dateString) as NSDate?
+                                            // Is our latest date newer? Use it if so
+                                            let currentDate: NSDate? = FormatterHelper.getDateFromString(r) as NSDate?
+                                            let potentialDate: NSDate? = FormatterHelper.getDateFromString(dateString) as NSDate?
 
-                                                if let c: NSDate = currentDate {
+                                            if let c: NSDate = currentDate {
+                                                
+                                                if let p: NSDate = potentialDate {
                                                     
-                                                    if let p: NSDate = potentialDate {
+                                                    if p.compare(c as Date) == ComparisonResult.orderedDescending {
                                                         
-                                                        if p.compare(c as Date) == ComparisonResult.orderedDescending {
-                                                            
-                                                            // Both dates are valid and our new one is later in time, so use it
-                                                            result = dateString
-                                                        }
+                                                        // Both dates are valid and our new one is later in time, so use it
+                                                        result = dateString
                                                     }
                                                 }
-                                            } else {
-                                                
-                                                result = dateString
                                             }
+                                        } else {
+                                            
+                                            result = dateString
                                         }
                                     }
+                                }
 
-                                    return result
-                                }
-                                    
-                                if let dateUpdatedString: String = getLastUpdatedDate(array) {
-                                    
-                                    if let dateUpdated: NSDate = FormatterHelper.getDateFromString(dateUpdatedString) as NSDate? {
-                                            
-                                        // if we get here, we can update our local DB with the last sync date
-                                        RealmHelper.UpdateData(dataPoints, lastUpdated: dateUpdated as Date)
-                                            
-                                        // count
-                                        let preferences = UserDefaults.standard//.standardUserDefaults()
-                                        preferences.set(recordsUpdated, forKey: Constants.Preferences.SuccessfulSyncCount)
-                                            
-                                        // date
-                                        preferences.set(dateUpdated, forKey: Constants.Preferences.SuccessfulSyncDate)
-                                            
-                                        if (self.dataSyncDelegate != nil) {
-                                            
-                                            self.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
-                                        }
+                                return result
+                            }
+                                
+                            if let dateUpdatedString: String = getLastUpdatedDate(array) {
+                                
+                                if let dateUpdated: NSDate = FormatterHelper.getDateFromString(dateUpdatedString) as NSDate? {
+                                        
+                                    // if we get here, we can update our local DB with the last sync date
+                                    RealmHelper.UpdateData(dataPoints, lastUpdated: dateUpdated as Date)
+                                        
+                                    // count
+                                    let preferences = UserDefaults.standard//.standardUserDefaults()
+                                    preferences.set(recordsUpdated, forKey: Constants.Preferences.SuccessfulSyncCount)
+                                        
+                                    // date
+                                    preferences.set(dateUpdated, forKey: Constants.Preferences.SuccessfulSyncDate)
+                                        
+                                    if (self.dataSyncDelegate != nil) {
+                                        
+                                        self.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
                                     }
                                 }
-                            }
-                        // inform user that record does not exist
-                        } else {
-                            
-                            if (self.dataSyncDelegate != nil) {
-                                
-                                self.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
                             }
                         }
-                    // inform user that there was an error
+                    // inform user that record does not exist
                     } else {
                         
                         if (self.dataSyncDelegate != nil) {
@@ -595,16 +587,24 @@ class SyncDataHelper {
                             self.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
                         }
                     }
-                 
                 // inform user that there was an error
-                case .error(let error, let statusCode):
+                } else {
                     
                     if (self.dataSyncDelegate != nil) {
                         
-                        let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                        self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
+                        self.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
                     }
                 }
+             
+            // inform user that there was an error
+            case .error(let error, let statusCode):
+                
+                if (self.dataSyncDelegate != nil) {
+                    
+                    let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                    self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
+                }
+            }
         }
     }
     

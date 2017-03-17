@@ -38,7 +38,7 @@ import UIKit
     }
     
     /// The tint color of the UISwitch when off
-    @IBInspectable public var offTintColor: UIColor = UIColor.lightGray {
+    @IBInspectable public var offTintColor: UIColor = .lightGray {
         
         didSet {
             
@@ -56,7 +56,7 @@ import UIKit
     }
     
     /// The tint color of the thumb
-    @IBInspectable public var thumbTintColor: UIColor = UIColor.white {
+    @IBInspectable public var thumbTintColor: UIColor = .white {
         
         didSet {
             
@@ -158,7 +158,7 @@ import UIKit
         self.thumbView.layer.shadowOffset = CGSize(width: 0.75, height: 2)
         
         // set up the labels
-        setupLabels()
+        self.setupLabels()
     }
     
     public override func layoutSubviews() {

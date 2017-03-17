@@ -22,8 +22,6 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // disable left navigation button
         self.navigationItem.leftBarButtonItems = nil
@@ -34,23 +32,18 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         self.tabBar.tintColor = UIColor.tealColor()
         // set delete to self in order to receive the calls from tab bar controller
         self.delegate = self
-
-        // set tint color, if translucent and the bar tint color of navigation bar
-        self.navigationController?.navigationBar.tintColor = UIColor.white
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = UIColor.tealColor()
         
         // change navigation bar title
         self.navigationController?.navigationBar.titleTextAttributes =
             [NSForegroundColorAttributeName: UIColor.white,
              NSFontAttributeName: UIFont(name: "OpenSans-Bold", size: 21)!]
         
-        NotificationCenter.default.addObserver(self, selector: #selector(logoutUser), name: NSNotification.Name("signOut"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(TabBarViewController.logoutUser), name: NSNotification.Name("signOut"), object: nil)        
     }
     
-    override func viewWillAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         
-        super.viewWillAppear(animated)
+        super.viewDidAppear(animated)
         
         // create bar button in navigation bar
         self.createBarButtonsFor(viewController: self.selectedViewController)
@@ -76,57 +69,46 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
      */
     func createBarButtonsFor(viewController: UIViewController?) {
         
-        // remove buttons on the left and right of the navigation bar
-        self.navigationItem.leftBarButtonItems = nil
-        self.navigationItem.rightBarButtonItems = nil
-        
-        if viewController is MapViewController {
+        if viewController != nil {
             
-            // set title in navigation bar
-            self.navigationItem.title = "Location"
+            // remove buttons on the left and right of the navigation bar
+            viewController!.navigationItem.leftBarButtonItems = nil
+            viewController!.navigationItem.rightBarButtonItems = nil
             
-            // create buttons
-            let button1 = UIBarButtonItem(title: "Settings", style: .plain, target: self, action: #selector(showSettingsViewController))
-            let button2 = UIBarButtonItem(title: "Data", style: .plain, target: self, action: #selector(showDataViewController))
-            let button3 = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
+            let button = UIBarButtonItem(image: UIImage(named: "Settings"), style: .plain, target: self, action: #selector(setUpActionViewController))
             
             // add buttons to navigation bar
-            self.navigationItem.leftBarButtonItems = [button1, button2]
-            self.navigationItem.rightBarButtonItem = button3
-        } else if viewController is SocialFeedViewController {
-            
-            // set title in navigation bar
-            self.navigationItem.title = "Social Feed"
-            
-            // create buttons
-            let button1 = UIBarButtonItem(title: "Filter by", style: .plain, target: self, action: #selector(filterSocialFeed))
-            let button3 = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
-            
-            // add buttons to navigation bar
-            self.navigationItem.leftBarButtonItem = button1
-            self.navigationItem.rightBarButtonItem = button3
-        } else if viewController is DataPlugsCollectionViewController {
-            
-            // set title in navigation bar
-            self.navigationItem.title = "Data Plugs"
-            
-            // create buttons
-            let button = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
-            
-            // add buttons to navigation bar
-            self.navigationItem.leftBarButtonItem = nil
-            self.navigationItem.rightBarButtonItem = button
-        } else {
-            
-            // change title in navigation bar
-            self.navigationItem.title = "Notables"
-            
-            // create buttons
-            let button = UIBarButtonItem(title: "Sign Out", style: .plain, target: self, action: #selector(logoutUser))
-            
-            // add buttons to navigation bar
-            self.navigationItem.rightBarButtonItem = button
+            viewController!.navigationItem.rightBarButtonItem = button
         }
+    }
+    
+    /**
+     Set's up the bar buttons for tab bar
+     */
+    func setUpActionViewController() {
+        
+        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
+        
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            TabBarViewController.logoutUser(from: self)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(logOutAction)
+        alertController.addAction(cancelAction)
+        
+        // if user is on ipad show as a pop up
+        if UI_USER_INTERFACE_IDIOM() == .pad {
+            
+            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
+            alertController.popoverPresentationController?.sourceView = self.view
+        }
+        
+        // present alert controller
+        self.navigationController!.present(alertController, animated: true, completion: nil)
     }
     
     /**
@@ -156,29 +138,29 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
     /**
      Logout procedure
      */
-    func logoutUser() -> Void {
+    class func logoutUser(from viewController: UIViewController) -> Void {
         
         let yesAction = { () -> Void in
             
-            // reset the stack to avoid allowing back
-            let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
-            let loginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
-            super.navigationController?.title = ""
-            let navigation = super.navigationController
-            _ = super.navigationController?.popToRootViewController(animated: false)
-            navigation?.pushViewController(loginViewController, animated: false)
-            
             // delete keys from keychain
             let clearUserToken = KeychainHelper.ClearKeychainKey(key: "UserToken")
+            _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
             
             if (!clearUserToken) {
                 
                 // show alert that the log out was not completed for some reason
-                // MARK: TODO
             }
+            
+            // reset the stack to avoid allowing back
+            let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+            let loginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+            viewController.navigationController?.title = ""
+            let navigation = viewController.navigationController
+            _ = viewController.navigationController?.popToRootViewController(animated: false)
+            navigation?.pushViewController(loginViewController, animated: false)
         }
         
-        self.createClassicAlertWith(alertMessage: NSLocalizedString("logout_message_label", comment:  "logout message"),
+        viewController.createClassicAlertWith(alertMessage: NSLocalizedString("logout_message_label", comment:  "logout message"),
                                     alertTitle: NSLocalizedString("logout_label", comment:  "logout"),
                                     cancelTitle: NSLocalizedString("no_label", comment:  "no"),
                                     proceedTitle: NSLocalizedString("yes_label", comment:  "yes"),

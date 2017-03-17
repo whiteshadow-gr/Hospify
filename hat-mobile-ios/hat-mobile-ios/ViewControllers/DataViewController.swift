@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import RealmSwift
 
 // MARK: Class
@@ -45,7 +44,7 @@ class DataViewController: UIViewController {
                                                                 self.dataTableView.reloadData()
                                                             }
                                                         },
-                                    cancelCompletion: {() -> Void in return})}
+                                    cancelCompletion: {})}
     
     // MARK: - View controller functions
     

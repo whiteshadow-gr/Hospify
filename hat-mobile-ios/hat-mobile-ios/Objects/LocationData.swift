@@ -15,7 +15,38 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A struct representing the location table received from JSON
-struct LocationData {
+class LocationData: Equatable {
+    
+    // MARK: - Comparable protocol
+    
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func ==(lhs: LocationData, rhs: LocationData) -> Bool {
+        
+        return (lhs.altitude == rhs.altitude && lhs.altitudeAccuracy == rhs.altitudeAccuracy && lhs.latitude == rhs.latitude
+            && lhs.accuracy == rhs.accuracy && lhs.longitude == rhs.longitude && lhs.speed == rhs.speed && lhs.heading == rhs.heading && lhs.shared == rhs.shared)
+    }
+    
+    /// Returns a Boolean value indicating whether the value of the first
+    /// argument is less than that of the second argument.
+    ///
+    /// This function is the only requirement of the `Comparable` protocol. The
+    /// remainder of the relational operator functions are implemented by the
+    /// standard library for any type that conforms to `Comparable`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func <(lhs: LocationData, rhs: LocationData) -> Bool {
+        
+        return (lhs.latitude < rhs.latitude && lhs.longitude < rhs.longitude)
+    }
     
     // MARK: - Variables
 
@@ -58,7 +89,7 @@ struct LocationData {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    init(dict: Dictionary<String, JSON>) {
+    convenience init(dict: Dictionary<String, JSON>) {
         
         // init values first
         self.init()

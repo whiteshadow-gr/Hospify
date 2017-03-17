@@ -57,7 +57,7 @@ struct MapsHelper {
      */
     static func GetUserPreferencesDistance() -> CLLocationDistance {
         
-        let minValue: CLLocationDistance = 100;
+        let minValue: CLLocationDistance = 100
         
         let preferences = UserDefaults.standard
         var newDistance: CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDistance) as? CLLocationDistance ?? minValue
@@ -78,7 +78,7 @@ struct MapsHelper {
      */
     static func GetUserPreferencesDeferredDistance() -> CLLocationDistance {
         
-        let minValue: CLLocationDistance = 150;
+        let minValue: CLLocationDistance = 150
         
         let preferences = UserDefaults.standard
         var newDistance: CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDeferredDistance) as? CLLocationDistance ?? minValue
@@ -111,6 +111,61 @@ struct MapsHelper {
         }
         
         return newTime
+    }
+    
+    // MARK: - Add locations to database
+    
+    /**
+     Adds the locations passed to database
+     
+     - parameter locationManager: The location manager used
+     - parameter locations: The locations to add
+     */
+    static func addLocationsToDatabase(locationManager: CLLocationManager, locations: [CLLocation]) {
+        
+        //get last location
+        let latestLocation: CLLocation = locations[locations.count - 1]
+        var dblocation: CLLocation? = nil
+        var timeInterval: TimeInterval = TimeInterval()
+        
+        if let dbLastPoint = RealmHelper.GetLastDataPoint() {
+            
+            dblocation = CLLocation(latitude: (dbLastPoint.lat), longitude: (dbLastPoint.lng))
+            let lastRecordedDate = dbLastPoint.dateAdded
+            timeInterval = Date().timeIntervalSince(lastRecordedDate)
+        }
+        
+        // test that the horizontal accuracy does not indicate an invalid measurement
+        if (latestLocation.horizontalAccuracy < 0) {
+            
+            return
+        }
+        
+        print("time interval: \(timeInterval)")
+        // check we have a measurement that meets our requirements,
+        if ((latestLocation.horizontalAccuracy <= locationManager.desiredAccuracy)) || !(timeInterval.isLess(than: 10)) {
+            
+            if (dblocation != nil) {
+                
+                //calculate distance from previous spot
+                let distance = latestLocation.distance(from: dblocation!)
+                if !distance.isLess(than: locationManager.distanceFilter - (latestLocation.horizontalAccuracy + dblocation!.horizontalAccuracy)) {
+                    
+                    print("added")
+                    // add data
+                    _ = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
+                    let syncHelper = SyncDataHelper()
+                    _ = syncHelper.CheckNextBlockToSync()
+                }
+            } else {
+                
+                print("added")
+                // add data
+                _ = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
+                let syncHelper = SyncDataHelper()
+                _ = syncHelper.CheckNextBlockToSync()
+            }
+        }
     }
 
 }

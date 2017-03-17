@@ -27,7 +27,7 @@ extension String {
      */
     public func fromBase64URLToBase64(s: String) -> String {
         
-        var s = s;
+        var s = s
         if (s.characters.count % 4 == 2 ) {
             
             s = s + "=="
@@ -62,6 +62,8 @@ extension String {
         return array
     }
     
+    // MARK: - Trim string
+    
     /**
      Trims a given String
      
@@ -72,4 +74,27 @@ extension String {
         
         return self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
     }
+    
+    // MARK: - Text Attributes
+    
+    /**
+     Creates an attributed string from the parameters passed
+     
+     - parameter foregroundColor: Foreground color of the string
+     - parameter strokeColor: stroke color of the string
+     - parameter font: the desired font for the string
+     - returns: An attributed string formatted according to the parameters
+     */
+    func createTextAttributes(foregroundColor: UIColor, strokeColor: UIColor, font: UIFont) -> NSAttributedString {
+        
+        let textAttributes = [
+            NSForegroundColorAttributeName: foregroundColor,
+            NSStrokeColorAttributeName: strokeColor,
+            NSFontAttributeName: font,
+            NSStrokeWidthAttributeName: -1.0
+            ] as [String : Any]
+        
+        return NSAttributedString(string: self + "\n", attributes: textAttributes)
+    }
+    
 }

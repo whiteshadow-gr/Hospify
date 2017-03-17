@@ -32,16 +32,14 @@ class TermsAndConditionsViewController: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // if url not nil load the file
         if let url = URL(string: self.filePathURL) {
             
             let request = NSURLRequest(url: url)
-            webView.loadRequest(request as URLRequest)
+            self.webView.loadRequest(request as URLRequest)
             // You might want to scale the page to fit
-            webView.scalesPageToFit = true
+            self.webView.scalesPageToFit = true
         }
     }
 

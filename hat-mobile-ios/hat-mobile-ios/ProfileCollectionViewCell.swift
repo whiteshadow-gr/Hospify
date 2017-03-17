@@ -41,17 +41,28 @@ class ProfileCollectionViewCell: UICollectionViewCell {
         // Configure the cell
         cell.profileTileLabel.text = profile.profileTileLabel
         cell.profileTileImageView.image = profile.profileTileImage
+        cell.backgroundColor = self.backgroundColorOfCellForIndexPath(indexPath)
+        
+        // return cell
+        return cell
+    }
+    
+    // MARK: - Decide background color
+    
+    /**
+     Decides the colof of the cell based on the index path
+     
+     - parameter indexPath: The index path of the cell
+     - returns: The color of the cell based on the index path and the device orientation
+     */
+    private class func backgroundColorOfCellForIndexPath(_ indexPath: IndexPath) -> UIColor {
         
         // set the color of the cell based on indexPath.row
         if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
             
-            cell.backgroundColor = UIColor.tealColor()
-        } else {
-            
-            cell.backgroundColor = UIColor.rumpelDarkGray()
+            return .tealColor()
         }
         
-        // return cell
-        return cell
+        return .rumpelDarkGray()
     }
 }

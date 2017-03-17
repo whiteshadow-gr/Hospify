@@ -15,7 +15,37 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A struct representing the outer notes JSON format
-struct NotesData {
+class NotesData: Equatable {
+    
+    // MARK: - Comparable protocol
+    
+    /// Returns a Boolean value indicating whether the value of the first
+    /// argument is less than that of the second argument.
+    ///
+    /// This function is the only requirement of the `Comparable` protocol. The
+    /// remainder of the relational operator functions are implemented by the
+    /// standard library for any type that conforms to `Comparable`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func <(lhs: NotesData, rhs: NotesData) -> Bool {
+        
+        return lhs.data.updatedTime < rhs.data.updatedTime
+    }
+    
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func ==(lhs: NotesData, rhs: NotesData) -> Bool {
+        
+        return lhs.data == rhs.data
+    }
     
     // MARK: - Variables
     
@@ -47,7 +77,7 @@ struct NotesData {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    init(dict: Dictionary<String, JSON>) {
+    convenience init(dict: Dictionary<String, JSON>) {
 
         self.init()
         

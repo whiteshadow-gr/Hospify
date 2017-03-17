@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import SafariServices
 
 // MARK: Class
@@ -69,6 +68,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     @IBOutlet weak var deleteButtonOutlet: UIButton!
     /// An IBOutlet for handling the facebook button
     @IBOutlet weak var facebookButton: UIButton!
+    /// An IBOutlet for handling the twitter button
     @IBOutlet weak var twitterButton: UIButton!
     /// An IBOutlet for handling the marketsquare button
     @IBOutlet weak var marketsquareButton: UIButton!
@@ -132,6 +132,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     @IBAction func shareForDurationAction(_ sender: Any) {
         
+        self.textView.resignFirstResponder()
         // create alert controller
         let alertController = UIAlertController(title: "Share for...", message: "Select the duration you want this note to be shared for", preferredStyle: .actionSheet)
         
@@ -185,7 +186,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         if UI_USER_INTERFACE_IDIOM() == .pad {
             
             alertController.popoverPresentationController?.sourceRect = self.durationSharedForLabel.frame
-            alertController.popoverPresentationController?.sourceView = self.shareForView;
+            alertController.popoverPresentationController?.sourceView = self.shareForView
         }
         
         // present alert controller
@@ -209,87 +210,142 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     @IBAction func shareButton(_ sender: Any) {
         
-        // hide keyboard
-        self.textView.resignFirstResponder()
-        
-        let previousButtonTitle = self.publishButton.titleLabel?.text
-        
-        // change button title to saving
-        self.publishButton.setTitle("Saving....", for: .normal)
-        self.publishButton.isUserInteractionEnabled = false
-        self.publishButton.alpha = 0.5
-        
-        // start the procedure to upload the note to the hat
-        let token = HatAccountService.getUsersTokenFromKeychain()
-        // if user is note editing an existing note post as a new note
-    
-        func defaultCancelAction() {
+        func post() {
             
-            // change publish button back to default state
-            self.publishButton.setTitle(previousButtonTitle, for: .normal)
-            self.publishButton.isUserInteractionEnabled = true
-            self.publishButton.alpha = 1
-        }
-        
-        // if note is shared and users have not selected any social networks to share show alert message
-        if (self.receivedNote?.data.shared)! && ((self.receivedNote?.data.sharedOn)! == "") {
+            // hide keyboard
+            self.textView.resignFirstResponder()
             
-            self.createClassicOKAlertWith(alertMessage: "Please select at least one shared destination", alertTitle: "", okTitle: "OK", proceedCompletion: defaultCancelAction)
-        }
-        
-        // not editing note
-        if !isEditingExistingNote {
+            let previousButtonTitle = self.publishButton.titleLabel?.text
             
-            func proceedCompletion() {
+            // change button title to saving
+            self.publishButton.setTitle("Saving....", for: .normal)
+            self.publishButton.isUserInteractionEnabled = false
+            self.publishButton.alpha = 0.5
+            
+            // start the procedure to upload the note to the hat
+            let token = HatAccountService.getUsersTokenFromKeychain()
+            // if user is note editing an existing note post as a new note
+        
+            func defaultCancelAction() {
                 
-                // save text
-                self.receivedNote?.data.message = self.textView.text!
-                
+<<<<<<< HEAD
                 // post note
                 NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
                     
                     _ = self.navigationController?.popViewController(animated: true)
                 })
+=======
+                // change publish button back to default state
+                self.publishButton.setTitle(previousButtonTitle, for: .normal)
+                self.publishButton.isUserInteractionEnabled = true
+                self.publishButton.alpha = 1
+>>>>>>> origin/master
             }
             
-            if (receivedNote?.data.shared)! {
+            // if note is shared and users have not selected any social networks to share show alert message
+            if (self.receivedNote?.data.shared)! && ((self.receivedNote?.data.sharedOn)! == "") {
                 
-                self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
-            } else {
-                
-                proceedCompletion()
+                self.createClassicOKAlertWith(alertMessage: "Please select at least one shared destination", alertTitle: "", okTitle: "OK", proceedCompletion: defaultCancelAction)
             }
-        // else delete the existing note and post a new one
-        } else {
             
-            func proceedCompletion() {
+            // not editing note
+            if !isEditingExistingNote {
                 
-                // save text
-                receivedNote?.data.message = self.textView.text!
-                
-                // delete note
-                NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
-                // post note
-                NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
+                func proceedCompletion() {
                     
+                    // save text
+                    self.receivedNote?.data.message = self.textView.text!
+                    
+                    // post note
+                    NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
+
+                        _ = self.navigationController?.popViewController(animated: true)
+                    }, errorCallback: {() -> Void in
+                    
+                        defaultCancelAction()   
+                    })
+                }
+                
+                if (receivedNote?.data.shared)! {
+                    
+<<<<<<< HEAD
                     _ = self.navigationController?.popViewController(animated: true)
                 })
             }
             
             // if note is shared and user has changed the text show alert message
             if cachedIsNoteShared && (receivedNote?.data.message != self.textView.text!) {
-                
-                self.createClassicAlertWith(alertMessage: "Your post would not be edited at the destination.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "OK", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
-
-            // if note is shared show message
-            } else if (receivedNote?.data.shared)! {
-                
-                self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
+=======
+                    self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
+                } else {
+                    
+                    proceedCompletion()
+                }
+            // else delete the existing note and post a new one
             } else {
+>>>>>>> origin/master
                 
-                proceedCompletion()
+                func proceedCompletion() {
+                    
+                    // save text
+                    receivedNote?.data.message = self.textView.text!
+                    
+                    // delete note
+                    NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+                    // post note
+                    NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
+                        
+                        // go back
+                        _ = self.navigationController?.popViewController(animated: true)
+                    }, errorCallback: {() -> Void in
+                        
+                        defaultCancelAction()
+                    })
+                }
+                
+                // if note is shared and user has changed the text show alert message
+                if cachedIsNoteShared && (receivedNote?.data.message != self.textView.text!) {
+                    
+                    self.createClassicAlertWith(alertMessage: "Your post would not be edited at the destination.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "OK", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
+
+                // if note is shared show message
+                } else if (receivedNote?.data.shared)! {
+                    
+                    self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
+                } else {
+                    
+                    proceedCompletion()
+                }
+            }
+            
+        }
+        
+        func success(token: String) {
+            
+            post()
+        }
+        
+        func failed(statusCode: Int) {
+            
+            if statusCode == 401 {
+                
+                let authoriseVC = AuthoriseUserViewController()
+                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                authoriseVC.view.layer.cornerRadius = 15
+                authoriseVC.completionFunc = post
+                
+                // add the page view controller to self
+                self.addChildViewController(authoriseVC)
+                self.view.addSubview(authoriseVC.view)
+                authoriseVC.didMove(toParentViewController: self)
+            
+                self.publishButton.setTitle("Please try again", for: .normal)
             }
         }
+        
+        let token = HatAccountService.getUsersTokenFromKeychain()
+        // delete data from hat and remove from table
+        HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
     }
     
     /**
@@ -299,30 +355,60 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     @IBAction func deleteButton(_ sender: Any) {
         
-        // if not a previous note then nothing to delete
-        if isEditingExistingNote {
-            
-            func proceedCompletion() {
+        func delete() {
+         
+            // if not a previous note then nothing to delete
+            if isEditingExistingNote {
                 
-                // get user's token
-                let token = HatAccountService.getUsersTokenFromKeychain()
+                func proceedCompletion() {
+                    
+                    // get user's token
+                    let token = HatAccountService.getUsersTokenFromKeychain()
+                    
+                    // delete note
+                    NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+                    
+                    //go back
+                    _ = self.navigationController?.popViewController(animated: true)
+                }
                 
-                // delete note
-                NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
-                
-                //go back
-                _ = self.navigationController?.popViewController(animated: true)
-            }
-            
-            // if note shared show message
-            if cachedIsNoteShared {
-                
-                self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
-            } else {
-                
-                proceedCompletion()
+                // if note shared show message
+                if cachedIsNoteShared {
+                    
+                    self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+                } else {
+                    
+                    proceedCompletion()
+                }
             }
         }
+        
+        func success(token: String) {
+            
+            delete()
+        }
+        
+        func failed(statusCode: Int) {
+            
+            if statusCode == 401 {
+                
+                let authoriseVC = AuthoriseUserViewController()
+                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                authoriseVC.view.layer.cornerRadius = 15
+                authoriseVC.completionFunc = delete
+                
+                // add the page view controller to self
+                self.addChildViewController(authoriseVC)
+                self.view.addSubview(authoriseVC.view)
+                authoriseVC.didMove(toParentViewController: self)
+                
+                self.deleteButtonOutlet.setTitle("Please try again", for: .normal)
+            }
+        }
+        
+        let token = HatAccountService.getUsersTokenFromKeychain()
+        // delete data from hat and remove from table
+        HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
     }
     
     /**
@@ -394,23 +480,23 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 self.removeFromArray(string: "facebook")
             // else select it and add it to the array
             } else {
-                
-                let result = KeychainHelper.GetKeychainValue(key: "facebookPlug")
-                
-                // check if user has been notified about the facebook plug
-                if (result == nil || result == "false") {
                     
-                    func facebookTokenReceived(token: String) {
+                func facebookTokenReceived(token: String) {
+                    
+                    func successfulCallback() {
                         
-                        func successfulCallback() {
-                            
-                            _ = KeychainHelper.SetKeychainValue(key: "facebookPlug", value: "true")
-                        }
+                        self.publishButton.setTitle("Save", for: .normal)
+                        self.publishButton.isUserInteractionEnabled = true
+                    }
+                    
+                    func failedCallback() {
                         
-                        func failedCallback() {
+                        func noAction() {
                             
-                            func noAction() {
+                            // if button was selected deselect it and remove the button from the array
+                            if self.facebookButton.alpha == 1 {
                                 
+<<<<<<< HEAD
                                 self.publishButton.setTitle("Save", for: .normal)
                                 self.publishButton.isUserInteractionEnabled = true
                                 
@@ -428,45 +514,60 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                     // construct string from the array and save it
                                     self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
                                 }
+=======
+                                self.facebookButton.alpha = 0.4
+                                self.removeFromArray(string: "facebook")
+                                // else select it and add it to the array
+                            } else {
+                                
+                                self.facebookButton.alpha = 1
+                                self.shareOnSocial.append("facebook")
+                                
+                                // construct string from the array and save it
+                                self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
+>>>>>>> origin/master
                             }
                             
-                            func yesAction() {
-                                
-                                func successfullCallBack(data: [DataPlugObject]) {
-                                    
-                                    for i in 0 ... data.count - 1 {
-                                        
-                                        if data[i].name == "facebook" {
-                                            
-                                            let userDomain = HatAccountService.TheUserHATDomain()
-                                            
-                                            let url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + data[i].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
-                                            
-                                            self.safariVC = SFSafariViewController(url: URL(string: url)!)
-                                            self.present(self.safariVC!, animated: true, completion: nil)
-                                            self.claimOffer()
-                                        }
-                                    }
-                                    
-                                    
-                                }
-                                
-                                DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {() -> Void in return})
-                            }
-                            
-                            self.createClassicAlertWith(alertMessage: "You have to enable Facebook data plug before sharing on Facebook, do you want to enable now?", alertTitle: "Data plug not enabled", cancelTitle: "No", proceedTitle: "Yes", proceedCompletion: yesAction, cancelCompletion: noAction)
+                            self.publishButton.setTitle("Save", for: .normal)
                         }
                         
-                        FacebookDataPlugService.isFacebookDataPlugActive(token: token, successful: successfulCallback, failed: failedCallback)
-
+                        func yesAction() {
+                            
+                            func successfullCallBack(data: [DataPlugObject]) {
+                                
+                                for i in 0 ... data.count - 1 {
+                                    
+                                    if data[i].name == "facebook" {
+                                        
+                                        let userDomain = HatAccountService.TheUserHATDomain()
+                                        
+                                        let url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + data[i].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
+                                        
+                                        self.safariVC = SFSafariViewController(url: URL(string: url)!)
+                                        self.publishButton.setTitle("Save", for: .normal)
+                                        self.present(self.safariVC!, animated: true, completion: nil)
+                                        self.claimOffer()
+                                    }
+                                }
+                            }
+                            
+                            DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {() -> Void in return})
+                        }
+                        
+                        self.createClassicAlertWith(alertMessage: "You have to enable Facebook data plug before sharing on Facebook, do you want to enable now?", alertTitle: "Data plug not enabled", cancelTitle: "No", proceedTitle: "Yes", proceedCompletion: yesAction, cancelCompletion: noAction)
                     }
                     
-                    FacebookDataPlugService.getAppTokenForFacebook(successful: facebookTokenReceived, failed: {() -> Void in
-                        
-                        self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
-                    
-                    })
+                    FacebookDataPlugService.isFacebookDataPlugActive(token: token, successful: successfulCallback, failed: failedCallback)
+
                 }
+                
+                self.publishButton.setTitle("Please Wait..", for: .normal)
+                FacebookDataPlugService.getAppTokenForFacebook(successful: facebookTokenReceived, failed: {() -> Void in
+                    
+                    self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                
+                })
+                
                 
                 self.facebookButton.alpha = 1
                 shareOnSocial.append("facebook")
@@ -488,15 +589,16 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         if self.marketsquareButton.isUserInteractionEnabled {
             
             // if button was selected deselect it and remove the button from the array
-            if self.marketsquareButton.alpha == 1{
+            if self.marketsquareButton.alpha == 1 {
                 
                 self.marketsquareButton.alpha = 0.4
                 self.removeFromArray(string: "marketsquare")
-            // else select it and add it to the array
+                // else select it and add it to the array
             } else {
                 
+                self.claimOffer()
                 self.marketsquareButton.alpha = 1
-                self.shareOnSocial.append("marketsquare")
+                shareOnSocial.append("marketsquare")
             }
             
             // construct string from the array and save it
@@ -544,6 +646,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                         // construct string from the array and save it
                         self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
                     }
+                    
+                    self.publishButton.setTitle("Save", for: .normal)
                 }
                 
                 // set up data plug
@@ -562,6 +666,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                 
                                 // open safari
                                 self.safariVC = SFSafariViewController(url: URL(string: url)!)
+                                self.publishButton.setTitle("Save", for: .normal)
                                 self.present(self.safariVC!, animated: true, completion: nil)
                                 
                                 // claim offer
@@ -582,6 +687,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: dataPlugIsEnabled, failed: dataPugIsNotEnabled)
         }
         
+        self.publishButton.setTitle("Please Wait..", for: .normal)
         // get app token for twitter
         TwitterDataPlugService.getAppTokenForTwitter(successful: checkDataPlug, failed: {() -> Void in
             
@@ -666,11 +772,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         // setup text field
         self.textView.keyboardAppearance = .dark
         
-        // add tap gesture to navigation bar title
-        let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(navigationTitleTap))
-        self.navigationController?.navigationBar.subviews[1].isUserInteractionEnabled = true
-        self.navigationController?.navigationBar.subviews[1].addGestureRecognizer(tapGesture)
-        
         // add gesture recognizer to share For view
         let tapGestureToShareForAction = UITapGestureRecognizer(target: self, action:  #selector (self.shareForDurationAction(_:)))
         self.shareForView.addGestureRecognizer(tapGestureToShareForAction)
@@ -719,6 +820,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         // add notification observers
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow2), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name:NSNotification.Name.UIKeyboardDidShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide2), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(showAlertForDataPlug), name: Notification.Name("dataPlugMessage"), object: nil)
@@ -902,14 +1004,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         self.marketsquareButton.alpha = 0.4
         self.twitterButton.alpha = 0.4
     }
-
-    /**
-     A funtion executed on tap of the navigation title
-     */
-    @objc private func navigationTitleTap() {
-        
-        
-    }
     
     // MARK: - Keyboard handling
     
@@ -922,15 +1016,29 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     func keyboardWillShow2(notification:NSNotification){
         
         var userInfo = notification.userInfo!
-        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+
+        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         keyboardFrame = self.view.convert(keyboardFrame, from: nil)
         
         self.scrollView.contentInset.bottom = keyboardFrame.size.height
+        print(String(describing: keyboardFrame.size.height))
         
         let desiredOffset = CGPoint(x: 0, y: self.scrollView.contentInset.top)
         self.scrollView.setContentOffset(desiredOffset, animated: true)
-        self.actionsView.frame.origin.y = self.view.frame.height - keyboardFrame.size.height - self.actionsView.frame.size.height
         self.isKeyboardVisible = true
+    }
+    
+    func keyboardDidShow(notification:NSNotification){
+        
+        var userInfo = notification.userInfo!
+        
+        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+        keyboardFrame = self.view.convert(keyboardFrame, from: nil)
+        
+        UIView.animate(withDuration: 0.3, animations: {() -> Void in
+        
+            self.actionsView.frame.origin.y = keyboardFrame.origin.y - self.actionsView.frame.height
+        })
     }
     
     func keyboardWillHide2(notification:NSNotification){

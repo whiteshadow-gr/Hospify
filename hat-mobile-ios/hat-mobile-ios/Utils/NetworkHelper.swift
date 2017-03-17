@@ -144,6 +144,7 @@ class NetworkHelper {
             headers: Dictionary<String, String>,
             completion: @escaping (_ r: NetworkHelper.ResultType) -> Void) -> Void {
         
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
         // do a post
         Alamofire.request(
             url, /* request url */
@@ -160,36 +161,46 @@ class NetworkHelper {
                 //print(response.data)     // server data
                 //print(response.result)   // result of response serialization
                 
-                switch response.result {
-                case .success(_):
+            switch response.result {
+            case .success(_):
+                
+                let headers = response.response?.allHeaderFields
+                if let tokenHeader = headers?["X-Auth-Token"] as? String {
                     
-                    // check if we have a value and return it
-                    if let value = response.result.value {
+                    let result = AuthenticationHelper.decodeToken(token: tokenHeader, networkResponse: "")
+                    if result.message == "refreshToken" && result.scope == "owner" {
                         
-                        let json = JSON(value)
-                        completion(NetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json))
-                    // else return isSuccess: false and nil for value
-                    } else {
-                        
-                        completion(NetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: tokenHeader)
                     }
-                    
-                // in case of failure return the error but check for internet connection or unauthorised status and let the user know
-                case .failure(let error):
-                    
-                    if error.localizedDescription == "The Internet connection appears to be offline." {
-                        
-                        NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "The Internet connection appears to be offline.")
-                    } else if response.response?.statusCode == 401 {
-                        
-                         NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "Unauthorized. Please sign out and try again.")
-                        
-                        // post a notification to log user out
-                        //NotificationCenter.default.post(name: NSNotification.Name("signOut"), object: nil)
-                    }
-                    
-                    completion(NetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
                 }
+                
+                // check if we have a value and return it
+                if let value = response.result.value {
+                
+                    let json = JSON(value)
+                    completion(NetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json))
+                // else return isSuccess: false and nil for value
+                } else {
+                    
+                    completion(NetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                }
+                
+            // in case of failure return the error but check for internet connection or unauthorised status and let the user know
+            case .failure(let error):
+                
+                if error.localizedDescription == "The Internet connection appears to be offline." {
+                    
+                    NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "The Internet connection appears to be offline.")
+                } else if response.response?.statusCode == 401 {
+                    
+                     NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "Unauthorized. Please sign out and try again.")
+                    _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "expired")
+                }
+                
+                completion(NetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
+            }
+            
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
         }
     }
     
@@ -215,6 +226,7 @@ class NetworkHelper {
         headers: Dictionary<String, String>,
         completion: @escaping (_ r: NetworkHelper.ResultTypeString) -> Void) -> Void {
         
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
         // do a post
         Alamofire.request(
             url, /* request url */
@@ -226,28 +238,40 @@ class NetworkHelper {
             .validate(statusCode: 200..<300)
             .validate(contentType: [contentType])
             .responseString { response in
-                //print(response.request)  // original URL request
-                //print(response.response) // URL response
-                //print(response.data)     // server data
-                //print(response.result)   // result of response serialization
+            //print(response.request)  // original URL request
+            //print(response.response) // URL response
+            //print(response.data)     // server data
+            //print(response.result)   // result of response serialization
+            
+            switch response.result {
+            case .success(_):
                 
-                switch response.result {
-                case .success(_):
+                let headers = response.response?.allHeaderFields
+                if let tokenHeader = headers?["X-Auth-Token"] as? String {
                     
-                    // check if we have a value and return it
-                    if let value = response.result.value {
+                    let result = AuthenticationHelper.decodeToken(token: tokenHeader, networkResponse: "")
+                    if result.message == "refreshToken" && result.scope == "owner" {
                         
-                        completion(NetworkHelper.ResultTypeString.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: value))
-                    // else return isSuccess: false and nil for value
-                    } else {
-                        
-                        completion(NetworkHelper.ResultTypeString.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: tokenHeader)
                     }
-                // return the error
-                case .failure(let error):
-                    
-                    completion(NetworkHelper.ResultTypeString.error(error: error, statusCode: response.response?.statusCode))
                 }
+                
+                // check if we have a value and return it
+                if let value = response.result.value {
+                    
+                    completion(NetworkHelper.ResultTypeString.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: value))
+                // else return isSuccess: false and nil for value
+                } else {
+                    
+                    completion(NetworkHelper.ResultTypeString.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                }
+            // return the error
+            case .failure(let error):
+                
+                completion(NetworkHelper.ResultTypeString.error(error: error, statusCode: response.response?.statusCode))
+            }
+                
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
         }
     }
     
@@ -276,6 +300,8 @@ class NetworkHelper {
         userHATAccessToken: String,
         completion: @escaping (_ r: NetworkHelper.ResultType) -> Void) -> Void {
         
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        
         let nsURL = NSURL(string: url)
 
         let request = NSMutableURLRequest(url: nsURL! as URL)
@@ -289,26 +315,38 @@ class NetworkHelper {
         urlRequest.allHTTPHeaderFields = headers
         urlRequest.httpBody = try! JSONSerialization.data(withJSONObject: parameters, options: [])
         
-        Alamofire.request(urlRequest)
-            .responseJSON { response in
-                switch response.result {
-                case .success(_):
+        Alamofire.request(urlRequest).responseJSON { response in
+            
+            switch response.result {
+            case .success(_):
+                
+                let headers = response.response?.allHeaderFields
+                if let tokenHeader = headers?["X-Auth-Token"] as? String {
                     
-                    // check if we have a value and return it
-                    if let value = response.result.value {
+                    let result = AuthenticationHelper.decodeToken(token: tokenHeader, networkResponse: "")
+                    if result.message == "refreshToken" && result.scope == "owner" {
                         
-                        let json = JSON(value)
-                        completion(NetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response!.statusCode, result: json))
-                    // else return isSuccess: false and nil for value
-                    } else {
-                        
-                        completion(NetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: tokenHeader)
                     }
-                // return the error
-                case .failure(let error):
-                    
-                    completion(NetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
                 }
+                
+                // check if we have a value and return it
+                if let value = response.result.value {
+                    
+                    let json = JSON(value)
+                    completion(NetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response!.statusCode, result: json))
+                // else return isSuccess: false and nil for value
+                } else {
+                    
+                    completion(NetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                }
+            // return the error
+            case .failure(let error):
+                
+                completion(NetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
+            }
+          
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
         }
     }
 }

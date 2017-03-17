@@ -42,7 +42,7 @@ class CompletePurchaseViewController: UIViewController {
      */
     @IBAction func hatAvailabilityButtonAction(_ sender: Any) {
         
-        self.createClassicOKAlertWith(alertMessage: "Your HAT is being created and will be available within 2-10mins", alertTitle: "Availability", okTitle: "OK", proceedCompletion: {() -> Void in return})
+        self.createClassicOKAlertWith(alertMessage: "Your HAT is being created and will be available within 2-10mins", alertTitle: "Availability", okTitle: "OK", proceedCompletion: {})
     }
     
     /**
@@ -60,20 +60,18 @@ class CompletePurchaseViewController: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // config the arrowBar
-        self.arrowbar.image = arrowbar.image!.withRenderingMode(.alwaysTemplate)
+        self.arrowbar.image = self.arrowbar.image!.withRenderingMode(.alwaysTemplate)
         self.arrowbar.tintColor = UIColor.rumpelVeryLightGray()
         
         // add border to home button
-        self.homeButton.addBorderToButton(width: 1, color: UIColor.rumpelDarkGray())
+        self.homeButton.addBorderToButton(width: 1, color: .rumpelDarkGray())
         
         // check if the image is nil, if not assign it to the imageview
-        if image != nil {
+        if self.image != nil {
             
-            self.hatProviderImage.image = image
+            self.hatProviderImage.image = self.image
         }
     }
 

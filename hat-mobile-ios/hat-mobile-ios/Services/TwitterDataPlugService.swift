@@ -32,7 +32,7 @@ class TwitterDataPlugService: NSObject {
             sourceName: "twitter",
             authToken: authToken,
             successCallback: getTweets(token: authToken, parameters: parameters, success: success),
-            errorCallback: {() -> Void in return})
+            errorCallback: {(statusCode) -> Void in return})
     }
     
     /**

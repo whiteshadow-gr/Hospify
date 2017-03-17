@@ -26,13 +26,14 @@ class GetAHATInfoViewController: UIViewController {
     
     /// An IBOutlet for handling the hatProviderImage image view
     @IBOutlet weak var hatProviderImage: UIImageView!
-    
+
     /// An IBOutlet for handling the hatProviderDetailedInfo label
     @IBOutlet weak var hatProviderDetailedInfo: UITextView!
-    /// An IBOutlet for handling the hatProviderTitle label
-    @IBOutlet weak var hatProviderTitle: UILabel!
     /// An IBOutlet for handling the hatProviderInfo label
     @IBOutlet weak var hatProviderInfo: UITextView!
+    
+    /// An IBOutlet for handling the hatProviderTitle label
+    @IBOutlet weak var hatProviderTitle: UILabel!
 
     /// An IBOutlet for handling the signUpButton button
     @IBOutlet weak var signUpButton: UIButton!
@@ -41,6 +42,11 @@ class GetAHATInfoViewController: UIViewController {
     
     // MARK: - IBActions
     
+    /**
+     User taped on sign up button. Open URL or hide pop up view depending on the data
+     
+     - parameter sender: The object that called this method
+     */
     @IBAction func signUpAction(_ sender: Any) {
         
         if self.hatProvider?.name == "HALL Free HAT" {
@@ -57,13 +63,24 @@ class GetAHATInfoViewController: UIViewController {
             }
         } else {
             
-            NotificationCenter.default.post(name: NSNotification.Name("hideView"), object: "1")
+            self.dismissView {
+                
+                NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideGetAHATPopUp.rawValue), object: "1")
+            }
         }
     }
     
+    /**
+     User taped on cancel button, hide pop up view
+     
+     - parameter sender: The object that called this method
+     */
     @IBAction func cancelButtonAction(_ sender: Any) {
         
-        NotificationCenter.default.post(name: NSNotification.Name("hideView"), object: nil)
+        self.dismissView {
+            
+            NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideGetAHATPopUp.rawValue), object: nil)
+        }
     }
     
     // MARK: - View Controller methods
@@ -71,67 +88,24 @@ class GetAHATInfoViewController: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // set up cancel button
-        cancelButton.imageView?.image = cancelButton.imageView?.image?.withRenderingMode(.alwaysTemplate)
-        cancelButton.tintColor = UIColor.black
+        self.cancelButton.imageView?.image = cancelButton.imageView?.image?.withRenderingMode(.alwaysTemplate)
+        self.cancelButton.tintColor = .black
         
         // if we have a passed value from parent view controler, set up the view with this value
-        if (hatProvider != nil) {
+        if (self.hatProvider != nil) {
             
-            self.hatProviderImage.image = (hatProvider?.hatProviderImage)!
-            self.hatProviderTitle.text = hatProvider?.name
-            self.hatProviderInfo.text = hatProvider?.category.description
+            // assigning values to objects
+            self.hatProviderImage.image = self.hatProvider?.hatProviderImage!
+            self.hatProviderTitle.text = self.hatProvider?.name
+            self.hatProviderInfo.text = self.hatProvider?.category.description
             self.hatProviderInfo.layoutIfNeeded()
-            self.hatProviderDetailedInfo.text = hatProvider?.description
+            self.hatProviderDetailedInfo.text = self.hatProvider?.description
             self.hatProviderDetailedInfo.sizeToFit()
             
-            let features: NSMutableAttributedString = NSMutableAttributedString(string: "")
-            for (index, string) in (hatProvider?.features)!.enumerated() {
-                
-                features.append(NSAttributedString(string: string))
-                
-                if (index < (hatProvider?.features.count)! - 1) {
-                    
-                    features.append(NSAttributedString(string: "\n" + "\u{2022}" + "\n"))
-                }
-            }
-                        
-            // format title label
-            let textAttributesTitle = [
-                NSForegroundColorAttributeName: UIColor.white,
-                NSStrokeColorAttributeName: UIColor.white,
-                NSFontAttributeName: UIFont(name: "OpenSans", size: 14)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
-            
-            let textAttributes = [
-                NSForegroundColorAttributeName: UIColor.white,
-                NSStrokeColorAttributeName: UIColor.white,
-                NSFontAttributeName: UIFont(name: "OpenSans-Bold", size: 14)!,
-                NSStrokeWidthAttributeName: -1.0
-                ] as [String : Any]
-            
-            if (self.hatProvider?.price)! > 0 && self.hatProvider?.kind.kind != "External" {
-                
-                self.signUpButton.setAttributedTitle(NSAttributedString(string: "SIGN ME UP", attributes: textAttributesTitle), for: .normal)
-            } else if self.hatProvider?.kind.kind == "External" {
-                
-                let buttonName = "Learn more about " + (self.hatProvider?.name)!
-                self.signUpButton.setAttributedTitle(NSAttributedString(string: buttonName, attributes: textAttributesTitle), for: .normal)
-            } else {
-                
-                let partOne = NSAttributedString(string: "SIGN ME UP ", attributes: textAttributesTitle)
-                let partTwo = NSAttributedString(string: "FREE", attributes: textAttributes)
-                let combination = NSMutableAttributedString()
-                
-                combination.append(partOne)
-                combination.append(partTwo)
-                
-                self.signUpButton.setAttributedTitle(combination, for: .normal)
-            }
+            let buttonTitle = HATProviderObject.setupLabelForInfoViewController(hatProvider: self.hatProvider!)
+            self.signUpButton.setAttributedTitle(buttonTitle, for: .normal)
         }
     }
 
@@ -139,5 +113,44 @@ class GetAHATInfoViewController: UIViewController {
         
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - Set up info view controller
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     - returns: <#Returns#>
+     */
+    class func setUpInfoHatProviderViewControllerPopUp(from storyBoard: UIStoryboard, hatProvider: HATProviderObject) -> GetAHATInfoViewController? {
+        
+        // set up page controller
+        let pageItemController = storyBoard.instantiateViewController(withIdentifier: "HATProviderInfo") as! GetAHATInfoViewController
+        
+        pageItemController.hatProvider = hatProvider
+        
+        pageItemController.view.createFloatingView(frame: CGRect(x: pageItemController.view.frame.origin.x + 15, y: pageItemController.view.bounds.maxY, width: pageItemController.view.frame.width - 30, height: pageItemController.view.bounds.height - 30), color: .white, cornerRadius: 15)
+        
+        return pageItemController
+    }
+    
+    // MARK: - Dismiss view controller
+    
+    /**
+     <#Function Details#>
+     */
+    private func dismissView(completion: @escaping (Void) -> Void) {
+        
+        AnimationHelper.animateView(self.view,
+                                    duration: 0.2,
+                                    animations: {
+                                        
+                                        self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.maxY, width: self.view.frame.width, height: self.view.frame.height) },
+                                    completion: {(bool) -> Void in
+                                        
+                                        self.removeViewController()
+                                        completion()
+        })
     }
 }

@@ -14,8 +14,6 @@ import KeychainSwift
 import Alamofire
 import SwiftyJSON
 import Crashlytics
-import JWTDecode
-import SwiftyRSA
 
 // MARK: Class
 
@@ -71,39 +69,19 @@ class HatAccountService {
             
             return token
         }
-        
+
         return ""
     }
     
-    /**
-     Gets user token completion function
-     
-     - parameter callback: A function variable of type, @escaping (String) -> Void) -> (_ r: Helper.ResultType)
-     */
-    private class func getUserTokenCompletionFunction (callback: @escaping (String) -> Void) -> (_ r: NetworkHelper.ResultType) -> Void {
+    class func checkIfTokenIsActive(token: String, success: @escaping (String) -> Void, failed: @escaping (Int) -> Void) {
         
-        // return the token if success
-        return { (_ r: NetworkHelper.ResultType) -> Void in
+        HatAccountService.checkHatTableExists(tableName: "notablesv1", sourceName: "rumpel", authToken: token, successCallback: {(_: NSNumber) -> Void in
             
-            switch r {
-                
-            case .error(let error, let statusCode):
-                
-                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
-            case .isSuccess(let isSuccess, _, let result):
-                
-                if isSuccess {
-                    
-                    let checkResult: String = "accessToken"
-                    
-                    if result[checkResult].exists() {
-                        
-                        callback(result[checkResult].stringValue)
-                        print(result[checkResult].stringValue)
-                    }
-                }
-            }
-        }
+            success(token)
+        }, errorCallback: {(statusCode) -> Void in
+            
+            failed(statusCode)
+        })
     }
     
     // MARK: - Delete from hat
@@ -124,7 +102,7 @@ class HatAccountService {
         let url = "https://"+userDomain+"/data/record/"+String(recordId)
         
         // create parameters and headers
-        let parameters = ["": ""]
+        let parameters: Dictionary<String, String> = [:]
         let headers = ["X-Auth-Token": token]
         
         // make the request
@@ -198,7 +176,7 @@ class HatAccountService {
      - parameter successCallback: A callback called when successful of type @escaping (NSNumber) -> Void
      - parameter errorCallback: A callback called when failed of type @escaping (Void) -> Void)
      */
-    class func checkHatTableExists(tableName: String, sourceName: String, authToken: String, successCallback: @escaping (NSNumber) -> Void, errorCallback: @escaping (Void) -> Void) -> Void {
+    class func checkHatTableExists(tableName: String, sourceName: String, authToken: String, successCallback: @escaping (NSNumber) -> Void, errorCallback: @escaping (Int) -> Void) -> Void {
         
         // create the url
         let tableURL = HatAccountService.TheUserHATCheckIfTableExistsURL(tableName: tableName, sourceName: sourceName)
@@ -223,7 +201,11 @@ class HatAccountService {
                     
                     if statusCode == 404 {
                         
-                        errorCallback()
+                        errorCallback(statusCode!)
+                    } else if statusCode == 401 {
+                        
+                        errorCallback(statusCode!)
+                        _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "expired")
                     } else {
                         
                         Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
@@ -245,7 +227,7 @@ class HatAccountService {
                             //table not found
                         } else if statusCode == 404 {
                             
-                            errorCallback()
+                            errorCallback(statusCode!)
                         }
                     }
                 }
@@ -282,15 +264,9 @@ class HatAccountService {
                 
                 switch r {
                     
-                case .error(let error, let statusCode):
+                case .error(_, _):
                     
-                    if statusCode == 404 {
-                        
-                        errorCallback()
-                    } else {
-                        
-                        Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
-                    }
+                    errorCallback()
                 case .isSuccess(let isSuccess, let statusCode, let result):
                     
                     if isSuccess {
@@ -373,19 +349,21 @@ class HatAccountService {
         // get user domain
         let userDomain = HatAccountService.TheUserHATDomain()
         // define the url to connect to
-        let url = "https://notables.hubofallthings.com/api/bulletin/tickle?"
+        let url = "https://notables.hubofallthings.com/api/bulletin/tickle"
         
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
         // make the request
         Alamofire.request(url, method: .get, parameters: ["phata": userDomain], encoding: Alamofire.URLEncoding.default, headers: nil).responseString { response in
                 
-                HatAccountService.errorHandlingWith(response: response)
+            HatAccountService.errorHandlingWith(response: response)
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
         }
     }
     
     /**
-     <#Function Details#>
+     Logs any error found from triggering th update
      
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter response: The DataResponse object returned from alamofire
      */
     private class func errorHandlingWith(response: DataResponse<String>) {
         
@@ -395,6 +373,10 @@ class HatAccountService {
         
         // check for numerous errors
         var statusCode = response.response?.statusCode
+        if statusCode != nil {
+            
+            print(statusCode!)
+        }
         if let error = response.result.error as? AFError {
             
             statusCode = error._code // statusCode private
@@ -461,8 +443,6 @@ class HatAccountService {
                 Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Unknown error:" : "\(error)"])
             }
         }
-        
-        print(statusCode!) // the status code
     }
     
     // MARK: - Verify domain
@@ -543,112 +523,82 @@ class HatAccountService {
      - parameter url: The url to connect
      - parameter selfViewController: The UIViewController that calls this method
      */
-    class func loginToHATAuthorization(userDomain: String, url: NSURL, selfViewController: LoginViewController) {
+    class func loginToHATAuthorization(userDomain: String, url: NSURL, selfViewController: LoginViewController?, completion: ((Void) -> Void)?) {
         
         // get token out
         if let token = NetworkHelper.GetQueryStringParameter(url: url.absoluteString, param: Constants.Auth.TokenParamName) {
-            
-            // save token in keychain
-            let savedSuccesfully = KeychainHelper.SetKeychainValue(key: "UserToken", value: token)
-            
-            if savedSuccesfully {
                 
-                // make asynchronous call
-                // parameters..
-                let parameters = ["": ""]
-                // auth header
-                let headers = ["Accept": Constants.ContentType.Text, "Content-Type": Constants.ContentType.Text]
-                // HAT domain
-                let hatDomain = userDomain.TrimString()
+            // make asynchronous call
+            // parameters..
+            let parameters = ["": ""]
+            // auth header
+            let headers = ["Accept": Constants.ContentType.Text, "Content-Type": Constants.ContentType.Text]
+            // HAT domain
+            let hatDomain = userDomain.TrimString()
+            
+            if let url = HatAccountService.TheUserHATDOmainPublicKeyURL(hatDomain) {
                 
-                if let url = HatAccountService.TheUserHATDOmainPublicKeyURL(hatDomain) {
+                //. application/json
+                NetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { [weak selfViewController](r: NetworkHelper.ResultTypeString) -> Void in
                     
-                    //. application/json
-                    NetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { [weak selfViewController](r: NetworkHelper.ResultTypeString) -> Void in
+                    switch r {
+                    case .isSuccess(let isSuccess, _, let result):
                         
-                        guard let weakSelf = selfViewController else { return }
-                        
-                        switch r {
-                        case .isSuccess(let isSuccess, _, let result):
+                        if isSuccess {
                             
-                            if isSuccess {
+                            let result = AuthenticationHelper.decodeToken(token: token, networkResponse: result)
+                            
+                            if (result.message == "success") {
                                 
-                                // decode the token and get the iss out
-                                let jwt = try! decode(jwt: token)
-                                
-                                // guard for the issuer check, “iss” (Issuer)
-                                guard let HATDomainFromToken = jwt.issuer else {
+                                if result.token != "" {
                                     
-                                    weakSelf.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_general", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
-                                    return
+                                    _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: result.token!)
+                                }
+                                if selfViewController != nil {
+                                    
+                                    selfViewController!.authoriseAppToWriteToCloud(hatDomain, result.domain!)
+                                } else {
+                                    
+                                    HatAccountService.authoriseAppToWriteToCloud(hatDomain, result.domain!, viewController: nil)
                                 }
                                 
-                                /*
-                                 The token will consist of header.payload.signature
-                                 To verify the token we use header.payload hashed with signature in base64 format
-                                 The public PEM string is used to verify also
-                                 */
-                                let tokenAttr: [String] = token.components(separatedBy: ".")
-                                
-                                // guard for the attr length. Should be 3 [header, payload, signature]
-                                guard tokenAttr.count == 3 else {
+                                if completion != nil {
                                     
-                                    weakSelf.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_general", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
-                                    return
+                                    completion!()
                                 }
-                                
-                                // And then to access the individual parts of token
-                                let header: String = tokenAttr[0]
-                                let payload: String = tokenAttr[1]
-                                let signature: String = tokenAttr[2]
-                                
-                                // decode signature from baseUrl64 to base64
-                                let decodedSig = signature.fromBase64URLToBase64(s: signature)
-                                
-                                // data to be verified header.payload
-                                let headerAndPayload = header + "." + payload
-                                
-                                do {
-                                    
-                                    let signature = try Signature(base64Encoded: decodedSig)
-                                    let privateKey = try PublicKey(pemEncoded: result)
-                                    let clear = try ClearMessage(string: headerAndPayload, using: .utf8)
-                                    let isSuccessful = try clear.verify(with: privateKey, signature: signature, digestType: .sha256)
-                                    
-                                    if (isSuccessful.isSuccessful) {
-                                        
-                                        weakSelf.authoriseAppToWriteToCloud(hatDomain, HATDomainFromToken)
-                                    } else {
-                                        
-                                        weakSelf.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_invalid_token", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
-                                    }
-                                    
-                                } catch {
-                                    
-                                    return
-                                }
-                                
                             } else {
                                 
-                                // alamo fire http fail
-                                weakSelf.createClassicOKAlertWith(alertMessage: result, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                if selfViewController != nil {
+                                    
+                                    selfViewController!.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_invalid_token", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                }
                             }
                             
-                        case .error(let error, let statusCode):
+                        } else {
+                            
+                            if selfViewController != nil {
+                                
+                                // alamo fire http fail
+                                selfViewController!.createClassicOKAlertWith(alertMessage: result, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                            }
+                        }
+                        
+                    case .error(let error, let statusCode):
+                        
+                        if selfViewController != nil {
                             
                             let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                            weakSelf.createClassicOKAlertWith(alertMessage: msg, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                            selfViewController!.createClassicOKAlertWith(alertMessage: msg, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
                         }
                     }
                 }
-            } else {
-                
-                selfViewController.createClassicOKAlertWith(alertMessage: "Could not save in keychain", alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
             }
         } else {
             
-            // no token in url callback redirect
-            selfViewController.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_no_token_in_callback", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+            if selfViewController != nil {
+                // no token in url callback redirect
+                selfViewController!.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_no_token_in_callback", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+            }
         }
     }
     
@@ -659,7 +609,7 @@ class HatAccountService {
      - parameter HATDomainFromToken: The HAT domain from token
      - parameter viewController: The UIViewController that calls this method
      */
-    class func authoriseAppToWriteToCloud(_ userDomain: String, _ HATDomainFromToken: String, viewController: LoginViewController) {
+    class func authoriseAppToWriteToCloud(_ userDomain: String, _ HATDomainFromToken: String, viewController: LoginViewController?) {
         
         // parameters..
         let parameters = ["" : ""]
@@ -672,7 +622,6 @@ class HatAccountService {
         // make asynchronous call
         NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: "application/json", parameters: parameters, headers: headers) { [weak viewController](r: NetworkHelper.ResultType) -> Void in
             
-            guard let weakSelf = viewController else { return }
             switch r {
             case .isSuccess(let isSuccess, _, let result):
                 
@@ -684,40 +633,50 @@ class HatAccountService {
                         // save the hatdomain from the token to the device Keychain
                         if(KeychainHelper.SetKeychainValue(key: Constants.Keychain.HATDomainKey, value: HATDomainFromToken)) {
                             
-                            weakSelf.performSegue(withIdentifier: "ShowTabBarController", sender: viewController)
+                            if viewController != nil {
+                                
+                                // setting image to nil and everything to clear color because animation was laggy
+                                viewController?.testImage.image = nil
+                                viewController?.testImage.backgroundColor = .clear
+                                viewController?.scrollView.backgroundColor = .clear
+                                viewController?.view.backgroundColor = .clear
+                                viewController?.hidePopUpLabel()
+                                
+                                _ = viewController!.navigationController?.popToRootViewController(animated: false)
+                            }
                         // else show error in the saving in keychain
                         } else {
                             
-                            weakSelf.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_keychain_save", comment: "keychain"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                            if viewController != nil {
+                                
+                                viewController!.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_keychain_save", comment: "keychain"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                            }
                         }
                     // No message field in JSON file
                     } else {
                         
-                        weakSelf.createClassicOKAlertWith(alertMessage: "Message not found", alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                        if viewController != nil {
+                            
+                            viewController!.createClassicOKAlertWith(alertMessage: "Message not found", alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                        }
                     }
                 // general error
                 } else {
                     
-                    weakSelf.createClassicOKAlertWith(alertMessage: result.rawString()!, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                    if viewController != nil {
+                        
+                        viewController!.createClassicOKAlertWith(alertMessage: result.rawString()!, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                    }
                 }
                 
             case .error(let error, let statusCode):
                 
-                //show error
-                let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                weakSelf.createClassicOKAlertWith(alertMessage: msg, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in
-                
-                    // save the hatdomain from the token to the device Keychain
-                    if(KeychainHelper.SetKeychainValue(key: Constants.Keychain.HATDomainKey, value: HATDomainFromToken)) {
-                        
-                        weakSelf.performSegue(withIdentifier: "ShowTabBarController", sender: viewController)
-                        
-                        // else show error in the saving in keychain
-                    } else {
-                        
-                        weakSelf.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_keychain_save", comment: "keychain"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
-                    }
-                })
+                if viewController != nil {
+                    
+                    //show error
+                    let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                    viewController!.createClassicOKAlertWith(alertMessage: msg, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return })
+                }
             }
         }
     }

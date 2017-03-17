@@ -22,8 +22,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     /// A MapSettingsDelegate object to pass back to the location tabs the stored values
     var mapSettingsDelegate: MapSettingsDelegate? = nil
 
-    // Picker initialiser code below needs to change if you re-order this array
-    /// the UIPickerView data
+    /// The UIPicker data. initialiser code below needs to change if you re-order this array
     private let pickerAccuracyData = ["kCLLocationAccuracyHundredMeters", "kCLLocationAccuracyKilometer", "kCLLocationAccuracyThreeKilometers", "kCLLocationAccuracyNearestTenMeters"]
     
     // MARK: - IBOutlets
@@ -41,6 +40,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     /// An IBOutlet for handling the location UISwitch
     @IBOutlet weak var locationSwitchOutlet: UISwitch!
     
+    /// An IBOutlet for handling the location tracking UILabel
     @IBOutlet weak var locationTrackingLabel: UILabel!
     
     //MARK: - IBActions 
@@ -69,7 +69,6 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
         // change view controller title
         self.title = NSLocalizedString("settings_label", comment: "settings title")
         
@@ -77,7 +76,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         self.hideKeyboardWhenTappedAround()
         
         // get settings from userdefault
-        readAndDisplayCurrentDefaults()
+        self.readAndDisplayCurrentDefaults()
         
         // select the right row in picker view
         self.selectRowInPickerViewFromUserDefaults(picker: self.pickerAccuracy, animated: true)
@@ -90,9 +89,9 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         let doneBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: view, action: #selector(UIView.endEditing(_:)))
         keyboardToolbar.items = [flexBarButton, doneBarButton]
         
-        textFieldDistance.inputAccessoryView = keyboardToolbar
-        textFieldDeferredTime.inputAccessoryView = keyboardToolbar
-        textFieldDeferredDistance.inputAccessoryView = keyboardToolbar
+        self.textFieldDistance.inputAccessoryView = keyboardToolbar
+        self.textFieldDeferredTime.inputAccessoryView = keyboardToolbar
+        self.textFieldDeferredDistance.inputAccessoryView = keyboardToolbar
                 
         if let result = KeychainHelper.GetKeychainValue(key: "trackDevice") {
             
@@ -133,7 +132,7 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     @objc func keyboardWillDisappear(notification: NSNotification) {
         
         // Do something here
-        storeValues()
+        self.storeValues()
     }
 
     //MARK: - UIPickerView delegate
@@ -145,17 +144,17 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         
-        return pickerAccuracyData.count
+        return self.pickerAccuracyData.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         
-        return pickerAccuracyData[row]
+        return self.pickerAccuracyData[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
        
-        let valueSelected: String = pickerAccuracyData[row]
+        let valueSelected: String = self.pickerAccuracyData[row]
         var locationAccuracy: CLLocationAccuracy = kCLLocationAccuracyHundredMeters //default
         
         switch valueSelected {
@@ -183,8 +182,8 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         
         let pickerLabel = UILabel()
-        var titleData: String = pickerAccuracyData[row]
-        let valueSelected: String = pickerAccuracyData[row]
+        var titleData: String = self.pickerAccuracyData[row]
+        let valueSelected: String = self.pickerAccuracyData[row]
         
         switch valueSelected {
             
@@ -243,21 +242,21 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
      */
     private func storeValues() {
         
-        guard Double(textFieldDistance.text!) != nil else {
+        guard Double(self.textFieldDistance.text!) != nil else {
             
-            readAndDisplayCurrentDefaults()
+            self.readAndDisplayCurrentDefaults()
             return
         }
         
-        guard Double(textFieldDeferredDistance.text!) != nil else {
+        guard Double(self.textFieldDeferredDistance.text!) != nil else {
             
-            readAndDisplayCurrentDefaults()
+            self.readAndDisplayCurrentDefaults()
             return
         }
         
-        guard Double(textFieldDeferredTime.text!) != nil else {
+        guard Double(self.textFieldDeferredTime.text!) != nil else {
             
-            readAndDisplayCurrentDefaults()
+            self.readAndDisplayCurrentDefaults()
             return
         }
         
@@ -265,11 +264,11 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         // distance
         let preferences = UserDefaults.standard
         // distance
-        preferences.set(Double(textFieldDistance.text!)!, forKey: Constants.Preferences.MapLocationDistance)
+        preferences.set(Double(self.textFieldDistance.text!)!, forKey: Constants.Preferences.MapLocationDistance)
         // deferred distance
-        preferences.set(Double(textFieldDeferredDistance.text!)!, forKey: Constants.Preferences.MapLocationDeferredDistance)
+        preferences.set(Double(self.textFieldDeferredDistance.text!)!, forKey: Constants.Preferences.MapLocationDeferredDistance)
         // time
-        preferences.set(Double(textFieldDeferredTime.text!)!, forKey: Constants.Preferences.MapLocationDeferredTimeout)
+        preferences.set(Double(self.textFieldDeferredTime.text!)!, forKey: Constants.Preferences.MapLocationDeferredTimeout)
         
         // pass new settings back and read the defaults from user defaults
         self.mapSettingsDelegate?.onChanged()
@@ -282,14 +281,14 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
     private func readAndDisplayCurrentDefaults() {
         
         // get settings from user defaults
-        textFieldDistance.text = String(MapsHelper.GetUserPreferencesDistance())
-        textFieldDistance.setNeedsDisplay()
+        self.textFieldDistance.text = String(MapsHelper.GetUserPreferencesDistance())
+        self.textFieldDistance.setNeedsDisplay()
         
-        textFieldDeferredDistance.text = String(MapsHelper.GetUserPreferencesDeferredDistance())
-        textFieldDeferredDistance.setNeedsDisplay()
+        self.textFieldDeferredDistance.text = String(MapsHelper.GetUserPreferencesDeferredDistance())
+        self.textFieldDeferredDistance.setNeedsDisplay()
         
-        textFieldDeferredTime.text = String(MapsHelper.GetUserPreferencesDeferredTimeout())
-        textFieldDeferredTime.setNeedsDisplay()
+        self.textFieldDeferredTime.text = String(MapsHelper.GetUserPreferencesDeferredTimeout())
+        self.textFieldDeferredTime.setNeedsDisplay()
     }
     
     // MARK: - UIPickerView select row 

@@ -52,15 +52,10 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
             // convert the post to FacebookSocialFeedObject
             let post = posts as! FacebookSocialFeedObject
             
-            // assign the values
-            cell.profileNameLabel.text = post.data.posts.from.name
-            cell.messageTextView.text = post.data.posts.message
-            cell.postTypeLabel.text = post.data.posts.type
-            
-            // created the info string and assign it
-            let date = post.data.posts.updatedTime
-            let text = "Posted on " + FormatterHelper.formatDateStringToUsersDefinedDate(date: date!, dateStyle: .short, timeStyle: .short) + ", privacy set to " + post.data.posts.privacy.value.replacingOccurrences(of: "_", with: " ")
-            cell.postInfoLabel.text = text
+            if let date = post.data.posts.updatedTime {
+                
+                cell.postInfoLabel.text = "Posted on " + FormatterHelper.formatDateStringToUsersDefinedDate(date: date, dateStyle: .short, timeStyle: .short) + ", privacy set to " + post.data.posts.privacy.value.replacingOccurrences(of: "_", with: " ")
+            }
             
             // If the post is a photo, download it to the imageview
             if post.data.posts.type == "photo" {
@@ -69,22 +64,14 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
                     
                     cell.socialNetworkImage.downloadedFrom(url: url)
                 }
-            // if the pos is a link show the link as well
-            } else if post.data.posts.type == "link" {
-                
-                cell.messageTextView.attributedText = NSAttributedString(string: post.data.posts.description + "\n" + post.data.posts.link)
             }
             
-            // if nothing of above try to story and description
-            if cell.messageTextView.text == "" {
-                
-                cell.messageTextView.text = post.data.posts.story
-            }
+            // assign the values
+            cell.profileNameLabel.text = post.data.posts.from.name
+            cell.postTypeLabel.text = post.data.posts.type
+            cell.messageTextView = self.constructMessageLabelFrom(data: post.data.posts, for: cell.messageTextView)
             
-            if cell.messageTextView.text == "" {
-                
-                cell.messageTextView.text = post.data.posts.description
-            }
+            cell.messageTextView.sizeToFit()
             
             return cell
         // else if the post is from twitter
@@ -101,10 +88,7 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
             // if the post has a date create the info string label
             if post.data.tweets.createdAt != nil {
                 
-                let date = post.data.tweets.createdAt
-                let text = "Posted on " + FormatterHelper.formatDateStringToUsersDefinedDate(date: date!, dateStyle: .short, timeStyle: .short)
-                
-                cell.postInfoLabel.text = text
+                cell.postInfoLabel.text = "Posted on " + FormatterHelper.formatDateStringToUsersDefinedDate(date: post.data.tweets.createdAt!, dateStyle: .short, timeStyle: .short)
             }
             
             // assign the twitter image as profile image
@@ -112,5 +96,37 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
                         
             return cell
         }
+    }
+    
+    // MARK: - Construct message label
+    
+    /**
+     Sets up a text view according to the data we have
+     
+     - parameter data: A FacebookDataPostsSocialFeedObject object that contains the data we need
+     - parameter textView: The textview to setup
+     - returns: An already set up textview
+     */
+    private class func constructMessageLabelFrom(data: FacebookDataPostsSocialFeedObject, for textView: UITextView) -> UITextView {
+        
+        textView.text = data.message
+        
+        if data.type == "link" {
+            
+            textView.attributedText = NSAttributedString(string: data.description + "\n" + data.link)
+        }
+        
+        // if nothing of above try to story and description
+        if textView.text == "" {
+            
+            textView.text = data.story
+        }
+        
+        if textView.text == "" {
+            
+            textView.text = data.description
+        }
+        
+        return textView
     }
 }

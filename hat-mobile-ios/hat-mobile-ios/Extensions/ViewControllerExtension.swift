@@ -43,8 +43,8 @@ extension UIViewController {
     public func addKeyboardHandling() {
         
         // create 2 notification observers for listening to the keyboard
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name:.UIKeyboardWillShow, object: nil);
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name:.UIKeyboardWillHide, object: nil);
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(sender:)), name:.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(sender:)), name:.UIKeyboardWillHide, object: nil)
     }
     
     /**
@@ -194,5 +194,29 @@ extension UIViewController {
     class func getMainStoryboard() -> UIStoryboard {
         
         return UIStoryboard.init(name: "Main", bundle: nil)
+    }
+    
+    // MARK: - Remove view controller
+    
+    /**
+     Removes the view controller that called this function of the superview and parent view controller
+     */
+    func removeViewController() {
+        
+        self.willMove(toParentViewController: nil)
+        self.view.removeFromSuperview()
+        self.removeFromParentViewController()
+    }
+    
+    // MARK: - Add view controller
+    
+    /**
+     Adds the view controller passed in the parameter
+     */
+    func addViewController(_ viewController: UIViewController) {
+        
+        self.addChildViewController(viewController)
+        self.view.addSubview(viewController.view)
+        viewController.didMove(toParentViewController: self)
     }
 }

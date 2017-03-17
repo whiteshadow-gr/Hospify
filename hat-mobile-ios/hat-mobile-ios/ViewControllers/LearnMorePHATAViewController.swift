@@ -31,7 +31,7 @@ class LearnMorePHATAViewController: UIViewController {
      */
     @IBAction func cancelButtonAction(_ sender: Any) {
         
-        NotificationCenter.default.post(name: NSNotification.Name("HideLearnMore"), object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideLearnMore.rawValue), object: nil)
     }
     
     // MARK: - View Controller methods

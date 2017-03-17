@@ -11,6 +11,7 @@
  */
 
 import SwiftyJSON
+import SafariServices
 
 // MARK: - Notables ViewController
 
@@ -42,11 +43,11 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     private var parameters: Dictionary<String, String> = ["starttime" : "0",
                                                           "limit" : "50"]
     
-    /// SafariViewController variable
-    private var pageViewController: FirstOnboardingPageViewController = FirstOnboardingPageViewController()
-    
     /// a dark view pop up to hide the background
     private var darkView: UIView? = nil
+    
+    /// a dark view pop up to hide the background
+    private var authorise: AuthoriseUserViewController? = nil
 
     // MARK: - IBOutlets
 
@@ -57,11 +58,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     @IBOutlet weak var createNewNoteView: UIView!
     
     /// An IBOutlet for handling the create new note button
-    @IBOutlet weak var createNewNoteLabel: UILabel!
-    /// An IBOutlet for handling the create new list button
-    @IBOutlet weak var createNewListLabel: UILabel!
-    /// An IBOutlet for handling the create new blog button
-    @IBOutlet weak var createNewBlogLabel: UILabel!
+    @IBOutlet weak var createNewNoteButton: UIButton!
     /// An IBOutlet for handling the info label when table view is empty or an error has occured
     @IBOutlet weak var eptyTableInfoLabel: UILabel!
     
@@ -69,6 +66,37 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     @IBOutlet weak var retryConnectingButton: UIButton!
 
     // MARK: - IBActions
+    
+    /**
+     Shows a pop up with the available settings
+     
+     - parameter sender: The object that calls this function
+     */
+    @IBAction func settingsButtonAction(_ sender: Any) {
+        
+        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
+        
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            TabBarViewController.logoutUser(from: self)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(logOutAction)
+        alertController.addAction(cancelAction)
+        
+        // if user is on ipad show as a pop up
+        if UI_USER_INTERFACE_IDIOM() == .pad {
+            
+            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
+            alertController.popoverPresentationController?.sourceView = self.view
+        }
+        
+        // present alert controller
+        self.navigationController!.present(alertController, animated: true, completion: nil)
+    }
     
     /**
      Try to reconnect to get notes
@@ -96,7 +124,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         let failCallBack = { self.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {() -> Void in return}) }
         
         // check if data plug is ready
-        DataPlugsService.ensureDataPlugReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
+        DataPlugsService.ensureOffersReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
     }
     
     /**
@@ -110,28 +138,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         self.performSegue(withIdentifier: "optionsSegue", sender: self)
     }
     
-    /**
-     Go to New note and create a blog
-     
-     - parameter sender: The object that calls this function
-     */
-    @IBAction func newBlogButton(_ sender: Any) {
-        
-        kind = "blog"
-        self.performSegue(withIdentifier: "optionsSegue", sender: self)
-    }
-    
-    /**
-     Go to New note and create a list
-     
-     - parameter sender: The object that calls this function
-     */
-    @IBAction func newListButton(_ sender: Any) {
-        
-        kind = "list"
-        self.performSegue(withIdentifier: "optionsSegue", sender: self)
-    }
-    
     // MARK: - View Methods
     
     override func viewDidLoad() {
@@ -139,35 +145,63 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+        // view controller title
+        self.title = "Notes"
+        
         // keep the green bar at the top
         self.view.bringSubview(toFront: createNewNoteView)
         
         // register observers for a notifications
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshData), name: NSNotification.Name(rawValue: "reloadTable"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.hideTable), name: NSNotification.Name(rawValue: "NetworkMessage"), object: nil)
-        // add a notification observer in order to hide the second page view controller
-        NotificationCenter.default.addObserver(self, selector: #selector(removePageController), name: Notification.Name("hideNewbiePageViewContoller"), object: nil)
-        
-        // add gesture recognizer in the labels
-        let newNoteTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newNoteButton(_:)))
-        self.createNewNoteLabel.addGestureRecognizer(newNoteTapGestureRecognizer)
-        self.createNewNoteLabel.isUserInteractionEnabled = true
-        
-        let newListTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newListButton(_:)))
-        self.createNewListLabel.addGestureRecognizer(newListTapGestureRecognizer)
-        self.createNewListLabel.isUserInteractionEnabled = true
-        
-        let newBlogTapGestureRecognizer = UITapGestureRecognizer.init(target: self, action: #selector(newBlogButton(_:)))
-        self.createNewBlogLabel.addGestureRecognizer(newBlogTapGestureRecognizer)
-        self.createNewBlogLabel.isUserInteractionEnabled = true
+                
+        self.createNewNoteButton.addBorderToButton(width: 0.5, color: .white)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
         
-        // fetch notes
-        self.connectToServerToGetNotes()        
+        func success(token: String) {
+            
+            if self.authorise != nil {
+                
+                self.authorise = nil
+            }
+            // fetch notes
+            self.connectToServerToGetNotes()
+        }
+        
+        func failed(statusCode: Int) {
+            
+            if self.authorise == nil && statusCode == 401 {
+                
+                self.authorise = AuthoriseUserViewController()
+                self.authorise!.view.backgroundColor = .clear
+                self.authorise!.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                self.authorise!.view.layer.cornerRadius = 15
+                self.authorise!.completionFunc = connectToServerToGetNotes
+                
+                // add the page view controller to self
+                self.addChildViewController(self.authorise!)
+                self.view.addSubview(self.authorise!.view)
+                self.authorise!.didMove(toParentViewController: self)
+            } else if statusCode == 404 {
+                
+                self.connectToServerToGetNotes()
+            }
+        }
+
+        // get notes
+        self.token = HatAccountService.getUsersTokenFromKeychain()
+        HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+        super.viewDidAppear(animated)
+        
+        self.token = HatAccountService.getUsersTokenFromKeychain()
     }
 
     override func didReceiveMemoryWarning() {
@@ -215,11 +249,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 self.cachedNotesArray.remove(at: self.selectedIndex!)
                 self.selectedIndex = nil
             }
-            
-            if let note = notification.object as? NotesData {
-                
-                self.cachedNotesArray.insert(note, at: 0)
-            }
         }
     }
     
@@ -261,7 +290,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                                        "limit" : self.notablesFetchLimit]
                     
                     // fetch notes
-                    NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: {() -> Void in return})
+                    NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: {(statusCode) -> Void in return})
                 } else {
                     
                     // revert parameters to initial values
@@ -311,12 +340,36 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             
             func proceedCompletion() {
                 
-                // delete data from hat and remove from table
                 let token = HatAccountService.getUsersTokenFromKeychain()
-                NotablesService.deleteNoteWithKeychain(id: self.cachedNotesArray[indexPath.row].id, tkn: token)
-                self.cachedNotesArray.remove(at: indexPath.row)
-                tableView.deleteRows(at: [indexPath], with: .fade)
-                self.updateUI()
+
+                func success(token: String) {
+                    
+                    NotablesService.deleteNoteWithKeychain(id: self.cachedNotesArray[indexPath.row].id, tkn: token)
+                    self.cachedNotesArray.remove(at: indexPath.row)
+                    tableView.deleteRows(at: [indexPath], with: .fade)
+                    self.updateUI()
+                    
+                    self.authorise = nil
+                }
+                
+                func failed(statusCode: Int) {
+                    
+                    if self.authorise != nil && statusCode == 401 {
+                        
+                        self.authorise! = AuthoriseUserViewController()
+                        self.authorise!.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                        self.authorise!.view.layer.cornerRadius = 15
+                        self.authorise!.completionFunc = proceedCompletion
+                        
+                        // add the page view controller to self
+                        self.addChildViewController(self.authorise!)
+                        self.view.addSubview(self.authorise!.view)
+                        self.authorise!.didMove(toParentViewController: self)
+                    }
+                }
+                
+                // delete data from hat and remove from table
+                HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
             }
             
             // if it is shared show message else delete the row
@@ -356,7 +409,16 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             
             self.showEmptyTableLabelWith(message: "Accessing your HAT...")
             
-            NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: showNewbieScreens)
+            NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: { (statusCode) -> Void in
+                
+                if statusCode != 404 {
+                    
+                    self.showEmptyTableLabelWith(message: "There was an error fetching notes. Please try again later")
+                } else if statusCode == 404 {
+                    
+                    self.connectToServerToGetNotes()
+                }
+            })
         }
     }
     
@@ -452,7 +514,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 }
                 
                 temp = NotablesService.removeDuplicatesFrom(array: temp)
-                temp = NotablesService.sortNotables(notes: temp)
                 
                 self.cachedNotesArray.removeAll()
                 
@@ -468,49 +529,5 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 self.showEmptyTableLabelWith(message: "No notables. Keep your words on your HAT. Create your first notable!")
             }
         }
-    }
-    
-    // MARK: - Show newbie screens
-    
-    /**
-     Shows newbie screens
-     */
-    private func showNewbieScreens() -> Void {
-        
-        // set up the created page view controller
-        self.pageViewController = self.storyboard!.instantiateViewController(withIdentifier: "firstTimeOnboarding") as! FirstOnboardingPageViewController
-        self.pageViewController.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.x + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30)
-        self.pageViewController.view.layer.cornerRadius = 15
-        
-        // present a dark pop up view
-        self.darkView = UIView(frame: CGRect(x: self.view.frame.origin.x, y: self.view.frame.origin.y, width: self.view.frame.width, height: self.view.frame.height))
-        self.darkView?.backgroundColor = UIColor.darkGray
-        self.darkView?.alpha = 0.6
-        self.view.addSubview((self.darkView)!)
-        
-        // add the page view controller to self
-        self.addChildViewController(self.pageViewController)
-        self.view.addSubview(self.pageViewController.view)
-        self.pageViewController.didMove(toParentViewController: self)
-        
-        self.updateUI()
-    }
-    
-    // MARK: - Remove second PageViewController
-    
-    /**
-     Removes the second pageviewcontroller on demand when receivd the notification
-     
-     - parameter notification: The Notification object send with this notification
-     */
-    @objc private func removePageController(notification: Notification) {
-        
-        // if view is found remove it
-        
-        self.pageViewController.willMove(toParentViewController: nil)
-        self.pageViewController.view.removeFromSuperview()
-        self.pageViewController.removeFromParentViewController()
-        
-        self.darkView?.removeFromSuperview()
     }
 }

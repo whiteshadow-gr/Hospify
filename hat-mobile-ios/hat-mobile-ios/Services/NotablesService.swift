@@ -26,13 +26,13 @@ class NotablesService: NSObject {
      
      - parameter authToken: The auth token from hat
      */
-    class func fetchNotables(authToken: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void, failure: @escaping () -> Void ) -> Void {
+    class func fetchNotables(authToken: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void, failure: @escaping (Int) -> Void ) -> Void {
         
-        func createNotablesTables() {
+        func createNotablesTables(statusCode: Int) {
             
             HatAccountService.createHatTable(token: authToken, notablesTableStructure: JSONHelper.createNotablesTableJSON())()
             
-            failure()
+            failure(statusCode)
         }
         
         HatAccountService.checkHatTableExists(tableName: "notablesv1", //posts // tweets
@@ -96,7 +96,7 @@ class NotablesService: NSObject {
      - parameter token: The token returned from the hat
      - parameter json: The json file as a Dictionary<String, Any>
      */
-    class func postNote(token: String, note: NotesData, successCallBack: @escaping () -> Void) -> Void {
+    class func postNote(token: String, note: NotesData, successCallBack: @escaping () -> Void, errorCallback: @escaping () -> Void) -> Void {
         
         let userToken = HatAccountService.getUsersTokenFromKeychain()
         
@@ -118,27 +118,29 @@ class NotablesService: NSObject {
                 // handle result
                 switch r {
                     
-                case .isSuccess(let isSuccess, _, _):
+                case .isSuccess(let isSuccess, let statusCode, _):
                     
                     if isSuccess {
                         
                         // reload table
                         successCallBack()
+                        HatAccountService.triggerHatUpdate()
+                    } else if statusCode == 401 {
+                        
+                        errorCallback()
+                        _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "expired")
                     }
                     
                 case .error(let error, let statusCode):
                     
                     print("error res: \(error)")
+                    errorCallback()
                     Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "status code: " : "\(statusCode)"])
                 }
             })
         }
         
-        func errorCall() {
-            
-        }
-        
-        HatAccountService.checkHatTableExistsForUploading(tableName: "notablesv1", sourceName: "rumpel", authToken: userToken, successCallback: posting, errorCallback: errorCall)
+        HatAccountService.checkHatTableExistsForUploading(tableName: "notablesv1", sourceName: "rumpel", authToken: userToken, successCallback: posting, errorCallback: errorCallback)
     }
     
     // MARK: - Remove duplicates
@@ -160,7 +162,7 @@ class NotablesService: NSObject {
             // check if the arrayToReturn it contains that value and if not add it
             let result = arrayToReturn.contains(where: {(note2: NotesData) -> Bool in
                 
-                if (note.data.createdTime == note2.data.createdTime) && (note.data.message == note.data.message) {
+                if (note.data.createdTime == note2.data.createdTime) && (note.data.message == note2.data.message) {
                     
                     return true
                 }
@@ -171,6 +173,29 @@ class NotablesService: NSObject {
             if !result {
                 
                 arrayToReturn.append(note)
+            }
+        }
+        
+        for (outterIndex, note) in arrayToReturn.enumerated().reversed() {
+            
+            for (innerIndex, innerNote) in arrayToReturn.enumerated().reversed() {
+                
+                if outterIndex != innerIndex {
+                    
+                    if innerNote.data.createdTime == note.data.createdTime {
+                    
+                        if innerNote.lastUpdated != note.lastUpdated {
+
+                            if innerNote.lastUpdated > note.lastUpdated {
+                                
+                                arrayToReturn.remove(at: outterIndex)
+                            } else {
+                                
+                                arrayToReturn.remove(at: innerIndex)
+                            }
+                        }
+                    }
+                }
             }
         }
         

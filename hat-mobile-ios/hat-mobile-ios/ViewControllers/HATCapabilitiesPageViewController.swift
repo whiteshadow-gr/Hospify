@@ -28,13 +28,11 @@ class HATCapabilitiesPageViewController: UIPageViewController, UIPageViewControl
         
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
         // create page view controller
         self.createPageViewController()
         
         // change the color of the pagination dots at the bottom of the screen
-        UIPageControl.appearance().pageIndicatorTintColor = UIColor.lightGray
-        UIPageControl.appearance().currentPageIndicatorTintColor = .white
+        self.changePaginationColors(pageTintColor: .lightGray, pageCurrentTintColor: .white)
     }
 
     override func didReceiveMemoryWarning() {
@@ -46,13 +44,7 @@ class HATCapabilitiesPageViewController: UIPageViewController, UIPageViewControl
     override func viewDidLayoutSubviews() {
         
         //corrects scrollview frame to allow for full-screen view controller pages
-        for subView in self.view.subviews {
-            
-            if subView is UIScrollView {
-                
-                subView.frame = self.view.bounds
-            }
-        }
+        self.makePageControllerFullScreen()
         
         super.viewDidLayoutSubviews()
     }
@@ -130,7 +122,7 @@ class HATCapabilitiesPageViewController: UIPageViewController, UIPageViewControl
     
     func presentationCount(for pageViewController: UIPageViewController) -> Int {
         
-        return numberOfPages.count
+        return self.numberOfPages.count
     }
     
     func presentationIndex(for pageViewController: UIPageViewController) -> Int {

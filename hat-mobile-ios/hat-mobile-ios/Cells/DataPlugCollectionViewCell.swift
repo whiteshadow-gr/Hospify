@@ -46,36 +46,42 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
         cell.dataPlugTitleLabel.text = dataPlug.name
         cell.dataPlugDetailsLabel.text = dataPlug.description
         cell.dataPlugImage.downloadedFrom(url: URL(string: dataPlug.illustrationUrl)!)
+        cell.checkMarkImage.isHidden = !dataPlug.showCheckMark
+        cell.backgroundColor = self.backgroundColorOfCellForIndexPath(indexPath, in: orientation)
         
-        if dataPlug.showCheckMark == true {
-            
-            cell.checkMarkImage.isHidden = false
-        }
+        // return cell
+        return cell
+    }
+    
+    // MARK: - Decide background color
+    
+    /**
+     Decides the colof of the cell based on the index path and the device orientation
+     
+     - parameter indexPath: The index path of the cell
+     - parameter orientation: The device current orientation
+     - returns: The color of the cell based on the index path and the device orientation
+     */
+    private class func backgroundColorOfCellForIndexPath(_ indexPath: IndexPath, in orientation: UIInterfaceOrientation) -> UIColor {
         
-        // check if device is in portrait mode, 3 tiles per row vs 2
         if orientation.isPortrait {
             
             // create this zebra like color based on the index of the cell
             if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
                 
-                cell.backgroundColor = UIColor.rumpelVeryLightGray()
-            } else {
-                
-                cell.backgroundColor = UIColor.white
+                return .rumpelVeryLightGray()
             }
+            
+            return .white
         } else {
             
             // create this zebra like color based on the index of the cell
             if (indexPath.row % 2 == 0 ) {
                 
-                cell.backgroundColor = UIColor.rumpelVeryLightGray()
-            } else {
-                
-                cell.backgroundColor = UIColor.white
+                return .rumpelVeryLightGray()
             }
+            
+            return .white
         }
-        
-        // return cell
-        return cell
     }
 }

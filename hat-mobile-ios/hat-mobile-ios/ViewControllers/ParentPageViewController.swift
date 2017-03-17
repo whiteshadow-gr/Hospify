@@ -37,12 +37,11 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
         self.createPageViewController()
         
         // change the color of the pagination dots at the bottom of the screen
-        UIPageControl.appearance().pageIndicatorTintColor = UIColor.tealColor()
-        UIPageControl.appearance().currentPageIndicatorTintColor = .white
+        self.changePaginationColors(pageTintColor: .tealColor(), pageCurrentTintColor: .white)
         
         // add notification observers for disabling and enabling page controll
-        NotificationCenter.default.addObserver(self, selector: #selector(disablePageControll), name: Notification.Name("disablePageControll"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(enablePageControll), name: Notification.Name("enablePageControll"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(disablePageControll), name: Notification.Name(Constants.NotificationNames.disablePageControll.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(enablePageControll), name: Notification.Name(Constants.NotificationNames.enablePageControll.rawValue), object: nil)
         
         // change background color
         self.view.backgroundColor = UIColor.tealColor()
@@ -59,13 +58,7 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
         super.viewDidLayoutSubviews()
         
         //corrects scrollview frame to allow for full-screen view controller pages
-        for subView in self.view.subviews {
-            
-            if subView is UIScrollView {
-                
-                subView.frame = self.view.bounds
-            }
-        }
+        self.makePageControllerFullScreen()
     }
     
     // MARK: - Page view controller methods
@@ -133,7 +126,7 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
         _ = self.getItemController(itemIndex: 6)
         
         // change the color of the pagination dots at the bottom of the screen
-        UIPageControl.appearance().pageIndicatorTintColor = UIColor.tealColor()
+        UIPageControl.appearance().pageIndicatorTintColor = .tealColor()
     }
     
     // MARK: - Create view controller

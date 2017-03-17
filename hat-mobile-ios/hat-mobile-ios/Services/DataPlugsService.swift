@@ -71,7 +71,7 @@ class DataPlugsService: NSObject {
         
         // setup parameters and headers
         let parameters = ["name" : serviceName, "resource" : resource]
-        var headers = ["" : ""]
+        var headers: Dictionary<String, String> = [:]
     
         // get token
         if let token = KeychainHelper.GetKeychainValue(key: "UserToken") {
@@ -112,9 +112,9 @@ class DataPlugsService: NSObject {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func ensureDataPlugReady(succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) -> Void {
+    class func ensureOffersReady(succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) -> Void {
         
-        // facebook offer ID
+        // notables offer
         let offerID = "32dde42f-5df9-4841-8257-5639db222e41"
         
         // set up the succesfulCallBack
@@ -434,7 +434,7 @@ class DataPlugsService: NSObject {
                     if statusCode == 404 {
                         
                         // post notification to authorize facebook
-                        NotificationCenter.default.post(name: NSNotification.Name("safari"), object: nil)
+                        NotificationCenter.default.post(name: NSNotification.Name("dataPlugMessage"), object: nil)
                     } else {
                         
                         failCallBack()
@@ -450,5 +450,103 @@ class DataPlugsService: NSObject {
                 }
             })
         }
+    }
+    
+    // MARK: - Create URL
+    
+    /**
+     Creates the url to connect to
+     
+     - parameter socialServiceName: The name of the social service
+     - parameter socialServiceURL: The url of the social service
+     - returns: A ready URL as a String if everything ok else nil
+     */
+    class func createURLBasedOn(socialServiceName: String, socialServiceURL: String) -> String? {
+        
+        // set up the url to open safari to
+        let userDomain: String = HatAccountService.TheUserHATDomain()
+        
+        if socialServiceName == "twitter" {
+            
+            return "https://" + userDomain + "/hatlogin?name=Twitter&redirect=" + socialServiceURL + "/authenticate/hat"
+        } else if socialServiceName == "facebook" {
+            
+            return "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + socialServiceURL.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
+        }
+        
+        return nil
+    }
+    
+    // MARK: - Check if data plugs are active
+    
+    /**
+     Checks if both data plugs are active
+     
+     - parameter completion: The function to execute when something finishes
+     */
+    class func checkDataPlugsIfActive(completion: @escaping (String, Bool) -> Void) {
+        
+        /// Check if facebook is active
+        func checkIfFacebookIsActive(appToken: String) {
+            
+            /// if facebook active, enable the checkmark
+            func enableCheckMarkOnFacebook() {
+                
+                completion("facebook", true)
+            }
+            
+            /// if facebook inactive, disable the checkmark
+            func disableCheckMarkOnFacebook() {
+                
+                completion("facebook", false)
+            }
+            
+            // check if facebook active
+            FacebookDataPlugService.isFacebookDataPlugActive(token: appToken, successful: enableCheckMarkOnFacebook, failed: disableCheckMarkOnFacebook)
+        }
+        
+        /// Check if twitter is active
+        func checkIfTwitterIsActive(appToken: String) {
+            
+            /// if twitter active, enable the checkmark
+            func enableCheckMarkOnTwitter() {
+                
+                completion("twitter", true)
+            }
+            
+            /// if twitter inactive, disable the checkmark
+            func disableCheckMarkOnTwitter() {
+                
+                completion("twitter", false)
+            }
+            
+            // check if twitter active
+            TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: enableCheckMarkOnTwitter, failed: disableCheckMarkOnTwitter)
+        }
+        
+        // get token for facebook and twitter and check if they are active
+        FacebookDataPlugService.getAppTokenForFacebook(successful: checkIfFacebookIsActive, failed: {})
+        
+        TwitterDataPlugService.getAppTokenForTwitter(successful: checkIfTwitterIsActive, failed: {})
+    }
+    
+    // MARK: - Filter available data plugs
+    
+    class func filterAvailableDataPlugs(dataPlugs: [DataPlugObject]) -> [DataPlugObject] {
+        
+        var tempDataPlugs = dataPlugs
+        // remove the existing dataplugs from array
+        tempDataPlugs.removeAll()
+        
+        // we want only facebook and twitter, so keep those
+        for i in 0 ... dataPlugs.count - 1 {
+            
+            if dataPlugs[i].name == "twitter" || dataPlugs[i].name == "facebook" {
+                
+                tempDataPlugs.append(dataPlugs[i])
+            }
+        }
+        
+        return tempDataPlugs
     }
 }

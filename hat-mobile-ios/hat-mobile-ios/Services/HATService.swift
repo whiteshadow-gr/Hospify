@@ -23,7 +23,7 @@ struct HATService {
     /**
      Fetches the available HAT providers
      */
-    static func getAvailableHATProviders() {
+    static func getAvailableHATProviders(successCompletion: @escaping ([HATProviderObject]) -> Void) {
         
         let url = "https://hatters.hubofallthings.com/api/products/hat"
         
@@ -47,7 +47,43 @@ struct HATService {
                         arrayToSendBack.append(HATProviderObject(from: item.dictionaryValue))
                     }
                         
-                    NotificationCenter.default.post(name: NSNotification.Name("hatProviders"), object: arrayToSendBack)
+                    successCompletion(arrayToSendBack)
+                }
+            }
+        })
+    }
+    
+    // MARK: - Get system status
+    
+    /**
+     Fetches the available HAT providers
+     */
+    static func getSystemStatus(userDomain: String, authToken: String, completion: @escaping ([SystemStatusObject]) -> Void) {
+        
+        let url = "https://" + userDomain + "/api/v2/system/status"
+        let headers = ["X-Auth-Token" : authToken]
+        
+        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: headers, completion: {(r: NetworkHelper.ResultType) -> Void in
+            
+            switch r {
+                
+            // in case of error call the failCallBack
+            case .error(let error, let statusCode):
+                
+                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
+            // in case of success call the succesfulCallBack
+            case .isSuccess(let isSuccess, _, let result):
+                
+                if isSuccess {
+                    
+                    let resultArray = result.arrayValue
+                    var arrayToSendBack: [SystemStatusObject] = []
+                    for item in resultArray {
+                        
+                        arrayToSendBack.append(SystemStatusObject(from: item.dictionaryValue))
+                    }
+                    
+                    completion(arrayToSendBack)
                 }
             }
         })

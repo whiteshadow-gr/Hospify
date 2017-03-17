@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import SafariServices
 import MessageUI
 
@@ -27,6 +26,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     @IBOutlet weak var getAHATButton: UIButton!
     /// An IBOutlet for handling the buttonLogon
     @IBOutlet weak var buttonLogon: UIButton!
+    /// An IBOutlet for handling the joinCommunityButton
+    @IBOutlet weak var joinCommunityButton: UIButton!
+    /// An IBOutlet for handling the domainButton
+    @IBOutlet weak var domainButton: UIButton!
     
     /// An IBOutlet for handling the inputUserHATDomain
     @IBOutlet weak var inputUserHATDomain: UITextField!
@@ -39,6 +42,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     /// An IBOutlet for handling the labelSubTitle
     @IBOutlet weak var labelSubTitle: UITextView!
     
+    @IBOutlet weak var testImage: UIImageView!
     /// An IBOutlet for handling the ivLogo
     @IBOutlet weak var ivLogo: UIImageView!
     
@@ -53,7 +57,52 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     /// SafariViewController variable
     private var safariVC: SFSafariViewController?
     
+    /// SafariViewController variable
+    private var popUpView: UIView?
+        
     // MARK: - IBActions
+    
+    /**
+     A button showing the different HAT's to select in order to log in
+     
+     - parameter sender: The object that called this method
+     */
+    @IBAction func domainButtonAction(_ sender: Any) {
+        
+        let alert = UIAlertController(title: "Select domain", message: nil, preferredStyle: .actionSheet)
+        
+        let hubofallthingsAction = UIAlertAction(title: ".hubofallthings.net", style: .default, handler: {(alert: UIAlertAction) -> Void in
+            
+            self.domainButton.setTitle(".hubofallthings.net", for: .normal)
+        })
+        
+        let bsafeAction = UIAlertAction(title: ".bsafe.org", style: .default, handler: {(alert: UIAlertAction) -> Void in
+            
+            self.domainButton.setTitle(".bsafe.org", for: .normal)
+        })
+        
+        let hubatAction = UIAlertAction(title: ".hubat.net", style: .default, handler: {(alert: UIAlertAction) -> Void in
+            
+            self.domainButton.setTitle(".hubat.net", for: .normal)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alert.addAction(hubofallthingsAction)
+        alert.addAction(bsafeAction)
+        alert.addAction(hubatAction)
+        alert.addAction(cancelAction)
+        
+        // if user is on ipad show as a pop up
+        if UI_USER_INTERFACE_IDIOM() == .pad {
+            
+            alert.popoverPresentationController?.sourceRect = self.domainButton.frame
+            alert.popoverPresentationController?.sourceView = self.domainButton
+        }
+        
+        // present alert controller
+        self.navigationController!.present(alert, animated: true, completion: nil)
+    }
     
     /**
      A button launching email view controller
@@ -62,13 +111,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
      */
     @IBAction func contactUsActionButton(_ sender: Any) {
         
-        // create mail view controler
-        let mailVC = MFMailComposeViewController()
-        mailVC.mailComposeDelegate = self
-        mailVC.setToRecipients(["contact@hatdex.org"])
-        
-        // present view controller
-        self.present(mailVC, animated: true, completion: nil)
+        if MFMailComposeViewController.canSendMail() {
+            
+            // create mail view controler
+            let mailVC = MFMailComposeViewController()
+            mailVC.mailComposeDelegate = self
+            mailVC.setToRecipients(["contact@hatdex.org"])
+            
+            // present view controller
+            self.present(mailVC, animated: true, completion: nil)
+        } else {
+            
+            self.createClassicOKAlertWith(alertMessage: "This device has not been configured to send emails", alertTitle: "Email services disabled", okTitle: "ok", proceedCompletion: {})
+        }
     }
     
     /**
@@ -84,6 +139,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             UIApplication.shared.openURL(url)
         }
     }
+    
     /**
      An action executed when the logon button is pressed
      
@@ -96,7 +152,35 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             self.createClassicOKAlertWith(alertMessage: "Please check your personal hat address again", alertTitle: "Wrong domain!", okTitle: "OK", proceedCompletion: {() -> Void in return})
         }
         
-        HatAccountService.logOnToHAT(userHATDomain: inputUserHATDomain.text!, successfulVerification: self.authoriseUser, failedVerification: failed)
+        if self.inputUserHATDomain.text != "" {
+            
+            _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
+            let filteredDomain = self.removeDomainFromUserEnteredText(domain: self.inputUserHATDomain.text!)
+            HatAccountService.logOnToHAT(userHATDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, successfulVerification: self.authoriseUser, failedVerification: failed)
+        } else {
+            
+            self.createClassicOKAlertWith(alertMessage: "Please input your HAT domain", alertTitle: "HAT domain is empty!", okTitle: "Ok", proceedCompletion: {})
+        }
+    }
+    
+    // MARK: - Remove domain from entered text
+    
+    /**
+     Removes domain from entered text
+     
+     - parameter domain: The user entered text
+     - returns: The filtered text
+     */
+    private func removeDomainFromUserEnteredText(domain: String) -> String {
+        
+        let array = domain.components(separatedBy: ".")
+        
+        if array.count > 0 {
+            
+            return array[0]
+        }
+        
+        return domain
     }
     
     // MARK: - View Controller functions
@@ -104,7 +188,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         
         // add keyboard handling
         self.addKeyboardHandling()
@@ -116,39 +199,42 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         // set title
         self.title = NSLocalizedString("logon_label", comment:  "logon title")
         
-        // format title label
-        let textAttributesTitle = [
-            NSForegroundColorAttributeName: UIColor.white,
-            NSStrokeColorAttributeName: UIColor.white,
-            NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 36)!,
-            NSStrokeWidthAttributeName: -1.0
-            ] as [String : Any]
+        let partOne = "Rumpel ".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 36)!)
+        let partTwo = "Lite".createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 36)!)
         
-        let textAttributes = [
-            NSForegroundColorAttributeName: UIColor.tealColor(),
-            NSStrokeColorAttributeName: UIColor.tealColor(),
-            NSFontAttributeName: UIFont(name: "OpenSans-CondensedLight", size: 36)!,
-            NSStrokeWidthAttributeName: -1.0
-            ] as [String : Any]
-        
-        let partOne = NSAttributedString(string: "Rumpel ", attributes: textAttributesTitle)
-        let partTwo = NSAttributedString(string: "Lite", attributes: textAttributes)
-        let combination = NSMutableAttributedString()
-        
-        combination.append(partOne)
-        combination.append(partTwo)
-        self.labelTitle.attributedText = combination
+        self.labelTitle.attributedText = partOne.combineWith(attributedText: partTwo)
         self.labelTitle.textAlignment = .center
         
         // move placeholder inside by 5 points
         self.inputUserHATDomain.layer.sublayerTransform = CATransform3DMakeTranslation(5, 0, 0)
         
         // input
-        inputUserHATDomain.placeholder = NSLocalizedString("hat_domain_placeholder", comment:  "user HAT domain")
+        self.inputUserHATDomain.placeholder = NSLocalizedString("hat_domain_placeholder", comment:  "user HAT domain")
 
         // button
-        buttonLogon.setTitle(NSLocalizedString("logon_label", comment:  "username"), for: UIControlState())
-        buttonLogon.backgroundColor = Constants.Colours.AppBase
+        self.buttonLogon.setTitle(NSLocalizedString("logon_label", comment:  "username"), for: UIControlState())
+        self.buttonLogon.backgroundColor = Constants.Colours.AppBase
+        
+        // app version
+        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            
+            self.labelAppVersion.text = "v. " + version
+        }
+        
+        // add notification observer for the login in
+        NotificationCenter.default.addObserver(self, selector: #selector(self.hatLoginAuth), name: NSNotification.Name(rawValue: Constants.Auth.NotificationHandlerName), object: nil)
+        
+        self.joinCommunityButton.addBorderToButton(width: 1, color: .white)
+        self.getAHATButton.addBorderToButton(width: 1, color: .white)
+        self.learnMoreButton.addBorderToButton(width: 1, color: .white)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        super.viewWillAppear(animated)
+        
+        // when the view appears clear the text field. The user might pressed sing out, this field must not contain the previous address
+        self.inputUserHATDomain.text = ""
         
         // Create a button bar for the number pad
         let toolbar = UIToolbar()
@@ -160,7 +246,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             
             // Setup the buttons to be put in the system.
             let autofillButton = UIBarButtonItem(title: barButtonTitle, style: .done, target: self, action: #selector(self.autofillPHATA))
-            autofillButton.setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans", size: 16.0)!, NSForegroundColorAttributeName: UIColor.white], for: .normal)
+            autofillButton.setTitleTextAttributes([NSFontAttributeName: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16.0)!, NSForegroundColorAttributeName: UIColor.white], for: .normal)
             toolbar.barTintColor = .black
             toolbar.setItems([autofillButton], animated: true)
             
@@ -170,43 +256,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
                 self.inputUserHATDomain.inputAccessoryView?.backgroundColor = .black
             }
         }
-        
-        // app version
-        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
-            
-            self.labelAppVersion.text = "v." + version
-        }
-        
-        // add notification observer for the login in
-        NotificationCenter.default.addObserver(self, selector: #selector(self.hatLoginAuth), name: NSNotification.Name(rawValue: Constants.Auth.NotificationHandlerName), object: nil)
-        
-        // set tint color, if translucent and the bar tint color of navigation bar
-        self.navigationController?.navigationBar.tintColor = UIColor.white
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = UIColor.tealColor()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        
-        super.viewWillAppear(animated)
-        
-        // when the view appears clear the text field. The user might pressed sing out, this field must not contain the previous address
-        self.inputUserHATDomain.text = ""
-    }
-
-    /*
-        Override and return false
-        We have a segue in the storyboard, mainly for visual 
-        We openSeque... after validation
-    */
-    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any!) -> Bool {
-        
-        if identifier == "ShowTabBarController" {
-            
-            return false
-        }
-        
-        return true
     }
     
     // MARK: - Mail View controller
@@ -227,7 +276,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
         if let result = KeychainHelper.GetKeychainValue(key: Constants.Keychain.HATDomainKey) {
             
-            self.inputUserHATDomain.text = result
+            let domain = result.components(separatedBy: ".")
+            self.inputUserHATDomain.text = domain[0]
+            self.domainButton.setTitle("." + domain[1] + "." + domain[2], for: .normal)
         }
     }
     
@@ -243,15 +294,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         // build up the hat domain auth url
         let hatDomainURL = "https://" + hatDomain + "/hatlogin?name=" + Constants.Auth.ServiceName + "&redirect=" +
             Constants.Auth.URLScheme + "://" + Constants.Auth.LocalAuthHost
-        
-        let authURL = NSURL(string: hatDomainURL)
-        
-        // open the log in procedure in safari
-        safariVC = SFSafariViewController(url: authURL as! URL)
-        if let vc: SFSafariViewController = self.safariVC {
-            
-            self.present(vc, animated: true, completion: nil)
-        }        
+              
+        self.safariVC = SFSafariViewController.openInSafari(url: hatDomainURL, on: self, animated: true, completion: nil)
     }
     
     /**
@@ -265,13 +309,20 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         let url = notification.object as! NSURL
         
         // first of all, we close the safari vc
-        if let vc: SFSafariViewController = safariVC {
-            
-            vc.dismiss(animated: true, completion: nil)
-        }
+        self.safariVC?.dismissSafari(animated: true, completion: nil)
+        
+        self.popUpView = UIView()
+        popUpView!.createFloatingView(frame: CGRect(x: self.view.frame.midX - 60, y: self.view.frame.midY - 15, width: 120, height: 30), color: .tealColor(), cornerRadius: 15)
+        
+        let label = UILabel().createLabel(frame: CGRect(x: 0, y: 0, width: 120, height: 30), text: "Authenticating...", textColor: .white, textAlignment: .center, font: UIFont(name: "OpenSans", size: 12))
+        
+        self.popUpView!.addSubview(label)
+        
+        self.view.addSubview(self.popUpView!)
         
         // authorize with hat
-        HatAccountService.loginToHATAuthorization(userDomain: self.inputUserHATDomain.text!, url: url, selfViewController: self)
+        let filteredDomain = self.removeDomainFromUserEnteredText(domain: self.inputUserHATDomain.text!)
+        HatAccountService.loginToHATAuthorization(userDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, url: url, selfViewController: self, completion: nil)
     }
     
     /**
@@ -289,11 +340,21 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     
     override func keyboardWillHide(sender: NSNotification) {
         
-        self.hideKeyboardInScrollView(scrollView)
+        self.hideKeyboardInScrollView(self.scrollView)
     }
     
     override func keyboardWillShow(sender: NSNotification) {
         
         self.showKeyboardInView(self.view, scrollView: self.scrollView, sender: sender)
+    }
+    
+    // MARK: - Hide label 
+    
+    /**
+     Hides the pop up, Authenticating..., label
+     */
+    func hidePopUpLabel() {
+        
+        self.popUpView?.removeFromSuperview()
     }
 }

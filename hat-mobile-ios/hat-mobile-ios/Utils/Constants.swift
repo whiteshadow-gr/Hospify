@@ -54,6 +54,54 @@ class Constants {
         static let allValues = [Latitude, Longitude, Accuracy, Timestamp]
     }
     
+    /**
+     The possible notification names, stored in convenience in one place
+     
+     - reauthorised: reauthorised
+     - dataPlug: dataPlugMessage
+     - hideNewbie: hideNewbiePageViewContoller
+     */
+    enum NotificationNames: String {
+        
+        case reauthorised = "reauthorisedUser"
+        case dataPlug = "dataPlugMessage"
+        case hideNewbie = "hideNewbiePageViewContoller"
+        case hideGetAHATPopUp = "hideView"
+        case hatProviders = "hatProviders"
+        case hideInfoHATProvider = "hideInfoHATProvider"
+        case enablePageControll = "enablePageControll"
+        case disablePageControll = "disablePageControll"
+        case hideCapabilitiesPageViewContoller = "hideCapabilitiesPageViewContoller"
+        case hideLearnMore = "HideLearnMore"
+    }
+    
+    /**
+     The possible notification names, stored in convenience in one place
+     
+     - reauthorised: reauthorised
+     - dataPlug: dataPlugMessage
+     - hideNewbie: hideNewbiePageViewContoller
+     */
+    enum fontNames: String {
+        
+        case openSansCondensedLight = "OpenSans-CondensedLight"
+        case openSans = "OpenSans"
+        case openSansBold = "OpenSans-Bold"
+    }
+    
+    /**
+     The possible reuse identifiers of the cells
+     
+     - dataplug: dataPlugCell
+     */
+    enum CellReuseIDs: String {
+        
+        case dataplug = "dataPlugCell"
+        case onboardingTile = "onboardingTile"
+        case homeHeader = "homeHeader"
+        case socialCell = "socialCell"
+    }
+    
     // MARK: - Structs
     
     /**

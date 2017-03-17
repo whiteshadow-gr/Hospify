@@ -10,10 +10,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import Alamofire
 import BEMCheckBox
 import SwiftyJSON
+import zxcvbn_ios
 
 // MARK: Class
 
@@ -41,6 +41,9 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     /// A picker view to show as inputView on keyboard later
     private let privatePicker = UIPickerView()
     
+    /// The password strength score calculated with the help of zxcvbn
+    private var score = 0
+    
     // MARK: - IBOutlets
     
     /// An IBOutlet for handling the arrow bar on top of the view
@@ -52,8 +55,6 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     @IBOutlet weak var firstNameTextField: UITextField!
     /// An IBOutlet for handling the last name textField
     @IBOutlet weak var lastNameTextField: UITextField!
-    /// An IBOutlet for handling the nickname textField
-    @IBOutlet weak var nicknameTextField: UITextField!
     /// An IBOutlet for handling the email textField
     @IBOutlet weak var emailTextField: UITextField!
     /// An IBOutlet for handling the personal HAT address textField
@@ -130,7 +131,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
             purchaseModel.email = self.emailTextField.text!
             purchaseModel.firstName = self.firstNameTextField.text!
             purchaseModel.lastName = self.lastNameTextField.text!
-            purchaseModel.nick = self.nicknameTextField.text!
+            purchaseModel.nick = purchaseModel.address
             purchaseModel.password = self.passwordTextField.text!
             
             purchaseModel.sku = self.sku
@@ -235,8 +236,8 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         self.countryTextField.inputView = self.privatePicker
         
         // create 2 notification observers for listening to the keyboard
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHandling(sender:)), name:.UIKeyboardWillShow, object: nil);
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHandling(sender:)), name:.UIKeyboardWillHide, object: nil);
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHandling(sender:)), name:.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHandling(sender:)), name:.UIKeyboardWillHide, object: nil)
         
         // add handling for taps
         self.hideKeyboardWhenTappedAround()
@@ -381,50 +382,67 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
      */
     private func checkIfDataAreOK() -> Bool {
     
-        if firstNameTextField.text == "" {
+        if self.firstNameTextField.text == "" {
             
+            if self.firstNameTextField.isFirstResponder {
+                
+                self.firstNameTextField.resignFirstResponder()
+            }
             self.createClassicOKAlertWith(alertMessage: "Please fill your first name", alertTitle: "First Name field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
             
             return false
         }
         
-        if lastNameTextField.text == "" {
+        if self.lastNameTextField.text == "" {
             
+            if self.lastNameTextField.isFirstResponder {
+                
+                self.lastNameTextField.resignFirstResponder()
+            }
             self.createClassicOKAlertWith(alertMessage: "Please fill your last name", alertTitle: "Last Name field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
             
             return false
         }
         
-        if nicknameTextField.text == "" {
+        if self.emailTextField.text == "" {
             
-            self.createClassicOKAlertWith(alertMessage: "Please fill your nickname", alertTitle: "Nickname field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
-            
-            return false
-        }
-        
-        if emailTextField.text == "" {
-            
+            if self.emailTextField.isFirstResponder {
+                
+                self.emailTextField.resignFirstResponder()
+            }
             self.createClassicOKAlertWith(alertMessage: "Please fill your email", alertTitle: "Email field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
             
             return false
         }
         
-        if personalHATAddressTextField.text == "" {
+        if self.personalHATAddressTextField.text == "" {
             
+            if self.personalHATAddressTextField.isFirstResponder {
+                
+                self.personalHATAddressTextField.resignFirstResponder()
+            }
             self.createClassicOKAlertWith(alertMessage: "Please fill your personal HAT address", alertTitle: "Personal HAT address field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
             
             return false
         }
         
-        if passwordTextField.text == "" {
+        if self.passwordTextField.text == "" {
             
+            if self.passwordTextField.isFirstResponder {
+                
+                self.passwordTextField.resignFirstResponder()
+            }
             self.createClassicOKAlertWith(alertMessage: "Please fill your password", alertTitle: "Password field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
             
             return false
         }
         
-        if countryTextField.text == "" {
+        if self.countryTextField.text == "" {
             
+            if self.countryTextField.isFirstResponder {
+                
+                self.countryTextField.resignFirstResponder()
+            }
             self.createClassicOKAlertWith(alertMessage: "Please fill your desired location for your HAT", alertTitle: "Desired location field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
             
             return false
@@ -439,7 +457,14 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         
         if self.hatTermsCheckBox.on == false || self.rumpelLiteCheckBox.on == false {
             
-            self.createClassicOKAlertWith(alertMessage: "You have to accept both terms and condition first. ", alertTitle: "Please accept Terms & Conditions", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "You have to accept both terms and condition first.", alertTitle: "Please accept Terms & Conditions", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            
+            return false
+        }
+        
+        if self.score < 2 {
+            
+            self.createClassicOKAlertWith(alertMessage: "Good passwords are hard to guess. Use uncommon words or inside jokes, non-standard uPPercasing, creative spelling, and non-obvious numbers and symbols.", alertTitle: "Password too weak", okTitle: "OK", proceedCompletion: {() -> Void in return})
             
             return false
         }
@@ -454,5 +479,22 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         // delete the domain every time user taps on it
         textField.text = textField.text?.replacingOccurrences(of: domain, with: "")
         self.textFieldDidChange()
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
+        if textField.tag == 10 {
+            
+            let zxcvbn = DBPasswordStrengthMeterView(frame: CGRect(x: 0, y: 0, width: 15, height: 30))
+            zxcvbn.scorePassword(textField.text)
+            
+            textField.rightViewMode = .always
+            textField.rightView = zxcvbn
+            
+            let tempZxcvbnResult = DBZxcvbn()
+            self.score = Int(tempZxcvbnResult.passwordStrength(textField.text).score)
+        }
+        
+        return true
     }
 }

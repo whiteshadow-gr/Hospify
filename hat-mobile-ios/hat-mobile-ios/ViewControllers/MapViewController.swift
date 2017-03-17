@@ -13,12 +13,13 @@
 import MapKit
 import FBAnnotationClusteringSwift
 import RealmSwift
+import SwiftyJSON
 
 // MARK: Class
 
 /// The MapView to render the DataPoints
-class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegate, DataSyncDelegate, CLLocationManagerDelegate {
-    
+class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegate, DataSyncDelegate {
+
     // MARK: - IBOutlets
 
     /// An IBOutlet for handling the labelErrors UILabel
@@ -40,6 +41,60 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     /// An IBOutlet for handling the buttonLastWeek UIButton
     @IBOutlet weak var buttonLastWeek: UIButton!
     
+    /// An IBOutlet for handling the calendarImageView UIImageView
+    @IBOutlet weak var calendarImageView: UIImageView!
+    
+    /// An IBOutlet for handling the hidden textField UITextField
+    @IBOutlet weak var textField: UITextField!
+    
+    // MARK: - IBActions
+    
+    /**
+     Shows a pop up with the available settings
+     
+     - parameter sender: The object that called this method
+     */
+    @IBAction func settingsButtonAction(_ sender: Any) {
+        
+        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
+        
+        let dataAction = UIAlertAction(title: "Show Data", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            self.performSegue(withIdentifier: "dataSegue", sender: self)
+            
+        })
+        
+        let settingsAction = UIAlertAction(title: "Location Settings", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            self.performSegue(withIdentifier: "settingsSegue", sender: self)
+        })
+        
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
+            
+            in
+            TabBarViewController.logoutUser(from: self)
+        })
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(dataAction)
+        alertController.addAction(settingsAction)
+        alertController.addAction(logOutAction)
+        alertController.addAction(cancelAction)
+        
+        // if user is on ipad show as a pop up
+        if UI_USER_INTERFACE_IDIOM() == .pad {
+            
+            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
+            alertController.popoverPresentationController?.sourceView = self.view
+        }
+        
+        // present alert controller
+        self.navigationController!.present(alertController, animated: true, completion: nil)
+    }
+    
     // MARK: - Variables
     
     /// The FBClusteringManager object constant
@@ -58,6 +113,17 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     /// The error message, if any
     private var lastErrorMessage: String = ""
     
+    /// The uidatepicker used in toolbar
+    private var datePicker: UIDatePicker = UIDatePicker()
+    
+    /// The uidatepicker used in toolbar
+    private var segmentControl: UISegmentedControl = UISegmentedControl()
+    
+    /// The start date to filter for points
+    private var filterDataPointsFrom: Date? = nil
+    /// The end date to filter for points
+    private var filterDataPointsTo: Date? = nil
+    
     // MARK: - Auto generated methods
     
     override func viewDidLoad() {
@@ -65,10 +131,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         super.viewDidLoad()
 
         // view controller title
-        super.title = "Location"
-
-        // hide back button
-        self.navigationItem.setHidesBackButton(true, animated: false);
+        self.title = "Location"
         
         // user HAT domain
         self.labelUserHATDomain.text = HatAccountService.TheUserHATDomain()
@@ -96,12 +159,165 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         let labelLastSyncInformationTap = UITapGestureRecognizer(target: self, action: #selector(MapViewController.LastSyncLabelTap))
         labelLastSyncInformation.addGestureRecognizer(labelLastSyncInformationTap)
         labelLastSyncInformation.isUserInteractionEnabled = true
+        
+        let recogniser = UITapGestureRecognizer()
+        recogniser.addTarget(self, action: #selector(self.selectDatesToViewLocations(gesture:)))
+        self.calendarImageView.isUserInteractionEnabled = true
+        self.calendarImageView.addGestureRecognizer(recogniser)
+        
+        datePicker = UIDatePicker(frame: CGRect(x: 0, y: 200, width: view.frame.width, height: 220))
+        datePicker.backgroundColor = .white
+        
+        // Set some of UIDatePicker properties
+        datePicker.timeZone = NSTimeZone.local
+        datePicker.backgroundColor = UIColor.white
+        datePicker.datePickerMode = .date
+        
+        // Add an event to call onDidChangeDate function when value is changed.
+        datePicker.addTarget(self, action: #selector(self.datePickerValueChanged(sender:)), for: .valueChanged)
+        
+        let toolBar = UIToolbar()
+        toolBar.barStyle = UIBarStyle.default
+        toolBar.isTranslucent = true
+        toolBar.tintColor = UIColor(red: 76/255, green: 217/255, blue: 100/255, alpha: 1)
+        toolBar.sizeToFit()
+        
+        let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.donePickerButton(sender:)))
+        doneButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
+        
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        spaceButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
+        
+        self.segmentControl = UISegmentedControl(items: ["From", "To"])
+        self.segmentControl.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
+        self.segmentControl.selectedSegmentIndex = 0
+        self.segmentControl.addTarget(self, action: #selector(segmentedControlDidChange(sender:)), for: UIControlEvents.valueChanged)
+        self.segmentControl.tintColor = .tealColor()
+        
+        let barButtonSegmentedControll = UIBarButtonItem(customView: segmentControl)
+        
+        let spaceButton2 = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        spaceButton2.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
+        
+        let cancelButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.cancelPickerButton(sender:)))
+        cancelButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
+
+        toolBar.setItems([cancelButton, spaceButton, barButtonSegmentedControll, spaceButton2, doneButton], animated: false)
+        toolBar.isUserInteractionEnabled = true
+        
+        textField.inputView = datePicker
+        textField.inputAccessoryView = toolBar
     }
     
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - Toolbar methods
+    
+    func segmentedControlDidChange(sender: UISegmentedControl) {
+        
+        if self.segmentControl.selectedSegmentIndex == 0 {
+            
+            if self.filterDataPointsFrom != nil {
+                
+                self.datePicker.setDate(self.filterDataPointsFrom!, animated: true)
+            }
+        } else {
+            
+            if self.filterDataPointsTo != nil {
+                
+                self.datePicker.setDate(self.filterDataPointsTo!, animated: true)
+            }
+        }
+    }
+    
+    func donePickerButton(sender: UIBarButtonItem) {
+        
+        self.textField.resignFirstResponder()
+        let userToken = HatAccountService.getUsersTokenFromKeychain()
+        
+        let view = UIView()
+        view.createFloatingView(frame: CGRect(x: self.view.frame.midX - 60, y: self.view.frame.midY - 15, width: 120, height: 30), color: .tealColor(), cornerRadius: 15)
+        
+        let label = UILabel().createLabel(frame: CGRect(x: 0, y: 0, width: 120, height: 30), text: "Getting locations...", textColor: .white, textAlignment: .center, font: UIFont(name: "OpenSans", size: 12))
+        
+        view.addSubview(label)
+        
+        self.view.addSubview(view)
+        
+        func getLocationsFromTable(tableID: NSNumber) {
+            
+            func receivedLocations(json: [JSON]) {
+                
+                var array: [LocationsObject] = []
+                
+                for item in json {
+                    
+                    array.append(LocationsObject(dict: item.dictionaryValue))
+                }
+                
+                let pins = self.createAnnotationsFrom(objects: array)
+                self.addPointsToMap(annottationArray: pins)
+                
+                view.removeFromSuperview()
+            }
+            
+            func requestLocations(token: String) {
+                
+                if self.filterDataPointsFrom != nil && self.filterDataPointsTo != nil {
+                    
+                    let starttime = FormatterHelper.formatDateToEpoch(date: self.filterDataPointsFrom!)
+                    let endtime = FormatterHelper.formatDateToEpoch(date: self.filterDataPointsTo!)
+                    let parameters: Dictionary<String, String> = ["starttime" : starttime, "endtime" : endtime, "limit" : "2000"]
+                    HatAccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: receivedLocations, errorCallback: {view.removeFromSuperview()})
+                }
+            }
+            DataPlugsService.getApplicationTokenFor(serviceName: "locations", resource: "iphone", succesfulCallBack: requestLocations, failCallBack: {view.removeFromSuperview()})
+        }
+        
+        HatAccountService.checkHatTableExists(tableName: "locations", sourceName: "iphone", authToken: userToken, successCallback: getLocationsFromTable, errorCallback: {_ in view.removeFromSuperview()})
+    }
+    
+    func cancelPickerButton(sender: UIBarButtonItem) {
+        
+        self.textField.resignFirstResponder()
+        self.filterDataPointsFrom = nil
+        self.filterDataPointsTo = nil
+    }
+    
+    // MARK: - Date picker method
+    
+    func datePickerValueChanged(sender: UIDatePicker) {
+        
+        if self.segmentControl.selectedSegmentIndex == 0 {
+            
+            self.filterDataPointsFrom = self.datePicker.date.startOfTheDay()
+            if let endOfDay = self.datePicker.date.endOfTheDay() {
+                
+                self.filterDataPointsTo = endOfDay
+            }
+        } else {
+            
+            if let endOfDay = self.datePicker.date.endOfTheDay() {
+                
+                self.filterDataPointsTo = endOfDay
+            }
+        }
+    }
+    
+    // MARK: - Hidden Text Field method
+    
+    func selectDatesToViewLocations(gesture: UITapGestureRecognizer) {
+        
+        self.textField.becomeFirstResponder()
+        self.filterDataPointsFrom = Date().startOfTheDay()
+        if let endOfDay = Date().endOfTheDay() {
+            
+            self.filterDataPointsTo = endOfDay
+        }
     }
     
     // MARK: - Navigation
@@ -260,6 +476,16 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
      */
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         
+        if self.textField.isFirstResponder {
+            
+            DispatchQueue.main.async {
+                
+                self.textField.resignFirstResponder()
+                self.filterDataPointsFrom = nil
+                self.filterDataPointsTo = nil
+            }
+        }
+        
         OperationQueue().addOperation({
             
             // calculate map size and scale
@@ -336,18 +562,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         appDelegate.locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
         appDelegate.locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
         
-        if let result = KeychainHelper.GetKeychainValue(key: "trackDevice") {
-            
-            if result == "true" {
-                
-                appDelegate.locationManager.startUpdatingLocation()
-            } else {
-                
-                // Location stop
-                appDelegate.locationManager.stopUpdatingLocation()
-                appDelegate.locationManager = nil
-            }
-        }
+        appDelegate.startUpdatingLocation()
     }
 
     func onDataSyncFeedback(_ isSuccess: Bool, message: String) {
@@ -355,12 +570,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         // if not a success show message and update UI
         if !isSuccess {
             
-            lastErrorMessage = message;
-            labelLastSyncInformation.textColor = UIColor.red;
+            lastErrorMessage = message
+            labelLastSyncInformation.textColor = UIColor.red
         } else {
             
-            lastErrorMessage = "";
-            labelLastSyncInformation.textColor = UIColor.white;
+            lastErrorMessage = ""
+            labelLastSyncInformation.textColor = UIColor.white
         }
     }
     
@@ -389,22 +604,53 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
                     pin.coordinate = CLLocationCoordinate2D(latitude: dataPoint.lat, longitude: dataPoint.lng)
                     annottationArray.append(pin)
                 }
-                // we must set annotations to replace old ones
-                self.clusteringManager.removeAll()
-                self.clusteringManager.add(annotations: annottationArray)
-                // force map changed to refresh the map and any pins
-                self.mapView(self.mapView, regionDidChangeAnimated: true)
                 
-                DispatchQueue.main.async(execute: { [unowned self]
-                    () -> Void in
-                    
-                    if(annottationArray.count > 0) {
-                        
-                        self.fitMapViewToAnnotaionList(annottationArray)
-                    }
-                })
+                self.addPointsToMap(annottationArray: annottationArray)
             }
         })
+    }
+    
+    /**
+     Adds the pins to the map
+     
+     - parameter annottationArray: The anottations, pins, to add to the map
+     */
+    private func addPointsToMap(annottationArray: [FBAnnotation]) {
+        
+        // we must set annotations to replace old ones
+        self.clusteringManager.removeAll()
+        self.clusteringManager.add(annotations: annottationArray)
+        // force map changed to refresh the map and any pins
+        self.mapView(self.mapView, regionDidChangeAnimated: true)
+        
+        DispatchQueue.main.async(execute: { [unowned self]
+            () -> Void in
+            
+            if(annottationArray.count > 0) {
+                
+                self.fitMapViewToAnnotaionList(annottationArray)
+            }
+        })
+    }
+    
+    /**
+     Converts the LocationsObjects to pins to add in the map later
+     
+     - parameter objects: The LocationsObjects to convert to FBAnnotation, pins
+     - returns: An array of FBAnnotation, pins
+     */
+    private func createAnnotationsFrom(objects: [LocationsObject]) -> [FBAnnotation] {
+        
+        var arrayToReturn: [FBAnnotation] = []
+        
+        for item in objects {
+            
+            let pin = FBAnnotation()
+            pin.coordinate = CLLocationCoordinate2D(latitude: Double(item.data.locations.latitude)!, longitude: Double(item.data.locations.longitude)!)
+            arrayToReturn.append(pin)
+        }
+        
+        return arrayToReturn
     }
     
     /**
@@ -476,23 +722,5 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
             })
         }
         timerSync.resume()
-    }
-    
-    /**
-     Stop any timers
-     */
-    private func stopTimer() {
-        
-        if timer != nil {
-            
-            timer.cancel()
-            timer = nil
-        }
-        
-        if timerSync != nil {
-            
-            timerSync.cancel()
-            timerSync = nil
-        }
     }
 }

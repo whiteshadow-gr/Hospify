@@ -29,7 +29,7 @@
 "auth_error_keychain_get" = "There was a problem getting the value from the Keychain. Please report the issue in the HAT forums.";
 
 /* placeholders */
-"hat_domain_placeholder" = "Your personal HAT address";
+"hat_domain_placeholder" = "HAT address";
 
 "login_screen_title" = "RumpelLite";
 "login_screen_subtitle" = "The hyperdata browser for your HAT data";

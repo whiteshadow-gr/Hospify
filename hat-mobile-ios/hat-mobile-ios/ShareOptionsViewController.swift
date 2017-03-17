@@ -85,7 +85,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     
     /// An IBOutlet for handling the UITextView
     @IBOutlet weak var textView: UITextView!
-
+    
     /// An IBOutlet for handling the textViewAspectRationConstraint NSLayoutConstraint
     @IBOutlet weak var textViewAspectRationConstraint: NSLayoutConstraint!
     
@@ -159,7 +159,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         })
         
         let oneMonthAction = UIAlertAction(title: "1 month", style: .default, handler: { (action) -> Void in
-           
+            
             self.durationSharedForLabel.text = "1 month"
             self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.month, value:1, to: Date())!
             self.shareForLabel.text = "Share for..."
@@ -225,21 +225,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             // start the procedure to upload the note to the hat
             let token = HatAccountService.getUsersTokenFromKeychain()
             // if user is note editing an existing note post as a new note
-        
+            
             func defaultCancelAction() {
                 
-<<<<<<< HEAD
-                // post note
-                NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
-                    
-                    _ = self.navigationController?.popViewController(animated: true)
-                })
-=======
                 // change publish button back to default state
                 self.publishButton.setTitle(previousButtonTitle, for: .normal)
                 self.publishButton.isUserInteractionEnabled = true
                 self.publishButton.alpha = 1
->>>>>>> origin/master
             }
             
             // if note is shared and users have not selected any social networks to share show alert message
@@ -258,32 +250,23 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     
                     // post note
                     NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
-
+                        
                         _ = self.navigationController?.popViewController(animated: true)
                     }, errorCallback: {() -> Void in
-                    
-                        defaultCancelAction()   
+                        
+                        defaultCancelAction()
                     })
                 }
                 
                 if (receivedNote?.data.shared)! {
                     
-<<<<<<< HEAD
-                    _ = self.navigationController?.popViewController(animated: true)
-                })
-            }
-            
-            // if note is shared and user has changed the text show alert message
-            if cachedIsNoteShared && (receivedNote?.data.message != self.textView.text!) {
-=======
                     self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
                 } else {
                     
                     proceedCompletion()
                 }
-            // else delete the existing note and post a new one
+                // else delete the existing note and post a new one
             } else {
->>>>>>> origin/master
                 
                 func proceedCompletion() {
                     
@@ -307,8 +290,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 if cachedIsNoteShared && (receivedNote?.data.message != self.textView.text!) {
                     
                     self.createClassicAlertWith(alertMessage: "Your post would not be edited at the destination.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "OK", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
-
-                // if note is shared show message
+                    
+                    // if note is shared show message
                 } else if (receivedNote?.data.shared)! {
                     
                     self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
@@ -338,7 +321,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 self.addChildViewController(authoriseVC)
                 self.view.addSubview(authoriseVC.view)
                 authoriseVC.didMove(toParentViewController: self)
-            
+                
                 self.publishButton.setTitle("Please try again", for: .normal)
             }
         }
@@ -356,7 +339,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     @IBAction func deleteButton(_ sender: Any) {
         
         func delete() {
-         
+            
             // if not a previous note then nothing to delete
             if isEditingExistingNote {
                 
@@ -478,9 +461,9 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 
                 self.facebookButton.alpha = 0.4
                 self.removeFromArray(string: "facebook")
-            // else select it and add it to the array
+                // else select it and add it to the array
             } else {
-                    
+                
                 func facebookTokenReceived(token: String) {
                     
                     func successfulCallback() {
@@ -496,25 +479,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                             // if button was selected deselect it and remove the button from the array
                             if self.facebookButton.alpha == 1 {
                                 
-<<<<<<< HEAD
-                                self.publishButton.setTitle("Save", for: .normal)
-                                self.publishButton.isUserInteractionEnabled = true
-                                
-                                // if button was selected deselect it and remove the button from the array
-                                if self.facebookButton.alpha == 1 {
-                                    
-                                    self.facebookButton.alpha = 0.4
-                                    self.removeFromArray(string: "facebook")
-                                    // else select it and add it to the array
-                                } else {
-                                    
-                                    self.facebookButton.alpha = 1
-                                    self.shareOnSocial.append("facebook")
-                                    
-                                    // construct string from the array and save it
-                                    self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
-                                }
-=======
                                 self.facebookButton.alpha = 0.4
                                 self.removeFromArray(string: "facebook")
                                 // else select it and add it to the array
@@ -525,7 +489,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                 
                                 // construct string from the array and save it
                                 self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
->>>>>>> origin/master
                             }
                             
                             self.publishButton.setTitle("Save", for: .normal)
@@ -558,14 +521,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     }
                     
                     FacebookDataPlugService.isFacebookDataPlugActive(token: token, successful: successfulCallback, failed: failedCallback)
-
+                    
                 }
                 
                 self.publishButton.setTitle("Please Wait..", for: .normal)
                 FacebookDataPlugService.getAppTokenForFacebook(successful: facebookTokenReceived, failed: {() -> Void in
                     
                     self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
-                
+                    
                 })
                 
                 
@@ -628,9 +591,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 
                 // reset twitter button
                 func noAction() {
-                    
-                    self.publishButton.setTitle("Save", for: .normal)
-                    self.publishButton.isUserInteractionEnabled = true
                     
                     // if button was selected deselect it and remove the button from the array
                     if self.twitterButton.alpha == 1 {
@@ -755,11 +715,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     }
     
     // MARK: - Autogenerated
-
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         
         // set title in the navigation bar
@@ -808,7 +768,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     self.shareForLabel.text = "Shared until"
                 }
             }
-        // else init a new value
+            // else init a new value
         } else {
             
             self.receivedNote = NotesData()
@@ -840,7 +800,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.textView.text = "What's on your mind?"
         }
     }
-
+    
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
@@ -1016,7 +976,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     func keyboardWillShow2(notification:NSNotification){
         
         var userInfo = notification.userInfo!
-
+        
         var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         keyboardFrame = self.view.convert(keyboardFrame, from: nil)
         
@@ -1036,7 +996,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         keyboardFrame = self.view.convert(keyboardFrame, from: nil)
         
         UIView.animate(withDuration: 0.3, animations: {() -> Void in
-        
+            
             self.actionsView.frame.origin.y = keyboardFrame.origin.y - self.actionsView.frame.height
         })
     }

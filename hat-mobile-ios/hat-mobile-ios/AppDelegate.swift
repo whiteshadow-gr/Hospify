@@ -55,16 +55,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             self.startUpdatingLocation()
         }
         self.startUpdatingLocation()
-<<<<<<< HEAD
-        
-        // change tab bar item font
-        UITabBarItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "Open Sans Condensed", size: 11)!], for: UIControlState.normal)
-=======
         self.locationManager.startMonitoringSignificantLocationChanges()
         
         // change tab bar item font
         UITabBarItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans", size: 11)!], for: UIControlState.normal)
->>>>>>> origin/master
         
         // change bar button item font
         UIBarButtonItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans-Bold", size: 17)!], for: UIControlState.normal)
@@ -76,17 +70,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         let notificationSettings = UIUserNotificationSettings(types: [.alert, .sound], categories: nil)
         UIApplication.shared.registerUserNotificationSettings(notificationSettings)
         
-<<<<<<< HEAD
-        let result = KeychainHelper.GetKeychainValue(key: "logedIn")
-        /* we already have a hat_domain, ie. can skip the login screen? */
-        if result == "true" {
-            
-            /* Go to the map screen. */
-            let nav: UINavigationController = window?.rootViewController as! UINavigationController
-            let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
-            let tabController = storyboard.instantiateViewController(withIdentifier: "tabBarControllerID") as! UITabBarController
-            nav.setViewControllers([tabController], animated: false)
-=======
         self.window?.tintColor = Constants.Colours.AppBase
         
         let regions = self.locationManager.monitoredRegions
@@ -94,28 +77,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         for region in regions {
             
             self.locationManager.stopMonitoring(for: region)
->>>>>>> origin/master
         }
         
         self.locationManager.requestLocation()
         
-<<<<<<< HEAD
-        let regions = self.locationManager.monitoredRegions
-        
-        for region in regions {
-            
-            self.locationManager.stopMonitoring(for: region)
-        }
-        
-        self.locationManager.requestLocation()
-=======
         UINavigationBar.appearance().isOpaque = true
         UINavigationBar.appearance().barTintColor = UIColor.tealColor()
         UINavigationBar.appearance().tintColor = UIColor.white
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white, NSFontAttributeName : UIFont(name: "OpenSans", size: 20)!]
         UIBarButtonItem.appearance()
             .setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.white, NSFontAttributeName : UIFont(name: "OpenSans", size: 17)!], for: UIControlState.normal)
->>>>>>> origin/master
         
         return true
     }
@@ -198,17 +169,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             if urlHost == Constants.Auth.LocalAuthHost {
                 
                 let result = KeychainHelper.GetKeychainValue(key: "logedIn")
-<<<<<<< HEAD
-                if (result == "true" && !HatAccountService.TheUserHATDomain().isEmpty) {
-                    
-                    NotificationCenter.default.post(name: Notification.Name("reauthorisedUser"), object: url)
-                } else {
-=======
                 if (result == "expired") {
                     
                     NotificationCenter.default.post(name: Notification.Name("reauthorisedUser"), object: url)
                 } else if (result == "false") {
->>>>>>> origin/master
                     
                     let notification = Notification.Name(Constants.Auth.NotificationHandlerName)
                     NotificationCenter.default.post(name: notification, object: url)
@@ -267,21 +231,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }
     }
     
-    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        
-        print("Monitoring failed for region with identifier: \(region!.identifier)")
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        
-        print("Location Manager failed with the following error: \(error)")
-    }
-    
-    // MARK: Update tracking settings
-    
-    /**
-     Enables or disables the location tracking based on user's settings
-     */
     func startUpdatingLocation() -> Void {
         
         /*
@@ -295,10 +244,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 if result == "true" {
                     
                     manager.requestLocation()
-<<<<<<< HEAD
-                    NSLog("Delegate startUpdatingLocation")
-=======
->>>>>>> origin/master
                 }
             } else {
                 
@@ -306,28 +251,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 self.stopRegionTracking()
                 self.locationManager.stopUpdatingLocation()
                 self.locationManager = nil
-<<<<<<< HEAD
-                NSLog("Delegate startUpdatingLocation")
-=======
                 self.locationManager.stopMonitoringSignificantLocationChanges()
->>>>>>> origin/master
             }
         }
     }
     
-<<<<<<< HEAD
-    // MARK: Stop region tracking
-    
-    /**
-     Stops tracking of all regions tracked
-     */
-    private func stopRegionTracking() {
-        
-        if self.region != nil {
-            
-            self.locationManager.stopMonitoring(for: self.region!)
-            self.region = nil
-=======
     private func stopRegionTracking() {
         
         if self.region != nil {
@@ -354,7 +282,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         if error != nil {
             
             Crashlytics.sharedInstance().recordError(error!, withAdditionalUserInfo: ["error" : error!.localizedDescription, "statusCode: " : String(describing: manager.monitoredRegions)])
->>>>>>> origin/master
         }
     }
     

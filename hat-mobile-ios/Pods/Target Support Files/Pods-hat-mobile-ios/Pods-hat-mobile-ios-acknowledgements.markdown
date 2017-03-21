@@ -80,7 +80,7 @@ THE SOFTWARE.
 
 Fabric: Copyright 2016 Twitter, Inc. All Rights Reserved. Use of this software is subject to the terms and conditions of the Fabric Software and Services Agreement located at https://fabric.io/terms. OSS: http://get.fabric.io/terms/opensource.txt
 
-## HAT-API-for-iOS
+## HatForIOS
 
 Mozilla Public License Version 2.0
 ==================================

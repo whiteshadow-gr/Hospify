@@ -1,10 +1,11 @@
+# OS X Finder
 .DS_Store
 
 # Xcode
 #
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
 
-## Build generated
+# Build generated
 build/
 DerivedData/
 
@@ -20,8 +21,10 @@ DerivedData/
 xcuserdata/
 
 ## Other
+*.xccheckout
 *.moved-aside
 *.xcuserstate
+*.xcscmblueprint
 
 ## Obj-C/Swift specific
 *.hmap
@@ -71,3 +74,7 @@ build
 *.xcodeproj/*
 !*.xcodeproj/project.pbxproj
 !*.xcworkspace/contents.xcworkspacedata
+
+# GPS Related file to simulate movement
+*.gpx
+

@@ -5,17 +5,31 @@ PODS:
     - Fabric (~> 1.6.3)
   - Fabric (1.6.11)
   - FBAnnotationClusteringSwift (2.0)
+  - HAT-API-for-iOS (0.0.1):
+    - Alamofire
+    - JWTDecode
+    - Mockingjay
+    - SwiftyJSON
+    - SwiftyRSA
   - JWTDecode (2.0.0)
   - KeychainSwift (7.0.0)
+  - Mockingjay (2.0.0):
+    - Mockingjay/Core (= 2.0.0)
+    - Mockingjay/XCTest (= 2.0.0)
+  - Mockingjay/Core (2.0.0):
+    - URITemplate (~> 2.0)
+  - Mockingjay/XCTest (2.0.0):
+    - Mockingjay/Core
   - Realm (2.4.4):
     - Realm/Headers (= 2.4.4)
   - Realm/Headers (2.4.4)
   - RealmSwift (2.4.4):
     - Realm (= 2.4.4)
-  - Stripe (10.0.0)
+  - Stripe (10.0.1)
   - SwiftyJSON (3.1.4)
   - SwiftyRSA (1.0.0)
   - Toaster (2.0.3)
+  - URITemplate (2.0.0)
   - zxcvbn-ios (1.0.4)
 
 DEPENDENCIES:
@@ -24,6 +38,7 @@ DEPENDENCIES:
   - Crashlytics
   - Fabric
   - FBAnnotationClusteringSwift (from `https://github.com/ribl/FBAnnotationClusteringSwift/`, branch `master`)
+  - HAT-API-for-iOS (from `https://github.com/whiteshadow-gr/HAT-API-for-iOS`)
   - JWTDecode
   - KeychainSwift
   - RealmSwift
@@ -37,28 +52,36 @@ EXTERNAL SOURCES:
   FBAnnotationClusteringSwift:
     :branch: master
     :git: https://github.com/ribl/FBAnnotationClusteringSwift/
+  HAT-API-for-iOS:
+    :git: https://github.com/whiteshadow-gr/HAT-API-for-iOS
 
 CHECKOUT OPTIONS:
   FBAnnotationClusteringSwift:
     :commit: cc3b6524156f8e0d8653688423fba2fdf0944bc8
     :git: https://github.com/ribl/FBAnnotationClusteringSwift/
+  HAT-API-for-iOS:
+    :commit: 405c89f3dda674d7f3ccc457e71ca1d242f29495
+    :git: https://github.com/whiteshadow-gr/HAT-API-for-iOS
 
 SPEC CHECKSUMS:
   Alamofire: dc44b1600b800eb63da6a19039a0083d62a6a62d
   BEMCheckBox: e18e4a148905b290bd03d98b767651c104f4eda3
   Crashlytics: 79e236942ca1e7fc641df1feb9a275360a78ab6a
   Fabric: 5911403591946b8228ab1c51d98f1d7137e863c6
-  FBAnnotationClusteringSwift: 0698ddcee46d1c28f14336909b2b0af4906b213f
+  FBAnnotationClusteringSwift: '0698ddcee46d1c28f14336909b2b0af4906b213f'
+  HAT-API-for-iOS: 7e6f66dbce01d6a1047485095fdd26ac0d671983
   JWTDecode: 178e47e5d28d3abcff778bacced8342858cd6cb5
   KeychainSwift: b6947435dd78cc442c64a84ae648dd0e871cf448
+  Mockingjay: 7122a3fc0597aa63438e4cd9b71b7bc8aac05b87
   Realm: 5a280a1f5a9a3c267bebf4f41ee47911137703d7
   RealmSwift: 0c02b9f2d4be4301c497ed10e53a0580584eb1dd
-  Stripe: abf87fc01f74a2143bba1b1798dd2e4d71fd2cb3
+  Stripe: dd6df0e2c6a8463e2f1ca9b15dc246e5ae1eee64
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
   SwiftyRSA: 3ec69b6a1bd2edf2b8fcb2fcdfd63e00b971e5eb
   Toaster: 77c0b03d78e680bbbab0071c9c7ee392b0034010
+  URITemplate: a5acb3f76c6a2338116fde88b658d83f91bbac45
   zxcvbn-ios: fef98b7c80f1512ff0eec47ac1fa399fc00f7e3c
 
-PODFILE CHECKSUM: f01ecd2070b95128b7a05c92ebbe8c11eeab9ee3
+PODFILE CHECKSUM: d83b5bc382ea521f3df6e97e37ca539ea0c7e44b
 
 COCOAPODS: 1.2.1.beta.1

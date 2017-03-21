@@ -18,6 +18,7 @@ target 'hat-mobile-ios' do
     pod 'Crashlytics'
     pod 'BEMCheckBox'
     pod 'zxcvbn-ios'
+    pod 'HAT-API-for-iOS', :git => 'https://github.com/whiteshadow-gr/HAT-API-for-iOS'
     
 end
 

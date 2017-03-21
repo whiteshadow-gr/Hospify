@@ -291,6 +291,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     
                     // fetch notes
                     NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: {(statusCode) -> Void in return})
+                    
                 } else {
                     
                     // revert parameters to initial values
@@ -400,6 +401,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         // get token and refresh view
         self.token = HatAccountService.getUsersTokenFromKeychain()
+        
         
         if token == "" {
             

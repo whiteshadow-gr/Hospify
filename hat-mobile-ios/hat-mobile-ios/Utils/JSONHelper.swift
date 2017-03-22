@@ -506,7 +506,7 @@ struct JSONHelper {
         //update share on
         jsonFile = JSONHelper.updateSharedOnDateOfNoteOnJSON(file: jsonFile, socialString: noteFile.data.sharedOn)
         //update phata
-        jsonFile = JSONHelper.updatePhataOfNoteOnJSON(file: jsonFile, phata: HatAccountService.TheUserHATDomain())
+        jsonFile = JSONHelper.updatePhataOfNoteOnJSON(file: jsonFile, phata: AccountService.TheUserHATDomain())
         
         return jsonFile.dictionaryObject!
     }

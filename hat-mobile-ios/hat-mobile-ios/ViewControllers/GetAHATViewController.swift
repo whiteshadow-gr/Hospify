@@ -26,13 +26,13 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     private var hatImage: UIImage? = nil
     
     /// the available HAT providers fetched from HAT
-    private var hatProviders: [HATProviderObject] = []
+    private var hatProviders: [ProviderObject] = []
     
     /// a dark view pop up to hide the background
     private var darkView: UIVisualEffectView? = nil
     
     /// the information of the hat provider cell that the user tapped
-    private var selectedHATProvider: HATProviderObject? = nil
+    private var selectedHATProvider: ProviderObject? = nil
 
     // MARK: - IBOutlets
 
@@ -85,7 +85,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         NotificationCenter.default.addObserver(self, selector: #selector(hidePopUpView), name: NSNotification.Name(Constants.NotificationNames.hideGetAHATPopUp.rawValue), object: nil)
         
         // fetch available hat providers
-        HATService.getAvailableHATProviders(successCompletion: refreshCollectionView)
+        Service.getAvailableHATProviders(successCompletion: refreshCollectionView)
     }
 
     override func didReceiveMemoryWarning() {
@@ -107,7 +107,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
      
      - parameter dataReceived: A callback executed when data received
      */
-    private func refreshCollectionView(dataReceived: [HATProviderObject]) {
+    private func refreshCollectionView(dataReceived: [ProviderObject]) {
         
         self.hatProviders = dataReceived
         self.collectionView.reloadData()

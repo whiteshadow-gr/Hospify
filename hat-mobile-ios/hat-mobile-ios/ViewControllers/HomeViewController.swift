@@ -181,8 +181,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         
         // reset the stack to avoid allowing back
         let result = KeychainHelper.GetKeychainValue(key: "logedIn")
-        let userDomain = HatAccountService.TheUserHATDomain()
-        let token = HatAccountService.getUsersTokenFromKeychain()
+        let userDomain = AccountService.TheUserHATDomain()
+        let token = AccountService.getUsersTokenFromKeychain()
         
         if result == "false" || userDomain == "" || token == "" {
             
@@ -201,10 +201,10 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             appDelegate.locationManager.requestAlwaysAuthorization()
             
             // check if the token has expired
-            HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+            AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
         }
         
-        HATService.getSystemStatus(userDomain: userDomain, authToken: token, completion: updateRingProgressBar)
+        Service.getSystemStatus(userDomain: userDomain, authToken: token, completion: updateRingProgressBar)
     }
     
     override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {

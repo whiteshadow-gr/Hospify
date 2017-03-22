@@ -156,7 +156,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             
             _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
             let filteredDomain = self.removeDomainFromUserEnteredText(domain: self.inputUserHATDomain.text!)
-            HatAccountService.logOnToHAT(userHATDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, successfulVerification: self.authoriseUser, failedVerification: failed)
+            AccountService.logOnToHAT(userHATDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, successfulVerification: self.authoriseUser, failedVerification: failed)
         } else {
             
             self.createClassicOKAlertWith(alertMessage: "Please input your HAT domain", alertTitle: "HAT domain is empty!", okTitle: "Ok", proceedCompletion: {})
@@ -322,7 +322,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
         // authorize with hat
         let filteredDomain = self.removeDomainFromUserEnteredText(domain: self.inputUserHATDomain.text!)
-        HatAccountService.loginToHATAuthorization(userDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, url: url, selfViewController: self, completion: nil)
+        AccountService.loginToHATAuthorization(userDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, url: url, selfViewController: self, completion: nil)
     }
     
     /**
@@ -333,7 +333,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
      */
     func authoriseAppToWriteToCloud(_ userDomain: String,_ HATDomainFromToken: String) {
         
-        HatAccountService.authoriseAppToWriteToCloud(userDomain, HATDomainFromToken, viewController: self)
+        AccountService.authoriseAppToWriteToCloud(userDomain, HATDomainFromToken, viewController: self)
     }
     
     // MARK: - Keyboard handling

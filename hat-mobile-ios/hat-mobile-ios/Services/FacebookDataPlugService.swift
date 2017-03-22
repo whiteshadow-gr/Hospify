@@ -29,7 +29,7 @@ class FacebookDataPlugService: NSObject {
      */
     class func fetchProfileFacebookPhoto(authToken: String, parameters: Dictionary<String, String>,success: @escaping (_ array: [JSON]) -> Void) -> Void {
         
-        HatAccountService.checkHatTableExists(tableName: "profile_picture",
+        AccountService.checkHatTableExists(tableName: "profile_picture",
                                               sourceName: "facebook",
                                               authToken: authToken,
                                               successCallback: getPosts(token: authToken, parameters: parameters, success: success),
@@ -47,7 +47,7 @@ class FacebookDataPlugService: NSObject {
      */
     class func facebookDataPlug(authToken: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void) -> Void {
         
-        HatAccountService.checkHatTableExists(tableName: "posts",
+        AccountService.checkHatTableExists(tableName: "posts",
                                               sourceName: "facebook",
                                               authToken: authToken,
                                               successCallback: getPosts(token: authToken, parameters: parameters, success: success),
@@ -105,7 +105,7 @@ class FacebookDataPlugService: NSObject {
         
         return {(tableID: NSNumber) -> Void in
             
-            HatAccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: success, errorCallback: {() -> Void in return})
+            AccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: success, errorCallback: {() -> Void in return})
         }
     }
     

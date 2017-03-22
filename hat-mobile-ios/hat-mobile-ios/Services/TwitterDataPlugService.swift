@@ -15,6 +15,7 @@ import SwiftyJSON
 
 // MARK: Class
 
+/// The twitter data plug service class
 class TwitterDataPlugService: NSObject {
     
     // MARK: - Twitter data plug
@@ -28,7 +29,7 @@ class TwitterDataPlugService: NSObject {
      */
     class func twitterDataPlug(authToken: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void) -> Void{
                 
-        HatAccountService.checkHatTableExists(tableName: "tweets",
+        AccountService.checkHatTableExists(tableName: "tweets",
             sourceName: "twitter",
             authToken: authToken,
             successCallback: getTweets(token: authToken, parameters: parameters, success: success),
@@ -86,7 +87,7 @@ class TwitterDataPlugService: NSObject {
         
         return {(tableID: NSNumber) -> Void in
             
-            HatAccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: success, errorCallback: {() -> Void in return})
+            AccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: success, errorCallback: {() -> Void in return})
         }
     }
     

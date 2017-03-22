@@ -20,7 +20,7 @@ class GetAHATInfoViewController: UIViewController {
     // MARK: - Variables
     
     /// the HAT provider object
-    var hatProvider: HATProviderObject? = nil
+    var hatProvider: ProviderObject? = nil
     
     // MARK: - IBOutlets
     
@@ -104,7 +104,7 @@ class GetAHATInfoViewController: UIViewController {
             self.hatProviderDetailedInfo.text = self.hatProvider?.description
             self.hatProviderDetailedInfo.sizeToFit()
             
-            let buttonTitle = HATProviderObject.setupLabelForInfoViewController(hatProvider: self.hatProvider!)
+            let buttonTitle = ProviderObject.setupLabelForInfoViewController(hatProvider: self.hatProvider!)
             self.signUpButton.setAttributedTitle(buttonTitle, for: .normal)
         }
     }
@@ -123,7 +123,7 @@ class GetAHATInfoViewController: UIViewController {
      - parameter <#Parameter#>: <#Parameter description#>
      - returns: <#Returns#>
      */
-    class func setUpInfoHatProviderViewControllerPopUp(from storyBoard: UIStoryboard, hatProvider: HATProviderObject) -> GetAHATInfoViewController? {
+    class func setUpInfoHatProviderViewControllerPopUp(from storyBoard: UIStoryboard, hatProvider: ProviderObject) -> GetAHATInfoViewController? {
         
         // set up page controller
         let pageItemController = storyBoard.instantiateViewController(withIdentifier: "HATProviderInfo") as! GetAHATInfoViewController

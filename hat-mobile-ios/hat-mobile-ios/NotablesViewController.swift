@@ -193,15 +193,15 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         }
 
         // get notes
-        self.token = HatAccountService.getUsersTokenFromKeychain()
-        HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+        self.token = AccountService.getUsersTokenFromKeychain()
+        AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         
         super.viewDidAppear(animated)
         
-        self.token = HatAccountService.getUsersTokenFromKeychain()
+        self.token = AccountService.getUsersTokenFromKeychain()
     }
 
     override func didReceiveMemoryWarning() {
@@ -341,7 +341,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             
             func proceedCompletion() {
                 
-                let token = HatAccountService.getUsersTokenFromKeychain()
+                let token = AccountService.getUsersTokenFromKeychain()
 
                 func success(token: String) {
                     
@@ -370,7 +370,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 }
                 
                 // delete data from hat and remove from table
-                HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+                AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
             }
             
             // if it is shared show message else delete the row
@@ -400,7 +400,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     private func connectToServerToGetNotes() {
         
         // get token and refresh view
-        self.token = HatAccountService.getUsersTokenFromKeychain()
+        self.token = AccountService.getUsersTokenFromKeychain()
         
         
         if token == "" {

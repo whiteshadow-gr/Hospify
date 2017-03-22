@@ -38,7 +38,7 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
 
      - returns: An UICollectionViewCell
      */
-    class func setUp(cell: OnboardingTileCollectionViewCell, indexPath: IndexPath, hatProvider: HATProviderObject, orientation: UIInterfaceOrientation) -> UICollectionViewCell {
+    class func setUp(cell: OnboardingTileCollectionViewCell, indexPath: IndexPath, hatProvider: ProviderObject, orientation: UIInterfaceOrientation) -> UICollectionViewCell {
         
         // set cell's color
         cell.backgroundColor = self.backgroundColorOfCellForIndexPath(indexPath, in: orientation)
@@ -65,7 +65,7 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
      - parameter hatProvider: The hatProvider object containing the values we need
      - returns: String containing the info to show
      */
-    private class func createInfoStringFromData(hatProvider: HATProviderObject) -> String {
+    private class func createInfoStringFromData(hatProvider: ProviderObject) -> String {
         
         // return the string to show to the info label according to the type of the hat provider
         if hatProvider.price == 0 {

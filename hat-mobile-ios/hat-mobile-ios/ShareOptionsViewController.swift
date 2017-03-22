@@ -223,7 +223,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.publishButton.alpha = 0.5
             
             // start the procedure to upload the note to the hat
-            let token = HatAccountService.getUsersTokenFromKeychain()
+            let token = AccountService.getUsersTokenFromKeychain()
             // if user is note editing an existing note post as a new note
             
             func defaultCancelAction() {
@@ -326,9 +326,9 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             }
         }
         
-        let token = HatAccountService.getUsersTokenFromKeychain()
+        let token = AccountService.getUsersTokenFromKeychain()
         // delete data from hat and remove from table
-        HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+        AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
     }
     
     /**
@@ -346,7 +346,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 func proceedCompletion() {
                     
                     // get user's token
-                    let token = HatAccountService.getUsersTokenFromKeychain()
+                    let token = AccountService.getUsersTokenFromKeychain()
                     
                     // delete note
                     NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
@@ -389,9 +389,9 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             }
         }
         
-        let token = HatAccountService.getUsersTokenFromKeychain()
+        let token = AccountService.getUsersTokenFromKeychain()
         // delete data from hat and remove from table
-        HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+        AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
     }
     
     /**
@@ -502,7 +502,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                     
                                     if data[i].name == "facebook" {
                                         
-                                        let userDomain = HatAccountService.TheUserHATDomain()
+                                        let userDomain = AccountService.TheUserHATDomain()
                                         
                                         let url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + data[i].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
                                         
@@ -620,7 +620,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                             if data[i].name == "twitter" {
                                 
                                 // construct twitter
-                                let userDomain = HatAccountService.TheUserHATDomain()
+                                let userDomain = AccountService.TheUserHATDomain()
                                 
                                 let url = "https://" + userDomain + "/hatlogin?name=Twitter&redirect=" + data[i].url + "/authenticate/hat"
                                 

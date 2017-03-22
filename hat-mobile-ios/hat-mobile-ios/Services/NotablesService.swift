@@ -30,12 +30,12 @@ class NotablesService: NSObject {
         
         func createNotablesTables(statusCode: Int) {
             
-            HatAccountService.createHatTable(token: authToken, notablesTableStructure: JSONHelper.createNotablesTableJSON())()
+            AccountService.createHatTable(token: authToken, notablesTableStructure: JSONHelper.createNotablesTableJSON())()
             
             failure(statusCode)
         }
         
-        HatAccountService.checkHatTableExists(tableName: "notablesv1", //posts // tweets
+        AccountService.checkHatTableExists(tableName: "notablesv1", //posts // tweets
                             sourceName: "rumpel", // facebook // twitter
                             authToken: authToken,
                             successCallback: getNotes(token: authToken, parameters: parameters, success: success),
@@ -52,7 +52,7 @@ class NotablesService: NSObject {
         
         return { (tableID: NSNumber) -> Void in
         
-            HatAccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: success, errorCallback: showNotablesFetchError)
+            AccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: success, errorCallback: showNotablesFetchError)
         }
     }
     
@@ -74,7 +74,7 @@ class NotablesService: NSObject {
      */
     class func deleteNoteWithKeychain(id: Int, tkn: String) -> Void {
         
-        HatAccountService.deleteHatRecord(token: tkn, recordId: id, success: self.completionDeleteNotesFunction)
+        AccountService.deleteHatRecord(token: tkn, recordId: id, success: self.completionDeleteNotesFunction)
     }
     
     /**
@@ -98,7 +98,7 @@ class NotablesService: NSObject {
      */
     class func postNote(token: String, note: NotesData, successCallBack: @escaping () -> Void, errorCallback: @escaping () -> Void) -> Void {
         
-        let userToken = HatAccountService.getUsersTokenFromKeychain()
+        let userToken = AccountService.getUsersTokenFromKeychain()
         
         func posting(resultJSON: Dictionary<String, Any>) {
             
@@ -110,7 +110,7 @@ class NotablesService: NSObject {
             // create the headers
             let headers = NetworkHelper.ConstructRequestHeaders(userToken)
             
-            let domain = HatAccountService.TheUserHATDomain()
+            let domain = AccountService.TheUserHATDomain()
             
             // make async request
             NetworkHelper.AsynchronousRequest("https://" + domain + "/data/record/values", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: hatData, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
@@ -124,7 +124,7 @@ class NotablesService: NSObject {
                         
                         // reload table
                         successCallBack()
-                        HatAccountService.triggerHatUpdate()
+                        AccountService.triggerHatUpdate()
                     } else if statusCode == 401 {
                         
                         errorCallback()
@@ -140,7 +140,7 @@ class NotablesService: NSObject {
             })
         }
         
-        HatAccountService.checkHatTableExistsForUploading(tableName: "notablesv1", sourceName: "rumpel", authToken: userToken, successCallback: posting, errorCallback: errorCallback)
+        AccountService.checkHatTableExistsForUploading(tableName: "notablesv1", sourceName: "rumpel", authToken: userToken, successCallback: posting, errorCallback: errorCallback)
     }
     
     // MARK: - Remove duplicates

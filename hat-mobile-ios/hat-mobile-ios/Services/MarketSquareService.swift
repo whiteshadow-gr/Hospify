@@ -14,6 +14,7 @@ import Foundation
 
 // MARK: Struct
 
+/// A class about the methods concerning marketsquare
 struct MarketSquareService {
     
     // MARK: - Methods

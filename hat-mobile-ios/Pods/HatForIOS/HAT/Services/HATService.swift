@@ -12,6 +12,9 @@
 
 import Alamofire
 
+// MARK: Class
+
+/// A class about the methods concerning the HAT
 class HATService: NSObject {
     
     // MARK: - Application Token
@@ -34,7 +37,7 @@ class HATService: NSObject {
         let url = "https://" + userDomain + "/users/application_token?"
         
         // async request
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
+        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -66,7 +69,7 @@ class HATService: NSObject {
         
         let url = "https://hatters.hubofallthings.com/api/products/hat"
         
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: [:], completion: {(r: NetworkHelper.ResultType) -> Void in
+        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: [:], completion: {(r: ΗΑΤNetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -102,12 +105,12 @@ class HATService: NSObject {
     /**
      Fetches the available HAT providers
      */
-    static func getSystemStatus(userDomain: String, authToken: String, completion: @escaping ([SystemStatusObject]) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) {
+    static func getSystemStatus(userDomain: String, authToken: String, completion: @escaping ([HATSystemStatusObject]) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) {
         
         let url = "https://" + userDomain + "/api/v2/system/status"
         let headers = ["X-Auth-Token" : authToken]
         
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: headers, completion: {(r: NetworkHelper.ResultType) -> Void in
+        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: headers, completion: {(r: ΗΑΤNetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -122,10 +125,10 @@ class HATService: NSObject {
                 if isSuccess {
                     
                     let resultArray = result.arrayValue
-                    var arrayToSendBack: [SystemStatusObject] = []
+                    var arrayToSendBack: [HATSystemStatusObject] = []
                     for item in resultArray {
                         
-                        arrayToSendBack.append(SystemStatusObject(from: item.dictionaryValue))
+                        arrayToSendBack.append(HATSystemStatusObject(from: item.dictionaryValue))
                     }
                     
                     completion(arrayToSendBack)

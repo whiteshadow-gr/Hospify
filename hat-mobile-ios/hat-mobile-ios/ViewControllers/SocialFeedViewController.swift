@@ -215,7 +215,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                 func twitterDataPlug() {
                     
                     // try to access twitter plug
-                    let token = HatAccountService.getUsersTokenFromKeychain()
+                    let token = AccountService.getUsersTokenFromKeychain()
                     
                     TwitterDataPlugService.twitterDataPlug(authToken: token, parameters: parameters, success: (weakSelf.showTweets))
                 }
@@ -247,9 +247,9 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                 }
                 
                 // get user's token
-                let token = HatAccountService.getUsersTokenFromKeychain()
+                let token = AccountService.getUsersTokenFromKeychain()
                 // delete data from hat and remove from table
-                HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+                AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
             }
         }
     }
@@ -372,7 +372,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                 weakSelf.isFacebookAvailable = true
                 
                 // get user's token
-                let token = HatAccountService.getUsersTokenFromKeychain()
+                let token = AccountService.getUsersTokenFromKeychain()
                 
                 func fetchPostsCurryingFunc() {
                     
@@ -435,7 +435,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                 }
                 
                 // delete data from hat and remove from table
-                HatAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+                AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
             }
         }
     }

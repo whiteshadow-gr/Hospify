@@ -13,6 +13,9 @@
 import SwiftyJSON
 import Alamofire
 
+// MARK: Class
+
+/// A class about the methods concerning the user's HAT account
 public class HATAccountService: NSObject {
     
     // MARK: - Get hat values from a table
@@ -35,8 +38,8 @@ public class HATAccountService: NSObject {
         let headers = [RequestHeaders.xAuthToken : token]
         
         // make the request
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion:
-            { (r: NetworkHelper.ResultType) -> Void in
+        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion:
+            { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
                 
                 switch r {
                     
@@ -79,14 +82,14 @@ public class HATAccountService: NSObject {
         let header = [RequestHeaders.xAuthToken : authToken]
         
         // make async request
-        NetworkHelper.AsynchronousRequest(
+        ΗΑΤNetworkHelper.AsynchronousRequest(
             tableURL,
             method: HTTPMethod.get,
             encoding: Alamofire.URLEncoding.default,
             contentType: ContentType.JSON,
             parameters: parameters,
             headers: header,
-            completion: {(r: NetworkHelper.ResultType) -> Void in
+            completion: {(r: ΗΑΤNetworkHelper.ResultType) -> Void in
                 
                 switch r {
                     
@@ -145,7 +148,7 @@ public class HATAccountService: NSObject {
             let url = "https://" + userDomain + "/data/table"
             
             // make async request
-            NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: ContentType.JSON, parameters: notablesTableStructure, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
+            ΗΑΤNetworkHelper.AsynchronousRequest(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: ContentType.JSON, parameters: notablesTableStructure, headers: headers, completion: { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
                 
                 // handle result
                 switch r {
@@ -191,7 +194,7 @@ public class HATAccountService: NSObject {
         let headers = [RequestHeaders.xAuthToken: token]
         
         // make the request
-        NetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: ContentType.Text, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
+        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: ContentType.Text, parameters: parameters, headers: headers, completion: { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
 
             // handle result
             switch r {
@@ -253,14 +256,14 @@ public class HATAccountService: NSObject {
         let header = [RequestHeaders.xAuthToken: authToken]
         
         // make async request
-        NetworkHelper.AsynchronousRequest(
+        ΗΑΤNetworkHelper.AsynchronousRequest(
             tableURL,
             method: HTTPMethod.get,
             encoding: Alamofire.URLEncoding.default,
             contentType: ContentType.JSON,
             parameters: parameters,
             headers: header,
-            completion: {(r: NetworkHelper.ResultType) -> Void in
+            completion: {(r: ΗΑΤNetworkHelper.ResultType) -> Void in
                 
                 switch r {
                     

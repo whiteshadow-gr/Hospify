@@ -80,7 +80,7 @@ class DataPlugsService: NSObject {
         }
     
         // contruct the url
-        let userDomain = HatAccountService.TheUserHATDomain()
+        let userDomain = AccountService.TheUserHATDomain()
         let url = "https://" + userDomain + "/users/application_token?"
         
         // async request
@@ -217,7 +217,7 @@ class DataPlugsService: NSObject {
         return { (dataDebitID: String) in
             
             // get user token, we dont need apptoken for this
-            let userToken = HatAccountService.getUsersTokenFromKeychain()
+            let userToken = AccountService.getUsersTokenFromKeychain()
             
             // approve data debit
             approveDataDebit(dataDebitID, userToken: userToken, succesfulCallBack: succesfulCallBack, failCallBack: failCallBack)
@@ -335,7 +335,7 @@ class DataPlugsService: NSObject {
         let headers = ["X-Auth-Token": userToken]
         
         // contruct the url
-        let userDomain = HatAccountService.TheUserHATDomain()
+        let userDomain = AccountService.TheUserHATDomain()
         let url = "https://" + userDomain + "/dataDebit/" + dataDebitID + "/enable"
         
         // make async request
@@ -372,7 +372,7 @@ class DataPlugsService: NSObject {
         let headers = ["X-Auth-Token": userToken]
         
         // contruct the url
-        let userDomain = HatAccountService.TheUserHATDomain()
+        let userDomain = AccountService.TheUserHATDomain()
         let url = "https://" + userDomain + "/dataDebit/" + dataDebitID
         
         // make async request
@@ -464,7 +464,7 @@ class DataPlugsService: NSObject {
     class func createURLBasedOn(socialServiceName: String, socialServiceURL: String) -> String? {
         
         // set up the url to open safari to
-        let userDomain: String = HatAccountService.TheUserHATDomain()
+        let userDomain: String = AccountService.TheUserHATDomain()
         
         if socialServiceName == "twitter" {
             

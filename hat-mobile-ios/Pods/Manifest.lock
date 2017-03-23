@@ -8,7 +8,6 @@ PODS:
   - HatForIOS (0.0.1):
     - Alamofire
     - JWTDecode
-    - Mockingjay
     - SwiftyJSON
     - SwiftyRSA
   - JWTDecode (2.0.0)
@@ -41,6 +40,7 @@ DEPENDENCIES:
   - HatForIOS (from `https://github.com/whiteshadow-gr/HatForIOS.git`)
   - JWTDecode
   - KeychainSwift
+  - Mockingjay
   - RealmSwift
   - Stripe
   - SwiftyJSON
@@ -60,7 +60,7 @@ CHECKOUT OPTIONS:
     :commit: cc3b6524156f8e0d8653688423fba2fdf0944bc8
     :git: https://github.com/ribl/FBAnnotationClusteringSwift/
   HatForIOS:
-    :commit: f2a0b7c5a9e5761fc352afa6bc5ad388ab4fd7a5
+    :commit: 92915433b22638845ec67b3d0b04d8c98dbe31c4
     :git: https://github.com/whiteshadow-gr/HatForIOS.git
 
 SPEC CHECKSUMS:
@@ -69,7 +69,7 @@ SPEC CHECKSUMS:
   Crashlytics: 79e236942ca1e7fc641df1feb9a275360a78ab6a
   Fabric: 5911403591946b8228ab1c51d98f1d7137e863c6
   FBAnnotationClusteringSwift: '0698ddcee46d1c28f14336909b2b0af4906b213f'
-  HatForIOS: c887211bf8ed8becac32e6c95da54bc9d5771597
+  HatForIOS: 741a6aa226fb96e93042b6b31d5429b89671f49e
   JWTDecode: 178e47e5d28d3abcff778bacced8342858cd6cb5
   KeychainSwift: b6947435dd78cc442c64a84ae648dd0e871cf448
   Mockingjay: 7122a3fc0597aa63438e4cd9b71b7bc8aac05b87
@@ -82,6 +82,6 @@ SPEC CHECKSUMS:
   URITemplate: a5acb3f76c6a2338116fde88b658d83f91bbac45
   zxcvbn-ios: fef98b7c80f1512ff0eec47ac1fa399fc00f7e3c
 
-PODFILE CHECKSUM: c8165a8a65c492823306d025337738bd97843c52
+PODFILE CHECKSUM: 0c6d4fa6abda8ba2a9584c0baa0b0b51b1d99398
 
 COCOAPODS: 1.2.1.beta.1

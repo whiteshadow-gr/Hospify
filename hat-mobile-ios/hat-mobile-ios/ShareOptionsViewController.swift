@@ -210,7 +210,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     @IBAction func shareButton(_ sender: Any) {
         
-        func post() {
+        func post(bool: Bool) {
             
             // hide keyboard
             self.textView.resignFirstResponder()
@@ -305,7 +305,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         func success(token: String) {
             
-            post()
+            post(bool: true)
         }
         
         func failed(statusCode: Int) {
@@ -338,7 +338,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     @IBAction func deleteButton(_ sender: Any) {
         
-        func delete() {
+        func delete(bool: Bool) {
             
             // if not a previous note then nothing to delete
             if isEditingExistingNote {
@@ -368,7 +368,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         func success(token: String) {
             
-            delete()
+            delete(bool: true)
         }
         
         func failed(statusCode: Int) {

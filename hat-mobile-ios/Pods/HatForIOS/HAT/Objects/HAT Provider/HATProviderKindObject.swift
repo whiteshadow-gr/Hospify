@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A class representing the hat provider kind object
-class HATProviderKindObject: Comparable {
+public class HATProviderKindObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -50,13 +50,13 @@ class HATProviderKindObject: Comparable {
     // MARK: - Variables
     
     /// The hat provider's kind type
-    var kind: String = ""
+    public var kind: String = ""
     /// The hat provider's kind domain
-    var domain: String = ""
+    public var domain: String = ""
     /// The hat provider's kind country
-    var country: String = ""
+    public var country: String = ""
     /// The hat provider's kind link
-    var link: String = ""
+    public var link: String = ""
     
     // MARK: - Initialisers
     

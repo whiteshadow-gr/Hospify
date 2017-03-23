@@ -11,6 +11,7 @@
  */
 
 import Stripe
+import HatForIOS
 
 // MARK: Class
 
@@ -26,13 +27,13 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     private var hatImage: UIImage? = nil
     
     /// the available HAT providers fetched from HAT
-    private var hatProviders: [ProviderObject] = []
+    private var hatProviders: [HATProviderObject] = []
     
     /// a dark view pop up to hide the background
     private var darkView: UIVisualEffectView? = nil
     
     /// the information of the hat provider cell that the user tapped
-    private var selectedHATProvider: ProviderObject? = nil
+    private var selectedHATProvider: HATProviderObject? = nil
 
     // MARK: - IBOutlets
 
@@ -85,7 +86,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         NotificationCenter.default.addObserver(self, selector: #selector(hidePopUpView), name: NSNotification.Name(Constants.NotificationNames.hideGetAHATPopUp.rawValue), object: nil)
         
         // fetch available hat providers
-        Service.getAvailableHATProviders(successCompletion: refreshCollectionView)
+        HATService.getAvailableHATProviders(succesfulCallBack: refreshCollectionView, failCallBack: {(error) -> Void in return})
     }
 
     override func didReceiveMemoryWarning() {
@@ -107,7 +108,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
      
      - parameter dataReceived: A callback executed when data received
      */
-    private func refreshCollectionView(dataReceived: [ProviderObject]) {
+    private func refreshCollectionView(dataReceived: [HATProviderObject]) {
         
         self.hatProviders = dataReceived
         self.collectionView.reloadData()

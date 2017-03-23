@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A struct representing the outer notes JSON format
-class HATNotesData: Comparable {
+public class HATNotesData: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -50,16 +50,16 @@ class HATNotesData: Comparable {
     // MARK: - Variables
     
     /// the note id
-    var id: Int
+    public var id: Int
     
     /// the name of the note
-    var name: String
+    public var name: String
     
     /// the last updated date of the note
-    var lastUpdated: Date
+    public var lastUpdated: Date
     
     /// the data of the note, such as tables about the author, location, photo etc
-    var data: HATNotesNotablesData
+    public var data: HATNotesNotablesData
     
     // MARK: - Initialisers
     

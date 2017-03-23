@@ -11,6 +11,7 @@
  */
 
 import SafariServices
+import HatForIOS
 
 // MARK: Class
 
@@ -20,7 +21,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
     // MARK: - Variables
     
     /// An array with the available data plugs
-    private var dataPlugs: [DataPlugObject] = []
+    private var dataPlugs: [HATDataPlugObject] = []
     
     /// A view to show that app is loading, fetching data plugs
     private var loadingView: UIView = UIView()
@@ -75,10 +76,10 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         super.viewWillAppear(animated)
                 
         /// method to execute on a successful callback
-        func successfullCallBack(data: [DataPlugObject]) {
+        func successfullCallBack(data: [HATDataPlugObject]) {
             
             // remove the existing dataplugs from array
-            self.dataPlugs = DataPlugsService.filterAvailableDataPlugs(dataPlugs: data)
+            self.dataPlugs = HATDataPlugsService.filterAvailableDataPlugs(dataPlugs: data)
             
             // check if dataplugs are active
             self.checkDataPlugsIfActive()
@@ -95,7 +96,10 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         self.loadingView = UIView.createLoadingView(with: CGRect(x: (self.collectionView?.frame.midX)! - 60, y: (self.collectionView?.frame.midY)! - 15, width: 120, height: 30), color: .tealColor(), cornerRadius: 15, in: self.view, with: "Getting data plugs...", textColor: .white, font: UIFont(name: "OpenSans", size: 12)!)
         
         // get available data plugs from server
-        DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: failureCallBack)
+        HATDataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {(error) -> Void in
+        
+            failureCallBack()
+        })
     }
     
     override func didReceiveMemoryWarning() {
@@ -144,7 +148,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
             }
         }
         
-        DataPlugsService.checkDataPlugsIfActive(completion: setupCheckMark)
+        HATDataPlugsService.checkDataPlugsIfActive(completion: setupCheckMark)
     }
 
     // MARK: - UICollectionView methods
@@ -170,7 +174,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        if let url = DataPlugsService.createURLBasedOn(socialServiceName: self.dataPlugs[indexPath.row].name, socialServiceURL: self.dataPlugs[indexPath.row].url) {
+        if let url = HATDataPlugsService.createURLBasedOn(socialServiceName: self.dataPlugs[indexPath.row].name, socialServiceURL: self.dataPlugs[indexPath.row].url) {
             
             // open safari view controller
             self.safariVC = SFSafariViewController.openInSafari(url: url, on: self, animated: true, completion: nil)

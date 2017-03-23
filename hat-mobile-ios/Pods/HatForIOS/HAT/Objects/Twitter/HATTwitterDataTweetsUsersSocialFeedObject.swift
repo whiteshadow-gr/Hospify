@@ -51,23 +51,23 @@ public class HATTwitterDataTweetsUsersSocialFeedObject: Comparable {
     // MARK: - Variables
 
     /// The user's friend count
-    var friendsCount: String = ""
+    public var friendsCount: String = ""
     /// The user's id
-    var id: String = ""
+    public var id: String = ""
     /// The user's language
-    var lang: String = ""
+    public var lang: String = ""
     /// The user's listed count
-    var listedCount: String = ""
+    public var listedCount: String = ""
     /// The user's favourites count
-    var favouritesCount: String = ""
+    public var favouritesCount: String = ""
     /// The user's statuses count
-    var statusesCount: String = ""
+    public var statusesCount: String = ""
     /// The user's screen name
-    var screenName: String = ""
+    public var screenName: String = ""
     /// The user's name
-    var name: String = ""
+    public var name: String = ""
     /// The user's followers count
-    var followersCount: String = ""
+    public var followersCount: String = ""
     
     // MARK: - Initialisers
     

@@ -15,23 +15,53 @@ import SwiftyJSON
 // MARK: Class
 
 /// A class representing the system status kind object
-class HATSystemStatusKindObject: NSObject {
+public class HATSystemStatusKindObject: Comparable {
+    
+    // MARK: - Comparable protocol
+    
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func ==(lhs: HATSystemStatusKindObject, rhs: HATSystemStatusKindObject) -> Bool {
+        
+        return (lhs.metric == rhs.metric && lhs.kind == rhs.kind && lhs.units == rhs.units)
+    }
+    
+    /// Returns a Boolean value indicating whether the value of the first
+    /// argument is less than that of the second argument.
+    ///
+    /// This function is the only requirement of the `Comparable` protocol. The
+    /// remainder of the relational operator functions are implemented by the
+    /// standard library for any type that conforms to `Comparable`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func <(lhs: HATSystemStatusKindObject, rhs: HATSystemStatusKindObject) -> Bool {
+        
+        return lhs.metric < rhs.metric && lhs.kind == rhs.kind
+    }
     
     // MARK: - Variables
 
     /// The value of the object
-    var metric: String = ""
+    public var metric: String = ""
     /// The kind of the value of the object
-    var kind: String = ""
+    public var kind: String = ""
     /// The unit type of the value of the object
-    var units: String? = nil
+    public var units: String? = nil
     
     // MARK: - Initialisers
     
     /**
      The default initialiser. Initialises everything to default values.
      */
-    override init() {
+    init() {
         
         metric = ""
         kind = ""

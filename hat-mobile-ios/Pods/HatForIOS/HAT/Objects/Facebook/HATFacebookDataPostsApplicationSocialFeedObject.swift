@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// A class representing the application that this post came from
-class HATFacebookDataPostsApplicationSocialFeedObject: Comparable {
+public class HATFacebookDataPostsApplicationSocialFeedObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -50,15 +50,15 @@ class HATFacebookDataPostsApplicationSocialFeedObject: Comparable {
     // MARK: - Variables
 
     /// The id of the application
-    var id: String = ""
+    public var id: String = ""
     /// The namespace of the application
-    var namespace: String = ""
+    public var namespace: String = ""
     /// The name of the application
-    var name: String = ""
+    public var name: String = ""
     /// The category of the application
-    var category: String = ""
+    public var category: String = ""
     /// The link of the application
-    var link: String = ""
+    public var link: String = ""
     
     // MARK: - Initialisers
     

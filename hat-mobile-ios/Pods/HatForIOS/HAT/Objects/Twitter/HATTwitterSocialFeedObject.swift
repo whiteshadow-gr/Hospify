@@ -63,15 +63,15 @@ public class HATTwitterSocialFeedObject: HATSocialFeedObject, Comparable {
     // MARK: - Class' variables
     
     /// The name of the record in database
-    var name: String = ""
+    public var name: String = ""
     /// The id of the record
-    var id: String = ""
+    public var id: String = ""
     
     /// The actual data of the record
-    var data: HATTwitterDataSocialFeedObject = HATTwitterDataSocialFeedObject()
+    public var data: HATTwitterDataSocialFeedObject = HATTwitterDataSocialFeedObject()
     
     /// The last updated field of the record
-    var lastUpdated: Date? = nil
+    public var lastUpdated: Date? = nil
     
     // MARK: - Initialisers
     

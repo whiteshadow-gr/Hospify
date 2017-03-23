@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A struct representing the notables table received from JSON
-class HATNotesNotablesData: Comparable {
+public class HATNotesNotablesData: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -53,30 +53,30 @@ class HATNotesNotablesData: Comparable {
     // MARK: - Variables
     
     /// the author data
-    var authorData: HATNotesAuthorData
+    public var authorData: HATNotesAuthorData
     
     /// the photo data
-    var photoData: HATNotesPhotoData
+    public var photoData: HATNotesPhotoData
     
     /// the location data
-    var locationData: HATNotesLocationData
+    public var locationData: HATNotesLocationData
     
     /// creation date
-    var createdTime: Date
+    public var createdTime: Date
     /// the date until this note will be public (don't know if it's optional or not)
-    var publicUntil: Date?
+    public var publicUntil: Date?
     /// the updated time of the note
-    var updatedTime: Date
+    public var updatedTime: Date
     
     /// if true this note is shared to facebook etc.
-    var shared: Bool
+    public var shared: Bool
     
     /// If shared, where is it shared? Coma seperated string (don't know if it's optional or not)
-    var sharedOn: String
+    public var sharedOn: String
     /// the actual message of the note
-    var message: String
+    public var message: String
     /// the kind of the note. 3 types available note, blog or list
-    var kind: String
+    public var kind: String
     
     // MARK: - Initialisers
     

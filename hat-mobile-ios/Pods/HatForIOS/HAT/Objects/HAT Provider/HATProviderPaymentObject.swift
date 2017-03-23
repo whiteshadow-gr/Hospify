@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A class representing the hat provider payment object
-class HATProviderPaymentObject: Comparable {
+public class HATProviderPaymentObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -50,7 +50,7 @@ class HATProviderPaymentObject: Comparable {
     // MARK: - Variables
 
     /// The subscription type, Monthly , yearly
-    var subscription: Dictionary = ["period" : ""]
+    public var subscription: Dictionary = ["period" : ""]
     
     // MARK: - Initialisers
     

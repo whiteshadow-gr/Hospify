@@ -15,25 +15,40 @@ import SwiftyJSON
 // MARK: Class
 
 /// A class representing the locations actual data
-class HATLocationsDataLocationsObject: NSObject {
+public class HATLocationsDataLocationsObject: Equatable {
+    
+    // MARK: - Equatable protocol
+    
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func ==(lhs: HATLocationsDataLocationsObject, rhs: HATLocationsDataLocationsObject) -> Bool {
+        
+        return (lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude && lhs.accuracy == rhs.accuracy && lhs.timeStamp == rhs.timeStamp)
+    }
     
     // MARK: - Variables
 
     /// The latitude of the location
-    var latitude: String = ""
+    public var latitude: String = ""
     /// The longitude of the location
-    var longitude: String = ""
+    public var longitude: String = ""
     /// The accuracy of the location
-    var accuracy: String = ""
+    public var accuracy: String = ""
     /// The date of the location
-    var timeStamp: Date? = nil
+    public var timeStamp: Date? = nil
     
     // MARK: - Initialisers
     
     /**
      The default initialiser. Initialises everything to default values.
      */
-    override init() {
+    init() {
         
         latitude = ""
         longitude = ""

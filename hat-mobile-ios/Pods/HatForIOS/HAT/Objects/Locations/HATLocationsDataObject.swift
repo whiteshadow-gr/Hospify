@@ -13,17 +13,34 @@
 import SwiftyJSON
 
 /// A class representing the data of the locations object
-class HATLocationsDataObject: NSObject {
+public class HATLocationsDataObject: Equatable {
+    
+    // MARK: - Equatable protocol
+    
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func ==(lhs: HATLocationsDataObject, rhs: HATLocationsDataObject) -> Bool {
+        
+        return (lhs.locations == rhs.locations)
+    }
+    
+    // MARK: - Variables
 
     /// The locations
-    var locations: HATLocationsDataLocationsObject = HATLocationsDataLocationsObject()
+    public var locations: HATLocationsDataLocationsObject = HATLocationsDataLocationsObject()
         
     // MARK: - Initialisers
     
     /**
      The default initialiser. Initialises everything to default values.
      */
-    override init() {
+    init() {
     
         locations = HATLocationsDataLocationsObject()
     }

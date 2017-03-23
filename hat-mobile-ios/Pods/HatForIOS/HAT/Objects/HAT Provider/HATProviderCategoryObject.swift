@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A class representing the hat provider category object
-class HATProviderCategoryObject: Comparable {
+public class HATProviderCategoryObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -50,14 +50,14 @@ class HATProviderCategoryObject: Comparable {
     /// MARK: - Variables
 
     /// The hat provider's category id
-    var categoryId: Int = 0
+    public var categoryId: Int = 0
     
     /// The hat provider's category title
-    var title: String = ""
+    public var title: String = ""
     /// The hat provider's category description
-    var description: String = ""
+    public var description: String = ""
     /// The hat provider's category illustration url
-    var illustration: String = ""
+    public var illustration: String = ""
     
     /// MARK: - Initialisers
     

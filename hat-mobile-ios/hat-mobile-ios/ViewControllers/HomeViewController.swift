@@ -11,6 +11,7 @@
  */
 
 import UIKit
+import HatForIOS
 
 // MARK: Class
 
@@ -204,7 +205,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
         }
         
-        Service.getSystemStatus(userDomain: userDomain, authToken: token, completion: updateRingProgressBar)
+        HATService.getSystemStatus(userDomain: userDomain, authToken: token, completion: updateRingProgressBar, failCallBack: {(jsonError) -> Void in return})
     }
     
     override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
@@ -288,7 +289,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
      
      - parameter data: The objects received from the server
      */
-    private func updateRingProgressBar(from data: [SystemStatusObject]) {
+    private func updateRingProgressBar(from data: [HATSystemStatusObject]) {
         
         if data.count > 0 {
             

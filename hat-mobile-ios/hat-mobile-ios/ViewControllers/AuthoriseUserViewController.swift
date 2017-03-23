@@ -11,6 +11,7 @@
  */
 
 import SafariServices
+import HatForIOS
 
 // MARK: Class
 
@@ -20,7 +21,7 @@ class AuthoriseUserViewController: UIViewController {
     // MARK: - Variables
     
     /// The func to execute after completing the authorisation
-    var completionFunc: ((Void) -> Void)? = nil
+    var completionFunc: ((Bool) -> Void)? = nil
 
     /// The safari view controller that opened to authorise user again
     private var safari: SFSafariViewController? = nil
@@ -67,7 +68,7 @@ class AuthoriseUserViewController: UIViewController {
             let userDomain = AccountService.TheUserHATDomain()
             
             // authorize with hat
-            AccountService.loginToHATAuthorization(userDomain: userDomain, url: url, selfViewController: nil, completion: self.completionFunc)
+            HATLoginService.loginToHATAuthorization(userDomain: userDomain, url: url, success: self.completionFunc!, failed: {(error: AuthenicationError) -> Void in return})
             
             // remove authorise view controller, that means remove self and notify the view controllers listening
             self.removeViewController()

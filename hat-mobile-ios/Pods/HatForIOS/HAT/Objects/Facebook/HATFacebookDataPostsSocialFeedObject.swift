@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// A class representing the actual data of the post
-class HATFacebookDataPostsSocialFeedObject: Comparable {
+public class HATFacebookDataPostsSocialFeedObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -59,44 +59,44 @@ class HATFacebookDataPostsSocialFeedObject: Comparable {
     // MARK: - Variables
 
     /// The user that made the post
-    var from: HATFacebookDataPostsFromSocialFeedObject = HATFacebookDataPostsFromSocialFeedObject()
+    public var from: HATFacebookDataPostsFromSocialFeedObject = HATFacebookDataPostsFromSocialFeedObject()
 
     /// The privacy settings for the post
-    var privacy: HATFacebookDataPostsPrivacySocialFeedObject = HATFacebookDataPostsPrivacySocialFeedObject()
+    public var privacy: HATFacebookDataPostsPrivacySocialFeedObject = HATFacebookDataPostsPrivacySocialFeedObject()
     
     /// The updated time of the post
-    var updatedTime: Date? = nil
+    public var updatedTime: Date? = nil
     /// The created time of the post
-    var createdTime: Date? = nil
+    public var createdTime: Date? = nil
     
     /// The message of the post
-    var message: String = ""
+    public var message: String = ""
     /// The id of the post
-    var id: String = ""
+    public var id: String = ""
     /// The status type of the post
-    var statusType: String = ""
+    public var statusType: String = ""
     /// The type of the post, status, video, image, etc,
-    var type: String = ""
+    public var type: String = ""
 
     /// The full picture url
-    var fullPicture: String = ""
+    public var fullPicture: String = ""
     /// If the post has a link to somewhere has the url
-    var link: String = ""
+    public var link: String = ""
     /// The picture url
-    var picture: String = ""
+    public var picture: String = ""
     /// The story of the post
-    var story: String = ""
+    public var story: String = ""
     /// The name of the post
-    var name: String = ""
+    public var name: String = ""
     /// The description of the post
-    var description: String = ""
+    public var description: String = ""
     /// The object id of the post
-    var objectID: String = ""
+    public var objectID: String = ""
     /// The caption of the post
-    var caption: String = ""
+    public var caption: String = ""
     
     /// The application details of the post
-    var application: HATFacebookDataPostsApplicationSocialFeedObject = HATFacebookDataPostsApplicationSocialFeedObject()
+    public var application: HATFacebookDataPostsApplicationSocialFeedObject = HATFacebookDataPostsApplicationSocialFeedObject()
     
     // MARK: - Initialisers
     

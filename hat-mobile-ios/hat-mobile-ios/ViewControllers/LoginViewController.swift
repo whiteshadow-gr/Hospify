@@ -12,6 +12,7 @@
 
 import SafariServices
 import MessageUI
+import HatForIOS
 
 // MARK: Class
 
@@ -147,7 +148,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
      */
     @IBAction func buttonLogonTouchUp(_ sender: AnyObject) {
         
-        let failed = {
+        func failed(error: String) {
             
             self.createClassicOKAlertWith(alertMessage: "Please check your personal hat address again", alertTitle: "Wrong domain!", okTitle: "OK", proceedCompletion: {() -> Void in return})
         }
@@ -156,7 +157,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             
             _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
             let filteredDomain = self.removeDomainFromUserEnteredText(domain: self.inputUserHATDomain.text!)
-            AccountService.logOnToHAT(userHATDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, successfulVerification: self.authoriseUser, failedVerification: failed)
+
+            HATLoginService.logOnToHAT(userHATDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, successfulVerification: self.authoriseUser, failedVerification: failed)
         } else {
             
             self.createClassicOKAlertWith(alertMessage: "Please input your HAT domain", alertTitle: "HAT domain is empty!", okTitle: "Ok", proceedCompletion: {})
@@ -320,9 +322,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
         self.view.addSubview(self.popUpView!)
         
+        func success(token: String?) {
+            
+            
+        }
+        
+        func failed(error: AuthenicationError) {
+            
+            
+        }
+        
         // authorize with hat
         let filteredDomain = self.removeDomainFromUserEnteredText(domain: self.inputUserHATDomain.text!)
-        AccountService.loginToHATAuthorization(userDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, url: url, selfViewController: self, completion: nil)
+        HATLoginService.loginToHATAuthorization(userDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, url: url, success: success, failed: failed)
     }
     
     /**
@@ -333,7 +345,34 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
      */
     func authoriseAppToWriteToCloud(_ userDomain: String,_ HATDomainFromToken: String) {
         
-        AccountService.authoriseAppToWriteToCloud(userDomain, HATDomainFromToken, viewController: self)
+        func success(result: Bool){
+            
+            // setting image to nil and everything to clear color because animation was laggy
+            self.testImage.image = nil
+            self.testImage.backgroundColor = .clear
+            self.scrollView.backgroundColor = .clear
+            self.view.backgroundColor = .clear
+            self.hidePopUpLabel()
+            
+            _ = self.navigationController?.popToRootViewController(animated: false)
+        }
+        
+        func failed(error: JSONParsingError) {
+            
+            switch error {
+                
+            case .expectedFieldNotFound:
+                
+                self.hidePopUpLabel()
+                self.createClassicOKAlertWith(alertMessage: "Value not found", alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+            case .generalError(_, _, _):
+                
+                self.hidePopUpLabel()
+                self.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_keychain_save", comment: "keychain"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+            }
+        }
+        
+        HATLocationService.enableLocationDataPlug(userDomain, HATDomainFromToken, success: success, failed: failed)
     }
     
     // MARK: - Keyboard handling

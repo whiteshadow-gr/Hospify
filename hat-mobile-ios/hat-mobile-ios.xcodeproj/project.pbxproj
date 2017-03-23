@@ -100,6 +100,7 @@
 		6097C0671E3273E9000E771A /* Rumpel Lite iOS Application Terms of Service.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6097C0651E3273E9000E771A /* Rumpel Lite iOS Application Terms of Service.pdf */; };
 		6097C0691E327506000E771A /* TermsAndConditionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6097C0681E327506000E771A /* TermsAndConditionsViewController.swift */; };
 		60A727BD1DDF47ED008AF409 /* FormatterHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A727BC1DDF47EC008AF409 /* FormatterHelper.swift */; };
+		60AAA5B81E83D70A0080D0D5 /* HATProviderObjectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60AAA5B71E83D70A0080D0D5 /* HATProviderObjectExtension.swift */; };
 		60B470101E2E4D0F0016F956 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B4700F1E2E4D0F0016F956 /* ProfileViewController.swift */; };
 		60B486251E1D341000914AD2 /* PurchaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B486241E1D341000914AD2 /* PurchaseModel.swift */; };
 		60B486271E1D51A300914AD2 /* ProviderObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B486261E1D51A300914AD2 /* ProviderObject.swift */; };
@@ -264,6 +265,7 @@
 		6097C0651E3273E9000E771A /* Rumpel Lite iOS Application Terms of Service.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Rumpel Lite iOS Application Terms of Service.pdf"; sourceTree = "<group>"; };
 		6097C0681E327506000E771A /* TermsAndConditionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TermsAndConditionsViewController.swift; path = ViewControllers/TermsAndConditionsViewController.swift; sourceTree = "<group>"; };
 		60A727BC1DDF47EC008AF409 /* FormatterHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FormatterHelper.swift; path = Utils/FormatterHelper.swift; sourceTree = "<group>"; };
+		60AAA5B71E83D70A0080D0D5 /* HATProviderObjectExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATProviderObjectExtension.swift; path = Extensions/HATProviderObjectExtension.swift; sourceTree = "<group>"; };
 		60B4700F1E2E4D0F0016F956 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProfileViewController.swift; path = ViewControllers/ProfileViewController.swift; sourceTree = "<group>"; };
 		60B486241E1D341000914AD2 /* PurchaseModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PurchaseModel.swift; path = Objects/PurchaseModel.swift; sourceTree = "<group>"; };
 		60B486261E1D51A300914AD2 /* ProviderObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProviderObject.swift; path = Objects/ProviderObject.swift; sourceTree = "<group>"; };
@@ -495,6 +497,7 @@
 				60B486301E1D6E7B00914AD2 /* UIImageViewExtension.swift */,
 				603D55C01E69962E00CCEBEB /* UIPageViewController.swift */,
 				603D55BC1E69861D00CCEBEB /* UIViewExtension.swift */,
+				60AAA5B71E83D70A0080D0D5 /* HATProviderObjectExtension.swift */,
 				608EAAA71DFEA8AD00234C60 /* ViewControllerExtension.swift */,
 			);
 			name = Extensions;
@@ -1166,6 +1169,7 @@
 				6045FBBE1E2EDAE300086926 /* LearnMorePHATAViewController.swift in Sources */,
 				60DDE1711E31006600AB9E18 /* MapsHelper.swift in Sources */,
 				60B4862D1E1D534A00914AD2 /* ProviderCategoryObject.swift in Sources */,
+				60AAA5B81E83D70A0080D0D5 /* HATProviderObjectExtension.swift in Sources */,
 				604D68E01DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift in Sources */,
 				6043F6D71E1D114D00C5BAD9 /* StripeViewController.swift in Sources */,
 				605197FF1E36552400516D75 /* FacebookSocialFeedObject.swift in Sources */,

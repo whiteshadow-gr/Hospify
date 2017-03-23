@@ -11,6 +11,7 @@
  */
 
 import UIKit
+import HatForIOS
 
 // MARK: Class
 
@@ -40,7 +41,7 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
      
      - returns: An UICollectionViewCell
      */
-    class func setUp(cell: DataPlugCollectionViewCell, indexPath: IndexPath, dataPlug: DataPlugObject, orientation: UIInterfaceOrientation) -> UICollectionViewCell {
+    class func setUp(cell: DataPlugCollectionViewCell, indexPath: IndexPath, dataPlug: HATDataPlugObject, orientation: UIInterfaceOrientation) -> UICollectionViewCell {
         
         // Configure the cell
         cell.dataPlugTitleLabel.text = dataPlug.name

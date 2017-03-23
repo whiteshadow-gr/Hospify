@@ -37,6 +37,8 @@ target 'hat-mobile-iosTests' do
     pod 'Fabric'
     pod 'Crashlytics'
     pod 'BEMCheckBox'
+    pod 'HatForIOS', :git => 'https://github.com/whiteshadow-gr/HatForIOS.git'
+    pod 'Mockingjay'
 end
 
 target 'hat-mobile-iosUITests' do

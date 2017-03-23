@@ -109,7 +109,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         self.retryConnectingButton.isHidden = true
         
         // fetch notes
-        self.connectToServerToGetNotes()
+        self.connectToServerToGetNotes(bool: true)
         
         // FIXME: Do I need the bool result??
         let boolResult = { (bool: String) -> Void in
@@ -169,7 +169,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 self.authorise = nil
             }
             // fetch notes
-            self.connectToServerToGetNotes()
+            self.connectToServerToGetNotes(bool: true)
         }
         
         func failed(statusCode: Int) {
@@ -188,7 +188,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 self.authorise!.didMove(toParentViewController: self)
             } else if statusCode == 404 {
                 
-                self.connectToServerToGetNotes()
+                self.connectToServerToGetNotes(bool: true)
             }
         }
 
@@ -339,7 +339,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         if (editingStyle == UITableViewCellEditingStyle.delete) {
             
-            func proceedCompletion() {
+            func proceedCompletion(bool: Bool) {
                 
                 let token = AccountService.getUsersTokenFromKeychain()
 
@@ -376,10 +376,13 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             // if it is shared show message else delete the row
             if self.cachedNotesArray[indexPath.row].data.shared {
                 
-                self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+                self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed",
+                    proceedCompletion: {() -> Void in
+                        proceedCompletion(bool: true)},
+                    cancelCompletion: {() -> Void in return})
             } else {
                 
-                proceedCompletion()
+                proceedCompletion(bool: true)
             }
         }
     }
@@ -397,7 +400,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     /**
      Connects to the server to get the notes
      */
-    private func connectToServerToGetNotes() {
+    private func connectToServerToGetNotes(bool: Bool) {
         
         // get token and refresh view
         self.token = AccountService.getUsersTokenFromKeychain()
@@ -418,7 +421,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     self.showEmptyTableLabelWith(message: "There was an error fetching notes. Please try again later")
                 } else if statusCode == 404 {
                     
-                    self.connectToServerToGetNotes()
+                    self.connectToServerToGetNotes(bool: true)
                 }
             })
         }

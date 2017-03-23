@@ -84,7 +84,7 @@ public class HATLoginService: NSObject {
      - parameter url: The url to connect
      - parameter selfViewController: The UIViewController that calls this method
      */
-    public class func loginToHATAuthorization(userDomain: String, url: NSURL, success: @escaping (Bool) -> Void, failed: @escaping (AuthenicationError) -> Void) {
+    public class func loginToHATAuthorization(userDomain: String, url: NSURL, success: @escaping (String?) -> Void, failed: ((AuthenicationError) -> Void)?) {
         
         // get token out
         if let token = ΗΑΤNetworkHelper.GetQueryStringParameter(url: url.absoluteString, param: Auth.TokenParamName) {
@@ -108,14 +108,20 @@ public class HATLoginService: NSObject {
                             // decode the token and get the iss out
                             guard let jwt = try? decode(jwt: token) else {
                                 
-                                failed(.cannotDecodeToken(token))
+                                if failed != nil {
+                                    
+                                    failed!(.cannotDecodeToken(token))
+                                }
                                 break
                             }
                             
                             // guard for the issuer check, “iss” (Issuer)
                             guard let _ = jwt.issuer else {
                                 
-                                failed(.noIssuerDetectedError(jwt.string))
+                                if failed != nil {
+                                    
+                                    failed!(.noIssuerDetectedError(jwt.string))
+                                }
                                 break
                             }
                             
@@ -129,7 +135,10 @@ public class HATLoginService: NSObject {
                             // guard for the attr length. Should be 3 [header, payload, signature]
                             guard tokenAttr.count == 3 else {
                                 
-                                failed(.cannotSplitToken(tokenAttr))
+                                if failed != nil {
+                                    
+                                    failed!(.cannotSplitToken(tokenAttr))
+                                }
                                 break
                             }
                             
@@ -153,28 +162,40 @@ public class HATLoginService: NSObject {
                                 
                                 if (isSuccessful.isSuccessful) {
                                     
-                                    success(true)
+                                    success(token)
                                 } else {
                                     
-                                    failed(.tokenValidationFailed(isSuccessful.description))
+                                    if failed != nil {
+                                        
+                                        failed!(.tokenValidationFailed(isSuccessful.description))
+                                    }
                                 }
                                 
                             } catch {
                                 
                                 let message = NSLocalizedString("Proccessing of token failed", comment: "")
-                                failed(.tokenValidationFailed(message))
+                                if failed != nil {
+                                    
+                                    failed!(.tokenValidationFailed(message))
+                                }
                             }
                             
                         } else {
                             
-                            // alamo fire http fail
-                            failed(.generalError(isSuccess.description, statusCode, nil))
+                            // alamofire http fail
+                            if failed != nil {
+                                
+                                failed!(.generalError(isSuccess.description, statusCode, nil))
+                            }
                         }
                         
                     case .error(let error, let statusCode):
                         
                         let message = NSLocalizedString("Server responded with error", comment: "")
-                        failed(.generalError(message, statusCode, error))
+                        if failed != nil {
+                            
+                            failed!(.generalError(message, statusCode, error))
+                        }
                         break
                     }
                 }
@@ -182,7 +203,10 @@ public class HATLoginService: NSObject {
         } else {
             
             // no token in url callback redirect
-            failed(.noTokenDetectedError)
+            if failed != nil {
+                
+                failed!(.noTokenDetectedError)
+            }
         }
     }
 

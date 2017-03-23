@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// A class representing the data of facebook
-class HATFacebookDataSocialFeedObject: Comparable {
+public class HATFacebookDataSocialFeedObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -50,7 +50,7 @@ class HATFacebookDataSocialFeedObject: Comparable {
     // MARK: - Variables
 
     /// The post data
-    var posts: HATFacebookDataPostsSocialFeedObject = HATFacebookDataPostsSocialFeedObject()
+    public var posts: HATFacebookDataPostsSocialFeedObject = HATFacebookDataPostsSocialFeedObject()
     
     // MARK: - Initialisers
     

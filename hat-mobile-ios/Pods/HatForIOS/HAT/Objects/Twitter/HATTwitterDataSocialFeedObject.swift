@@ -50,7 +50,7 @@ public class HATTwitterDataSocialFeedObject: Comparable {
     // MARK: - Variables
 
     /// The tweet data
-    var tweets: HATTwitterDataTweetsSocialFeedObject = HATTwitterDataTweetsSocialFeedObject()
+    public var tweets: HATTwitterDataTweetsSocialFeedObject = HATTwitterDataTweetsSocialFeedObject()
     
     // MARK: - Initialisers
     

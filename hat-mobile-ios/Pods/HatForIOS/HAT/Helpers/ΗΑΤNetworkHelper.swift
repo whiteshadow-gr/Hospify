@@ -16,7 +16,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// All network related methods
-class ΗΑΤNetworkHelper: NSObject {
+public class ΗΑΤNetworkHelper: NSObject {
     
     // MARK: - Enums
     
@@ -26,7 +26,7 @@ class ΗΑΤNetworkHelper: NSObject {
      - IsSuccess: A tuple containing: isSuccess: Bool, statusCode: Int?, result: JSON
      - Error: A tuple containing: error: Error, statusCode: Int?
      */
-    enum ResultType {
+    public enum ResultType {
         
         /// when the result is success. A tuple containing: isSuccess: Bool, statusCode: Int?, result: JSON
         case isSuccess(isSuccess: Bool, statusCode: Int?, result: JSON)
@@ -40,7 +40,7 @@ class ΗΑΤNetworkHelper: NSObject {
      - IsSuccess: A tuple containing: isSuccess: Bool, statusCode: Int?, result: String
      - Error: A tuple containing: error: Error, statusCode: Int?
      */
-    enum ResultTypeString {
+    public enum ResultTypeString {
         
         /// when the result is success. A tuple containing: isSuccess: Bool, statusCode: Int?, result: String
         case isSuccess(isSuccess: Bool, statusCode: Int?, result: String)
@@ -62,7 +62,7 @@ class ΗΑΤNetworkHelper: NSObject {
      - parameter headers: The headers in the request
      - parameter completion: The completion handler to execute upon completing the request
      */
-    class func AsynchronousRequest(
+    public class func AsynchronousRequest(
         
         _ url: String,
         method: HTTPMethod,
@@ -128,7 +128,7 @@ class ΗΑΤNetworkHelper: NSObject {
      - parameter headers: The headers in the request
      - parameter completion: The completion handler to execute upon completing the request
      */
-    class func AsynchronousStringRequest(
+    public class func AsynchronousStringRequest(
         
         _ url: String,
         method: HTTPMethod,
@@ -184,7 +184,7 @@ class ΗΑΤNetworkHelper: NSObject {
      
      - returns: String or nil if not found
      */
-    class func GetQueryStringParameter(url: String?, param: String) -> String? {
+    public class func GetQueryStringParameter(url: String?, param: String) -> String? {
         
         if let url = url, let urlComponents = NSURLComponents(string: url), let queryItems = (urlComponents.queryItems as [URLQueryItem]!) {
             

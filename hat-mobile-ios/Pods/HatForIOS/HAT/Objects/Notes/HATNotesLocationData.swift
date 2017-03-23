@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A struct representing the location table received from JSON
-class HATNotesLocationData: Comparable {
+public class HATNotesLocationData: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -51,23 +51,23 @@ class HATNotesLocationData: Comparable {
     // MARK: - Variables
 
     /// the altitude the at time of creating the note. This value is optional
-    var altitude: Double
+    public var altitude: Double
     /// the altitude accuracy at the time of creating the note. This value is optional
-    var altitudeAccuracy: Double
+    public var altitudeAccuracy: Double
     /// the latitude at the time of creating the note
-    var latitude: Double
+    public var latitude: Double
     /// the accuracy at the time of creating the note
-    var accuracy: Double
+    public var accuracy: Double
     /// the longitude at the time of creating the note
-    var longitude: Double
+    public var longitude: Double
     /// the speed at the time of creating the note. This value is optional
-    var speed: Double
+    public var speed: Double
     
     /// the heading at the time of creating the note. This value is optinal
-    var heading: String
+    public var heading: String
     
     /// is the location shared at the time of creating the note? This value is optional.
-    var shared: Bool
+    public var shared: Bool
     
     // MARK: Initialisers
     

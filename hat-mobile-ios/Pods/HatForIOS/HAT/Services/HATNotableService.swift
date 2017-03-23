@@ -25,7 +25,7 @@ public class HATNotablesService: NSObject {
      
      - parameter authToken: The auth token from hat
      */
-    class func fetchNotables(userDomain: String, authToken: String, structure: Dictionary<String, Any>, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void, failure: @escaping () -> Void ) -> Void {
+    public class func fetchNotables(userDomain: String, authToken: String, structure: Dictionary<String, Any>, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void, failure: @escaping () -> Void ) -> Void {
         
         func createNotablesTables(error: HATTableError) {
             
@@ -65,7 +65,7 @@ public class HATNotablesService: NSObject {
     /**
      Shows alert that the notes couldn't be fetched
      */
-    class func showNotablesFetchError(error: HATTableError) {
+    public class func showNotablesFetchError(error: HATTableError) {
         
         // alert magic
     }
@@ -78,7 +78,7 @@ public class HATNotablesService: NSObject {
      - parameter id: the id of the note to delete
      - parameter tkn: the user's token as a string
      */
-    class func deleteNoteWithKeychain(id: Int, tkn: String, userDomain: String) -> Void {
+    public class func deleteNoteWithKeychain(id: Int, tkn: String, userDomain: String) -> Void {
         
         HATAccountService.deleteHatRecord(userDomain: userDomain, token: tkn, recordId: id, success: self.completionDeleteNotesFunction, failed: {(HATTableError) -> Void in return})
     }
@@ -89,7 +89,7 @@ public class HATNotablesService: NSObject {
      - parameter token: The user's token as a string
      - returns: (_ r: Helper.ResultType) -> Void
      */
-    class func completionDeleteNotesFunction(token: String) -> Void {
+    public class func completionDeleteNotesFunction(token: String) -> Void {
         
         print(token)
     }
@@ -102,7 +102,7 @@ public class HATNotablesService: NSObject {
      - parameter token: The token returned from the hat
      - parameter json: The json file as a Dictionary<String, Any>
      */
-    class func postNote(userDomain: String, userToken: String, appToken: String, noteAsJSON: Dictionary<String, Any>, successCallBack: @escaping () -> Void) -> Void {
+    public class func postNote(userDomain: String, userToken: String, appToken: String, noteAsJSON: Dictionary<String, Any>, successCallBack: @escaping () -> Void) -> Void {
         
         func posting(resultJSON: Dictionary<String, Any>) {
             
@@ -149,7 +149,7 @@ public class HATNotablesService: NSObject {
      - parameter array: The NotesData array
      - returns: An array of NotesData
      */
-    class func removeDuplicatesFrom(array: [HATNotesData]) -> [HATNotesData] {
+    public class func removeDuplicatesFrom(array: [HATNotesData]) -> [HATNotesData] {
         
         // the array to return
         var arrayToReturn: [HATNotesData] = []
@@ -208,7 +208,7 @@ public class HATNotablesService: NSObject {
      - parameter notes: The NotesData array
      - returns: An array of NotesData
      */
-    class func sortNotables(notes: [HATNotesData]) -> [HATNotesData] {
+    public class func sortNotables(notes: [HATNotesData]) -> [HATNotesData] {
         
         return notes.sorted{ $0.data.updatedTime > $1.data.updatedTime }
     }

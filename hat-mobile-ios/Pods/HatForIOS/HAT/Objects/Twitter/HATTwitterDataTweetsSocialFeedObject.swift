@@ -60,29 +60,29 @@ public class HATTwitterDataTweetsSocialFeedObject: Comparable {
     // MARK: - Variables
 
     /// The source of the tweet
-    var source: String = ""
+    public var source: String = ""
     /// Shows if the tweet is truncated or not
-    var truncated: String = ""
+    public var truncated: String = ""
     /// Shows the retweet count
-    var retweetCount: String = ""
+    public var retweetCount: String = ""
     /// Shows if the tweet has been retweeted
-    var retweeted: String = ""
+    public var retweeted: String = ""
     /// Shows the tweet's favourites count
-    var favoriteCount: String = ""
+    public var favoriteCount: String = ""
     /// Shows the tweet's id
-    var id: String = ""
+    public var id: String = ""
     /// Shows the text of the tweet
-    var text: String = ""
+    public var text: String = ""
     /// Shows if the tweet is favourited or not
-    var favorited: String = ""
+    public var favorited: String = ""
     /// Shows the language of the tweet
-    var lang: String = ""
+    public var lang: String = ""
     
     /// Shows the date that the tweet has been created
-    var createdAt: Date? = nil
+    public var createdAt: Date? = nil
 
     /// Shows the user's info
-    var user: HATTwitterDataTweetsUsersSocialFeedObject = HATTwitterDataTweetsUsersSocialFeedObject()
+    public var user: HATTwitterDataTweetsUsersSocialFeedObject = HATTwitterDataTweetsUsersSocialFeedObject()
     
     // MARK: - Initialisers
     

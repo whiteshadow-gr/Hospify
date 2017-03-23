@@ -16,7 +16,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A class representing the hat provider object
-class HATProviderObject: Comparable {
+public class HATProviderObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -51,37 +51,37 @@ class HATProviderObject: Comparable {
     // MARK: - Variables
 
     /// The hat provider's sku number
-    var sku: String = ""
+    public var sku: String = ""
     /// The hat provider's name
-    var name: String = ""
+    public var name: String = ""
     /// The hat provider's description
-    var description: String = ""
+    public var description: String = ""
     /// The hat provider's details
-    var details: String = ""
+    public var details: String = ""
     /// The hat provider's illustration url
-    var illustration: String = ""
+    public var illustration: String = ""
     
     /// The hat provider's price
-    var price: Int = 0
+    public var price: Int = 0
     /// The hat provider's available hats
-    var available: Int = 0
+    public var available: Int = 0
     /// The hat provider's purchased hats
-    var purchased: Int = 0
+    public var purchased: Int = 0
     /// The hat provider's ordering
-    var ordering: Int = 0
+    public var ordering: Int = 0
     
     /// The hat provider's hat features
-    var features: [String] = []
+    public var features: [String] = []
     
     /// The hat provider's image
-    var hatProviderImage: UIImage? = nil
+    public var hatProviderImage: UIImage? = nil
     
     /// The hat provider's category object
-    var category: HATProviderCategoryObject = HATProviderCategoryObject()
+    public var category: HATProviderCategoryObject = HATProviderCategoryObject()
     /// The hat provider's kind object
-    var kind: HATProviderKindObject = HATProviderKindObject()
+    public var kind: HATProviderKindObject = HATProviderKindObject()
     /// The hat provider's payment type
-    var paymentType: HATProviderPaymentObject = HATProviderPaymentObject()
+    public var paymentType: HATProviderPaymentObject = HATProviderPaymentObject()
     
     // MARK: Initialisers
     

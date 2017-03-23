@@ -14,8 +14,8 @@ import SwiftyJSON
 
 // MARK: Struct
 
-/// A struct representing the outer data plug JSON format
-struct HATDataPlugObject: Comparable {
+/// A class representing the outer data plug JSON format
+public class HATDataPlugObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -59,33 +59,33 @@ struct HATDataPlugObject: Comparable {
     // MARK: - Variables
 
     /// The unique id of the data plug
-    var uuid: String = ""
+    public var uuid: String = ""
     /// The name of the data plug
-    var name: String = ""
+    public var name: String = ""
     /// The description of the data plug
-    var description: String = ""
+    public var description: String = ""
     /// The url of the data plug
-    var url: String = ""
+    public var url: String = ""
     /// The url of the image, asset, of the data plug
-    var illustrationUrl: String = ""
+    public var illustrationUrl: String = ""
     /// The url of the image, asset, of the data plug
-    var showCheckMark: Bool = false
+    public var showCheckMark: Bool = false
     
     /// The owner object of the data plug
-    var owner: HATDataPlugOwnerObject = HATDataPlugOwnerObject()
+    public var owner: HATDataPlugOwnerObject = HATDataPlugOwnerObject()
     /// The data definition object of the data plug
-    var dataDefinition: HATDataPlugDataDefinitionObject = HATDataPlugDataDefinitionObject()
+    public var dataDefinition: HATDataPlugDataDefinitionObject = HATDataPlugDataDefinitionObject()
     /// The rating object of the data plug
-    var rating: HATDataPlugRatingObject = HATDataPlugRatingObject()
+    public var rating: HATDataPlugRatingObject = HATDataPlugRatingObject()
     
     /// The created date of the data plug
-    var created: Date? = nil
+    public var created: Date? = nil
     
     /// The status of the data plug, if enabled is approved
-    var approved: Bool = false
+    public var approved: Bool = false
 
     /// The users using the data plug
-    var users: Int = -1
+    public var users: Int = -1
     
     // MARK: - Initializers
     
@@ -115,7 +115,7 @@ struct HATDataPlugObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    init(dict: Dictionary<String, JSON>){
+    convenience init(dict: Dictionary<String, JSON>){
         
         self.init()
         

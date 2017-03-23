@@ -12,6 +12,7 @@
 
 import Alamofire
 import Crashlytics
+import HatForIOS
 
 // MARK: Class
 
@@ -451,6 +452,9 @@ class DataPlugsService: NSObject {
             })
         }
     }
+}
+
+extension HATDataPlugsService {
     
     // MARK: - Create URL
     
@@ -461,7 +465,7 @@ class DataPlugsService: NSObject {
      - parameter socialServiceURL: The url of the social service
      - returns: A ready URL as a String if everything ok else nil
      */
-    class func createURLBasedOn(socialServiceName: String, socialServiceURL: String) -> String? {
+    public class func createURLBasedOn(socialServiceName: String, socialServiceURL: String) -> String? {
         
         // set up the url to open safari to
         let userDomain: String = AccountService.TheUserHATDomain()
@@ -484,7 +488,7 @@ class DataPlugsService: NSObject {
      
      - parameter completion: The function to execute when something finishes
      */
-    class func checkDataPlugsIfActive(completion: @escaping (String, Bool) -> Void) {
+    public class func checkDataPlugsIfActive(completion: @escaping (String, Bool) -> Void) {
         
         /// Check if facebook is active
         func checkIfFacebookIsActive(appToken: String) {
@@ -532,7 +536,13 @@ class DataPlugsService: NSObject {
     
     // MARK: - Filter available data plugs
     
-    class func filterAvailableDataPlugs(dataPlugs: [DataPlugObject]) -> [DataPlugObject] {
+    /**
+     Filters the available dataplugs down to 2, facebook and twitter
+     
+     - parameter dataPlugs: An array of HATDataPlugObject containing the full list of available data plugs
+     - returns: A filtered array of HATDataPlugObject
+     */
+    public class func filterAvailableDataPlugs(dataPlugs: [HATDataPlugObject]) -> [HATDataPlugObject] {
         
         var tempDataPlugs = dataPlugs
         // remove the existing dataplugs from array

@@ -13,7 +13,7 @@
 // MARK: Struct
 
 /// A struct representing the location table received from JSON
-class HATNotesPhotoData: Comparable {
+public class HATNotesPhotoData: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -48,14 +48,14 @@ class HATNotesPhotoData: Comparable {
     // MARK: - Variables
 
     /// the link to the photo
-    var link: String
+    public var link: String
     /// the source of the photo
-    var source: String
+    public var source: String
     /// the caption of the photo
-    var caption: String
+    public var caption: String
     
     /// if photo is shared
-    var shared: Bool
+    public var shared: Bool
     
     // MARK: - Initialisers
     

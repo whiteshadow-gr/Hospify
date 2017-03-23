@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// A class representing the privacy settings of the post
-class HATFacebookDataPostsPrivacySocialFeedObject: Comparable {
+public class HATFacebookDataPostsPrivacySocialFeedObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -50,15 +50,15 @@ class HATFacebookDataPostsPrivacySocialFeedObject: Comparable {
     // MARK: - Variables
 
     /// Is it friends only?
-    var friends: String = ""
+    public var friends: String = ""
     /// The value
-    var value: String = ""
+    public var value: String = ""
     /// deny access?
-    var deny: String = ""
+    public var deny: String = ""
     /// The desctiption of the setting
-    var description: String = ""
+    public var description: String = ""
     /// Allow?
-    var allow: String = ""
+    public var allow: String = ""
     
     // MARK: - Initialisers
     

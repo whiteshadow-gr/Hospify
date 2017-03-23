@@ -145,35 +145,4 @@ struct ProviderObject {
             category = ProviderCategoryObject(from: tempCategory)
         }
     }
-    
-    // MARK: - Quick setup for get a hat info
-    
-    /**
-     Sets up the string to display on the get a hat info view controller
-     
-     - parameter hatProvider: A hatProvider object to take the data from
-     - returns: A NSAttributedString based on the hatProvider object
-     */
-    static func setupLabelForInfoViewController(hatProvider: ProviderObject) -> NSAttributedString {
-        
-        if hatProvider.price > 0 && hatProvider.kind.kind != "External" {
-            
-            let partOne = "Sign Me Up".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 15)!)
-            let partTwo = "".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 15)!)
-            
-            return partOne.combineWith(attributedText: partTwo)
-        } else if hatProvider.kind.kind == "External" {
-            
-            let buttonName = ("Learn more about " + hatProvider.name).createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 15)!)
-            let partTwo = "".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 15)!)
-            
-            return buttonName.combineWith(attributedText: partTwo)
-        } else {
-            
-            let partOne = "Sign Me Up Free".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 15)!)
-            let partTwo = "".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSansBold.rawValue, size: 15)!)
-            
-            return partOne.combineWith(attributedText: partTwo)
-        }
-    }
 }

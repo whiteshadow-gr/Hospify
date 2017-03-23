@@ -11,6 +11,7 @@
  */
 
 import UIKit
+import HatForIOS
 
 // MARK: Class
 
@@ -20,7 +21,7 @@ class GetAHATInfoViewController: UIViewController {
     // MARK: - Variables
     
     /// the HAT provider object
-    var hatProvider: ProviderObject? = nil
+    var hatProvider: HATProviderObject? = nil
     
     // MARK: - IBOutlets
     
@@ -104,7 +105,7 @@ class GetAHATInfoViewController: UIViewController {
             self.hatProviderDetailedInfo.text = self.hatProvider?.description
             self.hatProviderDetailedInfo.sizeToFit()
             
-            let buttonTitle = ProviderObject.setupLabelForInfoViewController(hatProvider: self.hatProvider!)
+            let buttonTitle = HATProviderObject.setupLabelForInfoViewController(hatProvider: self.hatProvider!)
             self.signUpButton.setAttributedTitle(buttonTitle, for: .normal)
         }
     }
@@ -118,12 +119,13 @@ class GetAHATInfoViewController: UIViewController {
     // MARK: - Set up info view controller
     
     /**
-     <#Function Details#>
+     Creates and returns a new GetAHATInfoViewController
      
-     - parameter <#Parameter#>: <#Parameter description#>
-     - returns: <#Returns#>
+     - parameter storyBoard: The storyboard to initiate the view controller from
+     - parameter hatProvider: The HATProviderObject to pass on the new view controller
+     - returns: An optional GetAHATInfoViewController
      */
-    class func setUpInfoHatProviderViewControllerPopUp(from storyBoard: UIStoryboard, hatProvider: ProviderObject) -> GetAHATInfoViewController? {
+    class func setUpInfoHatProviderViewControllerPopUp(from storyBoard: UIStoryboard, hatProvider: HATProviderObject) -> GetAHATInfoViewController? {
         
         // set up page controller
         let pageItemController = storyBoard.instantiateViewController(withIdentifier: "HATProviderInfo") as! GetAHATInfoViewController
@@ -138,7 +140,7 @@ class GetAHATInfoViewController: UIViewController {
     // MARK: - Dismiss view controller
     
     /**
-     <#Function Details#>
+     Dismisses the view controller with animation
      */
     private func dismissView(completion: @escaping (Void) -> Void) {
         

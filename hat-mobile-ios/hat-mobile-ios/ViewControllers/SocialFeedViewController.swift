@@ -212,7 +212,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             
             if let weakSelf = self {
                 
-                func twitterDataPlug() {
+                func twitterDataPlug(bool: Bool) {
                     
                     // try to access twitter plug
                     let token = AccountService.getUsersTokenFromKeychain()
@@ -374,7 +374,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                 // get user's token
                 let token = AccountService.getUsersTokenFromKeychain()
                 
-                func fetchPostsCurryingFunc() {
+                func fetchPostsCurryingFunc(bool: Bool) {
                     
                     // try to access facebook plug
                     FacebookDataPlugService.facebookDataPlug(authToken: token, parameters: parameters, success: weakSelf.showPosts)
@@ -415,7 +415,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                 
                 func success(token: String) {
                     
-                    fetchPostsCurryingFunc()
+                    fetchPostsCurryingFunc(bool: true)
                 }
                 
                 func failed(statusCode: Int) {

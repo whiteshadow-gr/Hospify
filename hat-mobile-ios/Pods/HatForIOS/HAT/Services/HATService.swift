@@ -15,7 +15,7 @@ import Alamofire
 // MARK: Class
 
 /// A class about the methods concerning the HAT
-class HATService: NSObject {
+public class HATService: NSObject {
     
     // MARK: - Application Token
     
@@ -27,7 +27,7 @@ class HATService: NSObject {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func getApplicationTokenFor(serviceName: String, userDomain: String, token: String, resource: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) -> Void {
+    public class func getApplicationTokenFor(serviceName: String, userDomain: String, token: String, resource: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) -> Void {
         
         // setup parameters and headers
         let parameters = ["name" : serviceName, "resource" : resource]
@@ -65,7 +65,7 @@ class HATService: NSObject {
     /**
      Fetches the available HAT providers
      */
-    static func getAvailableHATProviders(succesfulCallBack: @escaping ([HATProviderObject]) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) {
+    public class func getAvailableHATProviders(succesfulCallBack: @escaping ([HATProviderObject]) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) {
         
         let url = "https://hatters.hubofallthings.com/api/products/hat"
         
@@ -105,7 +105,7 @@ class HATService: NSObject {
     /**
      Fetches the available HAT providers
      */
-    static func getSystemStatus(userDomain: String, authToken: String, completion: @escaping ([HATSystemStatusObject]) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) {
+    public class func getSystemStatus(userDomain: String, authToken: String, completion: @escaping ([HATSystemStatusObject]) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) {
         
         let url = "https://" + userDomain + "/api/v2/system/status"
         let headers = ["X-Auth-Token" : authToken]

@@ -137,7 +137,7 @@ public class HATAccountService: NSObject {
      
      - parameter token: The token returned from the hat
      */
-    class func createHatTable(userDomain: String, token: String, notablesTableStructure: Dictionary<String, Any>, failed: @escaping (HATTableError) -> Void) -> (_ callback: Void) -> Void {
+    public class func createHatTable(userDomain: String, token: String, notablesTableStructure: Dictionary<String, Any>, failed: @escaping (HATTableError) -> Void) -> (_ callback: Void) -> Void {
         
         return { (_ callback: Void) -> Void in
             
@@ -184,7 +184,7 @@ public class HATAccountService: NSObject {
      - parameter recordId: The record id to delete
      - parameter success: A callback called when successful of type @escaping (String) -> Void
      */
-    class func deleteHatRecord(userDomain: String, token: String, recordId: Int, success: @escaping (String) -> Void, failed: @ escaping (HATTableError) -> Void) {
+    public class func deleteHatRecord(userDomain: String, token: String, recordId: Int, success: @escaping (String) -> Void, failed: @ escaping (HATTableError) -> Void) {
         
         // form the url
         let url = "https://" + userDomain+"/data/record/" + String(recordId)
@@ -225,7 +225,7 @@ public class HATAccountService: NSObject {
     /**
      Triggers an update to hat servers
      */
-    class func triggerHatUpdate(userDomain: String, completion: @escaping (Void) -> Void) -> Void {
+    public class func triggerHatUpdate(userDomain: String, completion: @escaping (Void) -> Void) -> Void {
         
         // define the url to connect to
         let url = "https://notables.hubofallthings.com/api/bulletin/tickle?"
@@ -246,7 +246,7 @@ public class HATAccountService: NSObject {
      - parameter successCallback: A callback called when successful of type @escaping (NSNumber) -> Void
      - parameter errorCallback: A callback called when failed of type @escaping (Void) -> Void)
      */
-    class func checkHatTableExistsForUploading(userDomain: String, tableName: String, sourceName: String, authToken: String, successCallback: @escaping (Dictionary<String, Any>) -> Void, errorCallback: @escaping (HATTableError) -> Void) -> Void {
+    public class func checkHatTableExistsForUploading(userDomain: String, tableName: String, sourceName: String, authToken: String, successCallback: @escaping (Dictionary<String, Any>) -> Void, errorCallback: @escaping (HATTableError) -> Void) -> Void {
         
         // create the url
         let tableURL = "https://" + userDomain + "/data/table?name=" + tableName + "&source=" + sourceName
@@ -314,7 +314,7 @@ public class HATAccountService: NSObject {
      
      - returns: HATRegistrationURLAlias
      */
-    class func TheUserHATDomainPublicKeyURL(_ userHATDomain: String) -> String? {
+    public class func TheUserHATDomainPublicKeyURL(_ userHATDomain: String) -> String? {
         
         if let escapedUserHATDomain: String = userHATDomain.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) {
             

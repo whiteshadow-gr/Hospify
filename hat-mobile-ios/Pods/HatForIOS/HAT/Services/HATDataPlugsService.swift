@@ -15,7 +15,7 @@ import Alamofire
 // MARK: Class
 
 /// The data plugs service class
-class HATDataPlugsService: NSObject {
+public class HATDataPlugsService: NSObject {
     
     // MARK: - Get available data plugs
     
@@ -25,7 +25,7 @@ class HATDataPlugsService: NSObject {
      - parameter succesfulCallBack: A function of type ([HATDataPlugObject]) -> Void, executed on a successful result
      - parameter failCallBack: A function of type (Void) -> Void, executed on an unsuccessful result
      */
-    class func getAvailableDataPlugs(succesfulCallBack: @escaping ([HATDataPlugObject]) -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> Void {
+    public class func getAvailableDataPlugs(succesfulCallBack: @escaping ([HATDataPlugObject]) -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> Void {
         
         let url: String = "https://marketsquare.hubofallthings.com/api/dataplugs"
         
@@ -70,7 +70,7 @@ class HATDataPlugsService: NSObject {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func checkIfOfferIsClaimed(offerID: String, appToken: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) ->  Void {
+    public class func checkIfOfferIsClaimed(offerID: String, appToken: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) ->  Void {
         
         // setup parameters and headers
         let parameters: Dictionary<String, String> = [:]
@@ -132,7 +132,7 @@ class HATDataPlugsService: NSObject {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func claimOfferWithOfferID(_ offerID: String, appToken: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) ->  Void {
+    public class func claimOfferWithOfferID(_ offerID: String, appToken: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) ->  Void {
         
         // setup parameters and headers
         let parameters: Dictionary<String, String> = [:]
@@ -182,7 +182,7 @@ class HATDataPlugsService: NSObject {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func approveDataDebit(_ dataDebitID: String, userToken: String, userDomain: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) ->  Void {
+    public class func approveDataDebit(_ dataDebitID: String, userToken: String, userDomain: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) ->  Void {
         
         // setup parameters and headers
         let parameters: Dictionary<String, String> = [:]
@@ -223,7 +223,7 @@ class HATDataPlugsService: NSObject {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func checkDataDebit(_ dataDebitID: String, userToken: String, userDomain: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) ->  Void {
+    public class func checkDataDebit(_ dataDebitID: String, userToken: String, userDomain: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) ->  Void {
         
         // setup parameters and headers
         let parameters: Dictionary<String, String> = [:]
@@ -278,7 +278,7 @@ class HATDataPlugsService: NSObject {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func checkSocialPlugAvailability(succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> (_ appToken: String) ->  Void {
+    public class func checkSocialPlugAvailability(succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> (_ appToken: String) ->  Void {
         
         return { (appToken: String) in
             

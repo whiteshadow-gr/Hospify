@@ -21,7 +21,7 @@ import Foundation
  - sourceName: Cannot decode token. Includes a description(String)
  - serviceName: Cannot split token. Includes a description(String)
  */
-enum Twitter {
+public enum Twitter {
     
     static let statusURL = "https://twitter-plug.hubofallthings.com/api/status"
     static let dataPlugURL = "https://twitter-plug.hubofallthings.com"
@@ -39,7 +39,7 @@ enum Twitter {
  - sourceName: Cannot decode token. Includes a description(String)
  - serviceName: Cannot split token. Includes a description(String)
  */
-enum Facebook {
+public enum Facebook {
     
     static let statusURL = "https://social-plug.hubofallthings.com/api/user/token/status"
     static let dataPlugURL = "https://social-plug.hubofallthings.com"
@@ -54,7 +54,7 @@ enum Facebook {
  - tableName: No token detected
  - sourceName: No issuer of the token detected. Includes a description(String)
  */
-enum Notables {
+public enum Notables {
     
     static let tableName = "notablesv1"
     static let sourceName = "rumpel"
@@ -65,7 +65,7 @@ The request headers
  
  - xAuthToken: No token detected
  */
-enum RequestHeaders {
+public enum RequestHeaders {
     
     static let xAuthToken = "X-Auth-Token"
 }
@@ -76,7 +76,7 @@ enum RequestHeaders {
  - JSON: No token detected
  - Text: No issuer of the token detected. Includes a description(String)
  */
-enum ContentType {
+public enum ContentType {
     
     static let JSON = "application/json"
     static let Text = "text/plain"
@@ -91,7 +91,7 @@ enum ContentType {
  - NotificationHandlerName: Cannot decode token. Includes a description(String)
  - TokenParamName: Cannot split token. Includes a description(String)
  */
-enum Auth {
+public enum Auth {
     
     /// The name of the declared in the bundle identifier
     static let URLScheme: String = "rumpellocationtrackerapp"
@@ -113,7 +113,7 @@ enum Auth {
  - Market_DataPlugID: General error. Includes a description(String), the statusCode(Int?) and the error(Error?)
  - Market_AccessToken: Cannot decode token. Includes a description(String)
  */
-enum HATDataPlugCredentials {
+public enum HATDataPlugCredentials {
     
     /// hat username used for location data plug
     static let HAT_Username = "location"

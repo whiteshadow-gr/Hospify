@@ -11,6 +11,7 @@
  */
 
 import SafariServices
+import HatForIOS
 
 // MARK: Class
 
@@ -210,7 +211,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     @IBAction func shareButton(_ sender: Any) {
         
-        func post(bool: Bool) {
+        func post(token: String?) {
             
             // hide keyboard
             self.textView.resignFirstResponder()
@@ -305,7 +306,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         func success(token: String) {
             
-            post(bool: true)
+            post(token: nil)
         }
         
         func failed(statusCode: Int) {
@@ -338,7 +339,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     @IBAction func deleteButton(_ sender: Any) {
         
-        func delete(bool: Bool) {
+        func delete(token: String?) {
             
             // if not a previous note then nothing to delete
             if isEditingExistingNote {
@@ -368,7 +369,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         func success(token: String) {
             
-            delete(bool: true)
+            delete(token: "")
         }
         
         func failed(statusCode: Int) {
@@ -496,15 +497,15 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                         
                         func yesAction() {
                             
-                            func successfullCallBack(data: [DataPlugObject]) {
+                            func successfullCallBack(dataPlugs: [HATDataPlugObject]) {
                                 
-                                for i in 0 ... data.count - 1 {
+                                for i in 0 ... dataPlugs.count - 1 {
                                     
-                                    if data[i].name == "facebook" {
+                                    if dataPlugs[i].name == "facebook" {
                                         
                                         let userDomain = AccountService.TheUserHATDomain()
                                         
-                                        let url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + data[i].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
+                                        let url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + dataPlugs[i].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
                                         
                                         self.safariVC = SFSafariViewController(url: URL(string: url)!)
                                         self.publishButton.setTitle("Save", for: .normal)
@@ -514,23 +515,23 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                 }
                             }
                             
-                            DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {() -> Void in return})
+                            HATDataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {_ in })
                         }
                         
                         self.createClassicAlertWith(alertMessage: "You have to enable Facebook data plug before sharing on Facebook, do you want to enable now?", alertTitle: "Data plug not enabled", cancelTitle: "No", proceedTitle: "Yes", proceedCompletion: yesAction, cancelCompletion: noAction)
                     }
                     
-                    FacebookDataPlugService.isFacebookDataPlugActive(token: token, successful: successfulCallback, failed: failedCallback)
-                    
+                    HATFacebookService.isFacebookDataPlugActive(token: token, successful: {_ in successfulCallback()}, failed: {_ in failedCallback()})
                 }
                 
                 self.publishButton.setTitle("Please Wait..", for: .normal)
-                FacebookDataPlugService.getAppTokenForFacebook(successful: facebookTokenReceived, failed: {() -> Void in
-                    
-                    self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
-                    
-                })
                 
+                let userToken = AccountService.getUsersTokenFromKeychain()
+                let userDomain = AccountService.TheUserHATDomain()
+                HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: facebookTokenReceived, failed: {
+                    
+                        _ in self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                })
                 
                 self.facebookButton.alpha = 1
                 shareOnSocial.append("facebook")
@@ -576,6 +577,9 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     private func isTwitterEnabled() {
         
+        let userDomain = AccountService.TheUserHATDomain()
+        let userToken = AccountService.getUsersTokenFromKeychain()
+        
         // check data plug
         func checkDataPlug(appToken: String) {
             
@@ -613,15 +617,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // set up data plug
                 func yesAction() {
                     
-                    func successfullCallBack(data: [DataPlugObject]) {
+                    func successfullCallBack(data: [HATDataPlugObject]) {
                         
                         for i in 0 ... data.count - 1 {
                             
                             if data[i].name == "twitter" {
                                 
                                 // construct twitter
-                                let userDomain = AccountService.TheUserHATDomain()
-                                
                                 let url = "https://" + userDomain + "/hatlogin?name=Twitter&redirect=" + data[i].url + "/authenticate/hat"
                                 
                                 // open safari
@@ -636,7 +638,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     }
                     
                     // get available data plugs
-                    DataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {() -> Void in return})
+                    HATDataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {_ in})
                 }
                 
                 // show an alert
@@ -644,13 +646,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             }
             
             // check if twitter data plug is active
-            TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: dataPlugIsEnabled, failed: dataPugIsNotEnabled)
+            HATTwitterService.isTwitterDataPlugActive(token: appToken, successful: { _ in dataPlugIsEnabled()}, failed: {_ in dataPugIsNotEnabled()})
         }
         
         self.publishButton.setTitle("Please Wait..", for: .normal)
         // get app token for twitter
-        TwitterDataPlugService.getAppTokenForTwitter(successful: checkDataPlug, failed: {() -> Void in
+        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: checkDataPlug, failed: {
             
+            _ in
             // if something wrong show error
             self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
             
@@ -1061,9 +1064,12 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         }
         
         // setup succesfulCallBack
-        let offerClaimForToken = DataPlugsService.ensureOfferDataDebitEnabled(offerID: "32dde42f-5df9-4841-8257-5639db222e41", succesfulCallBack: succesfulCallBack, failCallBack: failCallback)
+        let offerClaimForToken = HATDataPlugsService.ensureOfferDataDebitEnabled(offerID: "32dde42f-5df9-4841-8257-5639db222e41", succesfulCallBack: succesfulCallBack, failCallBack: failCallback)
         
         // get applicationToken async
-        DataPlugsService.getApplicationTokenFor(serviceName: "MarketSquare", resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: failCallback)
+        let userDomain = AccountService.TheUserHATDomain()
+        let userToken = AccountService.getUsersTokenFromKeychain()
+        
+        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: {_ in failCallback()})
     }
 }

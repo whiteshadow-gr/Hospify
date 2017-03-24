@@ -324,12 +324,47 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
         func success(token: String?) {
             
+            self.hidePopUpLabel()
             
+            if token != "" || token != nil {
+                
+                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: token!)
+            }
+            
+            let userDomain = AccountService.TheUserHATDomain()
+            
+            self.enableLocationDataPlug(userDomain, userDomain)
         }
         
         func failed(error: AuthenicationError) {
             
+            self.hidePopUpLabel()
             
+            switch error {
+            case .cannotSplitToken(_):
+                
+                // no token in url callback redirect
+                self.createClassicOKAlertWith(alertMessage: "Token error!", alertTitle: "Cannot split token", okTitle: "OK", proceedCompletion: {})
+            case .cannotDecodeToken(_):
+                
+                // no token in url callback redirect
+                self.createClassicOKAlertWith(alertMessage: "Token error!", alertTitle: "Cannot decode token", okTitle: "OK", proceedCompletion: {})
+            case .generalError(_, let statusCode, let error):
+                
+                let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error!.localizedDescription)
+                self.createClassicOKAlertWith(alertMessage: msg, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {})
+            case .noIssuerDetectedError(_):
+                
+                // no token in url callback redirect
+                self.createClassicOKAlertWith(alertMessage: "Token error!", alertTitle: "Cannot detect issuer", okTitle: "OK", proceedCompletion: {})
+            case .noTokenDetectedError:
+                
+                // no token in url callback redirect
+                self.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_no_token_in_callback", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {})
+            case .tokenValidationFailed(_):
+                
+                self.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_invalid_token", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {})
+            }
         }
         
         // authorize with hat
@@ -343,7 +378,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
      - parameter userDomain: The user's domain
      - parameter HATDomainFromToken: The HAT domain extracted from the token
      */
-    func authoriseAppToWriteToCloud(_ userDomain: String,_ HATDomainFromToken: String) {
+    func enableLocationDataPlug(_ userDomain: String,_ HATDomainFromToken: String) {
         
         func success(result: Bool){
             
@@ -364,11 +399,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             case .expectedFieldNotFound:
                 
                 self.hidePopUpLabel()
-                self.createClassicOKAlertWith(alertMessage: "Value not found", alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                self.createClassicOKAlertWith(alertMessage: "Value not found", alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {})
             case .generalError(_, _, _):
                 
                 self.hidePopUpLabel()
-                self.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_keychain_save", comment: "keychain"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {() -> Void in return})
+                self.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_keychain_save", comment: "keychain"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {})
             }
         }
         

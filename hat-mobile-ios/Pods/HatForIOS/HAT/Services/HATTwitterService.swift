@@ -27,7 +27,7 @@ public class HATTwitterService: NSObject {
      - parameter parameters: The parameters to use in the request
      - parameter success: An @escaping (_ array: [JSON]) -> Void) method executed on a successful response
      */
-    private class func checkTwitterDataPlugTable(authToken: String, userDomain: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void) -> Void {
+    public class func checkTwitterDataPlugTable(authToken: String, userDomain: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void) -> Void {
         
         HATAccountService.checkHatTableExists(userDomain: userDomain,
                                               tableName: Twitter.tableName,

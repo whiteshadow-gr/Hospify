@@ -14,6 +14,7 @@ import MapKit
 import FBAnnotationClusteringSwift
 import RealmSwift
 import SwiftyJSON
+import HatForIOS
 
 // MARK: Class
 
@@ -238,6 +239,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         self.textField.resignFirstResponder()
         let userToken = AccountService.getUsersTokenFromKeychain()
+        let userDomain = AccountService.TheUserHATDomain()
         
         let view = UIView()
         view.createFloatingView(frame: CGRect(x: self.view.frame.midX - 60, y: self.view.frame.midY - 15, width: 120, height: 30), color: .tealColor(), cornerRadius: 15)
@@ -272,13 +274,14 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
                     let starttime = FormatterHelper.formatDateToEpoch(date: self.filterDataPointsFrom!)
                     let endtime = FormatterHelper.formatDateToEpoch(date: self.filterDataPointsTo!)
                     let parameters: Dictionary<String, String> = ["starttime" : starttime, "endtime" : endtime, "limit" : "2000"]
-                    AccountService.getHatTableValues(token: token, tableID: tableID, parameters: parameters, successCallback: receivedLocations, errorCallback: {view.removeFromSuperview()})
+                    
+                    HATAccountService.getHatTableValues(token: token, userDomain: userDomain, tableID: tableID, parameters: parameters, successCallback: receivedLocations, errorCallback: {_ in view.removeFromSuperview()})
                 }
             }
-            DataPlugsService.getApplicationTokenFor(serviceName: "locations", resource: "iphone", succesfulCallBack: requestLocations, failCallBack: {view.removeFromSuperview()})
+            HATService.getApplicationTokenFor(serviceName: "locations", userDomain: userDomain, token: userToken, resource: "iphone", succesfulCallBack: requestLocations, failCallBack: {_ in view.removeFromSuperview()})
         }
         
-        AccountService.checkHatTableExists(tableName: "locations", sourceName: "iphone", authToken: userToken, successCallback: getLocationsFromTable, errorCallback: {_ in view.removeFromSuperview()})
+        HATAccountService.checkHatTableExists(userDomain: userDomain, tableName: "locations", sourceName: "iphone", authToken: userToken, successCallback: getLocationsFromTable, errorCallback: {_ in view.removeFromSuperview()})
     }
     
     func cancelPickerButton(sender: UIBarButtonItem) {

@@ -11,6 +11,7 @@
  */
 
 import SwiftyJSON
+import HatForIOS
     
 // MARK: Class
 
@@ -47,10 +48,10 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
     class func setUpCell(cell: SocialFeedCollectionViewCell, indexPath: IndexPath, posts: Any) -> SocialFeedCollectionViewCell {
         
         // Check if the post to show is from facebook
-        if posts is FacebookSocialFeedObject {
+        if posts is HATFacebookSocialFeedObject {
             
             // convert the post to FacebookSocialFeedObject
-            let post = posts as! FacebookSocialFeedObject
+            let post = posts as! HATFacebookSocialFeedObject
             
             if let date = post.data.posts.updatedTime {
                 
@@ -78,7 +79,7 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
         } else {
             
             // convert the post to TwitterSocialFeedObject
-            let post = posts as! TwitterSocialFeedObject
+            let post = posts as! HATTwitterSocialFeedObject
             
             // assign the post values to cell values
             cell.profileNameLabel.text = post.data.tweets.user.name
@@ -107,7 +108,7 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
      - parameter textView: The textview to setup
      - returns: An already set up textview
      */
-    private class func constructMessageLabelFrom(data: FacebookDataPostsSocialFeedObject, for textView: UITextView) -> UITextView {
+    private class func constructMessageLabelFrom(data: HATFacebookDataPostsSocialFeedObject, for textView: UITextView) -> UITextView {
         
         textView.text = data.message
         

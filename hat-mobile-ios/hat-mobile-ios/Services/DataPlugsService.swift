@@ -14,96 +14,7 @@ import Alamofire
 import Crashlytics
 import HatForIOS
 
-// MARK: Class
-
-/// The data plugs service class
-class DataPlugsService: NSObject {
-    
-    // MARK: - Get available data plugs
-    
-    /**
-     Gets the available data plugs for the user to enable
-     
-     - parameter succesfulCallBack: A function of type ([DataPlugObject]) -> Void, executed on a successful result
-     - parameter failCallBack: A function of type (Void) -> Void, executed on an unsuccessful result
-     */
-    class func getAvailableDataPlugs(succesfulCallBack: @escaping ([DataPlugObject]) -> Void, failCallBack: @escaping (Void) -> Void) -> Void {
-        
-        let url: String = "https://marketsquare.hubofallthings.com/api/dataplugs"
-        
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: [:], completion: { (r: NetworkHelper.ResultType) -> Void in
-            
-            switch r {
-                
-            // in case of error call the failCallBack
-            case .error(let error, let statusCode):
-                
-                failCallBack()
-                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
-            // in case of success call the succesfulCallBack
-            case .isSuccess(let isSuccess, _, let result):
-                
-                if isSuccess {
-                    
-                    var returnValue: [DataPlugObject] = []
-                    
-                    for item in result.arrayValue {
-                        
-                        returnValue.append(DataPlugObject(dict: item.dictionaryValue))
-                    }
-                    
-                    succesfulCallBack(returnValue)
-                }
-            }
-        })
-    }
-    
-    // MARK: - Application Token
-    
-    /**
-     Gets the application level token from hat
-     
-     - parameter serviceName: The service name requesting the token
-     - parameter resource: The resource for the token
-     - parameter succesfulCallBack: A function to call if everything is ok
-     - parameter failCallBack: A function to call if fail
-     */
-    class func getApplicationTokenFor(serviceName: String, resource: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) -> Void {
-        
-        // setup parameters and headers
-        let parameters = ["name" : serviceName, "resource" : resource]
-        var headers: Dictionary<String, String> = [:]
-    
-        // get token
-        if let token = KeychainHelper.GetKeychainValue(key: "UserToken") {
-            
-            headers = ["X-Auth-Token": token]
-        }
-    
-        // contruct the url
-        let userDomain = AccountService.TheUserHATDomain()
-        let url = "https://" + userDomain + "/users/application_token?"
-        
-        // async request
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
-            
-            switch r {
-                
-            // in case of error call the failCallBack
-            case .error(let error, let statusCode):
-                
-                failCallBack()
-                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
-            // in case of success call the succesfulCallBack
-            case .isSuccess(let isSuccess, _, let result):
-                
-                if isSuccess {
-                    
-                    succesfulCallBack(result["accessToken"].stringValue)
-                }
-            }
-        })
-    }
+extension HATDataPlugsService {
     
     // MARK: - Wrappers
     
@@ -115,15 +26,17 @@ class DataPlugsService: NSObject {
      */
     class func ensureOffersReady(succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) -> Void {
         
+        let userDomain = AccountService.TheUserHATDomain()
+        let userToken = AccountService.getUsersTokenFromKeychain()
         // notables offer
         let offerID = "32dde42f-5df9-4841-8257-5639db222e41"
         
         // set up the succesfulCallBack
         let plugReadyContinue = ensureOfferEnabled(offerID: offerID, succesfulCallBack: succesfulCallBack, failCallBack: failCallBack)
-        let checkPlugForToken = checkSocialPlugAvailability(succesfulCallBack: plugReadyContinue, failCallBack: failCallBack)
+        let checkPlugForToken = HATDataPlugsService.checkSocialPlugAvailability(succesfulCallBack: plugReadyContinue, failCallBack: {_ in failCallBack()})
         
         // get token async
-        getApplicationTokenFor(serviceName: "Facebook", resource: "https://social-plug.hubofallthings.com", succesfulCallBack: checkPlugForToken, failCallBack: failCallBack)
+        HATService.getApplicationTokenFor(serviceName: "Facebook", userDomain: userDomain, token: userToken, resource: "https://social-plug.hubofallthings.com", succesfulCallBack: checkPlugForToken, failCallBack: {_ in failCallBack()})
     }
     
     /**
@@ -137,11 +50,14 @@ class DataPlugsService: NSObject {
         
         return {_ in
             
+            let userDomain = AccountService.TheUserHATDomain()
+            let userToken = AccountService.getUsersTokenFromKeychain()
+            
             // setup succesfulCallBack
             let offerClaimForToken = ensureOfferDataDebitEnabled(offerID: offerID, succesfulCallBack: succesfulCallBack, failCallBack: failCallBack)
             
             // get applicationToken async
-            getApplicationTokenFor(serviceName: "MarketSquare", resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: failCallBack)
+            HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: {_ in failCallBack()})
         }
     }
     
@@ -167,7 +83,7 @@ class DataPlugsService: NSObject {
     /**
      Ensure offer claimed
      
-    - parameter offerID: The offerID as a String
+     - parameter offerID: The offerID as a String
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
@@ -180,9 +96,7 @@ class DataPlugsService: NSObject {
                                                                   succesfulCallBack: succesfulCallBack,
                                                                   failCallBack: failCallBack)
             // ensure offer is claimed
-            checkIfOfferIsClaimed(offerID: offerID, appToken: appToken,
-                                  succesfulCallBack: succesfulCallBack,
-                                  failCallBack: claimOfferIfFailed)
+            HATDataPlugsService.checkIfOfferIsClaimed(offerID: offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: {_ in claimOfferIfFailed()})
         }
     }
     
@@ -200,9 +114,7 @@ class DataPlugsService: NSObject {
         return {
             
             // claim offer
-            claimOfferWithOfferID(offerID, appToken: appToken,
-                                  succesfulCallBack: succesfulCallBack,
-                                  failCallBack: failCallBack)
+            HATDataPlugsService.claimOfferWithOfferID(offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: {_ in failCallBack()})
         }
     }
     
@@ -219,242 +131,12 @@ class DataPlugsService: NSObject {
             
             // get user token, we dont need apptoken for this
             let userToken = AccountService.getUsersTokenFromKeychain()
+            let userDomain = AccountService.TheUserHATDomain()
             
             // approve data debit
-            approveDataDebit(dataDebitID, userToken: userToken, succesfulCallBack: succesfulCallBack, failCallBack: failCallBack)
+            HATDataPlugsService.approveDataDebit(dataDebitID, userToken: userToken, userDomain: userDomain, succesfulCallBack: succesfulCallBack, failCallBack: {_ in failCallBack()})
         }
     }
-    
-    // MARK: - Claiming offers
-    
-    /**
-     Check if offer is claimed
-     
-     - parameter offerID: The offerID as a String
-     - parameter appToken: The application token as a String
-     - parameter succesfulCallBack: A function to call if everything is ok
-     - parameter failCallBack: A function to call if fail
-     */
-    class func checkIfOfferIsClaimed(offerID: String, appToken: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) ->  Void {
-    
-        // setup parameters and headers
-        let parameters = ["" : ""]
-        let headers = ["X-Auth-Token": appToken]
-        
-        // contruct the url
-        let url = "https://marketsquare.hubofallthings.com/api/offer/" + offerID + "/userClaim"
-        
-        // make async request
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
-            
-            switch r {
-                
-            // in case of error call the failCallBack
-            case .error(let error, let statusCode):
-                
-                if statusCode != 404 {
-                    
-                    Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
-                } else {
-                    
-                   failCallBack()
-                }
-            // in case of success call succesfulCallBack
-            case .isSuccess(let isSuccess, let statusCode, let result):
-                
-                if isSuccess {
-                    
-                    if statusCode == 200 {
-                        
-                        if !result["confirmed"].boolValue {
-                            
-                            succesfulCallBack(result["dataDebitId"].stringValue)
-                        } else {
-                            
-                            
-                        }
-                    }
-                }
-            }
-        })
-    }
-    
-    /**
-     Claim offer with this ID
-     
-     - parameter offerID: The offerID as a String
-     - parameter appToken: The application token as a String
-     - parameter succesfulCallBack: A function to call if everything is ok
-     - parameter failCallBack: A function to call if fail
-     */
-    class func claimOfferWithOfferID(_ offerID: String, appToken: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) ->  Void {
-        
-        // setup parameters and headers
-        let parameters = ["" : ""]
-        let headers = ["X-Auth-Token": appToken]
-        
-        // contruct the url
-        let url = "https://marketsquare.hubofallthings.com/api/offer/" + offerID + "/claim"
-        
-        // make async request
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
-            
-            switch r {
-             
-            // in case of error call the failCallBack
-            case .error(let error, let statusCode):
-                
-                failCallBack()
-                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
-            // in case of success call succesfulCallBack
-            case .isSuccess(let isSuccess, let statusCode, let result):
-                
-                if isSuccess {
-                    
-                    if statusCode == 200 {
-                        
-                        succesfulCallBack(result["dataDebitId"].stringValue)
-                    }
-                }
-            }
-        })
-    }
-    
-    // MARK: - Data debits
-    
-    /**
-     Approve data debit
-     
-     - parameter dataDebitID: The data debit ID as a String
-     - parameter succesfulCallBack: A function to call if everything is ok
-     - parameter failCallBack: A function to call if fail
-     */
-    class func approveDataDebit(_ dataDebitID: String, userToken: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) ->  Void {
-        
-        // setup parameters and headers
-        let parameters = ["" : ""]
-        let headers = ["X-Auth-Token": userToken]
-        
-        // contruct the url
-        let userDomain = AccountService.TheUserHATDomain()
-        let url = "https://" + userDomain + "/dataDebit/" + dataDebitID + "/enable"
-        
-        // make async request
-        NetworkHelper.AsynchronousRequest(url, method: .put, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
-            
-            switch r {
-                
-            // in case of error call the failCallBack
-            case .error(let error, let statusCode):
-                
-                failCallBack()
-                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
-            // in case of success call succesfulCallBack
-            case .isSuccess(let isSuccess, _, _):
-                
-                if isSuccess {
-                    
-                }
-            }
-        })
-    }
-    
-    /**
-     Check data debit with this ID
-     
-     - parameter dataDebitID: The data debit ID as a String
-     - parameter succesfulCallBack: A function to call if everything is ok
-     - parameter failCallBack: A function to call if fail
-     */
-    class func checkDataDebit(_ dataDebitID: String, userToken: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) ->  Void {
-        
-        // setup parameters and headers
-        let parameters = ["" : ""]
-        let headers = ["X-Auth-Token": userToken]
-        
-        // contruct the url
-        let userDomain = AccountService.TheUserHATDomain()
-        let url = "https://" + userDomain + "/dataDebit/" + dataDebitID
-        
-        // make async request
-        NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
-            
-            switch r {
-                
-            // in case of error call the failCallBack
-            case .error( let error, let statusCode):
-                
-                if statusCode != 404 {
-                    
-                    Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
-                } else {
-                    
-                    failCallBack()
-                }
-            // in case of success call succesfulCallBack
-            case .isSuccess(let isSuccess, _, let result):
-                
-                if isSuccess {
-                    
-                    if result["enabled"].boolValue {
-                        
-                        
-                    }
-                }
-            }
-        })
-    }
-    
-    // MARK: - Social plug
-    
-    /**
-     Check social plug
-     
-     - parameter succesfulCallBack: A function to call if everything is ok
-     - parameter failCallBack: A function to call if fail
-     */
-    class func checkSocialPlugAvailability(succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) -> (_ appToken: String) ->  Void {
-        
-        return { (appToken: String) in
-            
-            // setup parameters and headers
-            let parameters = ["" : ""]
-            let headers = ["X-Auth-Token": appToken]
-            
-            // contruct the url
-            let url = "https://social-plug.hubofallthings.com/api/user/token/status"
-            
-            // make async request
-            NetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: NetworkHelper.ResultType) -> Void in
-                
-                switch r {
-                    
-                // in case of error call the failCallBack
-                case .error(let error, let statusCode):
-                    
-                    if statusCode == 404 {
-                        
-                        // post notification to authorize facebook
-                        NotificationCenter.default.post(name: NSNotification.Name("dataPlugMessage"), object: nil)
-                    } else {
-                        
-                        failCallBack()
-                        Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["error" : error.localizedDescription, "statusCode: " : String(describing: statusCode)])
-                    }
-                // in case of success call succesfulCallBack
-                case .isSuccess(let isSuccess, _, let result):
-                    
-                    if isSuccess {
-                        
-                        succesfulCallBack(String(result["canPost"].boolValue))
-                    }
-                }
-            })
-        }
-    }
-}
-
-extension HATDataPlugsService {
     
     // MARK: - Create URL
     
@@ -494,9 +176,9 @@ extension HATDataPlugsService {
         func checkIfFacebookIsActive(appToken: String) {
             
             /// if facebook active, enable the checkmark
-            func enableCheckMarkOnFacebook() {
+            func enableCheckMarkOnFacebook(result: Bool) {
                 
-                completion("facebook", true)
+                completion("facebook", result)
             }
             
             /// if facebook inactive, disable the checkmark
@@ -506,7 +188,7 @@ extension HATDataPlugsService {
             }
             
             // check if facebook active
-            FacebookDataPlugService.isFacebookDataPlugActive(token: appToken, successful: enableCheckMarkOnFacebook, failed: disableCheckMarkOnFacebook)
+            HATFacebookService.isFacebookDataPlugActive(token: appToken, successful: enableCheckMarkOnFacebook, failed: {_ in disableCheckMarkOnFacebook()})
         }
         
         /// Check if twitter is active
@@ -525,13 +207,15 @@ extension HATDataPlugsService {
             }
             
             // check if twitter active
-            TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: enableCheckMarkOnTwitter, failed: disableCheckMarkOnTwitter)
+            HATTwitterService.isTwitterDataPlugActive(token: appToken, successful: { _ in enableCheckMarkOnTwitter()}, failed: {_ in disableCheckMarkOnTwitter()})
         }
         
+        let userDomain = AccountService.TheUserHATDomain()
+        let userToken = AccountService.getUsersTokenFromKeychain()
         // get token for facebook and twitter and check if they are active
-        FacebookDataPlugService.getAppTokenForFacebook(successful: checkIfFacebookIsActive, failed: {})
+        HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: checkIfFacebookIsActive, failed: {_ in})
         
-        TwitterDataPlugService.getAppTokenForTwitter(successful: checkIfTwitterIsActive, failed: {})
+        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: checkIfTwitterIsActive, failed: {_ in})
     }
     
     // MARK: - Filter available data plugs

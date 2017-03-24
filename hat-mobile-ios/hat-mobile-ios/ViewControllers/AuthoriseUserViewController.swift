@@ -21,7 +21,7 @@ class AuthoriseUserViewController: UIViewController {
     // MARK: - Variables
     
     /// The func to execute after completing the authorisation
-    var completionFunc: ((Bool) -> Void)? = nil
+    var completionFunc: ((String?) -> Void)? = nil
 
     /// The safari view controller that opened to authorise user again
     private var safari: SFSafariViewController? = nil

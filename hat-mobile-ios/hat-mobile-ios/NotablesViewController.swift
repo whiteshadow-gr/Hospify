@@ -12,6 +12,7 @@
 
 import SwiftyJSON
 import SafariServices
+import HatForIOS
 
 // MARK: - Notables ViewController
 
@@ -109,7 +110,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         self.retryConnectingButton.isHidden = true
         
         // fetch notes
-        self.connectToServerToGetNotes(bool: true)
+        self.connectToServerToGetNotes(result: nil)
         
         // FIXME: Do I need the bool result??
         let boolResult = { (bool: String) -> Void in
@@ -124,7 +125,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         let failCallBack = { self.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {() -> Void in return}) }
         
         // check if data plug is ready
-        DataPlugsService.ensureOffersReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
+        HATDataPlugsService.ensureOffersReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
     }
     
     /**
@@ -169,7 +170,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 self.authorise = nil
             }
             // fetch notes
-            self.connectToServerToGetNotes(bool: true)
+            self.connectToServerToGetNotes(result: nil)
         }
         
         func failed(statusCode: Int) {
@@ -188,7 +189,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 self.authorise!.didMove(toParentViewController: self)
             } else if statusCode == 404 {
                 
-                self.connectToServerToGetNotes(bool: true)
+                self.connectToServerToGetNotes(result: nil)
             }
         }
 
@@ -339,13 +340,13 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         if (editingStyle == UITableViewCellEditingStyle.delete) {
             
-            func proceedCompletion(bool: Bool) {
+            func proceedCompletion(result: String?) {
                 
                 let token = AccountService.getUsersTokenFromKeychain()
 
-                func success(token: String) {
+                func success(token: String?) {
                     
-                    NotablesService.deleteNoteWithKeychain(id: self.cachedNotesArray[indexPath.row].id, tkn: token)
+                    NotablesService.deleteNoteWithKeychain(id: self.cachedNotesArray[indexPath.row].id, tkn: token!)
                     self.cachedNotesArray.remove(at: indexPath.row)
                     tableView.deleteRows(at: [indexPath], with: .fade)
                     self.updateUI()
@@ -378,11 +379,11 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 
                 self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed",
                     proceedCompletion: {() -> Void in
-                        proceedCompletion(bool: true)},
+                        proceedCompletion(result: nil)},
                     cancelCompletion: {() -> Void in return})
             } else {
                 
-                proceedCompletion(bool: true)
+                proceedCompletion(result: nil)
             }
         }
     }
@@ -400,7 +401,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     /**
      Connects to the server to get the notes
      */
-    private func connectToServerToGetNotes(bool: Bool) {
+    private func connectToServerToGetNotes(result: String?) {
         
         // get token and refresh view
         self.token = AccountService.getUsersTokenFromKeychain()
@@ -421,7 +422,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     self.showEmptyTableLabelWith(message: "There was an error fetching notes. Please try again later")
                 } else if statusCode == 404 {
                     
-                    self.connectToServerToGetNotes(bool: true)
+                    self.connectToServerToGetNotes(result: nil)
                 }
             })
         }

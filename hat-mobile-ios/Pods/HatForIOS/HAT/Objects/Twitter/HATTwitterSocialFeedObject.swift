@@ -58,7 +58,8 @@ public class HATTwitterSocialFeedObject: HATSocialFeedObject, Comparable {
     
     // MARK: - Protocol's variables
     
-    internal var protocolLastUpdate: Date? = nil
+    /// The last date updated of the record
+    public var protocolLastUpdate: Date? = nil
     
     // MARK: - Class' variables
     

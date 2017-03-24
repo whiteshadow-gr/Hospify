@@ -12,6 +12,7 @@
 
 import UIKit
 import SwiftyJSON
+import HatForIOS
 
 // MARK: Class
 
@@ -29,16 +30,16 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
     // MARK: - Variables
     
     /// An FacebookSocialFeedObject array to store all the posts from facebook
-    private var posts: [FacebookSocialFeedObject] = []
+    private var posts: [HATFacebookSocialFeedObject] = []
     
     /// An TwitterSocialFeedObject array to store all the tweets from twitter
-    private var tweets: [TwitterSocialFeedObject] = []
+    private var tweets: [HATTwitterSocialFeedObject] = []
     
     /// An SocialFeedObject array to store all the date from both twitter and facebook
-    private var allData: [SocialFeedObject] = []
+    private var allData: [HATSocialFeedObject] = []
     
     /// An SocialFeedObject array to cache all the date from both twitter and facebook
-    private var cachedDataArray: [SocialFeedObject] = []
+    private var cachedDataArray: [HATSocialFeedObject] = []
     
     /// A String to filter the social feed by, Twitter, Facebook and All
     private var filterBy: String = "All"
@@ -141,10 +142,13 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         // show empty label
         showEptyLabelWith(text: "Checking data plugs....")
         
-        // get Token for plugs
-        FacebookDataPlugService.getAppTokenForFacebook(successful: self.fetchFacebookData, failed: {() -> Void in return})
+        let userDomain = AccountService.TheUserHATDomain()
+        let userToken = AccountService.getUsersTokenFromKeychain()
         
-        TwitterDataPlugService.getAppTokenForTwitter(successful: self.fetchTwitterData, failed: {() -> Void in return})
+        // get Token for plugs
+        HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: self.fetchFacebookData, failed: {_ in})
+        
+        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: self.fetchTwitterData, failed: {_ in})
         
         // set datasource and delegate to self
         self.collectionView.dataSource = self
@@ -197,7 +201,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         }
         
         // check if twitter is active
-        TwitterDataPlugService.isTwitterDataPlugActive(token: appToken, successful: self.fetchTweets(parameters: parameters), failed: failed)
+        HATTwitterService.isTwitterDataPlugActive(token: appToken, successful: {_ in self.fetchTweets(parameters: parameters)}, failed: {_ in failed()})
     }
     
     /**
@@ -206,52 +210,45 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      - parameter parameters: The url request parameters
      - returns: (Void) -> Void
      */
-    private func fetchTweets(parameters: Dictionary<String, String>) -> (Void) -> Void {
+    private func fetchTweets(parameters: Dictionary<String, String>) -> Void {
         
-        return { [weak self](Void) -> Void in
+        // try to access twitter plug
+        let userToken = AccountService.getUsersTokenFromKeychain()
+        let userDomain = AccountService.TheUserHATDomain()
+        
+        func twitterDataPlug(token: String?) {
+
+            HATTwitterService.checkTwitterDataPlugTable(authToken: userToken, userDomain: userDomain, parameters: parameters, success: self.showTweets)
+        }
+        // show message that the social feed is downloading
+        self.showEptyLabelWith(text: "Fetching social feed...")
+        // change flag
+        self.isTwitterAvailable = true
+        
+        func success(token: String) {
             
-            if let weakSelf = self {
+            // try to access twitter plug
+            HATTwitterService.checkTwitterDataPlugTable(authToken: userToken, userDomain: userDomain, parameters: parameters, success: self.showTweets)
+        }
+        
+        func failed(statusCode: Int) {
+            
+            if statusCode == 401 {
                 
-                func twitterDataPlug(bool: Bool) {
-                    
-                    // try to access twitter plug
-                    let token = AccountService.getUsersTokenFromKeychain()
-                    
-                    TwitterDataPlugService.twitterDataPlug(authToken: token, parameters: parameters, success: (weakSelf.showTweets))
-                }
-                // show message that the social feed is downloading
-                weakSelf.showEptyLabelWith(text: "Fetching social feed...")
-                // change flag
-                weakSelf.isTwitterAvailable = true
+                let authoriseVC = AuthoriseUserViewController()
+                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                authoriseVC.view.layer.cornerRadius = 15
+                authoriseVC.completionFunc = twitterDataPlug
                 
-                func success(token: String) {
-                    
-                    // try to access twitter plug
-                    TwitterDataPlugService.twitterDataPlug(authToken: token, parameters: parameters, success: (weakSelf.showTweets))
-                }
-                
-                func failed(statusCode: Int) {
-                    
-                    if statusCode == 401 {
-                        
-                        let authoriseVC = AuthoriseUserViewController()
-                        authoriseVC.view.frame = CGRect(x: weakSelf.view.center.x - 50, y: weakSelf.view.center.y - 20, width: 100, height: 40)
-                        authoriseVC.view.layer.cornerRadius = 15
-                        authoriseVC.completionFunc = twitterDataPlug
-                        
-                        // add the page view controller to self
-                        weakSelf.addChildViewController(authoriseVC)
-                        weakSelf.view.addSubview(authoriseVC.view)
-                        authoriseVC.didMove(toParentViewController: weakSelf)
-                    }
-                }
-                
-                // get user's token
-                let token = AccountService.getUsersTokenFromKeychain()
-                // delete data from hat and remove from table
-                AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+                // add the page view controller to self
+                self.addChildViewController(authoriseVC)
+                self.view.addSubview(authoriseVC.view)
+                authoriseVC.didMove(toParentViewController: self)
             }
         }
+        
+        // delete data from hat and remove from table
+        AccountService.checkIfTokenIsActive(token: userToken, success: success, failed: failed)
     }
     
     /**
@@ -271,10 +268,10 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                 if let weakSelf = self {
                     
                     // filter data from duplicates
-                    var filteredArray = TwitterDataPlugService.removeDuplicatesFrom(array: array)
+                    var filteredArray = HATTwitterService.removeDuplicatesFrom(array: array)
                     
                     // sort array
-                    filteredArray = weakSelf.sortArray(array: filteredArray) as! [TwitterSocialFeedObject]
+                    filteredArray = weakSelf.sortArray(array: filteredArray) as! [HATTwitterSocialFeedObject]
                     
                     // for each dictionary parse it and add it to the array
                     for tweets in filteredArray {
@@ -351,7 +348,10 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         }
         
         // check if facebook is active
-        FacebookDataPlugService.isFacebookDataPlugActive(token: appToken, successful: self.fetchPosts(parameters: parameters), failed: failed)
+        HATFacebookService.isFacebookDataPlugActive(token: appToken,
+                        successful:
+                            {(result: Bool) in _ = self.fetchPosts(parameters: parameters)},
+                        failed: {_ in failed()})
     }
     
     /**
@@ -360,84 +360,79 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      - parameter parameters: The url request parameters
      - returns: (Void) -> Void
      */
-    private func fetchPosts(parameters: Dictionary<String, String>) -> (Void) -> Void {
+    private func fetchPosts(parameters: Dictionary<String, String>) -> Void {
         
-        return { [weak self](Void) -> Void in
+        // get user's token
+        let userToken = AccountService.getUsersTokenFromKeychain()
+        let userDomain = AccountService.TheUserHATDomain()
+        
+        // show message that the social feed is downloading
+        self.showEptyLabelWith(text: "Fetching social feed...")
+        // change flag
+        self.isFacebookAvailable = true
+        
+        func fetchPostsCurryingFunc(token: String?) {
             
-            if let weakSelf = self {
+            // try to access facebook plug
+            HATFacebookService.facebookDataPlug(authToken: userToken, userDomain: userDomain, parameters: parameters, success: self.showPosts)
+            
+            // switch to another thread
+            DispatchQueue.global().async { [weak self] () -> Void in
                 
-                // show message that the social feed is downloading
-                weakSelf.showEptyLabelWith(text: "Fetching social feed...")
-                // change flag
-                weakSelf.isFacebookAvailable = true
-                
-                // get user's token
-                let token = AccountService.getUsersTokenFromKeychain()
-                
-                func fetchPostsCurryingFunc(bool: Bool) {
+                if let weakSelf2 = self {
                     
-                    // try to access facebook plug
-                    FacebookDataPlugService.facebookDataPlug(authToken: token, parameters: parameters, success: weakSelf.showPosts)
-                    
-                    // switch to another thread
-                    DispatchQueue.global().async { [weak self] () -> Void in
+                    // if no facebook profile image download onw
+                    if weakSelf2.facebookProfileImage == nil {
                         
-                        if let weakSelf2 = self {
+                        // the returned array for the request
+                        func success(array: [JSON]) -> Void {
                             
-                            // if no facebook profile image download onw
-                            if weakSelf2.facebookProfileImage == nil {
+                            if array.count > 0 {
                                 
-                                // the returned array for the request
-                                func success(array: [JSON]) -> Void {
+                                weakSelf2.facebookProfileImage = UIImageView()
+                                
+                                // extract image
+                                if let url = URL(string: array[0]["data"]["profile_picture"]["url"].stringValue) {
                                     
-                                    if array.count > 0 {
-                                        
-                                        weakSelf2.facebookProfileImage = UIImageView()
-                                        
-                                        // extract image
-                                        if let url = URL(string: array[0]["data"]["profile_picture"]["url"].stringValue) {
-                                            
-                                            // download image
-                                            weakSelf2.facebookProfileImage?.downloadedFrom(url: url)
-                                        } else {
-                                            
-                                            // set image to nil
-                                            weakSelf2.facebookProfileImage = nil
-                                        }
-                                    }
+                                    // download image
+                                    weakSelf2.facebookProfileImage?.downloadedFrom(url: url)
+                                } else {
+                                    
+                                    // set image to nil
+                                    weakSelf2.facebookProfileImage = nil
                                 }
-                                // fetch facebook image
-                                FacebookDataPlugService.fetchProfileFacebookPhoto(authToken: token, parameters: [:], success: success)
                             }
                         }
+                        // fetch facebook image
+                        HATFacebookService.fetchProfileFacebookPhoto(authToken: userToken, userDomain: userDomain, parameters: [:], success: success)
                     }
                 }
-                
-                func success(token: String) {
-                    
-                    fetchPostsCurryingFunc(bool: true)
-                }
-                
-                func failed(statusCode: Int) {
-                    
-                    if statusCode == 401 {
-                        
-                        let authoriseVC = AuthoriseUserViewController()
-                        authoriseVC.view.frame = CGRect(x: weakSelf.view.center.x - 50, y: weakSelf.view.center.y - 20, width: 100, height: 40)
-                        authoriseVC.view.layer.cornerRadius = 15
-                        authoriseVC.completionFunc = fetchPostsCurryingFunc
-                        
-                        // add the page view controller to self
-                        weakSelf.addChildViewController(authoriseVC)
-                        weakSelf.view.addSubview(authoriseVC.view)
-                        authoriseVC.didMove(toParentViewController: weakSelf)
-                    }
-                }
-                
-                // delete data from hat and remove from table
-                AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
             }
         }
+        
+        func success(token: String) {
+            
+            fetchPostsCurryingFunc(token: "")
+        }
+        
+        func failed(statusCode: Int) {
+            
+            if statusCode == 401 {
+                
+                let authoriseVC = AuthoriseUserViewController()
+                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                authoriseVC.view.layer.cornerRadius = 15
+                authoriseVC.completionFunc = fetchPostsCurryingFunc
+                
+                // add the page view controller to self
+                self.addChildViewController(authoriseVC)
+                self.view.addSubview(authoriseVC.view)
+                authoriseVC.didMove(toParentViewController: self)
+            }
+        }
+        
+        // delete data from hat and remove from table
+        AccountService.checkIfTokenIsActive(token: userToken, success: success, failed: failed)
     }
     
     /**
@@ -456,55 +451,51 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                 if let weakSelf = self {
                     
                     // removes duplicates from parameter array
-                    var filteredArray = FacebookDataPlugService.removeDuplicatesFrom(array: array)
+                    var filteredArray = HATFacebookService.removeDuplicatesFrom(array: array)
                     
                     // sort array
-                    if let tempArray = weakSelf.sortArray(array: filteredArray) as? [FacebookSocialFeedObject] {
+                    filteredArray = weakSelf.sortArray(array: filteredArray) as! [HATFacebookSocialFeedObject]
                         
-                        filteredArray = tempArray
+                    // for each dictionary parse it and add it to the array
+                    for posts in filteredArray {
                         
-                        // for each dictionary parse it and add it to the array
-                        for posts in filteredArray {
-                            
-                            weakSelf.posts.append(posts)
-                        }
-                        
-                        if weakSelf.facebookEndTime == nil {
-                            
-                            // removes duplicates
-                            weakSelf.reloadCollectionView(with: weakSelf.filterBy)
-                        }
-                        
-                        // if the returned array is equal or bigger than the defined limit make a new request with more data while this thread will continue to show that data
-                        if array.count == Int(weakSelf.facebookLimitParameter) {
-                            
-                            // get the unix time stamp
-                            let elapse = (filteredArray.last?.data.posts.createdTime)!.timeIntervalSince1970
-                            
-                            let temp = String(elapse)
-                            
-                            let array2 = temp.components(separatedBy: ".")
-                            
-                            // save the time stamp
-                            weakSelf.facebookEndTime = array2[0]
-                            
-                            // increase the limit
-                            weakSelf.facebookLimitParameter = "500"
-                            
-                            // removes duplicates
-                            weakSelf.removeDuplicates()
-                            
-                            // rebuild data
-                            weakSelf.rebuildDataArray(filter: weakSelf.filterBy)
-                            // else nil the flags we use and reload collection view with the saved filter
-                        } else {
-                            
-                            weakSelf.facebookEndTime = nil
-                            // removes duplicates
-                            weakSelf.reloadCollectionView(with: weakSelf.filterBy)
-                        }
+                        weakSelf.posts.append(posts)
                     }
-
+                
+                    if weakSelf.facebookEndTime == nil {
+                        
+                        // removes duplicates
+                        weakSelf.reloadCollectionView(with: weakSelf.filterBy)
+                    }
+                    
+                    // if the returned array is equal or bigger than the defined limit make a new request with more data while this thread will continue to show that data
+                    if array.count == Int(weakSelf.facebookLimitParameter) {
+                        
+                        // get the unix time stamp
+                        let elapse = (filteredArray.last?.data.posts.createdTime)!.timeIntervalSince1970
+                        
+                        let temp = String(elapse)
+                        
+                        let array2 = temp.components(separatedBy: ".")
+                        
+                        // save the time stamp
+                        weakSelf.facebookEndTime = array2[0]
+                        
+                        // increase the limit
+                        weakSelf.facebookLimitParameter = "500"
+                        
+                        // removes duplicates
+                        weakSelf.removeDuplicates()
+                        
+                        // rebuild data
+                        weakSelf.rebuildDataArray(filter: weakSelf.filterBy)
+                        // else nil the flags we use and reload collection view with the saved filter
+                    } else {
+                        
+                        weakSelf.facebookEndTime = nil
+                        // removes duplicates
+                        weakSelf.reloadCollectionView(with: weakSelf.filterBy)
+                    }
                 }
             }
         }
@@ -515,7 +506,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         // if this index path is FacebookSocialFeedObject
-        if let post = self.cachedDataArray[indexPath.row] as? FacebookSocialFeedObject {
+        if let post = self.cachedDataArray[indexPath.row] as? HATFacebookSocialFeedObject {
             
             // create a cell
             var cell = SocialFeedCollectionViewCell()
@@ -541,7 +532,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         } else {
             
             // get TwitterSocialFeedObject
-            let tweet = self.cachedDataArray[indexPath.row] as? TwitterSocialFeedObject
+            let tweet = self.cachedDataArray[indexPath.row] as? HATTwitterSocialFeedObject
             
             // set up cell
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "statusSocialFeedCell", for: indexPath) as! SocialFeedCollectionViewCell
@@ -559,7 +550,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         // if this index path is FacebookSocialFeedObject
-        if let post = self.cachedDataArray[indexPath.row] as? FacebookSocialFeedObject {
+        if let post = self.cachedDataArray[indexPath.row] as? HATFacebookSocialFeedObject{
             
             // if this is a photo post
             if post.data.posts.type == "photo" {
@@ -596,7 +587,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         } else {
             
             //return size of text plus the cell
-            let tweet = self.cachedDataArray[indexPath.row] as! TwitterSocialFeedObject
+            let tweet = self.cachedDataArray[indexPath.row] as! HATTwitterSocialFeedObject
             
             let text = tweet.data.tweets.text
             let size = self.calculateCellHeight(text: text, width: self.collectionView.frame.width - 20)
@@ -627,40 +618,40 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      - parameter array: The array to sort
      - returns: A sorted SocialFeedObject array based on crated times
      */
-    private func sortArray(array: [SocialFeedObject]) -> [SocialFeedObject] {
+    private func sortArray(array: [HATSocialFeedObject]) -> [HATSocialFeedObject] {
         
         // the method to sort the array
-        func sorting(a: SocialFeedObject, b: SocialFeedObject) -> Bool {
+        func sorting(a: HATSocialFeedObject, b: HATSocialFeedObject) -> Bool {
             
             // if a is FacebookSocialFeedObject
-            if let postA = a as? FacebookSocialFeedObject {
+            if let postA = a as? HATFacebookSocialFeedObject {
                 
                 // if b is FacebookSocialFeedObject
-                if let postB = b as? FacebookSocialFeedObject {
+                if let postB = b as? HATFacebookSocialFeedObject {
                     
                     // return true of false based on this result
                     return (postA.data.posts.createdTime)! > (postB.data.posts.createdTime)!
                 // else b is TwitterSocialFeedObject
                 } else {
                     
-                    let tweetB = b as? TwitterSocialFeedObject
+                    let tweetB = b as? HATTwitterSocialFeedObject
                     // return true of false based on this result
                     return (postA.data.posts.createdTime)! > (tweetB!.data.tweets.createdAt)!
                 }
             // else a is TwitterSocialFeedObject
             } else {
                 
-                let tweetA = a as? TwitterSocialFeedObject
+                let tweetA = a as? HATTwitterSocialFeedObject
                 
                 // if b is FacebookSocialFeedObject
-                if let postB = b as? FacebookSocialFeedObject {
+                if let postB = b as? HATFacebookSocialFeedObject {
                     
                     // return true of false based on this result
                     return (tweetA!.data.tweets.createdAt)! > (postB.data.posts.createdTime)!
                 // if b is TwitterSocialFeedObject
                 } else {
                     
-                    let tweetB = b as? TwitterSocialFeedObject
+                    let tweetB = b as? HATTwitterSocialFeedObject
                     // return true of false based on this result
                     return (tweetA?.data.tweets.createdAt)! > (tweetB!.data.tweets.createdAt)!
                 }
@@ -701,8 +692,8 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      */
     private func removeDuplicates() {
         
-        self.posts = FacebookDataPlugService.removeDuplicatesFrom(array: self.posts)
-        self.tweets = TwitterDataPlugService.removeDuplicatesFrom(array: self.tweets)
+        self.posts = HATFacebookService.removeDuplicatesFrom(array: self.posts)
+        self.tweets = HATTwitterService.removeDuplicatesFrom(array: self.tweets)
     }
     
     // MARK: - Rebuild data array
@@ -719,7 +710,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             
             for post in self.posts {
                 
-                self.allData.append(post)
+                self.allData.append(post as HATSocialFeedObject)
             }
             for tweet in self.tweets {
                 
@@ -735,7 +726,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             
             for post in self.posts {
                 
-                self.allData.append(post)
+                self.allData.append(post as HATSocialFeedObject)
             }
         }
         
@@ -772,7 +763,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                     
                     for i in 0...weakSelf.posts.count - 1 {
                         
-                        weakSelf.cachedDataArray.append(weakSelf.posts[i])
+                        weakSelf.cachedDataArray.append(weakSelf.posts[i] as HATSocialFeedObject)
                     }
                 }
                 
@@ -820,7 +811,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                     
                     for i in 0...weakSelf.posts.count - 1 {
                         
-                        weakSelf.cachedDataArray.append(weakSelf.posts[i])
+                        weakSelf.cachedDataArray.append(weakSelf.posts[i] as HATSocialFeedObject)
                     }
                 }
                 

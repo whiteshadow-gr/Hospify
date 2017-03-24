@@ -10,7 +10,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import Foundation
+import HatForIOS
 
 // MARK: Struct
 
@@ -68,7 +68,10 @@ struct MarketSquareService {
      */
     static func getAppTokenForMarketsquare(successful: @escaping (String) -> Void, failed: @escaping (Void) -> Void) {
         
-        DataPlugsService.getApplicationTokenFor(serviceName: "MarketSquare", resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: successful, failCallBack: failed)
+        let userDomain = AccountService.TheUserHATDomain()
+        let userToken = AccountService.getUsersTokenFromKeychain()
+        
+        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: successful, failCallBack: {_ in failed()})
     }
     
 }

@@ -63,10 +63,10 @@ class InfoHatProvidersViewController: UIViewController {
     // MARK: - Set up info view controller
     
     /**
-     <#Function Details#>
+     Creates and returns an InfoHatProvidersViewController
      
-     - parameter <#Parameter#>: <#Parameter description#>
-     - returns: <#Returns#>
+     - parameter storyBoard: The storyboard to init the view controller from
+     - returns: An optional InfoHatProvidersViewController
      */
     class func setUpInfoHatProviderViewControllerPopUp(from storyBoard: UIStoryboard) -> InfoHatProvidersViewController? {
         

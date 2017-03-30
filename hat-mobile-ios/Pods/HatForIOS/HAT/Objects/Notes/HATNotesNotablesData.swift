@@ -83,7 +83,7 @@ public class HATNotesNotablesData: Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         authorData = HATNotesAuthorData.init()
         createdTime = Date()
@@ -100,7 +100,7 @@ public class HATNotesNotablesData: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(dict: Dictionary<String, JSON>) {
+    public convenience init(dict: Dictionary<String, JSON>) {
 
         // the tables are optional fields in the json so init them and check if they exist in our json
         self.init()

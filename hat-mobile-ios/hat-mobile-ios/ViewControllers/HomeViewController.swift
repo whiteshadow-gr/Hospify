@@ -65,15 +65,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        alertController.addAction(logOutAction)
-        alertController.addAction(cancelAction)
-        
-        // if user is on ipad show as a pop up
-        if UI_USER_INTERFACE_IDIOM() == .pad {
-            
-            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
-            alertController.popoverPresentationController?.sourceView = self.view
-        }
+        alertController.addActions(actions: [logOutAction, cancelAction])
+        alertController.addiPadSupport(barButtonItem: self.navigationItem.rightBarButtonItem!, sourceView: self.view)
         
         // present alert controller
         self.navigationController!.present(alertController, animated: true, completion: nil)
@@ -131,9 +124,9 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         } else if self.tiles[indexPath.row].serviceName == "Social Data" {
             
             self.performSegue(withIdentifier: "socialDataSegue", sender: self)
-        }else if self.tiles[indexPath.row].serviceName == "Chat" {
+        }else if self.tiles[indexPath.row].serviceName == "Photo Viewer" {
             
-            self.showInfoViewController(text: "Send messages and data to your family and friends through your HAT. The chat service is a fully private HAT2HAT service.")
+            self.performSegue(withIdentifier: "photoViewerSegue", sender: self)
         }
     }
     
@@ -166,15 +159,24 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         self.title = "Data Services"
         self.ringProgressBar.isHidden = true
         
-        func success(token: String) {
+        func success(token: String?) {
             
+            if token != "" {
+                
+                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: token!)
+                _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "true")
+            }
         }
         
         func failed(statusCode: Int) {
             
             if statusCode == 401 {
                 
+                NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "Unauthorized. Please sign out and try again.")
+                _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "expired")
+                
                 let authorise = AuthoriseUserViewController.setupAuthoriseViewController(view: self.view)
+                authorise.completionFunc = success
                 // add the page view controller to self
                 self.addViewController(authorise)
             }
@@ -182,8 +184,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         
         // reset the stack to avoid allowing back
         let result = KeychainHelper.GetKeychainValue(key: "logedIn")
-        let userDomain = AccountService.TheUserHATDomain()
-        let token = AccountService.getUsersTokenFromKeychain()
+        let userDomain = HATAccountService.TheUserHATDomain()
+        let token = HATAccountService.getUsersTokenFromKeychain()
         
         if result == "false" || userDomain == "" || token == "" {
             
@@ -202,10 +204,10 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             appDelegate.locationManager.requestAlwaysAuthorization()
             
             // check if the token has expired
-            AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+            HATAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
         }
         
-        HATService.getSystemStatus(userDomain: userDomain, authToken: token, completion: updateRingProgressBar, failCallBack: {(jsonError) -> Void in return})
+        HATService.getSystemStatus(userDomain: userDomain, authToken: token, completion: updateRingProgressBar, failCallBack: {(jsonError) -> Void in return })
     }
     
     override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
@@ -298,7 +300,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             attributedString = NSAttributedString(string: self.helloLabel.text! + "\n")
             self.helloLabel.text = attributedString.combineWith(attributedText: NSAttributedString(string: "Used space " + String(describing: Int(Float(data[4].kind.metric)!)) + " " + data[4].kind.units!)).string
             
-            let fullCircle = 2.0 * CGFloat(M_PI)
+            let fullCircle = 2.0 * CGFloat(Double.pi)
             self.ringProgressBar.startPoint = -0.25 * fullCircle
             
             let endPoint = CGFloat(Float(data[6].kind.metric)!)

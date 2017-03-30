@@ -103,7 +103,7 @@ public class HATFacebookDataPostsSocialFeedObject: Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         from = HATFacebookDataPostsFromSocialFeedObject()
         id = ""
@@ -128,7 +128,7 @@ public class HATFacebookDataPostsSocialFeedObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(from dictionary: Dictionary<String, JSON>) {
+    public convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()
         

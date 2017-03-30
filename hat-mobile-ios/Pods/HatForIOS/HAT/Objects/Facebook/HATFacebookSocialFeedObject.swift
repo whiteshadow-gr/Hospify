@@ -79,7 +79,7 @@ public class HATFacebookSocialFeedObject: HATSocialFeedObject, Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         name = ""
         data = HATFacebookDataSocialFeedObject()
@@ -90,7 +90,7 @@ public class HATFacebookSocialFeedObject: HATSocialFeedObject, Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(from dict: Dictionary<String, JSON>) {
+    public convenience init(from dict: Dictionary<String, JSON>) {
         
         self.init()
         

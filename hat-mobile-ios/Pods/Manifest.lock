@@ -19,11 +19,11 @@ PODS:
     - URITemplate (~> 2.0)
   - Mockingjay/XCTest (2.0.0):
     - Mockingjay/Core
-  - Realm (2.4.4):
-    - Realm/Headers (= 2.4.4)
-  - Realm/Headers (2.4.4)
-  - RealmSwift (2.4.4):
-    - Realm (= 2.4.4)
+  - Realm (2.5.0):
+    - Realm/Headers (= 2.5.0)
+  - Realm/Headers (2.5.0)
+  - RealmSwift (2.5.0):
+    - Realm (= 2.5.0)
   - Stripe (10.0.1)
   - SwiftyJSON (3.1.4)
   - SwiftyRSA (1.0.0)
@@ -60,7 +60,7 @@ CHECKOUT OPTIONS:
     :commit: cc3b6524156f8e0d8653688423fba2fdf0944bc8
     :git: https://github.com/ribl/FBAnnotationClusteringSwift/
   HatForIOS:
-    :commit: 06cc6ad7bf86d8b03503ccd64d9876498742f97f
+    :commit: 4778684a02128b69365b0f5f1f2329c8fcb35c55
     :git: https://github.com/whiteshadow-gr/HatForIOS.git
 
 SPEC CHECKSUMS:
@@ -73,8 +73,8 @@ SPEC CHECKSUMS:
   JWTDecode: 178e47e5d28d3abcff778bacced8342858cd6cb5
   KeychainSwift: b6947435dd78cc442c64a84ae648dd0e871cf448
   Mockingjay: 7122a3fc0597aa63438e4cd9b71b7bc8aac05b87
-  Realm: 5a280a1f5a9a3c267bebf4f41ee47911137703d7
-  RealmSwift: 0c02b9f2d4be4301c497ed10e53a0580584eb1dd
+  Realm: 62abce501668580092d2be9b6ba7324a3d5f906a
+  RealmSwift: 9f1a8f624f2f153410115c2cb7d486be9976565d
   Stripe: dd6df0e2c6a8463e2f1ca9b15dc246e5ae1eee64
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
   SwiftyRSA: 3ec69b6a1bd2edf2b8fcb2fcdfd63e00b971e5eb

@@ -11,6 +11,7 @@
  */
 
 import UIKit
+import HatForIOS
 
 // MARK: Class
 
@@ -62,7 +63,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
      - parameter indexPath: The index path of the cell
      - returns: NotablesTableViewCell
      */
-    func setUpCell(_ cell: NotablesTableViewCell, note: NotesData, indexPath: IndexPath) -> NotablesTableViewCell {
+    func setUpCell(_ cell: NotablesTableViewCell, note: HATNotesData, indexPath: IndexPath) -> NotablesTableViewCell {
         
         let newCell = self.initCellToNil(cell: cell)
         

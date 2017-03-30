@@ -37,7 +37,7 @@ public class HATService: NSObject {
         let url = "https://" + userDomain + "/users/application_token?"
         
         // async request
-        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -69,7 +69,7 @@ public class HATService: NSObject {
         
         let url = "https://hatters.hubofallthings.com/api/products/hat"
         
-        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: [:], completion: {(r: ΗΑΤNetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: [:], completion: {(r: HATNetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -110,7 +110,7 @@ public class HATService: NSObject {
         let url = "https://" + userDomain + "/api/v2/system/status"
         let headers = ["X-Auth-Token" : authToken]
         
-        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: headers, completion: {(r: ΗΑΤNetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: headers, completion: {(r: HATNetworkHelper.ResultType) -> Void in
             
             switch r {
                 

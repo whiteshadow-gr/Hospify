@@ -62,7 +62,7 @@ public class HATNotesPhotoData: Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         link = ""
         source = ""
@@ -73,7 +73,7 @@ public class HATNotesPhotoData: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(dict: Dictionary<String, String>) {
+    public convenience init(dict: Dictionary<String, String>) {
         
         self.init()
         

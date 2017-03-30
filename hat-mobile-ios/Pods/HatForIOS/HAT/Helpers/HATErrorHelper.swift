@@ -61,21 +61,14 @@ public enum HATTableError: Error {
 }
 
 /**
- The possible facebook data plug errors produced when communicating with data plugs
+ The possible HAT errors produced when accessing tables
  
+ - noValuesFound: The table didn't return any values
+ - tableDoesNotExist: Table does not exist
+ - noTableIDFound: Couldn't find the table ID
  - generalError: General error. Includes a description(String), the statusCode(Int?) and the error(Error?)
  */
-public enum FacebookError: Error {
-    
-    case generalError(String, Int?, Error?)
-}
-
-/**
- The possible twitter data plug errors produced when communicating with data plugs
- 
- - generalError: General error. Includes a description(String), the statusCode(Int?) and the error(Error?)
- */
-public enum TwitterError: Error {
+public enum HATError: Error {
     
     case generalError(String, Int?, Error?)
 }

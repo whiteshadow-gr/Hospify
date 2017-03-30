@@ -16,7 +16,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// All network related methods
-public class ΗΑΤNetworkHelper: NSObject {
+public class HATNetworkHelper: NSObject {
     
     // MARK: - Enums
     
@@ -70,7 +70,7 @@ public class ΗΑΤNetworkHelper: NSObject {
         contentType: String,
         parameters: Dictionary<String, Any>,
         headers: Dictionary<String, String>,
-        completion: @escaping (_ r: ΗΑΤNetworkHelper.ResultType) -> Void) -> Void {
+        completion: @escaping (_ r: HATNetworkHelper.ResultType) -> Void) -> Void {
         
         // do a post
         Alamofire.request(
@@ -86,6 +86,8 @@ public class ΗΑΤNetworkHelper: NSObject {
                 //print(response.data)     // server data
                 //print(response.result)   // result of response serialization
                 
+                UIApplication.shared.isNetworkActivityIndicatorVisible = true
+
                 switch response.result {
                 case .success(_):
                     
@@ -93,11 +95,11 @@ public class ΗΑΤNetworkHelper: NSObject {
                     if let value = response.result.value {
                         
                         let json = JSON(value)
-                        completion(ΗΑΤNetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json))
+                        completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json))
                         // else return isSuccess: false and nil for value
                     } else {
                         
-                        completion(ΗΑΤNetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                        completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
                     }
                     
                 // in case of failure return the error but check for internet connection or unauthorised status and let the user know
@@ -111,8 +113,10 @@ public class ΗΑΤNetworkHelper: NSObject {
                         
                     }
                     
-                    completion(ΗΑΤNetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
+                    completion(HATNetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
                 }
+                
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
         }
     }
     
@@ -136,8 +140,10 @@ public class ΗΑΤNetworkHelper: NSObject {
         contentType: String,
         parameters: Dictionary<String, Any>,
         headers: Dictionary<String, String>,
-        completion: @escaping (_ r: ΗΑΤNetworkHelper.ResultTypeString) -> Void) -> Void {
+        completion: @escaping (_ r: HATNetworkHelper.ResultTypeString) -> Void) -> Void {
         
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+
         // do a post
         Alamofire.request(
             url, /* request url */
@@ -160,18 +166,65 @@ public class ΗΑΤNetworkHelper: NSObject {
                     // check if we have a value and return it
                     if let value = response.result.value {
                         
-                        completion(ΗΑΤNetworkHelper.ResultTypeString.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: value))
+                        completion(HATNetworkHelper.ResultTypeString.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: value))
                         // else return isSuccess: false and nil for value
                     } else {
                         
-                        completion(ΗΑΤNetworkHelper.ResultTypeString.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                        completion(HATNetworkHelper.ResultTypeString.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
                     }
                 // return the error
                 case .failure(let error):
                     
-                    completion(ΗΑΤNetworkHelper.ResultTypeString.error(error: error, statusCode: response.response?.statusCode))
+                    completion(HATNetworkHelper.ResultTypeString.error(error: error, statusCode: response.response?.statusCode))
                 }
+                
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
         }
+    }
+    
+    // MARK: - Upload file
+    
+    /**
+     Uploads a specified file to the url provided
+     
+     - parameter filePath: A String representing the file path
+     - parameter url: The url to upload the file to
+     - parameter completion: A function to execute if everything is ok
+     */
+    public class func uploadFile(image: Data, url: String, progressUpdateHandler: ((Double) -> Void)?, completion: @escaping (_ r: HATNetworkHelper.ResultType) -> Void) {
+        
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        
+        let headers = ["x-amz-server-side-encryption" : "AES256"]
+        
+        Alamofire.upload(image, to: URL(string: url)!, method: .put, headers: headers).uploadProgress(closure: {(progress) -> Void in
+        
+            if let updateFunc = progressUpdateHandler {
+                
+                updateFunc(progress.fractionCompleted)
+            }
+        }).responseString(completionHandler: {(response) in
+        
+            switch response.result {
+            case .success(_):
+                
+                // check if we have a value and return it
+                if let value = response.result.value {
+                    
+                    completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: JSON(value)))
+                    // else return isSuccess: false and nil for value
+                } else {
+                    
+                    completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                }
+            // return the error
+            case .failure(let error):
+                
+                completion(HATNetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
+            }
+            
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        })
     }
     
     // MARK: - Query from string

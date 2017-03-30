@@ -142,8 +142,8 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         // show empty label
         showEptyLabelWith(text: "Checking data plugs....")
         
-        let userDomain = AccountService.TheUserHATDomain()
-        let userToken = AccountService.getUsersTokenFromKeychain()
+        let userDomain = HATAccountService.TheUserHATDomain()
+        let userToken = HATAccountService.getUsersTokenFromKeychain()
         
         // get Token for plugs
         HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: self.fetchFacebookData, failed: {_ in})
@@ -213,8 +213,8 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
     private func fetchTweets(parameters: Dictionary<String, String>) -> Void {
         
         // try to access twitter plug
-        let userToken = AccountService.getUsersTokenFromKeychain()
-        let userDomain = AccountService.TheUserHATDomain()
+        let userToken = HATAccountService.getUsersTokenFromKeychain()
+        let userDomain = HATAccountService.TheUserHATDomain()
         
         func twitterDataPlug(token: String?) {
 
@@ -248,7 +248,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         }
         
         // delete data from hat and remove from table
-        AccountService.checkIfTokenIsActive(token: userToken, success: success, failed: failed)
+        HATAccountService.checkIfTokenIsActive(token: userToken, success: success, failed: failed)
     }
     
     /**
@@ -363,8 +363,8 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
     private func fetchPosts(parameters: Dictionary<String, String>) -> Void {
         
         // get user's token
-        let userToken = AccountService.getUsersTokenFromKeychain()
-        let userDomain = AccountService.TheUserHATDomain()
+        let userToken = HATAccountService.getUsersTokenFromKeychain()
+        let userDomain = HATAccountService.TheUserHATDomain()
         
         // show message that the social feed is downloading
         self.showEptyLabelWith(text: "Fetching social feed...")
@@ -395,7 +395,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                                 if let url = URL(string: array[0]["data"]["profile_picture"]["url"].stringValue) {
                                     
                                     // download image
-                                    weakSelf2.facebookProfileImage?.downloadedFrom(url: url)
+                                    weakSelf2.facebookProfileImage?.downloadedFrom(url: url, completion: nil)
                                 } else {
                                     
                                     // set image to nil
@@ -432,7 +432,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         }
         
         // delete data from hat and remove from table
-        AccountService.checkIfTokenIsActive(token: userToken, success: success, failed: failed)
+        HATAccountService.checkIfTokenIsActive(token: userToken, success: success, failed: failed)
     }
     
     /**

@@ -74,7 +74,7 @@ public class HATNotesLocationData: Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         altitude = 0
         altitudeAccuracy = 0
@@ -89,7 +89,7 @@ public class HATNotesLocationData: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(dict: Dictionary<String, JSON>) {
+    public convenience init(dict: Dictionary<String, JSON>) {
         
         // init values first
         self.init()

@@ -135,7 +135,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         self.title = "Location"
         
         // user HAT domain
-        self.labelUserHATDomain.text = AccountService.TheUserHATDomain()
+        self.labelUserHATDomain.text = HATAccountService.TheUserHATDomain()
         
         // sync feedback delegate
         self.syncDataHelper.dataSyncDelegate = self
@@ -238,8 +238,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     func donePickerButton(sender: UIBarButtonItem) {
         
         self.textField.resignFirstResponder()
-        let userToken = AccountService.getUsersTokenFromKeychain()
-        let userDomain = AccountService.TheUserHATDomain()
+        let userToken = HATAccountService.getUsersTokenFromKeychain()
+        let userDomain = HATAccountService.TheUserHATDomain()
         
         let view = UIView()
         view.createFloatingView(frame: CGRect(x: self.view.frame.midX - 60, y: self.view.frame.midY - 15, width: 120, height: 30), color: .tealColor(), cornerRadius: 15)
@@ -254,11 +254,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
             
             func receivedLocations(json: [JSON]) {
                 
-                var array: [LocationsObject] = []
+                var array: [HATLocationsObject] = []
                 
                 for item in json {
                     
-                    array.append(LocationsObject(dict: item.dictionaryValue))
+                    array.append(HATLocationsObject(dict: item.dictionaryValue))
                 }
                 
                 let pins = self.createAnnotationsFrom(objects: array)
@@ -642,7 +642,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
      - parameter objects: The LocationsObjects to convert to FBAnnotation, pins
      - returns: An array of FBAnnotation, pins
      */
-    private func createAnnotationsFrom(objects: [LocationsObject]) -> [FBAnnotation] {
+    private func createAnnotationsFrom(objects: [HATLocationsObject]) -> [FBAnnotation] {
         
         var arrayToReturn: [FBAnnotation] = []
         

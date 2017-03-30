@@ -23,6 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     // MARK: - Variables
     
     var window: UIWindow?
+    var completion: ((CLLocation) -> Void)?
     private var region: CLCircularRegion? = nil
     
     /// Load the LocationManager
@@ -221,6 +222,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         self.region!.notifyOnExit = true
         locationManager.stopUpdatingLocation()
         locationManager.startMonitoring(for: region!)
+        
+        if self.completion != nil {
+            
+            self.completion!(locations.last!)
+            self.completion = nil
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
@@ -296,5 +303,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func endBackgroundUpdateTask(taskID: UIBackgroundTaskIdentifier) {
         
         UIApplication.shared.endBackgroundTask(taskID)
+    }
+    
+    func getCurrentLocation(completion: @escaping (CLLocation) -> Void) {
+        
+        self.completion = completion
+        self.locationManager.requestLocation()
     }
 }

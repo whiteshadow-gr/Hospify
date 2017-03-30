@@ -62,7 +62,7 @@ public class HATDataPlugDataSetObject: Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         name = ""
         description = ""
@@ -72,7 +72,7 @@ public class HATDataPlugDataSetObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(dict: Dictionary<String, JSON>) {
+    public convenience init(dict: Dictionary<String, JSON>) {
         
         self.init()
         

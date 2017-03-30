@@ -74,7 +74,7 @@ public class HATTwitterDataTweetsUsersSocialFeedObject: Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         friendsCount = ""
         id = ""
@@ -90,7 +90,7 @@ public class HATTwitterDataTweetsUsersSocialFeedObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(from dictionary: Dictionary<String, JSON>) {
+    public convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()
         

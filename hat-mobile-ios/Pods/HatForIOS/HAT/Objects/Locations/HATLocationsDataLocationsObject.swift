@@ -48,7 +48,7 @@ public class HATLocationsDataLocationsObject: Equatable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         latitude = ""
         longitude = ""
@@ -59,7 +59,7 @@ public class HATLocationsDataLocationsObject: Equatable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(dict: Dictionary<String, JSON>) {
+    public convenience init(dict: Dictionary<String, JSON>) {
         
         self.init()
         

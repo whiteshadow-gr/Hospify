@@ -22,9 +22,9 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     // MARK: - Variables
     
     /// a cached array of the notes to display
-    private var cachedNotesArray: [NotesData] = []
+    private var cachedNotesArray: [HATNotesData] = []
     /// an array of the notes to work on without touching the cachedNotesArray
-    private var notesArray: [NotesData] = []
+    private var notesArray: [HATNotesData] = []
     
     private var selectedIndex: Int? = nil
     
@@ -194,15 +194,15 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         }
 
         // get notes
-        self.token = AccountService.getUsersTokenFromKeychain()
-        AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+        self.token = HATAccountService.getUsersTokenFromKeychain()
+        HATAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         
         super.viewDidAppear(animated)
         
-        self.token = AccountService.getUsersTokenFromKeychain()
+        self.token = HATAccountService.getUsersTokenFromKeychain()
     }
 
     override func didReceiveMemoryWarning() {
@@ -225,7 +225,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             // for each dictionary parse it and add it to the array
             for dict in array {
                 
-                self.notesArray.append(NotesData.init(dict: dict.dictionary!))
+                self.notesArray.append(HATNotesData.init(dict: dict.dictionary!))
             }
             
             DispatchQueue.main.async {
@@ -270,7 +270,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     self.notablesFetchLimit = "500"
                     
                     // init object
-                    let object = NotesData(dict: (array.last?.dictionaryValue)!)
+                    let object = HATNotesData(dict: (array.last?.dictionaryValue)!)
                     
                     // get unixt date
                     let elapse = object.lastUpdated.timeIntervalSince1970
@@ -291,7 +291,8 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                                        "limit" : self.notablesFetchLimit]
                     
                     // fetch notes
-                    NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: {(statusCode) -> Void in return})
+                    let userDomain = HATAccountService.TheUserHATDomain()
+                    HATNotablesService.fetchNotables(userDomain: userDomain, authToken: self.token, structure: JSONHelper.createNotablesTableJSON(), parameters: self.parameters, success: self.showNotables, failure: {_ in})
                     
                 } else {
                     
@@ -342,11 +343,11 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             
             func proceedCompletion(result: String?) {
                 
-                let token = AccountService.getUsersTokenFromKeychain()
-
+                let token = HATAccountService.getUsersTokenFromKeychain()
+                let userDomain = HATAccountService.TheUserHATDomain()
                 func success(token: String?) {
                     
-                    NotablesService.deleteNoteWithKeychain(id: self.cachedNotesArray[indexPath.row].id, tkn: token!)
+                    HATNotablesService.deleteNote(id: self.cachedNotesArray[indexPath.row].id, tkn: token!, userDomain: userDomain)
                     self.cachedNotesArray.remove(at: indexPath.row)
                     tableView.deleteRows(at: [indexPath], with: .fade)
                     self.updateUI()
@@ -371,9 +372,8 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 }
                 
                 // delete data from hat and remove from table
-                AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+                HATAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
             }
-            
             // if it is shared show message else delete the row
             if self.cachedNotesArray[indexPath.row].data.shared {
                 
@@ -404,8 +404,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     private func connectToServerToGetNotes(result: String?) {
         
         // get token and refresh view
-        self.token = AccountService.getUsersTokenFromKeychain()
-        
+        self.token = HATAccountService.getUsersTokenFromKeychain()
         
         if token == "" {
             
@@ -415,14 +414,27 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             
             self.showEmptyTableLabelWith(message: "Accessing your HAT...")
             
-            NotablesService.fetchNotables(authToken: self.token, parameters: self.parameters, success: self.showNotables, failure: { (statusCode) -> Void in
+            let userDomain = HATAccountService.TheUserHATDomain()
+            HATNotablesService.fetchNotables(userDomain: userDomain, authToken: self.token, structure: JSONHelper.createNotablesTableJSON(), parameters: self.parameters, success: self.showNotables, failure: {
                 
-                if statusCode != 404 {
+                error in
+                switch error {
                     
-                    self.showEmptyTableLabelWith(message: "There was an error fetching notes. Please try again later")
-                } else if statusCode == 404 {
+                case .generalError(_, let statusCode, _) :
                     
-                    self.connectToServerToGetNotes(result: nil)
+                    if statusCode != nil {
+                        
+                        if statusCode != 404 && statusCode != 401 {
+                            
+                            self.showEmptyTableLabelWith(message: "There was an error fetching notes. Please try again later")
+                        }
+                        self.connectToServerToGetNotes(result: nil)
+                    }
+                case .tableDoesNotExist:
+                    
+                  HATAccountService.createHatTable(userDomain: userDomain, token: self.token, notablesTableStructure: JSONHelper.createNotablesTableJSON(), failed: {(error: HATTableError) -> Void in return})()
+                default:
+                    break
                 }
             })
         }
@@ -519,12 +531,10 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     temp.append(note)
                 }
                 
-                temp = NotablesService.removeDuplicatesFrom(array: temp)
-                
                 self.cachedNotesArray.removeAll()
                 
-                self.cachedNotesArray = temp
-                
+                self.cachedNotesArray = HATNotablesService.removeDuplicatesFrom(array: temp)
+                                
                 self.notesArray.removeAll()
                 
                 // reload table

@@ -38,8 +38,8 @@ public class HATAccountService: NSObject {
         let headers = [RequestHeaders.xAuthToken : token]
         
         // make the request
-        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion:
-            { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion:
+            { (r: HATNetworkHelper.ResultType) -> Void in
                 
                 switch r {
                     
@@ -82,14 +82,14 @@ public class HATAccountService: NSObject {
         let header = [RequestHeaders.xAuthToken : authToken]
         
         // make async request
-        ΗΑΤNetworkHelper.AsynchronousRequest(
+        HATNetworkHelper.AsynchronousRequest(
             tableURL,
             method: HTTPMethod.get,
             encoding: Alamofire.URLEncoding.default,
             contentType: ContentType.JSON,
             parameters: parameters,
             headers: header,
-            completion: {(r: ΗΑΤNetworkHelper.ResultType) -> Void in
+            completion: {(r: HATNetworkHelper.ResultType) -> Void in
                 
                 switch r {
                     
@@ -124,6 +124,10 @@ public class HATAccountService: NSObject {
                         } else if statusCode == 404 {
                             
                             errorCallback(.tableDoesNotExist)
+                        } else {
+                            
+                            let message = NSLocalizedString("Server responded with error", comment: "")
+                            errorCallback(.generalError(message, statusCode, nil))
                         }
                     }
                 }
@@ -148,7 +152,7 @@ public class HATAccountService: NSObject {
             let url = "https://" + userDomain + "/data/table"
             
             // make async request
-            ΗΑΤNetworkHelper.AsynchronousRequest(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: ContentType.JSON, parameters: notablesTableStructure, headers: headers, completion: { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
+            HATNetworkHelper.AsynchronousRequest(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: ContentType.JSON, parameters: notablesTableStructure, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
                 
                 // handle result
                 switch r {
@@ -194,7 +198,7 @@ public class HATAccountService: NSObject {
         let headers = [RequestHeaders.xAuthToken: token]
         
         // make the request
-        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: ContentType.Text, parameters: parameters, headers: headers, completion: { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: ContentType.Text, parameters: parameters, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
 
             // handle result
             switch r {
@@ -256,14 +260,14 @@ public class HATAccountService: NSObject {
         let header = [RequestHeaders.xAuthToken: authToken]
         
         // make async request
-        ΗΑΤNetworkHelper.AsynchronousRequest(
+        HATNetworkHelper.AsynchronousRequest(
             tableURL,
             method: HTTPMethod.get,
             encoding: Alamofire.URLEncoding.default,
             contentType: ContentType.JSON,
             parameters: parameters,
             headers: header,
-            completion: {(r: ΗΑΤNetworkHelper.ResultType) -> Void in
+            completion: {(r: HATNetworkHelper.ResultType) -> Void in
                 
                 switch r {
                     
@@ -302,6 +306,115 @@ public class HATAccountService: NSObject {
                         
                         let message = NSLocalizedString("Respond is not succesful", comment: "")
                         errorCallback(.generalError(message, statusCode, nil))
+                    }
+                }
+        })
+    }
+    
+    // MARK: - Upload File to hat
+    
+    /**
+     Uploads a file to hat
+     
+     - parameter fileName: The file name of the file to be uploaded
+     - parameter token: The owner's token
+     - parameter userDomain: The user hat domain
+     - parameter completion: A function to execute on success, returning the object returned from the server
+     - parameter errorCallback: A function to execute on failure, returning an error
+     */
+    public class func uploadFileToHAT(fileName: String, token: String, userDomain: String, completion: @escaping (FileUploadObject) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
+        
+        // create the url
+        let uploadURL = "https://" + userDomain + "/api/v2/files/upload"
+        
+        // create parameters and headers
+        let parameters: Dictionary<String, String> = HATJSONHelper.createFileUploadingJSONFrom(fileName: fileName) as! Dictionary<String, String>
+        let header = ["X-Auth-Token" : token]
+        
+        // make async request
+        HATNetworkHelper.AsynchronousRequest(
+            uploadURL,
+            method: HTTPMethod.post,
+            encoding: Alamofire.JSONEncoding.default,
+            contentType: "application/json",
+            parameters: parameters,
+            headers: header,
+            completion: {(r: HATNetworkHelper.ResultType) -> Void in
+                
+                switch r {
+                    
+                case .error(let error, let statusCode):
+                    
+                    let message = NSLocalizedString("Server responded with error", comment: "")
+                    errorCallback(.generalError(message, statusCode, error))
+                case .isSuccess(let isSuccess, let statusCode, let result):
+                    
+                    if isSuccess {
+                        
+                        let fileUploadJSON = FileUploadObject(from: result.dictionaryValue)
+                        
+                        //table found
+                        if statusCode == 200 {
+                            
+                            completion(fileUploadJSON)
+                        } else {
+                            
+                            let message = NSLocalizedString("Server responded with error", comment: "")
+                            errorCallback(.generalError(message, statusCode, nil))
+                        }
+                    }
+                }
+        })
+    }
+    
+    /**
+     Completes an upload of a file to hat
+     
+     - parameter fileID: The fileID of the file uploaded to hat
+     - parameter token: The owner's token
+     - parameter userDomain: The user hat domain
+     - parameter completion: A function to execute on success, returning the object returned from the server
+     - parameter errorCallback: A function to execute on failure, returning an error
+     */
+    public class func completeUploadFileToHAT(fileID: String, token: String, userDomain: String, completion: @escaping (FileUploadObject) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
+        
+        // create the url
+        let uploadURL = "https://" + userDomain + "/api/v2/files/file/" + fileID + "/complete"
+        
+        // create parameters and headers
+        let header = ["X-Auth-Token" : token]
+        
+        // make async request
+        HATNetworkHelper.AsynchronousRequest(
+            uploadURL,
+            method: HTTPMethod.put,
+            encoding: Alamofire.JSONEncoding.default,
+            contentType: "application/json",
+            parameters: [:],
+            headers: header,
+            completion: {(r: HATNetworkHelper.ResultType) -> Void in
+                
+                switch r {
+                    
+                case .error(let error, let statusCode):
+                    
+                    let message = NSLocalizedString("Server responded with error", comment: "")
+                    errorCallback(.generalError(message, statusCode, error))
+                case .isSuccess(let isSuccess, let statusCode, let result):
+                    
+                    if isSuccess {
+                        
+                        let fileUploadJSON = FileUploadObject(from: result.dictionaryValue)
+                        
+                        //table found
+                        if statusCode == 200 {
+                            
+                            completion(fileUploadJSON)
+                        } else {
+                            
+                            let message = NSLocalizedString("Server responded with error", comment: "")
+                            errorCallback(.generalError(message, statusCode, nil))
+                        }
                     }
                 }
         })

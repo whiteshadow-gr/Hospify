@@ -102,4 +102,18 @@ extension Date {
         components.second = -1
         return Calendar.current.date(byAdding: components, to: self.startOfTheDay())
     }
+    
+    func isoDate() -> String {
+        let f = DateFormatter()
+        f.timeZone = TimeZone(abbreviation: "UTC")
+        f.dateFormat = "yyyy:MM:dd"
+        return f.string(from: self)
+    }
+    
+    func isoTime() -> String {
+        let f = DateFormatter()
+        f.timeZone = TimeZone(abbreviation: "UTC")
+        f.dateFormat = "HH:mm:ss.SSSSSS"
+        return f.string(from: self)
+    }
 }

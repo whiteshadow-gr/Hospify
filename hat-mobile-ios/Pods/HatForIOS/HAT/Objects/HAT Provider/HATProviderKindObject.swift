@@ -63,7 +63,7 @@ public class HATProviderKindObject: Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         kind = ""
         domain = ""
@@ -74,7 +74,7 @@ public class HATProviderKindObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(from dictionary: Dictionary<String, JSON>) {
+    public convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()
         

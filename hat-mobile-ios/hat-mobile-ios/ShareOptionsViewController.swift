@@ -12,28 +12,39 @@
 
 import SafariServices
 import HatForIOS
+import Photos
+import AssetsLibrary
 
 // MARK: Class
 
 /// The share options view controller
-class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafariViewControllerDelegate {
+class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafariViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     // MARK: - Variables
     
     /// An array of strings holding the selected social networks to share the note
     private var shareOnSocial: [String] = []
     
-    /// An array of strings holding the selected social networks to share the note
-    private var dataPlugs: [DataPlugObject] = []
+    /// An array of strings holding the available data plugs
+    private var dataPlugs: [HATDataPlugObject] = []
+    
+    /// A variable holding a reference to the image picker view used to present the photo library or camera
+    private var imagePicker: UIImagePickerController!
+    
+    /// A variable holding the selected image from the image picker
+    private var imageSelected: UIImageView = UIImageView()
     
     /// A string passed from Notables view controller about the kind of the note
     var kind: String = "note"
+    /// The user's token
+    private let token: String = HATAccountService.getUsersTokenFromKeychain()
+    /// The user's hat domain
+    private let userDomain: String = HATAccountService.TheUserHATDomain()
+    /// The previous title for publish button
+    private var previousPublishButtonTitle: String? = nil
     
     /// the received note to edit from notables view controller
-    var receivedNote: NotesData? = nil
-    
-    /// Total notes user has, need this to show a message on the first time
-    var usersNotesCount: Int? = nil
+    var receivedNote: HATNotesData? = nil
     
     /// the cached received note to edit from notables view controller
     private var cachedIsNoteShared: Bool = false
@@ -75,6 +86,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     @IBOutlet weak var marketsquareButton: UIButton!
     /// An IBOutlet for handling the publish button
     @IBOutlet weak var publishButton: UIButton!
+    /// An IBOutlet for handling the add button
+    @IBOutlet weak var addButton: UIButton!
     
     /// An IBOutlet for handling the action view
     @IBOutlet weak var actionsView: UIView!
@@ -93,6 +106,36 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     // MARK: - IBActions
     
     /**
+     This function is called when the user touches the add media button
+     
+     - parameter sender: The object that called this function
+     */
+    @IBAction func addButtonAction(_ sender: Any) {
+        
+        let alertController = UIAlertController(title: "Select options", message: "Select from where to upload image", preferredStyle: .actionSheet)
+        
+        // create alert actions
+        let cameraAction = UIAlertAction(title: "Take photo", style: .default, handler: { (action) -> Void in
+            
+            self.presentImagePicker(buttonTitle: action.title!)
+        })
+        
+        let libraryAction = UIAlertAction(title: "Choose from library", style: .default, handler: { (action) -> Void in
+            
+            self.presentImagePicker(buttonTitle: action.title!)
+        })
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addActions(actions: [cameraAction, libraryAction, cancel])
+        
+        alertController.addiPadSupport(sourceRect: self.addButton.frame, sourceView: self.shareForView)
+        
+        // present alert controller
+        self.navigationController!.present(alertController, animated: true, completion: nil)
+    }
+    
+    /**
      This function is called when the user touches the twitter button
      
      - parameter sender: The object that called this function
@@ -100,30 +143,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     @IBAction func twitterButtonAction(_ sender: Any) {
         
         // change publish button settings
-        self.publishButton.isUserInteractionEnabled = false
-        self.publishButton.setTitle("Please Wait..", for: .normal)
+        self.changePublishButtonTo(title: "Please Wait..", userEnabled: false)
         
         // check if twitter is enabled
         self.isTwitterEnabled()
         
-        // if button is enabled
-        if self.twitterButton.isUserInteractionEnabled {
-            
-            // if button was selected deselect it and remove the button from the array
-            if self.twitterButton.alpha == 1 {
-                
-                self.twitterButton.alpha = 0.4
-                self.removeFromArray(string: "twitter")
-                // else select it and add it to the array
-            } else {
-                
-                self.twitterButton.alpha = 1
-                shareOnSocial.append("twitter")
-            }
-            
-            // construct string from the array and save it
-            self.receivedNote?.data.sharedOn = self.constructStringFromArray(array: self.shareOnSocial)
-        }
+        // refresh twitter button based on the bool value if it is user interaction enabled
+        self.refreshTwitterButton()
     }
     
     /**
@@ -140,55 +166,35 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         // create alert actions
         let oneDayAction = UIAlertAction(title: "1 day", style: .default, handler: { (action) -> Void in
             
-            self.durationSharedForLabel.text = "1 day"
-            self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.day, value:1, to: Date())!
-            self.shareForLabel.text = "Share for..."
+            self.updateShareOptions(buttonTitle: action.title!, byAdding: .day, value: 1)
         })
         
         let sevenDaysAction = UIAlertAction(title: "7 days", style: .default, handler: { (action) -> Void in
             
-            self.durationSharedForLabel.text = "7 days"
-            self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.day, value:7, to: Date())!
-            self.shareForLabel.text = "Share for..."
+            self.updateShareOptions(buttonTitle: action.title!, byAdding: .day, value: 7)
         })
         
         let fourteenDaysAction = UIAlertAction(title: "14 days", style: .default, handler: { (action) -> Void in
             
-            self.durationSharedForLabel.text = "14 days"
-            self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.day, value:14, to: Date())!
-            self.shareForLabel.text = "Share for..."
+            self.updateShareOptions(buttonTitle: action.title!, byAdding: .day, value: 14)
         })
         
         let oneMonthAction = UIAlertAction(title: "1 month", style: .default, handler: { (action) -> Void in
             
-            self.durationSharedForLabel.text = "1 month"
-            self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding:.month, value:1, to: Date())!
-            self.shareForLabel.text = "Share for..."
+            self.updateShareOptions(buttonTitle: action.title!, byAdding: .month, value: 1)
         })
         
         let forEverAction = UIAlertAction(title: "Forever", style: .default, handler: { (action) -> Void in
             
-            self.durationSharedForLabel.text = "Forever"
-            self.receivedNote?.data.publicUntil = nil
-            self.shareForLabel.text = "Share for..."
+            self.updateShareOptions(buttonTitle: action.title!, byAdding: nil, value: nil)
         })
         
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         // add those actions to the alert controller
-        alertController.addAction(oneDayAction)
-        alertController.addAction(sevenDaysAction)
-        alertController.addAction(fourteenDaysAction)
-        alertController.addAction(oneMonthAction)
-        alertController.addAction(forEverAction)
-        alertController.addAction(cancelButton)
-        
-        // if user is on ipad show as a pop up
-        if UI_USER_INTERFACE_IDIOM() == .pad {
-            
-            alertController.popoverPresentationController?.sourceRect = self.durationSharedForLabel.frame
-            alertController.popoverPresentationController?.sourceView = self.shareForView
-        }
+        let actionsArray = [oneDayAction, sevenDaysAction, fourteenDaysAction, oneMonthAction, forEverAction, cancelButton]
+        alertController.addActions(actions: actionsArray)
+        alertController.addiPadSupport(sourceRect: self.durationSharedForLabel.frame, sourceView: self.shareForView)
         
         // present alert controller
         self.navigationController!.present(alertController, animated: true, completion: nil)
@@ -204,6 +210,32 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         _ = self.navigationController?.popViewController(animated: true)
     }
     
+    func changePublishButtonTo(title: String, userEnabled: Bool) {
+        
+        self.previousPublishButtonTitle = self.publishButton.titleLabel?.text
+        
+        // change button title to saving
+        self.publishButton.setTitle(title, for: .normal)
+        self.publishButton.isUserInteractionEnabled = userEnabled
+        
+        if !userEnabled {
+            
+            self.publishButton.alpha = 0.5
+        }
+    }
+    
+    func restorePublishButtonToPreviousState(isUserInteractionEnabled: Bool) {
+        
+        // change publish button back to default state
+        self.publishButton.setTitle(self.previousPublishButtonTitle!, for: .normal)
+        self.publishButton.isUserInteractionEnabled = isUserInteractionEnabled
+        
+        if isUserInteractionEnabled {
+            
+            self.publishButton.alpha = 1
+        }
+    }
+    
     /**
      This function is called when the user touches the share button
      
@@ -216,23 +248,23 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             // hide keyboard
             self.textView.resignFirstResponder()
             
-            let previousButtonTitle = self.publishButton.titleLabel?.text
-            
-            // change button title to saving
-            self.publishButton.setTitle("Saving....", for: .normal)
-            self.publishButton.isUserInteractionEnabled = false
-            self.publishButton.alpha = 0.5
-            
-            // start the procedure to upload the note to the hat
-            let token = AccountService.getUsersTokenFromKeychain()
-            // if user is note editing an existing note post as a new note
+            self.changePublishButtonTo(title: "Saving...", userEnabled: false)
             
             func defaultCancelAction() {
                 
                 // change publish button back to default state
-                self.publishButton.setTitle(previousButtonTitle, for: .normal)
-                self.publishButton.isUserInteractionEnabled = true
-                self.publishButton.alpha = 1
+                self.restorePublishButtonToPreviousState(isUserInteractionEnabled: true)
+            }
+            
+            func postNote() {
+                
+                // save text
+                self.receivedNote?.data.message = self.textView.text!
+                
+                HATNotablesService.postNote(userDomain: self.userDomain, userToken: self.token, note: self.receivedNote!, successCallBack: {() -> Void in
+                    
+                    _ = self.navigationController?.popViewController(animated: true)
+                })
             }
             
             // if note is shared and users have not selected any social networks to share show alert message
@@ -244,47 +276,22 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             // not editing note
             if !isEditingExistingNote {
                 
-                func proceedCompletion() {
-                    
-                    // save text
-                    self.receivedNote?.data.message = self.textView.text!
-                    
-                    // post note
-                    NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
-                        
-                        _ = self.navigationController?.popViewController(animated: true)
-                    }, errorCallback: {() -> Void in
-                        
-                        defaultCancelAction()
-                    })
-                }
-                
                 if (receivedNote?.data.shared)! {
                     
-                    self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceedCompletion, cancelCompletion: defaultCancelAction)
+                    self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: postNote, cancelCompletion: defaultCancelAction)
                 } else {
                     
-                    proceedCompletion()
+                    postNote()
                 }
                 // else delete the existing note and post a new one
             } else {
                 
                 func proceedCompletion() {
                     
-                    // save text
-                    receivedNote?.data.message = self.textView.text!
-                    
                     // delete note
-                    NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
-                    // post note
-                    NotablesService.postNote(token: token, note: self.receivedNote!, successCallBack: {() -> Void in
-                        
-                        // go back
-                        _ = self.navigationController?.popViewController(animated: true)
-                    }, errorCallback: {() -> Void in
-                        
-                        defaultCancelAction()
-                    })
+                    HATNotablesService.deleteNote(id: (receivedNote?.id)!, tkn: self.token, userDomain: self.userDomain)
+                    
+                    postNote()
                 }
                 
                 // if note is shared and user has changed the text show alert message
@@ -301,22 +308,22 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     proceedCompletion()
                 }
             }
-            
         }
         
-        func success(token: String) {
-            
-            post(token: nil)
-        }
+        // delete data from hat and remove from table
+        HATAccountService.checkIfTokenIsActive(token: self.token, success: {_ in}, failed: self.checkIfReauthorisationIsNeeded(completion: post))
+    }
+    
+    func checkIfReauthorisationIsNeeded(completion: @escaping (String?) -> Void) -> (Int) -> Void {
         
-        func failed(statusCode: Int) {
+        return { (statusCode: Int) -> Void in
             
             if statusCode == 401 {
                 
                 let authoriseVC = AuthoriseUserViewController()
                 authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
                 authoriseVC.view.layer.cornerRadius = 15
-                authoriseVC.completionFunc = post
+                authoriseVC.completionFunc = completion
                 
                 // add the page view controller to self
                 self.addChildViewController(authoriseVC)
@@ -326,10 +333,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 self.publishButton.setTitle("Please try again", for: .normal)
             }
         }
-        
-        let token = AccountService.getUsersTokenFromKeychain()
-        // delete data from hat and remove from table
-        AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
     }
     
     /**
@@ -346,11 +349,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 
                 func proceedCompletion() {
                     
-                    // get user's token
-                    let token = AccountService.getUsersTokenFromKeychain()
-                    
                     // delete note
-                    NotablesService.deleteNoteWithKeychain(id: (receivedNote?.id)!, tkn: token)
+                    HATNotablesService.deleteNote(id: (receivedNote?.id)!, tkn: self.token, userDomain: self.userDomain)
                     
                     //go back
                     _ = self.navigationController?.popViewController(animated: true)
@@ -359,7 +359,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // if note shared show message
                 if cachedIsNoteShared {
                     
-                    self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {() -> Void in return})
+                    self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed", proceedCompletion: proceedCompletion, cancelCompletion: {})
                 } else {
                     
                     proceedCompletion()
@@ -367,32 +367,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             }
         }
         
-        func success(token: String) {
-            
-            delete(token: "")
-        }
-        
-        func failed(statusCode: Int) {
-            
-            if statusCode == 401 {
-                
-                let authoriseVC = AuthoriseUserViewController()
-                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
-                authoriseVC.view.layer.cornerRadius = 15
-                authoriseVC.completionFunc = delete
-                
-                // add the page view controller to self
-                self.addChildViewController(authoriseVC)
-                self.view.addSubview(authoriseVC.view)
-                authoriseVC.didMove(toParentViewController: self)
-                
-                self.deleteButtonOutlet.setTitle("Please try again", for: .normal)
-            }
-        }
-        
-        let token = AccountService.getUsersTokenFromKeychain()
         // delete data from hat and remove from table
-        AccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+        HATAccountService.checkIfTokenIsActive(token: self.token, success: delete, failed: self.checkIfReauthorisationIsNeeded(completion: delete))
     }
     
     /**
@@ -469,8 +445,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     
                     func successfulCallback() {
                         
-                        self.publishButton.setTitle("Save", for: .normal)
-                        self.publishButton.isUserInteractionEnabled = true
+                        self.changePublishButtonTo(title: "Save", userEnabled: true)
                     }
                     
                     func failedCallback() {
@@ -503,9 +478,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                     
                                     if dataPlugs[i].name == "facebook" {
                                         
-                                        let userDomain = AccountService.TheUserHATDomain()
-                                        
-                                        let url = "https://" + userDomain + "/hatlogin?name=Facebook&redirect=" + dataPlugs[i].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
+                                        let url = "https://" + self.userDomain + "/hatlogin?name=Facebook&redirect=" + dataPlugs[i].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
                                         
                                         self.safariVC = SFSafariViewController(url: URL(string: url)!)
                                         self.publishButton.setTitle("Save", for: .normal)
@@ -526,11 +499,9 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 
                 self.publishButton.setTitle("Please Wait..", for: .normal)
                 
-                let userToken = AccountService.getUsersTokenFromKeychain()
-                let userDomain = AccountService.TheUserHATDomain()
-                HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: facebookTokenReceived, failed: {
+                HATFacebookService.getAppTokenForFacebook(token: self.token, userDomain: self.userDomain, successful: facebookTokenReceived, failed: {
                     
-                        _ in self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                        _ in self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {})
                 })
                 
                 self.facebookButton.alpha = 1
@@ -570,15 +541,56 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         }
     }
     
+    // MARK: - Image picker Controller
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        
+        self.imagePicker.dismiss(animated: true, completion: nil)
+        self.imageSelected.image = (info[UIImagePickerControllerOriginalImage] as! UIImage)
+        
+        self.imageSelected.image = info[UIImagePickerControllerOriginalImage] as? UIImage
+        
+        UIImageWriteToSavedPhotosAlbum((self.imageSelected.image)!, self, #selector(self.image(_:didFinishSavingWithError:contextInfo:)), nil)
+        
+        HATAccountService.uploadFileToHAT(fileName: "rumpelPhoto", token: self.token, userDomain: self.userDomain,
+                                          completion: {(fileObject) -> Void in
+                                            
+                                            let data = UIImageJPEGRepresentation(self.imageSelected.image!, 1.0)
+                                            HATNetworkHelper.uploadFile(image: data!,
+                                                                        url: fileObject.contentURL,
+                                                                        progressUpdateHandler: {(progress) -> Void in
+                                                                        
+                                                                            print(progress)
+                                                                        },
+                                                                        completion: {(result) -> Void in
+                                                                            
+                                                                            print(fileObject)
+                                                                            HATAccountService.completeUploadFileToHAT(fileID: fileObject.fileID, token: self.token, userDomain: self.userDomain, completion: {(fileObject) -> Void in
+                                                                                
+                                                                                print(fileObject)
+                                                                            },
+                                                                        errorCallback: {(error) -> Void in return})
+                                            })
+        }, errorCallback: {(error) -> Void in return})
+    }
+    
+    func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        
+        if let error = error {
+            
+            // we got back an error!
+            let ac = UIAlertController(title: "Save error", message: error.localizedDescription, preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default))
+            present(ac, animated: true)
+        }
+    }
+    
     // MARK: - Check if twitter is available
     
     /**
      Check if twitter data plug is enabled
      */
     private func isTwitterEnabled() {
-        
-        let userDomain = AccountService.TheUserHATDomain()
-        let userToken = AccountService.getUsersTokenFromKeychain()
         
         // check data plug
         func checkDataPlug(appToken: String) {
@@ -596,20 +608,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // reset twitter button
                 func noAction() {
                     
-                    // if button was selected deselect it and remove the button from the array
-                    if self.twitterButton.alpha == 1 {
-                        
-                        self.twitterButton.alpha = 0.4
-                        self.removeFromArray(string: "twitter")
-                        // else select it and add it to the array
-                    } else {
-                        
-                        self.twitterButton.alpha = 1
-                        self.shareOnSocial.append("twitter")
-                        
-                        // construct string from the array and save it
-                        self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
-                    }
+                    self.refreshTwitterButton()
                     
                     self.publishButton.setTitle("Save", for: .normal)
                 }
@@ -626,9 +625,10 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                 // construct twitter
                                 let url = "https://" + userDomain + "/hatlogin?name=Twitter&redirect=" + data[i].url + "/authenticate/hat"
                                 
+                                self.restorePublishButtonToPreviousState(isUserInteractionEnabled: true)
+
                                 // open safari
                                 self.safariVC = SFSafariViewController(url: URL(string: url)!)
-                                self.publishButton.setTitle("Save", for: .normal)
                                 self.present(self.safariVC!, animated: true, completion: nil)
                                 
                                 // claim offer
@@ -649,13 +649,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             HATTwitterService.isTwitterDataPlugActive(token: appToken, successful: { _ in dataPlugIsEnabled()}, failed: {_ in dataPugIsNotEnabled()})
         }
         
-        self.publishButton.setTitle("Please Wait..", for: .normal)
+        self.changePublishButtonTo(title: "Please Wait..", userEnabled: false)
         // get app token for twitter
-        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: checkDataPlug, failed: {
+        HATTwitterService.getAppTokenForTwitter(userDomain: self.userDomain, token: self.token, successful: checkDataPlug, failed: {
             
             _ in
             // if something wrong show error
-            self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {})
             
             // reset ui
             self.turnUIElementsOn()
@@ -722,9 +722,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        
-        // Do any additional setup after loading the view.
-        
+                
         // set title in the navigation bar
         self.navigationItem.title = self.kind.capitalized
         
@@ -774,7 +772,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             // else init a new value
         } else {
             
-            self.receivedNote = NotesData()
+            self.receivedNote = HATNotesData()
             self.deleteButtonOutlet.isHidden = true
         }
         
@@ -810,24 +808,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         // Dispose of any resources that can be recreated.
     }
     
-    override func viewDidLayoutSubviews() {
-        
-        super.viewDidLayoutSubviews()
-        
-        // resize text ficiew
-        let contentSize = self.textView.sizeThatFits(self.textView.bounds.size)
-        var frame = self.textView.frame
-        frame.size.height = contentSize.height
-        self.textView.frame = frame
-        
-        textViewAspectRationConstraint = NSLayoutConstraint(item: self.textView, attribute: .height, relatedBy: .equal, toItem: self.textView, attribute: .width, multiplier: textView.bounds.height/textView.bounds.width, constant: 1)
-        self.textView.addConstraint(textViewAspectRationConstraint!)
-        
-        self.view.layoutSubviews()
-        
-        self.scrollView.setNeedsLayout()
-    }
-    
     // MARK: - Safari View controller notification
     
     func showAlertForDataPlug(notif: Notification) {
@@ -846,7 +826,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     /**
      Update the ui from the received note
      */
-    private func setUpUIElementsFromReceivedNote(_ receivedNote: NotesData) {
+    private func setUpUIElementsFromReceivedNote(_ receivedNote: HATNotesData) {
         
         // add message to the text field
         self.textView.text = receivedNote.data.message
@@ -968,6 +948,54 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         self.twitterButton.alpha = 0.4
     }
     
+    private func refreshTwitterButton() {
+        
+        // if button is enabled
+        if self.twitterButton.isUserInteractionEnabled {
+            
+            // if button was selected deselect it and remove the button from the array
+            if self.twitterButton.alpha == 1 {
+                
+                self.twitterButton.alpha = 0.4
+                self.removeFromArray(string: "twitter")
+                // else select it and add it to the array
+            } else {
+                
+                self.twitterButton.alpha = 1
+                shareOnSocial.append("twitter")
+            }
+            
+            // construct string from the array and save it
+            self.receivedNote?.data.sharedOn = self.constructStringFromArray(array: self.shareOnSocial)
+        }
+    }
+    
+    private func updateShareOptions(buttonTitle: String, byAdding: Calendar.Component?, value: Int?) {
+        
+        self.durationSharedForLabel.text = buttonTitle
+        if byAdding != nil && value != nil {
+            
+            self.receivedNote?.data.publicUntil = Calendar.current.date(byAdding: byAdding!, value: value!, to: Date())!
+        }
+        self.shareForLabel.text = "Share for..."
+    }
+    
+    private func presentImagePicker(buttonTitle: String) {
+        
+        self.imagePicker =  UIImagePickerController()
+        self.imagePicker.delegate = self
+        if buttonTitle == "Choose from library" {
+            
+            self.imagePicker.sourceType = .photoLibrary
+            self.imagePicker.mediaTypes = UIImagePickerController.availableMediaTypes(for: UIImagePickerControllerSourceType.photoLibrary)!
+        } else {
+            
+            self.imagePicker.sourceType = .camera
+        }
+        
+        self.present(self.imagePicker, animated: true, completion: nil)
+    }
+    
     // MARK: - Keyboard handling
     
     override func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -1055,21 +1083,12 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         func failCallback() {
             
-            self.createClassicOKAlertWith(alertMessage: "There was a problem enabling offer. Please try again later", alertTitle: "Error enabling offer", okTitle: "OK", proceedCompletion: {() -> Void in return})
-        }
-        
-        func succesfulCallBack(string: String) {
-            
-            
+            self.createClassicOKAlertWith(alertMessage: "There was a problem enabling offer. Please try again later", alertTitle: "Error enabling offer", okTitle: "OK", proceedCompletion: {})
         }
         
         // setup succesfulCallBack
-        let offerClaimForToken = HATDataPlugsService.ensureOfferDataDebitEnabled(offerID: "32dde42f-5df9-4841-8257-5639db222e41", succesfulCallBack: succesfulCallBack, failCallBack: failCallback)
+        let offerClaimForToken = HATDataPlugsService.ensureOfferDataDebitEnabled(offerID: "32dde42f-5df9-4841-8257-5639db222e41", succesfulCallBack: {_ in}, failCallBack: failCallback)
         
-        // get applicationToken async
-        let userDomain = AccountService.TheUserHATDomain()
-        let userToken = AccountService.getUsersTokenFromKeychain()
-        
-        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: {_ in failCallback()})
+        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: self.userDomain, token: self.token, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: {_ in failCallback()})
     }
 }

@@ -14,41 +14,37 @@ import SwiftyJSON
 
 // MARK: Class
 
-/// A class representing the user's details that made the post
-class FacebookDataPostsFromSocialFeedObject {
+public class FileUploadObjectPermissions: NSObject {
     
     // MARK: - Variables
-
-    /// The user's name
-    var name: String = ""
-    /// The user's id
-    var id: String = ""
     
+    public var userID: String = ""
+    public var contentReadable: String = ""
+
     // MARK: - Initialisers
     
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public override init() {
         
-        name = ""
-        id = ""
+        userID = ""
     }
     
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(from dictionary: Dictionary<String, JSON>) {
+    public convenience init(from dict: Dictionary<String, JSON>) {
         
         self.init()
         
-        if let tempName = dictionary["name"]?.stringValue {
+        if let tempUserID = dict["userID"]?.stringValue {
             
-            name = tempName
+            userID = tempUserID
         }
-        if let tempID = dictionary["id"]?.stringValue {
+        if let tempContentReadable = dict["contentReadable"]?.stringValue {
             
-            id = tempID
+            contentReadable = tempContentReadable
         }
     }
 }

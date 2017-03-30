@@ -12,13 +12,8 @@
 
 import UIKit
 
-// MARK: Protocol
-
-/// This protocol is used to compare the facebook and twitter objects for social feed
-protocol SocialFeedObject {
+class PhotosCollectionViewCell: UICollectionViewCell {
     
-    // MARK: - Variable
-
-    /// The last date updated of the record
-    var protocolLastUpdate: Date? {get set}
+    @IBOutlet weak var image: UIImageView!
+    
 }

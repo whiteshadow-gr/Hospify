@@ -60,7 +60,7 @@ public class HATFacebookDataSocialFeedObject: Comparable, HATSocialFeedObject {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         posts = HATFacebookDataPostsSocialFeedObject()
     }
@@ -68,7 +68,7 @@ public class HATFacebookDataSocialFeedObject: Comparable, HATSocialFeedObject {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    init(from dictionary: Dictionary<String, JSON>) {
+    public init(from dictionary: Dictionary<String, JSON>) {
         
         if let tempPosts = dictionary["posts"]?.dictionaryValue {
             

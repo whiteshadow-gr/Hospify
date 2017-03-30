@@ -26,8 +26,8 @@ extension HATDataPlugsService {
      */
     class func ensureOffersReady(succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) -> Void {
         
-        let userDomain = AccountService.TheUserHATDomain()
-        let userToken = AccountService.getUsersTokenFromKeychain()
+        let userDomain = HATAccountService.TheUserHATDomain()
+        let userToken = HATAccountService.getUsersTokenFromKeychain()
         // notables offer
         let offerID = "32dde42f-5df9-4841-8257-5639db222e41"
         
@@ -50,8 +50,8 @@ extension HATDataPlugsService {
         
         return {_ in
             
-            let userDomain = AccountService.TheUserHATDomain()
-            let userToken = AccountService.getUsersTokenFromKeychain()
+            let userDomain = HATAccountService.TheUserHATDomain()
+            let userToken = HATAccountService.getUsersTokenFromKeychain()
             
             // setup succesfulCallBack
             let offerClaimForToken = ensureOfferDataDebitEnabled(offerID: offerID, succesfulCallBack: succesfulCallBack, failCallBack: failCallBack)
@@ -130,8 +130,8 @@ extension HATDataPlugsService {
         return { (dataDebitID: String) in
             
             // get user token, we dont need apptoken for this
-            let userToken = AccountService.getUsersTokenFromKeychain()
-            let userDomain = AccountService.TheUserHATDomain()
+            let userToken = HATAccountService.getUsersTokenFromKeychain()
+            let userDomain = HATAccountService.TheUserHATDomain()
             
             // approve data debit
             HATDataPlugsService.approveDataDebit(dataDebitID, userToken: userToken, userDomain: userDomain, succesfulCallBack: succesfulCallBack, failCallBack: {_ in failCallBack()})
@@ -150,7 +150,7 @@ extension HATDataPlugsService {
     public class func createURLBasedOn(socialServiceName: String, socialServiceURL: String) -> String? {
         
         // set up the url to open safari to
-        let userDomain: String = AccountService.TheUserHATDomain()
+        let userDomain: String = HATAccountService.TheUserHATDomain()
         
         if socialServiceName == "twitter" {
             
@@ -210,8 +210,8 @@ extension HATDataPlugsService {
             HATTwitterService.isTwitterDataPlugActive(token: appToken, successful: { _ in enableCheckMarkOnTwitter()}, failed: {_ in disableCheckMarkOnTwitter()})
         }
         
-        let userDomain = AccountService.TheUserHATDomain()
-        let userToken = AccountService.getUsersTokenFromKeychain()
+        let userDomain = HATAccountService.TheUserHATDomain()
+        let userToken = HATAccountService.getUsersTokenFromKeychain()
         // get token for facebook and twitter and check if they are active
         HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: checkIfFacebookIsActive, failed: {_ in})
         

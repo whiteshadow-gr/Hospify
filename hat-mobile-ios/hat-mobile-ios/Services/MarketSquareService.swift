@@ -39,25 +39,6 @@ struct MarketSquareService {
         return Constants.HATDataPlugCredentials.Market_DataPlugID
     }
     
-    /**
-     Register with HAT url
-     
-     - parameter userHATDomain: The user's hat domain
-     - returns: HATRegistrationURLAlias
-     */
-    static func TheAppRegistrationWithHATURL(_ userHATDomain: String) -> Constants.HATRegistrationURLAlias {
-        
-        if let escapedUserHATDomain: String = userHATDomain.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) {
-            
-            let url: Constants.HATRegistrationURLAlias = Constants.RequestUrls.AppRegistrationWithHATURL +
-                self.TheMarketDataPlugID() + "/" + "connect?hat=" + escapedUserHATDomain
-            
-            return url
-        }
-        
-        return ""
-    }
-    
     // MARK: - Get app token
     
     /**
@@ -68,8 +49,8 @@ struct MarketSquareService {
      */
     static func getAppTokenForMarketsquare(successful: @escaping (String) -> Void, failed: @escaping (Void) -> Void) {
         
-        let userDomain = AccountService.TheUserHATDomain()
-        let userToken = AccountService.getUsersTokenFromKeychain()
+        let userDomain = HATAccountService.TheUserHATDomain()
+        let userToken = HATAccountService.getUsersTokenFromKeychain()
         
         HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: successful, failCallBack: {_ in failed()})
     }

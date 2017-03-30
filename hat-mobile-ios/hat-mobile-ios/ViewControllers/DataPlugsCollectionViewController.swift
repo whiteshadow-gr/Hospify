@@ -47,15 +47,8 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        alertController.addAction(logOutAction)
-        alertController.addAction(cancelAction)
-        
-        // if user is on ipad show as a pop up
-        if UI_USER_INTERFACE_IDIOM() == .pad {
-            
-            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
-            alertController.popoverPresentationController?.sourceView = self.view
-        }
+        alertController.addActions(actions: [logOutAction, cancelAction])
+        alertController.addiPadSupport(barButtonItem: self.navigationItem.rightBarButtonItem!, sourceView: self.view)
         
         // present alert controller
         self.navigationController!.present(alertController, animated: true, completion: nil)

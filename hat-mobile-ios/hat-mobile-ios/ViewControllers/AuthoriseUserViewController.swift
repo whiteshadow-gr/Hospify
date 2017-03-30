@@ -65,10 +65,10 @@ class AuthoriseUserViewController: UIViewController {
             // first of all, we close the safari vc
             self.safari?.dismissSafari(animated: true, completion: nil)
             
-            let userDomain = AccountService.TheUserHATDomain()
+            let userDomain = HATAccountService.TheUserHATDomain()
             
             // authorize with hat
-            HATLoginService.loginToHATAuthorization(userDomain: userDomain, url: url, success: self.completionFunc!, failed: {(error: AuthenicationError) -> Void in return})
+            HATLoginService.loginToHATAuthorization(userDomain: userDomain, url: url, success: self.completionFunc, failed: {(error: AuthenicationError) -> Void in return})
             
             // remove authorise view controller, that means remove self and notify the view controllers listening
             self.removeViewController()
@@ -104,7 +104,7 @@ class AuthoriseUserViewController: UIViewController {
     private func launchSafari() {
         
         // build up the hat domain auth url
-        let userDomain = AccountService.TheUserHATDomain()
+        let userDomain = HATAccountService.TheUserHATDomain()
         let hatDomainURL = "https://" + userDomain + "/hatlogin?name=" + Constants.Auth.ServiceName + "&redirect=" +
             Constants.Auth.URLScheme + "://" + Constants.Auth.LocalAuthHost
         

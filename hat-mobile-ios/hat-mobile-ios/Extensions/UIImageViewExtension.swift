@@ -10,7 +10,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
+import Alamofire
 
 // MARK: Extension
 
@@ -24,28 +24,24 @@ extension UIImageView {
      - parameter url: The url to download the image from
      - parameter mode: The content mode of the image, default value = scaleAspectFit
      */
-    public func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit) {
+    public func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit, completion: ((Void) -> Void)?) {
         
         contentMode = mode
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
+        
+        Alamofire.request(url).responseData {[weak self] response in
+            guard let data = response.result.value else { return }
+            let image = UIImage(data: data)
             
-            // check that the response is valid and we have the data we want
-            guard
-                let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
-                let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
-                let data2 = data, error == nil,
-                let image = UIImage(data: data2)
-                else { return }
-            
-            // set image on the main thread
-            DispatchQueue.main.async() { [weak self]
-                () -> Void in
+            if let weakSelf = self {
                 
-                if let weakSelf = self {
-                    
-                    weakSelf.image = image
-                }
+                weakSelf.image = image
             }
-        }.resume()
+            
+            if completion != nil {
+                
+                completion!()
+            }
+        }
+
     }
 }

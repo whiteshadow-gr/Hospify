@@ -84,10 +84,10 @@ public class HATLoginService: NSObject {
      - parameter url: The url to connect
      - parameter selfViewController: The UIViewController that calls this method
      */
-    public class func loginToHATAuthorization(userDomain: String, url: NSURL, success: @escaping (String?) -> Void, failed: ((AuthenicationError) -> Void)?) {
+    public class func loginToHATAuthorization(userDomain: String, url: NSURL, success: ((String?) -> Void)?, failed: ((AuthenicationError) -> Void)?) {
         
         // get token out
-        if let token = ΗΑΤNetworkHelper.GetQueryStringParameter(url: url.absoluteString, param: Auth.TokenParamName) {
+        if let token = HATNetworkHelper.GetQueryStringParameter(url: url.absoluteString, param: Auth.TokenParamName) {
                 
             // make asynchronous call
             // parameters..
@@ -98,7 +98,7 @@ public class HATLoginService: NSObject {
             if let url = HATAccountService.TheUserHATDomainPublicKeyURL(userDomain) {
                 
                 //. application/json
-                ΗΑΤNetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { (r: ΗΑΤNetworkHelper.ResultTypeString) -> Void in
+                HATNetworkHelper.AsynchronousStringRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.Text, parameters: parameters as Dictionary<String, AnyObject>, headers: headers) { (r: HATNetworkHelper.ResultTypeString) -> Void in
                     
                     switch r {
                     case .isSuccess(let isSuccess, let statusCode, let result):
@@ -162,7 +162,10 @@ public class HATLoginService: NSObject {
                                 
                                 if (isSuccessful.isSuccessful) {
                                     
-                                    success(token)
+                                    if success != nil {
+                                        
+                                        success!(token)
+                                    }
                                 } else {
                                     
                                     if failed != nil {

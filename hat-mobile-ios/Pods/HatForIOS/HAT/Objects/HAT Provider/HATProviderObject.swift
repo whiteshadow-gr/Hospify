@@ -88,7 +88,7 @@ public class HATProviderObject: Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         sku = ""
         name = ""
@@ -113,7 +113,7 @@ public class HATProviderObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(from dictionary: Dictionary<String, JSON>) {
+    public convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()
         

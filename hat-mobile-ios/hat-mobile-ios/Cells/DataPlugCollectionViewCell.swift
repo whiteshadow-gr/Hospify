@@ -46,7 +46,7 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
         // Configure the cell
         cell.dataPlugTitleLabel.text = dataPlug.name
         cell.dataPlugDetailsLabel.text = dataPlug.description
-        cell.dataPlugImage.downloadedFrom(url: URL(string: dataPlug.illustrationUrl)!)
+        cell.dataPlugImage.downloadedFrom(url: URL(string: dataPlug.illustrationUrl)!, completion: nil)
         cell.checkMarkImage.isHidden = !dataPlug.showCheckMark
         cell.backgroundColor = self.backgroundColorOfCellForIndexPath(indexPath, in: orientation)
         

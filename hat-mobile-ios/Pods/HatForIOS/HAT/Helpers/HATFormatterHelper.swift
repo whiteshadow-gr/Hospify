@@ -20,6 +20,21 @@ public class HATFormatterHelper: NSObject {
     // MARK: - String to Date formaters
     
     /**
+     Formats a date to ISO 8601 format
+     
+     - parameter date: The date to format
+     - returns: String
+     */
+    public class func formatDateToISO(date: Date) -> String {
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(abbreviation: "GMT")
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+        
+        return dateFormatter.string(from: date as Date)
+    }
+    
+    /**
      Formats a string into a Date
      
      - parameter string: The string to format to a Date

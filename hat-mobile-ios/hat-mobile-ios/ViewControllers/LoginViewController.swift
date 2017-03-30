@@ -331,9 +331,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
                 _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: token!)
             }
             
-            let userDomain = AccountService.TheUserHATDomain()
+            let userDomain = HATAccountService.TheUserHATDomain()
             
             self.enableLocationDataPlug(userDomain, userDomain)
+            _ = self.navigationController?.popToRootViewController(animated: false)
         }
         
         func failed(error: AuthenicationError) {
@@ -369,6 +370,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
         // authorize with hat
         let filteredDomain = self.removeDomainFromUserEnteredText(domain: self.inputUserHATDomain.text!)
+        _ = KeychainHelper.SetKeychainValue(key: Constants.Keychain.HATDomainKey, value: self.inputUserHATDomain.text! + (self.domainButton.titleLabel?.text)!)
         HATLoginService.loginToHATAuthorization(userDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, url: url, success: success, failed: failed)
     }
     

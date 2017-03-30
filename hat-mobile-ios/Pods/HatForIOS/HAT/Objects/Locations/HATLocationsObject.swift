@@ -48,7 +48,7 @@ public class HATLocationsObject: Equatable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         id = 0
         lastUpdate = nil
@@ -59,7 +59,7 @@ public class HATLocationsObject: Equatable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(dict: Dictionary<String, JSON>) {
+    public convenience init(dict: Dictionary<String, JSON>) {
         
         // init optional JSON fields to default values
         self.init()

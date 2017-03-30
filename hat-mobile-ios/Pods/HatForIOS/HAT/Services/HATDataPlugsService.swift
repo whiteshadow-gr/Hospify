@@ -29,7 +29,7 @@ public class HATDataPlugsService: NSObject {
         
         let url: String = "https://marketsquare.hubofallthings.com/api/dataplugs"
         
-        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: [:], completion: { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: [:], completion: { (r: HATNetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -80,7 +80,7 @@ public class HATDataPlugsService: NSObject {
         let url = "https://marketsquare.hubofallthings.com/api/offer/" + offerID + "/userClaim"
         
         // make async request
-        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -142,7 +142,7 @@ public class HATDataPlugsService: NSObject {
         let url = "https://marketsquare.hubofallthings.com/api/offer/" + offerID + "/claim"
         
         // make async request
-        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -192,7 +192,7 @@ public class HATDataPlugsService: NSObject {
         let url = "https://" + userDomain + "/dataDebit/" + dataDebitID + "/enable"
         
         // make async request
-        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .put, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .put, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -233,7 +233,7 @@ public class HATDataPlugsService: NSObject {
         let url = "https://" + userDomain + "/dataDebit/" + dataDebitID
         
         // make async request
-        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
             
             switch r {
                 
@@ -290,7 +290,7 @@ public class HATDataPlugsService: NSObject {
             let url = "https://social-plug.hubofallthings.com/api/user/token/status"
             
             // make async request
-            ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
+            HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
                 
                 switch r {
                     

@@ -32,9 +32,9 @@ import UIKit
     ///The background ring fill color
     @IBInspectable open var backgroundRingFillColor: UIColor = UIColor.clear
     ///The ring's start point
-    @IBInspectable open var startPoint: CGFloat = CGFloat(-M_PI_2)
+    @IBInspectable open var startPoint: CGFloat = CGFloat(Double.pi / 2)
     ///The ring's end point
-    @IBInspectable open var endPoint: CGFloat = CGFloat(M_PI_4 / 4)
+    @IBInspectable open var endPoint: CGFloat = CGFloat((Double.pi / 4) / 4)
     ///The ring's shadow radius
     @IBInspectable open var ringShadowRadius: CGFloat = 0.0
     ///The ring's shadow opacity
@@ -76,8 +76,8 @@ import UIKit
         backgroundRingFillColor = UIColor.clear
         backgroundRingColor = UIColor.gray
         ringLineWidth = 12.0
-        startPoint = CGFloat(-M_PI_2)
-        endPoint = CGFloat(M_PI_4 / 4)
+        startPoint = CGFloat(-Double.pi / 2)
+        endPoint = CGFloat((Double.pi / 4) / 4)
         ringShadowRadius = 0.0
         ringShadowOpacity = 0.0
         ringShadowOffset = CGSize.zero
@@ -152,7 +152,7 @@ import UIKit
         let Y = self.bounds.midY
         
         //create the background path of the circle
-        let backgroundRingPath = UIBezierPath(arcCenter: CGPoint(x: X, y: Y), radius: self.ringRadius, startAngle: (CGFloat(-M_PI_2)), endAngle: CGFloat(3 * M_PI_2), clockwise: true).cgPath
+        let backgroundRingPath = UIBezierPath(arcCenter: CGPoint(x: X, y: Y), radius: self.ringRadius, startAngle: (CGFloat(-Double.pi / 2)), endAngle: CGFloat(3 * (Double.pi / 2)), clockwise: true).cgPath
         //create the background path of the circle
         let path = UIBezierPath(arcCenter: CGPoint(x: X, y: Y), radius: self.ringRadius, startAngle: self.startPoint, endAngle: self.endPoint, clockwise: true).cgPath
         //add a full background circle

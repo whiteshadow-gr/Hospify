@@ -92,7 +92,7 @@ public class HATDataPlugObject: Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         uuid = ""
         name = ""
@@ -115,7 +115,7 @@ public class HATDataPlugObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(dict: Dictionary<String, JSON>){
+    public convenience init(dict: Dictionary<String, JSON>){
         
         self.init()
         

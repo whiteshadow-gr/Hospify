@@ -14,41 +14,38 @@ import SwiftyJSON
 
 // MARK: Class
 
-/// A class representing the system status object
-class SystemStatusObject: NSObject {
-    
+public class FileUploadObjectStatus: NSObject {
+
     // MARK: - Variables
     
-    /// The title of the object
-    var title: String = ""
-    /// The kind object holding the values
-    var kind: SystemStatusKindObject = SystemStatusKindObject()
+    public var status: String = ""
+    public var size: Int?
     
     // MARK: - Initialisers
     
     /**
      The default initialiser. Initialises everything to default values.
      */
-    override init() {
+    public override init() {
         
-        title = ""
-        kind = SystemStatusKindObject()
+        status = ""
+        size = nil
     }
     
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(from dictionary: Dictionary<String, JSON>) {
+    public convenience init(from dict: Dictionary<String, JSON>) {
         
         self.init()
         
-        if let tempTitle = dictionary["title"]?.stringValue {
+        if let tempStatus = dict["status"]?.stringValue {
             
-            title = tempTitle
+            status = tempStatus
         }
-        if let tempKind = dictionary["kind"]?.dictionaryValue {
+        if let tempSize = dict["size"]?.intValue {
             
-            kind = SystemStatusKindObject(from: tempKind)
+            size = tempSize
         }
     }
 }

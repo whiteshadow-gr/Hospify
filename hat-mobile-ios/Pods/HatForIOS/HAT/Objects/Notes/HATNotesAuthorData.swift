@@ -66,7 +66,7 @@ public class HATNotesAuthorData: Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         nickName = ""
         name = ""
@@ -78,7 +78,7 @@ public class HATNotesAuthorData: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(dict: Dictionary<String, JSON>) {
+    public convenience init(dict: Dictionary<String, JSON>) {
         
         // init optional JSON fields to default values
         self.init()

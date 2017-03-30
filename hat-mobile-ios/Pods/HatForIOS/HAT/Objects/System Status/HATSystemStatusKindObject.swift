@@ -61,7 +61,7 @@ public class HATSystemStatusKindObject: Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         metric = ""
         kind = ""
@@ -71,7 +71,7 @@ public class HATSystemStatusKindObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(from dictionary: Dictionary<String, JSON>) {
+    public convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()
         

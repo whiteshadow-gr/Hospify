@@ -60,7 +60,7 @@ public class HATLocationService: NSObject {
         let url = HATLocationService.locationDataPlugURL(userDomain, dataPlugID: HATDataPlugCredentials.Market_DataPlugID)
         
         // make asynchronous call
-        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: "application/json", parameters: parameters, headers: headers) { (r: ΗΑΤNetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: "application/json", parameters: parameters, headers: headers) { (r: HATNetworkHelper.ResultType) -> Void in
             
             switch r {
             case .isSuccess(let isSuccess, let statusCode, let result):

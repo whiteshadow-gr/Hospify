@@ -57,7 +57,7 @@ public class HATProviderPaymentObject: Comparable {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    init() {
+    public init() {
         
         subscription = ["period" : ""]
     }
@@ -65,7 +65,7 @@ public class HATProviderPaymentObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    convenience init(from dictionary: Dictionary<String, JSON>) {
+    public convenience init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()
         

@@ -13,6 +13,7 @@
 import Alamofire
 import SwiftyJSON
 import RealmSwift
+import HatForIOS
 
 // MARK: Class
 
@@ -144,7 +145,7 @@ class SyncDataHelper {
         let headers: [String : String] = NetworkHelper.ConstructRequestHeaders(MarketSquareService.TheMarketAccessToken())
 
         // construct url
-        let url = AccountService.TheUserHATAccessTokenURL()
+        let url = HATAccountService.TheUserHATAccessTokenURL()
         
         // make asynchronous call to get token
         NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers) { (r: NetworkHelper.ResultType) -> Void in
@@ -222,7 +223,7 @@ class SyncDataHelper {
         let headers: [String : String] = NetworkHelper.ConstructRequestHeaders(userHATAccessToken)
 
         // construct url
-        let url = AccountService.TheUserHATCheckIfTableExistsURL(tableName: Constants.HATDataSource().name, sourceName: Constants.HATDataSource().source)
+        let url = HATAccountService.TheUserHATCheckIfTableExistsURL(tableName: Constants.HATDataSource().name, sourceName: Constants.HATDataSource().source)
         
         // make asynchronous call to get token
         NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters , headers: headers) { (r: NetworkHelper.ResultType) -> Void in
@@ -308,7 +309,7 @@ class SyncDataHelper {
         let headers: [String : String] = NetworkHelper.ConstructRequestHeaders(userHATAccessToken)
 
         // construct url
-        let url = AccountService.TheConfigureNewDataSourceURL()
+        let url = HATAccountService.TheConfigureNewDataSourceURL()
         
         // make asynchronous call to get token
         NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers) { (r: NetworkHelper.ResultType) -> Void in
@@ -380,7 +381,7 @@ class SyncDataHelper {
         let headers: [String : String] = NetworkHelper.ConstructRequestHeaders(userHATAccessToken)
         
         // construct url
-        let url = AccountService.TheGetFieldInformationUsingTableIDURL(fieldID)
+        let url = HATAccountService.TheGetFieldInformationUsingTableIDURL(fieldID)
         
         // make asynchronous call to get token
         NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers) { (r: NetworkHelper.ResultType) -> Void in
@@ -497,7 +498,7 @@ class SyncDataHelper {
         let headers: [String : String] = NetworkHelper.ConstructRequestHeaders(userHATAccessToken)
         
         // construct url
-        let url = AccountService.ThePOSTDataToHATURL()
+        let url = HATAccountService.ThePOSTDataToHATURL()
         
         // make asynchronous call to get token
         NetworkHelper.AsynchronousRequestData(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: dataToPOSTToHAT.arrayObject! as [AnyObject], headers: headers, userHATAccessToken:  userHATAccessToken) { (r: NetworkHelper.ResultType) -> Void in

@@ -63,7 +63,7 @@ public class HATFacebookService: NSObject {
      - parameter successful: An @escaping (Void) -> Void method executed on a successful response
      - parameter failed: An @escaping (Void) -> Void) method executed on a failed response
      */
-    public class func isFacebookDataPlugActive(token: String, successful: @escaping (Bool) -> Void, failed: @escaping (FacebookError) -> Void) {
+    public class func isFacebookDataPlugActive(token: String, successful: @escaping (Bool) -> Void, failed: @escaping (DataPlugError) -> Void) {
         
         // construct the url, set parameters and headers for the request
         let url = Facebook.statusURL
@@ -71,7 +71,7 @@ public class HATFacebookService: NSObject {
         let headers = [RequestHeaders.xAuthToken : token]
         
         // make the request
-        ΗΑΤNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: {(r : ΗΑΤNetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: {(r : HATNetworkHelper.ResultType) -> Void in
             
             // act upon response
             switch r {

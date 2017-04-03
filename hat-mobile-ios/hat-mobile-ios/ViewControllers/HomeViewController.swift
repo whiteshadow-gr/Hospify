@@ -201,7 +201,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             
             // request for location tracking
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            appDelegate.locationManager.requestAlwaysAuthorization()
+            appDelegate.locationHelper.locationManager.requestAlwaysAuthorization()
             
             // check if the token has expired
             HATAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)

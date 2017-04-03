@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import CoreLocation
 import Fabric
 import Crashlytics
 import Stripe
@@ -18,27 +17,12 @@ import Stripe
 // MARK: Class
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - Variables
     
     var window: UIWindow?
-    var completion: ((CLLocation) -> Void)?
-    private var region: CLCircularRegion? = nil
-    
-    /// Load the LocationManager
-    lazy var locationManager: CLLocationManager! = {
-        
-        let locationManager = CLLocationManager()
-        locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
-        locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
-        locationManager.delegate = self
-        locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.requestAlwaysAuthorization()
-        locationManager.disallowDeferredLocationUpdates()
-        locationManager.activityType = CLActivityType.otherNavigation /* see https://developer.apple.com/reference/corelocation/clactivitytype */
-        return locationManager
-    }()
+    let locationHelper: UpdateLocations = UpdateLocations()
     
     // MARK: - App Delegate methods
     
@@ -46,17 +30,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // Override point for customization after application launch.
         
         Fabric.with([Crashlytics.self])
-        
         STPPaymentConfiguration.shared().publishableKey = "pk_live_IkuCnCV8N48VKdcMfbfb1Mp7"
         STPPaymentConfiguration.shared().appleMerchantIdentifier = "merchant.com.hubofallthings.rumpellocationtracker"
         
         // if app was closed by iOS (low mem, etc), then receives a location update, and respawns your app, letting it know it respawned due to a location service
         if launchOptions?[UIApplicationLaunchOptionsKey.location] != nil {
             
-            self.startUpdatingLocation()
+            self.locationHelper.startUpdatingLocation()
         }
-        self.startUpdatingLocation()
-        self.locationManager.startMonitoringSignificantLocationChanges()
+        
+        self.locationHelper.startMonitoringSignificantLocationChanges()
         
         // change tab bar item font
         UITabBarItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans", size: 11)!], for: UIControlState.normal)
@@ -73,14 +56,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         self.window?.tintColor = Constants.Colours.AppBase
         
-        let regions = self.locationManager.monitoredRegions
+        self.locationHelper.stopMonitoringAllRegions()
         
-        for region in regions {
-            
-            self.locationManager.stopMonitoring(for: region)
-        }
-        
-        self.locationManager.requestLocation()
+        self.locationHelper.requestLocation()
         
         UINavigationBar.appearance().isOpaque = true
         UINavigationBar.appearance().barTintColor = UIColor.tealColor()
@@ -132,14 +110,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         UIApplication.shared.scheduleLocalNotification(localNotification)
         
-        locationManager.stopUpdatingLocation()
+        locationHelper.stopUpdatingLocation()
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
         
-        locationManager.requestLocation()
-        self.startUpdatingLocation()
+        self.locationHelper.requestLocation()
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -147,14 +124,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         // purge old data
         self.purgeUsingPredicate()
-        self.startUpdatingLocation()
+        //self.startUpdatingLocation()
         self.endBackgroundUpdateTask(taskID: UIBackgroundTaskIdentifier.init())
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
         
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-        locationManager.stopUpdatingLocation()
+        self.locationHelper.stopUpdatingLocation()
         _ = self.beginBackgroundUpdateTask()
     }
     
@@ -202,96 +179,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         _ = RealmHelper.Purge(predicate)
     }
     
-    // MARK: - Location Manager Delegate Functions
-    
-    /**
-     The CLLocationManagerDelegate delegate
-     Called when location update changes
-     
-     - parameter manager:   The CLLocation manager used
-     - parameter locations: Array of locations
-     */
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
-        MapsHelper.addLocationsToDatabase(locationManager: manager, locations: locations)
-        
-        self.stopRegionTracking()
-        
-        self.region = CLCircularRegion(center: locations[locations.count - 1].coordinate, radius: 150, identifier: "UpdateCircle")
-        
-        self.region!.notifyOnExit = true
-        locationManager.stopUpdatingLocation()
-        locationManager.startMonitoring(for: region!)
-        
-        if self.completion != nil {
-            
-            self.completion!(locations.last!)
-            self.completion = nil
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        
-        if region is CLCircularRegion {
-            
-            self.locationManager.requestLocation()
-        }
-    }
-    
-    func startUpdatingLocation() -> Void {
-        
-        /*
-         If not authorised, we can ignore.
-         Onve user us logged in and has accepted the authorization, this will always be true
-         */
-        if let manager: CLLocationManager = locationManager {
-            
-            if let result = KeychainHelper.GetKeychainValue(key: "trackDevice") {
-                
-                if result == "true" {
-                    
-                    manager.requestLocation()
-                }
-            } else {
-                
-                _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "true")
-                self.stopRegionTracking()
-                self.locationManager.stopUpdatingLocation()
-                self.locationManager = nil
-                self.locationManager.stopMonitoringSignificantLocationChanges()
-            }
-        }
-    }
-    
-    private func stopRegionTracking() {
-        
-        if self.region != nil {
-            
-            self.locationManager.stopMonitoring(for: self.region!)
-            self.region = nil
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        
-        print("Monitoring failed for region with identifier: \(region!.identifier)")
-        Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Monitoring failed for region with identifier: " : "\(region!.identifier)"])
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        
-        print("Location Manager failed with the following error: \(error)")
-        Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Location Manager failed with the following error: " : "\(error)"])
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
-        
-        if error != nil {
-            
-            Crashlytics.sharedInstance().recordError(error!, withAdditionalUserInfo: ["error" : error!.localizedDescription, "statusCode: " : String(describing: manager.monitoredRegions)])
-        }
-    }
-    
     // MARK: - Background Task Functions
     
     // background task
@@ -303,11 +190,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func endBackgroundUpdateTask(taskID: UIBackgroundTaskIdentifier) {
         
         UIApplication.shared.endBackgroundTask(taskID)
-    }
-    
-    func getCurrentLocation(completion: @escaping (CLLocation) -> Void) {
-        
-        self.completion = completion
-        self.locationManager.requestLocation()
     }
 }

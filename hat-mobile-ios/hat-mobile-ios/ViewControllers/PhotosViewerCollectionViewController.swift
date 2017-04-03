@@ -40,6 +40,7 @@ class PhotosViewerCollectionViewController: UICollectionViewController {
         func success(filesReceived: [FileUploadObject]) {
             
             self.files = filesReceived
+            self.collectionView?.reloadData()
         }
         
         func failed(error: HATError) {

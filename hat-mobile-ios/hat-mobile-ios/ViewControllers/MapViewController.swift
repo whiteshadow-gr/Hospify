@@ -63,7 +63,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
             
             in
             self.performSegue(withIdentifier: "dataSegue", sender: self)
-            
         })
         
         let settingsAction = UIAlertAction(title: "Location Settings", style: .default, handler: {(alert: UIAlertAction) -> Void
@@ -562,10 +561,10 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         
         // apply changes
-        appDelegate.locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
-        appDelegate.locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
+        appDelegate.locationHelper.locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
+        appDelegate.locationHelper.locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
         
-        appDelegate.startUpdatingLocation()
+        appDelegate.locationHelper.startUpdatingLocation()
     }
 
     func onDataSyncFeedback(_ isSuccess: Bool, message: String) {

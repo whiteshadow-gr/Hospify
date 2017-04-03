@@ -125,9 +125,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.presentImagePicker(buttonTitle: action.title!)
         })
         
+        let locationAction = UIAlertAction(title: "Add Location", style: .default, handler: { (action) -> Void in
+            
+            self.performSegue(withIdentifier: "checkInSegue", sender: self)
+        })
+        
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        alertController.addActions(actions: [cameraAction, libraryAction, cancel])
+        alertController.addActions(actions: [cameraAction, libraryAction, locationAction, cancel])
         
         alertController.addiPadSupport(sourceRect: self.addButton.frame, sourceView: self.shareForView)
         
@@ -311,7 +316,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         }
         
         // delete data from hat and remove from table
-        HATAccountService.checkIfTokenIsActive(token: self.token, success: {_ in}, failed: self.checkIfReauthorisationIsNeeded(completion: post))
+        HATAccountService.checkIfTokenIsActive(token: self.token, success: post, failed: self.checkIfReauthorisationIsNeeded(completion: post))
     }
     
     func checkIfReauthorisationIsNeeded(completion: @escaping (String?) -> Void) -> (Int) -> Void {
@@ -550,7 +555,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         self.imageSelected.image = info[UIImagePickerControllerOriginalImage] as? UIImage
         
-        UIImageWriteToSavedPhotosAlbum((self.imageSelected.image)!, self, #selector(self.image(_:didFinishSavingWithError:contextInfo:)), nil)
+        //UIImageWriteToSavedPhotosAlbum((self.imageSelected.image)!, self, #selector(self.image(_:didFinishSavingWithError:contextInfo:)), nil)
+        PhotosHelper.sharedInstance.saveImage(image: self.imageSelected.image!, metadata: info[UIImagePickerControllerMediaMetadata] as! NSDictionary)
         
         HATAccountService.uploadFileToHAT(fileName: "rumpelPhoto", token: self.token, userDomain: self.userDomain,
                                           completion: {(fileObject) -> Void in
@@ -984,6 +990,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         self.imagePicker =  UIImagePickerController()
         self.imagePicker.delegate = self
+        
         if buttonTitle == "Choose from library" {
             
             self.imagePicker.sourceType = .photoLibrary

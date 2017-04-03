@@ -33,6 +33,7 @@
 		60113D331E856EB2000EAF89 /* HATAccountServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60113D321E856EB2000EAF89 /* HATAccountServiceExtension.swift */; };
 		601142771E5F877500A9D982 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601142761E5F877500A9D982 /* HomeViewController.swift */; };
 		601142791E5F967D00A9D982 /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601142781E5F967D00A9D982 /* HomeCollectionViewCell.swift */; };
+		601BDFD01E8D4D5A00213E37 /* CheckInMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601BDFCF1E8D4D5A00213E37 /* CheckInMapViewController.swift */; };
 		601FFD791E3A7E3600441EAD /* FirstOnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601FFD781E3A7E3600441EAD /* FirstOnboardingViewController.swift */; };
 		60236C751E1BA2A6003B4B92 /* GetAHATViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60236C741E1BA2A6003B4B92 /* GetAHATViewController.swift */; };
 		60275BA01E6DB3740098B66C /* TextPopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60275B9F1E6DB3740098B66C /* TextPopUpViewController.swift */; };
@@ -66,6 +67,9 @@
 		6045FBBE1E2EDAE300086926 /* LearnMorePHATAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6045FBBD1E2EDAE300086926 /* LearnMorePHATAViewController.swift */; };
 		604D68DE1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604D68DD1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift */; };
 		604D68E01DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604D68DF1DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift */; };
+		605EE0341E8DBF8600B265F6 /* UpdateLocationsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605EE0331E8DBF8600B265F6 /* UpdateLocationsDelegate.swift */; };
+		605EE0361E8DC02F00B265F6 /* UpdateLocations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605EE0351E8DC02F00B265F6 /* UpdateLocations.swift */; };
+		605EE03C1E92A5BF00B265F6 /* PhotosHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605EE03B1E92A5BF00B265F6 /* PhotosHelper.swift */; };
 		606435DB1E1B196F001A5D14 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606435DA1E1B196F001A5D14 /* DateExtension.swift */; };
 		606528D31DDA037400026EA6 /* JSONHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606528D21DDA037400026EA6 /* JSONHelper.swift */; };
 		607C107B1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C107A1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift */; };
@@ -167,6 +171,7 @@
 		60113D321E856EB2000EAF89 /* HATAccountServiceExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATAccountServiceExtension.swift; path = Extensions/HATAccountServiceExtension.swift; sourceTree = "<group>"; };
 		601142761E5F877500A9D982 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HomeViewController.swift; path = ViewControllers/HomeViewController.swift; sourceTree = "<group>"; };
 		601142781E5F967D00A9D982 /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HomeCollectionViewCell.swift; path = Cells/HomeCollectionViewCell.swift; sourceTree = "<group>"; };
+		601BDFCF1E8D4D5A00213E37 /* CheckInMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CheckInMapViewController.swift; path = ViewControllers/CheckInMapViewController.swift; sourceTree = "<group>"; };
 		601FFD781E3A7E3600441EAD /* FirstOnboardingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FirstOnboardingViewController.swift; path = ViewControllers/FirstOnboardingViewController.swift; sourceTree = "<group>"; };
 		60236C741E1BA2A6003B4B92 /* GetAHATViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GetAHATViewController.swift; path = ViewControllers/GetAHATViewController.swift; sourceTree = "<group>"; };
 		60275B9F1E6DB3740098B66C /* TextPopUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TextPopUpViewController.swift; path = ViewControllers/TextPopUpViewController.swift; sourceTree = "<group>"; };
@@ -201,6 +206,9 @@
 		6045FBBD1E2EDAE300086926 /* LearnMorePHATAViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LearnMorePHATAViewController.swift; path = ViewControllers/LearnMorePHATAViewController.swift; sourceTree = "<group>"; };
 		604D68DD1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATCapabilitiesPageViewController.swift; path = ViewControllers/HATCapabilitiesPageViewController.swift; sourceTree = "<group>"; };
 		604D68DF1DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATCapabilitiesViewController.swift; path = ViewControllers/HATCapabilitiesViewController.swift; sourceTree = "<group>"; };
+		605EE0331E8DBF8600B265F6 /* UpdateLocationsDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UpdateLocationsDelegate.swift; path = Protocols/UpdateLocationsDelegate.swift; sourceTree = "<group>"; };
+		605EE0351E8DC02F00B265F6 /* UpdateLocations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UpdateLocations.swift; path = Objects/UpdateLocations.swift; sourceTree = "<group>"; };
+		605EE03B1E92A5BF00B265F6 /* PhotosHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhotosHelper.swift; path = Utils/PhotosHelper.swift; sourceTree = "<group>"; };
 		606435DA1E1B196F001A5D14 /* DateExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DateExtension.swift; path = Extensions/DateExtension.swift; sourceTree = "<group>"; };
 		606528D21DDA037400026EA6 /* JSONHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSONHelper.swift; path = Utils/JSONHelper.swift; sourceTree = "<group>"; };
 		607C107A1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OnboardingTileCollectionViewCell.swift; path = Cells/OnboardingTileCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -499,6 +507,7 @@
 			isa = PBXGroup;
 			children = (
 				60E2679D1E55B9B800B6D626 /* AuthoriseUserViewController.swift */,
+				601BDFCF1E8D4D5A00213E37 /* CheckInMapViewController.swift */,
 				60DDE16C1E30E19300AB9E18 /* CompletePurchaseViewController.swift */,
 				60FAC7681E223A1D00532C01 /* DataPlugsCollectionViewController.swift */,
 				B591368B1D19F13500E9EDD0 /* DataViewController.swift */,
@@ -526,6 +535,7 @@
 				6044B2171DDB3151003A1263 /* TabBarViewController.swift */,
 				6097C0681E327506000E771A /* TermsAndConditionsViewController.swift */,
 				60275B9F1E6DB3740098B66C /* TextPopUpViewController.swift */,
+				605EE0351E8DC02F00B265F6 /* UpdateLocations.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -536,6 +546,7 @@
 				603D08B01E6D5E340077E90C /* AnimationHelper.swift */,
 				60F1D7E61E6828DA0009CF1F /* AuthenticationHelper.swift */,
 				B59136841D19D3BB00E9EDD0 /* Constants.swift */,
+				605EE03B1E92A5BF00B265F6 /* PhotosHelper.swift */,
 				60A727BC1DDF47EC008AF409 /* FormatterHelper.swift */,
 				606528D21DDA037400026EA6 /* JSONHelper.swift */,
 				60DDE16E1E30FCD200AB9E18 /* KeychainHelper.swift */,
@@ -566,6 +577,7 @@
 			children = (
 				B56E2FAB1D23DED900546C7E /* DataSyncDelegate.swift */,
 				B51CC9251D1D620C000C9E48 /* MapSettingsDelegate.swift */,
+				605EE0331E8DBF8600B265F6 /* UpdateLocationsDelegate.swift */,
 				B5E97D9A1D1C03A000CFD1C8 /* UpdateCountDelegate.swift */,
 			);
 			name = Protocols;
@@ -932,6 +944,7 @@
 				603926D41E604C3500DC1816 /* HomeHeaderCollectionReusableView.swift in Sources */,
 				60DD7F701E27D790000C1B1E /* ProfileCollectionViewCell.swift in Sources */,
 				60113D331E856EB2000EAF89 /* HATAccountServiceExtension.swift in Sources */,
+				601BDFD01E8D4D5A00213E37 /* CheckInMapViewController.swift in Sources */,
 				B591368C1D19F13500E9EDD0 /* DataViewController.swift in Sources */,
 				6090D4661E31316F004FD1E2 /* MarketSquareService.swift in Sources */,
 				B564E9A01D198C4D00EDB8F1 /* MapViewController.swift in Sources */,
@@ -965,6 +978,7 @@
 				603FDD511E43E7840086559B /* InfoHatProvidersViewController.swift in Sources */,
 				B59136851D19D3BB00E9EDD0 /* Constants.swift in Sources */,
 				603D08AF1E6D5CFF0077E90C /* RingProgressCircle.swift in Sources */,
+				605EE0341E8DBF8600B265F6 /* UpdateLocationsDelegate.swift in Sources */,
 				608EAAA81DFEA8AD00234C60 /* ViewControllerExtension.swift in Sources */,
 				60A727BD1DDF47ED008AF409 /* FormatterHelper.swift in Sources */,
 				60F1D7E71E6828DA0009CF1F /* AuthenticationHelper.swift in Sources */,
@@ -981,6 +995,7 @@
 				602CB44A1E8BF3AB00903F33 /* PhotosCollectionViewCell.swift in Sources */,
 				60B486251E1D341000914AD2 /* PurchaseModel.swift in Sources */,
 				6045FBBE1E2EDAE300086926 /* LearnMorePHATAViewController.swift in Sources */,
+				605EE0361E8DC02F00B265F6 /* UpdateLocations.swift in Sources */,
 				60DDE1711E31006600AB9E18 /* MapsHelper.swift in Sources */,
 				60AAA5B81E83D70A0080D0D5 /* HATProviderObjectExtension.swift in Sources */,
 				60113D2F1E856BBA000EAF89 /* HATDataplugsServiceExtension.swift in Sources */,
@@ -988,6 +1003,7 @@
 				6043F6D71E1D114D00C5BAD9 /* StripeViewController.swift in Sources */,
 				603D55C11E69962E00CCEBEB /* UIPageViewController.swift in Sources */,
 				60275BA01E6DB3740098B66C /* TextPopUpViewController.swift in Sources */,
+				605EE03C1E92A5BF00B265F6 /* PhotosHelper.swift in Sources */,
 				B51CC9281D1D7895000C9E48 /* LoginViewController.swift in Sources */,
 				6041B2101DD4AC190018CC31 /* NotablesTableViewCell.swift in Sources */,
 				60D317691E35FE52008E0A5F /* SocialFeedCollectionViewCell.swift in Sources */,

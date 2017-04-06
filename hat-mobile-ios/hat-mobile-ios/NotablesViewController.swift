@@ -1,4 +1,4 @@
-/**
+    /**
  * Copyright (C) 2017 HAT Data Exchange Ltd
  *
  * SPDX-License-Identifier: MPL2
@@ -26,6 +26,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     /// an array of the notes to work on without touching the cachedNotesArray
     private var notesArray: [HATNotesData] = []
     
+    /// the index of the selected note
     private var selectedIndex: Int? = nil
     
     /// the cells of the table
@@ -77,23 +78,15 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
         
-        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[unowned self] (alert: UIAlertAction) -> Void in
             
-            in
             TabBarViewController.logoutUser(from: self)
         })
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        alertController.addAction(logOutAction)
-        alertController.addAction(cancelAction)
-        
-        // if user is on ipad show as a pop up
-        if UI_USER_INTERFACE_IDIOM() == .pad {
-            
-            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
-            alertController.popoverPresentationController?.sourceView = self.view
-        }
+        alertController.addActions(actions: [logOutAction, cancelAction])
+        alertController.addiPadSupport(barButtonItem: self.navigationItem.rightBarButtonItem!, sourceView: self.view)
         
         // present alert controller
         self.navigationController!.present(alertController, animated: true, completion: nil)
@@ -112,20 +105,17 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         // fetch notes
         self.connectToServerToGetNotes(result: nil)
         
-        // FIXME: Do I need the bool result??
-        let boolResult = { (bool: String) -> Void in
+        // if something wrong show error
+        let failCallBack = { [weak self] () -> Void in
             
-            if bool == "true" {
+            if self != nil {
                 
-                // refresh
+                self!.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {})
             }
         }
         
-        // if something wrong show error
-        let failCallBack = { self.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {() -> Void in return}) }
-        
         // check if data plug is ready
-        HATDataPlugsService.ensureOffersReady(succesfulCallBack: boolResult, failCallBack: failCallBack)
+        HATDataPlugsService.ensureOffersReady(succesfulCallBack: {_ in}, failCallBack: failCallBack)
     }
     
     /**
@@ -165,17 +155,15 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         func success(token: String) {
             
-            if self.authorise != nil {
-                
-                self.authorise = nil
-            }
+            self.authorise = nil
+            
             // fetch notes
             self.connectToServerToGetNotes(result: nil)
         }
         
         func failed(statusCode: Int) {
             
-            if self.authorise == nil && statusCode == 401 {
+            if self.authorise == nil {
                 
                 self.authorise = AuthoriseUserViewController()
                 self.authorise!.view.backgroundColor = .clear
@@ -187,15 +175,23 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 self.addChildViewController(self.authorise!)
                 self.view.addSubview(self.authorise!.view)
                 self.authorise!.didMove(toParentViewController: self)
-            } else if statusCode == 404 {
-                
-                self.connectToServerToGetNotes(result: nil)
             }
         }
 
         // get notes
         self.token = HATAccountService.getUsersTokenFromKeychain()
-        HATAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+        let result = HATAccountService.checkIfTokenExpired(token: token)
+        
+        if result == self.token {
+            
+            success(token: self.token)
+        } else if result == "401" {
+            
+            failed(statusCode: 401)
+        } else {
+            
+            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -220,18 +216,21 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     private func showReceivedNotesFrom(array: [JSON]) {
         
-        DispatchQueue.global().async {
+        DispatchQueue.global().async { [weak self] () -> Void in
             
-            // for each dictionary parse it and add it to the array
-            for dict in array {
+            if let weakSelf = self {
                 
-                self.notesArray.append(HATNotesData.init(dict: dict.dictionary!))
-            }
-            
-            DispatchQueue.main.async {
+                // for each dictionary parse it and add it to the array
+                for dict in array {
+                    
+                    weakSelf.notesArray.append(HATNotesData.init(dict: dict.dictionary!))
+                }
                 
-                // update UI
-                self.updateUI()
+                DispatchQueue.main.async {
+                    
+                    // update UI
+                    weakSelf.updateUI()
+                }
             }
         }
     }
@@ -243,12 +242,15 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     @objc private func refreshData(notification: Notification) {
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] () -> Void in
             
-            if self.selectedIndex != nil {
+            if let weakSelf = self {
                 
-                self.cachedNotesArray.remove(at: self.selectedIndex!)
-                self.selectedIndex = nil
+                if weakSelf.selectedIndex != nil {
+                    
+                    weakSelf.cachedNotesArray.remove(at: weakSelf.selectedIndex!)
+                    weakSelf.selectedIndex = nil
+                }
             }
         }
     }
@@ -262,47 +264,47 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         if self.isViewLoaded && (self.view.window != nil) {
             
-            DispatchQueue.global().async {
+            DispatchQueue.global().async { [weak self] () -> Void in
                 
-                if array.count >= Int(self.notablesFetchLimit)! {
+                if let weakSelf = self {
                     
-                    // increase limit
-                    self.notablesFetchLimit = "500"
+                    if array.count >= Int(weakSelf.notablesFetchLimit)! {
+                        
+                        // increase limit
+                        weakSelf.notablesFetchLimit = "500"
+                        
+                        // init object
+                        let object = HATNotesData(dict: (array.last?.dictionaryValue)!)
+                        
+                        // get unixt date
+                        let elapse = object.lastUpdated.timeIntervalSince1970
+                        
+                        let temp = String(elapse)
+                        
+                        let array2 = temp.components(separatedBy: ".")
+                        
+                        // set unix date
+                        weakSelf.notablesFetchEndDate = array2[0]
+                        
+                        // change parameters
+                        weakSelf.parameters = ["starttime" : "0",
+                                           "endtime" : weakSelf.notablesFetchEndDate!,
+                                           "limit" : weakSelf.notablesFetchLimit]
+                        
+                        // fetch notes
+                        let userDomain = HATAccountService.TheUserHATDomain()
+                        HATNotablesService.fetchNotables(userDomain: userDomain, authToken: weakSelf.token, structure: JSONHelper.createNotablesTableJSON(), parameters: weakSelf.parameters, success: weakSelf.showNotables, failure: {_ in})
+                        
+                    } else {
+                        
+                        // revert parameters to initial values
+                        weakSelf.notablesFetchEndDate = nil
+                        weakSelf.parameters = ["starttime" : "0",
+                                           "limit" : weakSelf.notablesFetchLimit]
+                    }
                     
-                    // init object
-                    let object = HATNotesData(dict: (array.last?.dictionaryValue)!)
-                    
-                    // get unixt date
-                    let elapse = object.lastUpdated.timeIntervalSince1970
-                    
-                    let temp = String(elapse)
-                    
-                    let array2 = temp.components(separatedBy: ".")
-                    
-                    // set unix date
-                    self.notablesFetchEndDate = array2[0]
-                    
-                    print("Unix time" + String(describing: self.notablesFetchEndDate))
-                    print("notes received:" + String(array.count))
-                    
-                    // change parameters
-                    self.parameters = ["starttime" : "0",
-                                       "endtime" : self.notablesFetchEndDate!,
-                                       "limit" : self.notablesFetchLimit]
-                    
-                    // fetch notes
-                    let userDomain = HATAccountService.TheUserHATDomain()
-                    HATNotablesService.fetchNotables(userDomain: userDomain, authToken: self.token, structure: JSONHelper.createNotablesTableJSON(), parameters: self.parameters, success: self.showNotables, failure: {_ in})
-                    
-                } else {
-                    
-                    // revert parameters to initial values
-                    self.notablesFetchEndDate = nil
-                    self.parameters = ["starttime" : "0",
-                                       "limit" : self.notablesFetchLimit]
+                    weakSelf.showReceivedNotesFrom(array: array)
                 }
-                
-                self.showReceivedNotesFrom(array: array)
             }
         }
     }
@@ -333,7 +335,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         
-        // enable swipte to delete
+        // enable swipe to delete
         return true
     }
     
@@ -372,15 +374,25 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 }
                 
                 // delete data from hat and remove from table
-                HATAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+                let result = HATAccountService.checkIfTokenExpired(token: token)
+                
+                if result == self.token {
+                    
+                    success(token: self.token)
+                } else if result == "401" {
+                    
+                    failed(statusCode: 401)
+                } else {
+                    
+                    self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+                }
             }
             // if it is shared show message else delete the row
             if self.cachedNotesArray[indexPath.row].data.shared {
                 
                 self.createClassicAlertWith(alertMessage: "Deleting a note that has already been shared will not delete it at the destination. \n\nTo remove a note from the external site, first make it private. You may then choose to delete it.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Proceed",
-                    proceedCompletion: {() -> Void in
-                        proceedCompletion(result: nil)},
-                    cancelCompletion: {() -> Void in return})
+                    proceedCompletion: {proceedCompletion(result: nil)},
+                    cancelCompletion: {})
             } else {
                 
                 proceedCompletion(result: nil)
@@ -415,26 +427,34 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             self.showEmptyTableLabelWith(message: "Accessing your HAT...")
             
             let userDomain = HATAccountService.TheUserHATDomain()
-            HATNotablesService.fetchNotables(userDomain: userDomain, authToken: self.token, structure: JSONHelper.createNotablesTableJSON(), parameters: self.parameters, success: self.showNotables, failure: {
+            HATNotablesService.fetchNotables(userDomain: userDomain, authToken: self.token, structure: JSONHelper.createNotablesTableJSON(), parameters: self.parameters, success: self.showNotables, failure: {[weak self] error in
                 
-                error in
                 switch error {
                     
                 case .generalError(_, let statusCode, _) :
                     
-                    if statusCode != nil {
+                    if statusCode != nil && self != nil {
                         
                         if statusCode != 404 && statusCode != 401 {
                             
-                            self.showEmptyTableLabelWith(message: "There was an error fetching notes. Please try again later")
+                            self!.showEmptyTableLabelWith(message: "There was an error fetching notes. Please try again later")
                         }
-                        self.connectToServerToGetNotes(result: nil)
+                        self!.connectToServerToGetNotes(result: nil)
                     }
+                    
                 case .tableDoesNotExist:
                     
-                  HATAccountService.createHatTable(userDomain: userDomain, token: self.token, notablesTableStructure: JSONHelper.createNotablesTableJSON(), failed: {(error: HATTableError) -> Void in return})()
+                    if self != nil {
+                        
+                        HATAccountService.createHatTable(userDomain: userDomain, token: self!.token, notablesTableStructure: JSONHelper.createNotablesTableJSON(), failed: {(createTableError: HATTableError) -> Void in
+                            
+                            _ = CrashLoggerHelper.hatTableErrorLog(error: createTableError)
+                        })()
+                    }
+                    
                 default:
-                    break
+                    
+                    _ = CrashLoggerHelper.hatTableErrorLog(error: error)
                 }
             })
         }
@@ -457,7 +477,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 let cellIndexPath = self.tableView.indexPath(for: sender as! UITableViewCell)
                 destinationVC?.receivedNote = self.cachedNotesArray[(cellIndexPath?.row)!]
                 destinationVC?.isEditingExistingNote = true
-                //destinationVC?.usersNotesCount = self.notesArray.count
             } else {
                 
                 destinationVC?.kind = self.kind
@@ -487,26 +506,29 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     private func showEmptyTableLabelWith(message: String) {
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] () -> Void in
             
-            if self.cachedNotesArray.count == 0 {
+            if let weakSelf = self {
                 
-                var stringMessage = message
-                
-                if stringMessage == "The Internet connection appears to be offline." {
+                if weakSelf.cachedNotesArray.count == 0 {
                     
-                    self.retryConnectingButton.isHidden = false
-                    stringMessage = "No Internet connection. Please retry"
-                } else {
+                    var stringMessage = message
                     
-                    self.retryConnectingButton.isHidden = true
+                    if stringMessage == "The Internet connection appears to be offline." {
+                        
+                        weakSelf.retryConnectingButton.isHidden = false
+                        stringMessage = "No Internet connection. Please retry"
+                    } else {
+                        
+                        weakSelf.retryConnectingButton.isHidden = true
+                    }
+                    
+                    weakSelf.eptyTableInfoLabel.isHidden = false
+                    
+                    weakSelf.eptyTableInfoLabel.text = stringMessage
+                    
+                    weakSelf.tableView.isHidden = true
                 }
-                
-                self.eptyTableInfoLabel.isHidden = false
-                
-                self.eptyTableInfoLabel.text = stringMessage
-                
-                self.tableView.isHidden = true
             }
         }
     }
@@ -516,33 +538,36 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     private func updateUI() {
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] () -> Void in
             
-            if self.notesArray.count > 0 {
+            if let weakSelf = self {
                 
-                self.eptyTableInfoLabel.isHidden = true
-                
-                self.tableView.isHidden = false
-                
-                var temp = self.cachedNotesArray
-                
-                for note in self.notesArray {
+                if weakSelf.notesArray.count > 0 {
                     
-                    temp.append(note)
+                    weakSelf.eptyTableInfoLabel.isHidden = true
+                    
+                    weakSelf.tableView.isHidden = false
+                    
+                    var temp = weakSelf.cachedNotesArray
+                    
+                    for note in weakSelf.notesArray {
+                        
+                        temp.append(note)
+                    }
+                    
+                    weakSelf.cachedNotesArray.removeAll()
+                    
+                    weakSelf.cachedNotesArray = HATNotablesService.removeDuplicatesFrom(array: temp)
+                    
+                    weakSelf.notesArray.removeAll()
+                    
+                    // reload table
+                    weakSelf.tableView.reloadData()
+                    
+                } else if weakSelf.notesArray.count == 0 {
+                    
+                    weakSelf.showEmptyTableLabelWith(message: "No notables. Keep your words on your HAT. Create your first notable!")
                 }
-                
-                self.cachedNotesArray.removeAll()
-                
-                self.cachedNotesArray = HATNotablesService.removeDuplicatesFrom(array: temp)
-                                
-                self.notesArray.removeAll()
-                
-                // reload table
-                self.tableView.reloadData()
-                
-            } else if self.notesArray.count == 0 {
-                
-                self.showEmptyTableLabelWith(message: "No notables. Keep your words on your HAT. Create your first notable!")
             }
         }
     }

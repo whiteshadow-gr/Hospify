@@ -10,17 +10,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import HatForIOS
 
 // MARK: Class
 
+/// The collectionViewController for the photo viewer
 class PhotosViewerCollectionViewController: UICollectionViewController {
     
     // MARK: - Variables
     
+    /// The files, images, to show in the cells
     private var files: [FileUploadObject] = []
     
+    /// The reuse identifier of the cell
     private let reuseIdentifier = "photosCell"
     
     // MARK: - View controller methods
@@ -34,20 +36,24 @@ class PhotosViewerCollectionViewController: UICollectionViewController {
         
         super.viewWillAppear(animated)
         
+        // get the user domain and token
         let userDomain = HATAccountService.TheUserHATDomain()
         let token = HATAccountService.getUsersTokenFromKeychain()
         
         func success(filesReceived: [FileUploadObject]) {
             
+            // save the files received and reload data
             self.files = filesReceived
             self.collectionView?.reloadData()
         }
         
         func failed(error: HATError) {
             
-            print(error)
+            // log error
+            _ = CrashLoggerHelper.hatErrorLog(error: error)
         }
         
+        // search for available files on hat
         HATFileService.searchFiles(userDomain: userDomain, token: token, successCallback: success, errorCallBack: failed)
     }
 
@@ -85,7 +91,7 @@ class PhotosViewerCollectionViewController: UICollectionViewController {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? PhotosCollectionViewCell
     
         // Configure the cell
-        cell!.image.downloadedFrom(url: URL(string: self.files[indexPath.row].contentURL)!, completion: { })
+        cell!.image.downloadedFrom(url: URL(string: self.files[indexPath.row].contentURL)!, completion: {})
     
         return cell!
     }

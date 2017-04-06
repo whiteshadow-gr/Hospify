@@ -1,4 +1,4 @@
-    /**
+/**
  * Copyright (C) 2017 HAT Data Exchange Ltd
  *
  * SPDX-License-Identifier: MPL2
@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import SwiftyJSON
 import HatForIOS
     
 // MARK: Class

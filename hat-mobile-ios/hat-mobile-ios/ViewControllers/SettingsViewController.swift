@@ -73,26 +73,26 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
         self.title = NSLocalizedString("settings_label", comment: "settings title")
         
         // add keyboard handling
-        self.hideKeyboardWhenTappedAround()
+        //self.hideKeyboardWhenTappedAround()
         
         // get settings from userdefault
-        self.readAndDisplayCurrentDefaults()
+        //self.readAndDisplayCurrentDefaults()
         
         // select the right row in picker view
-        self.selectRowInPickerViewFromUserDefaults(picker: self.pickerAccuracy, animated: true)
+        //self.selectRowInPickerViewFromUserDefaults(picker: self.pickerAccuracy, animated: true)
        
         // add inputAccessoryView to the text fields
-        let keyboardToolbar = UIToolbar()
-        keyboardToolbar.sizeToFit()
+//        let keyboardToolbar = UIToolbar()
+//        keyboardToolbar.sizeToFit()
+//        
+//        let flexBarButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+//        let doneBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: view, action: #selector(UIView.endEditing(_:)))
+//        keyboardToolbar.items = [flexBarButton, doneBarButton]
+//        
+//        self.textFieldDistance.inputAccessoryView = keyboardToolbar
+//        self.textFieldDeferredTime.inputAccessoryView = keyboardToolbar
+//        self.textFieldDeferredDistance.inputAccessoryView = keyboardToolbar
         
-        let flexBarButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: view, action: #selector(UIView.endEditing(_:)))
-        keyboardToolbar.items = [flexBarButton, doneBarButton]
-        
-        self.textFieldDistance.inputAccessoryView = keyboardToolbar
-        self.textFieldDeferredTime.inputAccessoryView = keyboardToolbar
-        self.textFieldDeferredDistance.inputAccessoryView = keyboardToolbar
-                
         if let result = KeychainHelper.GetKeychainValue(key: "trackDevice") {
             
             if result == "true" {
@@ -242,37 +242,37 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
      */
     private func storeValues() {
         
-        guard Double(self.textFieldDistance.text!) != nil else {
-            
-            self.readAndDisplayCurrentDefaults()
-            return
-        }
-        
-        guard Double(self.textFieldDeferredDistance.text!) != nil else {
-            
-            self.readAndDisplayCurrentDefaults()
-            return
-        }
-        
-        guard Double(self.textFieldDeferredTime.text!) != nil else {
-            
-            self.readAndDisplayCurrentDefaults()
-            return
-        }
-        
-        // save distance and time prefs
-        // distance
-        let preferences = UserDefaults.standard
-        // distance
-        preferences.set(Double(self.textFieldDistance.text!)!, forKey: Constants.Preferences.MapLocationDistance)
-        // deferred distance
-        preferences.set(Double(self.textFieldDeferredDistance.text!)!, forKey: Constants.Preferences.MapLocationDeferredDistance)
-        // time
-        preferences.set(Double(self.textFieldDeferredTime.text!)!, forKey: Constants.Preferences.MapLocationDeferredTimeout)
+//        guard Double(self.textFieldDistance.text!) != nil else {
+//            
+//            //self.readAndDisplayCurrentDefaults()
+//            return
+//        }
+//        
+//        guard Double(self.textFieldDeferredDistance.text!) != nil else {
+//            
+//            //self.readAndDisplayCurrentDefaults()
+//            return
+//        }
+//        
+//        guard Double(self.textFieldDeferredTime.text!) != nil else {
+//            
+//            //self.readAndDisplayCurrentDefaults()
+//            return
+//        }
+//        
+//        // save distance and time prefs
+//        // distance
+//        let preferences = UserDefaults.standard
+//        // distance
+//        preferences.set(Double(self.textFieldDistance.text!)!, forKey: Constants.Preferences.MapLocationDistance)
+//        // deferred distance
+//        preferences.set(Double(self.textFieldDeferredDistance.text!)!, forKey: Constants.Preferences.MapLocationDeferredDistance)
+//        // time
+//        preferences.set(Double(self.textFieldDeferredTime.text!)!, forKey: Constants.Preferences.MapLocationDeferredTimeout)
         
         // pass new settings back and read the defaults from user defaults
         self.mapSettingsDelegate?.onChanged()
-        readAndDisplayCurrentDefaults()
+        //readAndDisplayCurrentDefaults()
     }
     
     /**

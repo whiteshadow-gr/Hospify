@@ -75,7 +75,7 @@ class SyncDataHelper {
         let predicate = NSPredicate(format: "lastSynced == %@")
         
         //Get the results. Results list is optional
-        if let results: Results<DataPoint> = RealmHelper.GetResults(predicate) {
+        if let results: Results<DataPoint> = RealmHelper.getResults(predicate) {
             
             var theBlockDataPoints: [DataPoint] = []
             
@@ -137,9 +137,6 @@ class SyncDataHelper {
      - parameter dataPoints: The data points to sync
      */
     func GetAccesstokenForUser(_ dataPoints: [DataPoint]) {
-    
-        // parameters..
-        let parameters = ["" : ""]
         
         // auth header
         let headers: [String : String] = NetworkHelper.ConstructRequestHeaders(MarketSquareService.TheMarketAccessToken())
@@ -148,57 +145,60 @@ class SyncDataHelper {
         let url = HATAccountService.TheUserHATAccessTokenURL()
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers) { (r: NetworkHelper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: headers) {[weak self] (r: NetworkHelper.ResultType) -> Void in
             
             // the result from asynchronous call to login
-            
-            let checkResult: String = "accessToken"
-            
-            switch r {
+            if let weakSelf = self {
                 
-            case .isSuccess(let isSuccess, _, let result):
-                if isSuccess{
+                let checkResult: String = "accessToken"
+                
+                switch r {
                     
-                    //print("JSON res: \(theResult)")
+                case .isSuccess(let isSuccess, _, let result):
+                    
+                    if isSuccess{
                         
-                    // belt and braces.. check we have a accessToken in the returned JSON
-                    if result[checkResult].exists() {
-                        
-                        // get the user HAT access token ..
-                        let userHATAccessToken = result[checkResult].stringValue
-                        
-                        // 2. Check if DateSource exists
-                        self.CheckIfUserDataSourceExists(userHATAccessToken, dataPoints: dataPoints)
-                        
-                        // inform user
-                        if (self.dataSyncDelegate != nil) {
+                        // belt and braces.. check we have a accessToken in the returned JSON
+                        if result[checkResult].exists() {
                             
-                            self.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
+                            // get the user HAT access token ..
+                            let userHATAccessToken = result[checkResult].stringValue
+                            
+                            // 2. Check if DateSource exists
+                            weakSelf.CheckIfUserDataSourceExists(userHATAccessToken, dataPoints: dataPoints)
+                            
+                            // inform user
+                            if (weakSelf.dataSyncDelegate != nil) {
+                                
+                                weakSelf.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
+                            }
+                            // inform user that accessToken does not exist
+                        } else {
+                            
+                            if (weakSelf.dataSyncDelegate != nil) {
+                                
+                                let message = checkResult +  " not found in server response"
+                                weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: message)
+                            }
                         }
-                    // inform user that accessToken does not exist
+                        // inform user that there was an error
                     } else {
                         
-                        if (self.dataSyncDelegate != nil) {
+                        if (weakSelf.dataSyncDelegate != nil) {
                             
-                            self.dataSyncDelegate?.onDataSyncFeedback(false, message: checkResult +  " not found")
+                            weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
                         }
                     }
+                    
                 // inform user that there was an error
-                } else {
+                case .error(let error, let statusCode):
                     
-                    if (self.dataSyncDelegate != nil) {
+                    if (weakSelf.dataSyncDelegate != nil) {
                         
-                        self.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
+                        let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                        weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
+                        _ = CrashLoggerHelper.customErrorLog(message: msg, error: error)
                     }
-                }
-                
-            // inform user that there was an error
-            case .error(let error, let statusCode):
-                
-                if (self.dataSyncDelegate != nil) {
-                    
-                    let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                    self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
                 }
             }
         }
@@ -216,9 +216,6 @@ class SyncDataHelper {
      */
     func CheckIfUserDataSourceExists(_ userHATAccessToken: String, dataPoints: [DataPoint]) {
         
-        // parameters..
-        let parameters = ["" : ""]
-        
         // auth header
         let headers: [String : String] = NetworkHelper.ConstructRequestHeaders(userHATAccessToken)
 
@@ -226,67 +223,69 @@ class SyncDataHelper {
         let url = HATAccountService.TheUserHATCheckIfTableExistsURL(tableName: Constants.HATDataSource().name, sourceName: Constants.HATDataSource().source)
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters , headers: headers) { (r: NetworkHelper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:] , headers: headers) {[weak self] (r: NetworkHelper.ResultType) -> Void in
             
-            // the result from asynchronous call to login
-            
-            let checkResult: String = "id"
-            
-            switch r {
+            if let weakSelf = self {
                 
-            case .isSuccess(let isSuccess, _, let result):
-                if isSuccess{
+                // the result from asynchronous call to login
+                let checkResult: String = "id"
+                
+                switch r {
                     
-                    // print("JSON res: \(theResult)")
+                case .isSuccess(let isSuccess, _, let result):
+                    
+                    if isSuccess{
                         
-                    // belt and braces.. check we have an id in the returned JSON
-                    if result[checkResult].exists() {
-                        
-                        // 2. Check if DateSource exists
-                        
-                        // get the tableID from json
-                        let tableId: Int = result[checkResult].intValue
-
-                        self.GetFieldInformationUsingTableID(userHATAccessToken, fieldID: tableId, dataPoints: dataPoints)
-                        
-                        // inform user
-                        if (self.dataSyncDelegate != nil) {
+                        // belt and braces.. check we have an id in the returned JSON
+                        if result[checkResult].exists() {
                             
-                            self.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
+                            // 2. Check if DateSource exists
+                            
+                            // get the tableID from json
+                            let tableId: Int = result[checkResult].intValue
+                            
+                            weakSelf.GetFieldInformationUsingTableID(userHATAccessToken, fieldID: tableId, dataPoints: dataPoints)
+                            
+                            // inform user
+                            if (weakSelf.dataSyncDelegate != nil) {
+                                
+                                weakSelf.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
+                            }
+                            // inform user that id does not exist
+                        } else {
+                            
+                            if (weakSelf.dataSyncDelegate != nil) {
+                                
+                                weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: checkResult + " not found")
+                            }
                         }
-                    // inform user that id does not exist
+                        // inform user that there was an error
                     } else {
                         
-                        if (self.dataSyncDelegate != nil) {
+                        if (weakSelf.dataSyncDelegate != nil) {
                             
-                            self.dataSyncDelegate?.onDataSyncFeedback(false, message: checkResult + " not found")
+                            weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
                         }
                     }
-                // inform user that there was an error
-                } else {
+                // inform user that there was an error, except the status is 404 that is to be expected
+                case .error(let error, let statusCode):
                     
-                    if (self.dataSyncDelegate != nil) {
+                    // 404 error is thrown when the datasource does not exist
+                    if statusCode == 404 {
                         
-                        self.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
-                    }
-                }
-            // inform user that there was an error, except the status is 404 that is to be expected
-            case .error(let error, let statusCode):
-                
-                //print("error res: \(error)")
-                
-                // 404 error is thrown when the datasource does not exist
-                if statusCode == 404 {
-                    
-                    // the DS does not exist, we can configure a new datasource
-                    self.ConfigureANewDatasource(userHATAccessToken, dataPoints: dataPoints)
-                } else {
-                    
-                    // else it's a more general error
-                    if (self.dataSyncDelegate != nil) {
+                        // the DS does not exist, we can configure a new datasource
+                        weakSelf.ConfigureANewDatasource(userHATAccessToken, dataPoints: dataPoints)
+                    } else {
                         
                         let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                        self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
+                        
+                        // else it's a more general error
+                        if (weakSelf.dataSyncDelegate != nil) {
+                            
+                            weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
+                        }
+                        
+                        _ = CrashLoggerHelper.customErrorLog(message: msg, error: error)
                     }
                 }
             }
@@ -312,53 +311,56 @@ class SyncDataHelper {
         let url = HATAccountService.TheConfigureNewDataSourceURL()
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers) { (r: NetworkHelper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers) {[weak self] (r: NetworkHelper.ResultType) -> Void in
             
-            // the result from asynchronous call to login
-            
-            let checkResult: String = "name"
-            
-            switch r {
-            case .isSuccess(let isSuccess, _, let result):
-                if isSuccess {
+            if let weakSelf = self {
+                
+                // the result from asynchronous call to login
+                let checkResult: String = "name"
+                
+                switch r {
+                case .isSuccess(let isSuccess, _, let result):
                     
-                    //print("JSON res: \(theResult)")
+                    if isSuccess {
                         
-                    // belt and braces.. check we have a name in the returned JSON
-                    if result[checkResult].exists() {
-                        
-                        // 2. Check if DateSource exists
-                        self.CheckIfUserDataSourceExists(userHATAccessToken, dataPoints: dataPoints)
+                        // belt and braces.. check we have a name in the returned JSON
+                        if result[checkResult].exists() {
                             
-                        // inform user
-                        if (self.dataSyncDelegate != nil) {
+                            // 2. Check if DateSource exists
+                            weakSelf.CheckIfUserDataSourceExists(userHATAccessToken, dataPoints: dataPoints)
                             
-                            self.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
+                            // inform user
+                            if (weakSelf.dataSyncDelegate != nil) {
+                                
+                                weakSelf.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
+                            }
+                            // inform user that name does not exist
+                        } else {
+                            
+                            if (weakSelf.dataSyncDelegate != nil) {
+                                
+                                weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: checkResult +  " not found")
+                            }
                         }
-                    // inform user that name does not exist
+                        // inform user that there was an error
                     } else {
                         
-                        if (self.dataSyncDelegate != nil) {
+                        if (weakSelf.dataSyncDelegate != nil) {
                             
-                            self.dataSyncDelegate?.onDataSyncFeedback(false, message: checkResult +  " not found")
+                            weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
                         }
                     }
                 // inform user that there was an error
-                } else {
-                    
-                    if (self.dataSyncDelegate != nil) {
-                        
-                        self.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
-                    }
-                }
-            // inform user that there was an error
-            case .error(let error, let statusCode):
-                
-                //print("error res: \(error)")
-                if (self.dataSyncDelegate != nil) {
+                case .error(let error, let statusCode):
                     
                     let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                    self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
+                    
+                    if (weakSelf.dataSyncDelegate != nil) {
+                        
+                        weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
+                    }
+                    
+                    _ = CrashLoggerHelper.customErrorLog(message: msg, error: error)
                 }
             }
         }
@@ -375,8 +377,6 @@ class SyncDataHelper {
      */
     func GetFieldInformationUsingTableID(_ userHATAccessToken: String, fieldID: Int, dataPoints: [DataPoint]) {
         
-        let parameters = ["" : ""]
-        
         // auth header
         let headers: [String : String] = NetworkHelper.ConstructRequestHeaders(userHATAccessToken)
         
@@ -384,73 +384,78 @@ class SyncDataHelper {
         let url = HATAccountService.TheGetFieldInformationUsingTableIDURL(fieldID)
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers) { (r: NetworkHelper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: headers) {[weak self] (r: NetworkHelper.ResultType) -> Void in
             
-            let checkResult: String = "fields"
-            
-            switch r {
+            if let weakSelf = self {
                 
-            case .isSuccess(let isSuccess, _, let result):
+                let checkResult: String = "fields"
                 
-                if isSuccess{
+                switch r {
+                    
+                case .isSuccess(let isSuccess, _, let result):
+                    
+                    if isSuccess{
                         
-                    // belt and braces.. check we have a fields in the returned JSON
-                    if result[checkResult].exists() {
-                        
-                        // 2. Check if DateSource exists
-                        // we have the field info back. Ge the field id from the json for eacvh field in our request
-                        
-                        let theHATSource: Constants.HATDataSource = Constants.HATDataSource()
-                        for requsetField: JSONDataSourceRequestField in theHATSource.fields {
+                        // belt and braces.. check we have a fields in the returned JSON
+                        if result[checkResult].exists() {
                             
-                            let fieldsArray: Array = result["fields"].arrayValue
-                            for arrayItem in fieldsArray {
+                            // 2. Check if DateSource exists
+                            // we have the field info back. Ge the field id from the json for eacvh field in our request
+                            
+                            let theHATSource: Constants.HATDataSource = Constants.HATDataSource()
+                            for requsetField: JSONDataSourceRequestField in theHATSource.fields {
                                 
-                                let fieldName: String = arrayItem["name"].stringValue
-                                let fieldID: Int = arrayItem["id"].intValue
-                                
-                                if fieldName == requsetField.name {
+                                let fieldsArray: Array = result["fields"].arrayValue
+                                for arrayItem in fieldsArray {
                                     
-                                    // update it and exit to next
-                                    requsetField.id = fieldID
-                                    break
+                                    let fieldName: String = arrayItem["name"].stringValue
+                                    let fieldID: Int = arrayItem["id"].intValue
+                                    
+                                    if fieldName == requsetField.name {
+                                        
+                                        // update it and exit to next
+                                        requsetField.id = fieldID
+                                        break
+                                    }
                                 }
                             }
-                        }
-                        
-                        // POST data
-                        self.PostOurData(userHATAccessToken, hatDataSource: theHATSource, dataPoints: dataPoints)
                             
-                        // inform user
-                        if (self.dataSyncDelegate != nil) {
+                            // POST data
+                            weakSelf.PostOurData(userHATAccessToken, hatDataSource: theHATSource, dataPoints: dataPoints)
                             
-                            self.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
+                            // inform user
+                            if (weakSelf.dataSyncDelegate != nil) {
+                                
+                                weakSelf.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
+                            }
+                            // inform user that fields does not exist
+                        } else {
+                            
+                            if (weakSelf.dataSyncDelegate != nil) {
+                                
+                                weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: checkResult +  " not found")
+                            }
                         }
-                    // inform user that fields does not exist
+                        // inform user that there was an error
                     } else {
                         
-                        if (self.dataSyncDelegate != nil) {
+                        if (weakSelf.dataSyncDelegate != nil) {
                             
-                            self.dataSyncDelegate?.onDataSyncFeedback(false, message: checkResult +  " not found")
+                            weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
                         }
                     }
-                // inform user that there was an error
-                } else {
                     
-                    if (self.dataSyncDelegate != nil) {
-                        
-                        self.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
-                    }
-                }
-                
-            // inform user that there was an error
-            case .error(let error, let statusCode):
-                
-                //print("error res: \(error)")
-                if (self.dataSyncDelegate != nil) {
+                // inform user that there was an error
+                case .error(let error, let statusCode):
                     
                     let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                    self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
+                    
+                    if (weakSelf.dataSyncDelegate != nil) {
+                        
+                        weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
+                    }
+                    
+                    _ = CrashLoggerHelper.customErrorLog(message: msg, error: error)
                 }
             }
         }
@@ -501,109 +506,114 @@ class SyncDataHelper {
         let url = HATAccountService.ThePOSTDataToHATURL()
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequestData(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: dataToPOSTToHAT.arrayObject! as [AnyObject], headers: headers, userHATAccessToken:  userHATAccessToken) { (r: NetworkHelper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequestData(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: dataToPOSTToHAT.arrayObject! as [AnyObject], headers: headers, userHATAccessToken:  userHATAccessToken) {[weak self] (r: NetworkHelper.ResultType) -> Void in
             
-            // the result from asynchronous call to login
-            
-            let checkResult: String = "record"
-            
-            switch r {
+            if let weakSelf = self {
                 
-            case .isSuccess(let isSuccess, let statusCode, let result):
+                // the result from asynchronous call to login
+                let checkResult: String = "record"
                 
-                if isSuccess {
+                switch r {
+                    
+                case .isSuccess(let isSuccess, let statusCode, let result):
+                    
+                    if isSuccess {
                         
-                    // belt and braces.. check we have a record in the returned JSON
-                    if result[0][checkResult].exists() {
-                        
-                        // 2. Check if DateSource exists
-
-                        if let array: [JSON] = result.array {
+                        // belt and braces.. check we have a record in the returned JSON
+                        if result[0][checkResult].exists() {
                             
-                            // get last updtedate
-                            let recordsUpdated: Int = array.count
-
-                            // get lastUpdatedDate
-                            func getLastUpdatedDate(_ array: [JSON]) -> (String?) {
+                            // 2. Check if DateSource exists
+                            
+                            if let array: [JSON] = result.array {
                                 
-                                // Find the latest date
-                                var result: String? = nil
-                                for item in array {
+                                // get last updtedate
+                                let recordsUpdated: Int = array.count
+                                
+                                // get lastUpdatedDate
+                                func getLastUpdatedDate(_ array: [JSON]) -> (String?) {
                                     
-                                    if let dateString = item["record"]["lastUpdated"].string {
+                                    // Find the latest date
+                                    var result: String? = nil
+                                    for item in array {
                                         
-                                        if let r = result {
+                                        if let dateString = item["record"]["lastUpdated"].string {
                                             
-                                            // Is our latest date newer? Use it if so
-                                            let currentDate: NSDate? = FormatterHelper.getDateFromString(r) as NSDate?
-                                            let potentialDate: NSDate? = FormatterHelper.getDateFromString(dateString) as NSDate?
-
-                                            if let c: NSDate = currentDate {
+                                            if let r = result {
                                                 
-                                                if let p: NSDate = potentialDate {
+                                                // Is our latest date newer? Use it if so
+                                                let currentDate: NSDate? = FormatterHelper.getDateFromString(r) as NSDate?
+                                                let potentialDate: NSDate? = FormatterHelper.getDateFromString(dateString) as NSDate?
+                                                
+                                                if let c: NSDate = currentDate {
                                                     
-                                                    if p.compare(c as Date) == ComparisonResult.orderedDescending {
+                                                    if let p: NSDate = potentialDate {
                                                         
-                                                        // Both dates are valid and our new one is later in time, so use it
-                                                        result = dateString
+                                                        if p.compare(c as Date) == ComparisonResult.orderedDescending {
+                                                            
+                                                            // Both dates are valid and our new one is later in time, so use it
+                                                            result = dateString
+                                                        }
                                                     }
                                                 }
+                                            } else {
+                                                
+                                                result = dateString
                                             }
-                                        } else {
+                                        }
+                                    }
+                                    
+                                    return result
+                                }
+                                
+                                if let dateUpdatedString: String = getLastUpdatedDate(array) {
+                                    
+                                    if let dateUpdated: NSDate = FormatterHelper.getDateFromString(dateUpdatedString) as NSDate? {
+                                        
+                                        // if we get here, we can update our local DB with the last sync date
+                                        RealmHelper.updateData(dataPoints, lastUpdated: dateUpdated as Date)
+                                        
+                                        // count
+                                        let preferences = UserDefaults.standard//.standardUserDefaults()
+                                        preferences.set(recordsUpdated, forKey: Constants.Preferences.SuccessfulSyncCount)
+                                        
+                                        // date
+                                        preferences.set(dateUpdated, forKey: Constants.Preferences.SuccessfulSyncDate)
+                                        
+                                        if (weakSelf.dataSyncDelegate != nil) {
                                             
-                                            result = dateString
+                                            weakSelf.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
                                         }
                                     }
                                 }
-
-                                return result
                             }
+                            // inform user that record does not exist
+                        } else {
+                            
+                            if (weakSelf.dataSyncDelegate != nil) {
                                 
-                            if let dateUpdatedString: String = getLastUpdatedDate(array) {
-                                
-                                if let dateUpdated: NSDate = FormatterHelper.getDateFromString(dateUpdatedString) as NSDate? {
-                                        
-                                    // if we get here, we can update our local DB with the last sync date
-                                    RealmHelper.UpdateData(dataPoints, lastUpdated: dateUpdated as Date)
-                                        
-                                    // count
-                                    let preferences = UserDefaults.standard//.standardUserDefaults()
-                                    preferences.set(recordsUpdated, forKey: Constants.Preferences.SuccessfulSyncCount)
-                                        
-                                    // date
-                                    preferences.set(dateUpdated, forKey: Constants.Preferences.SuccessfulSyncDate)
-                                        
-                                    if (self.dataSyncDelegate != nil) {
-                                        
-                                        self.dataSyncDelegate?.onDataSyncFeedback(true, message: result.rawString()!)
-                                    }
-                                }
+                                weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
                             }
                         }
-                    // inform user that record does not exist
+                        // inform user that there was an error
                     } else {
                         
-                        if (self.dataSyncDelegate != nil) {
+                        if (weakSelf.dataSyncDelegate != nil) {
                             
-                            self.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
+                            weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
                         }
                     }
-                // inform user that there was an error
-                } else {
                     
-                    if (self.dataSyncDelegate != nil) {
-                        
-                        self.dataSyncDelegate?.onDataSyncFeedback(false, message: result.rawString()!)
-                    }
-                }
-             
-            // inform user that there was an error
-            case .error(let error, let statusCode):
-                
-                if (self.dataSyncDelegate != nil) {
+                // inform user that there was an error
+                case .error(let error, let statusCode):
                     
                     let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                    self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
+                    
+                    if (weakSelf.dataSyncDelegate != nil) {
+                        
+                        weakSelf.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
+                    }
+                    
+                    _ = CrashLoggerHelper.customErrorLog(message: msg, error: error)
                 }
             }
         }

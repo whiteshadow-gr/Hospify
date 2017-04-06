@@ -11,18 +11,27 @@
  */
 
 import MapKit
-import Crashlytics
 
+// MARK: Class
+
+/// A class responsible for handling the gps tracking
 class UpdateLocations: UIViewController, CLLocationManagerDelegate {
+    
+    // MARK: - Variables
 
+    /// The deleage variable of the protocol for gps tracking
     weak var locationDelegate: UpdateLocationsDelegate?
     
+    /// A singleton to always have access to
     static var shared: UpdateLocations = UpdateLocations()
     
+    /// An optional function to execute after the delegate has executed
     var completion: ((CLLocation) -> Void)?
+    
+    // The region currently monitoring
     private var region: CLCircularRegion? = nil
     
-    /// Load the LocationManager
+    /// The LocationManager responsible for the settings used for gps tracking
     lazy var locationManager: CLLocationManager! = {
         
         let locationManager = CLLocationManager()
@@ -36,22 +45,17 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
         return locationManager
     }()
     
+    // MARK: - View controller methods
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
         
+        self.stopMonitoringAllRegions()
+
         UpdateLocations.shared.startUpdatingLocation()
         UpdateLocations.shared.locationManager.startMonitoringSignificantLocationChanges()
-        
-        let regions = UpdateLocations.shared.locationManager.monitoredRegions
-        
-        for region in regions {
-            
-            UpdateLocations.shared.locationManager.stopMonitoring(for: region)
-        }
-        
         UpdateLocations.shared.locationManager.requestLocation()
-        
     }
     
     override func didReceiveMemoryWarning() {
@@ -71,17 +75,24 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
      */
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
+        // add locations gather to database
         MapsHelper.addLocationsToDatabase(locationManager: manager, locations: locations)
         
-        UpdateLocations.shared.stopRegionTracking()
+        // stop monitoring for regions
+        UpdateLocations.shared.stopMonitoringAllRegions()
         
+        // create a new region
         UpdateLocations.shared.region = CLCircularRegion(center: locations[locations.count - 1].coordinate, radius: 150, identifier: "UpdateCircle")
-        
         UpdateLocations.shared.region!.notifyOnExit = true
+        
+        // call delegate method
         UpdateLocations.shared.locationDelegate?.updateLocations(locations: locations)
+        
+        // stop using gps and start monitoring for the new region
         locationManager.stopUpdatingLocation()
         locationManager.startMonitoring(for: region!)
         
+        // if a completion was specified execute it
         if UpdateLocations.shared.completion != nil {
             
             UpdateLocations.shared.completion!(locations.last!)
@@ -91,17 +102,44 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         
+        // create a new region everytime the user exits the region
         if region is CLCircularRegion {
             
             UpdateLocations.shared.locationManager.requestLocation()
         }
     }
     
-    func startUpdatingLocation() -> Void {
+    public func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+        
+        let message = "Monitoring failed for region with identifier: \(region!.identifier)"
+        _ = CrashLoggerHelper.customErrorLog(message: message, error: error)
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        
+        let message = "Location Manager failed with the following error: \(error)"
+        _ = CrashLoggerHelper.customErrorLog(message: message, error: error)
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
+        
+        if error != nil {
+            
+            let message = "error: \(error!.localizedDescription), status code: \(String(describing: manager.monitoredRegions))"
+            _ = CrashLoggerHelper.customErrorLog(message: message, error: error!)
+        }
+    }
+    
+    // MARK: - Wrappers to enable disable tracking
+    
+    /**
+     Start updating location
+     */
+    public func startUpdatingLocation() {
         
         /*
          If not authorised, we can ignore.
-         Onve user us logged in and has accepted the authorization, this will always be true
+         Once user i    s logged in and has accepted the authorization, this will always be true
          */
         if let manager: CLLocationManager = locationManager {
             
@@ -114,7 +152,7 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
             } else {
                 
                 _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "true")
-                UpdateLocations.shared.stopRegionTracking()
+                UpdateLocations.shared.stopMonitoringAllRegions()
                 UpdateLocations.shared.locationManager.stopUpdatingLocation()
                 UpdateLocations.shared.locationManager = nil
                 UpdateLocations.shared.locationManager.stopMonitoringSignificantLocationChanges()
@@ -122,36 +160,18 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
         }
     }
     
-    private func stopRegionTracking() {
+    /**
+     Stop updating location
+     */
+    public func stopUpdatingLocation() {
         
-        if self.region != nil {
-            
-            UpdateLocations.shared.locationManager.stopMonitoring(for: self.region!)
-            UpdateLocations.shared.region = nil
-        }
+        UpdateLocations.shared.locationManager.stopUpdatingLocation()
     }
     
-    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        
-        print("Monitoring failed for region with identifier: \(region!.identifier)")
-        Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Monitoring failed for region with identifier: " : "\(region!.identifier)"])
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        
-        print("Location Manager failed with the following error: \(error)")
-        Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Location Manager failed with the following error: " : "\(error)"])
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
-        
-        if error != nil {
-            
-            Crashlytics.sharedInstance().recordError(error!, withAdditionalUserInfo: ["error" : error!.localizedDescription, "statusCode: " : String(describing: manager.monitoredRegions)])
-        }
-    }
-    
-    func stopMonitoringAllRegions() {
+    /**
+     Stop monitoring ALL regions
+     */
+    public func stopMonitoringAllRegions() {
         
         let regions = self.locationManager.monitoredRegions
         
@@ -159,21 +179,53 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
             
             UpdateLocations.shared.locationManager.stopMonitoring(for: region)
         }
+        
+        UpdateLocations.shared.region = nil
     }
     
-    func startMonitoringSignificantLocationChanges() {
+    /**
+     Start monitoring for significant, >500m, location changes
+     */
+    public func startMonitoringSignificantLocationChanges() {
         
         UpdateLocations.shared.locationManager.startMonitoringSignificantLocationChanges()
     }
     
-    func requestLocation() {
+    /**
+     Stop monitoring for significant, >500m, location changes
+     */
+    public func stopMonitoringSignificantLocationChanges() {
+        
+        UpdateLocations.shared.locationManager.stopMonitoringSignificantLocationChanges()
+    }
+    
+    /**
+     Request user's location
+     */
+    public func requestLocation() {
         
         UpdateLocations.shared.locationManager.requestLocation()
     }
     
-    func stopUpdatingLocation() {
+    /**
+     Resume location services as they were previously, if user had locations disabled then disabled it.
+     */
+    func resumeLocationServices() {
         
-        UpdateLocations.shared.locationManager.stopUpdatingLocation()
+        let result = KeychainHelper.GetKeychainValue(key: "trackDevice")
+        
+        if result == "true" {
+            
+            UpdateLocations.shared.startUpdatingLocation()
+            UpdateLocations.shared.startMonitoringSignificantLocationChanges()
+            
+        } else {
+            
+            UpdateLocations.shared.stopMonitoringAllRegions()
+            UpdateLocations.shared.stopUpdatingLocation()
+            UpdateLocations.shared.stopMonitoringSignificantLocationChanges()
+            UpdateLocations.shared.locationManager = nil
+        }
     }
     
 }

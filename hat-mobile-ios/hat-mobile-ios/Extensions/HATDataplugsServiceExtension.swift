@@ -10,9 +10,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import Alamofire
-import Crashlytics
 import HatForIOS
+
+// MARK: Extension
 
 extension HATDataPlugsService {
     
@@ -33,10 +33,18 @@ extension HATDataPlugsService {
         
         // set up the succesfulCallBack
         let plugReadyContinue = ensureOfferEnabled(offerID: offerID, succesfulCallBack: succesfulCallBack, failCallBack: failCallBack)
-        let checkPlugForToken = HATDataPlugsService.checkSocialPlugAvailability(succesfulCallBack: plugReadyContinue, failCallBack: {_ in failCallBack()})
+        let checkPlugForToken = HATDataPlugsService.checkSocialPlugAvailability(succesfulCallBack: plugReadyContinue, failCallBack: {(error) in
+            
+            failCallBack()
+            _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
+        })
         
         // get token async
-        HATService.getApplicationTokenFor(serviceName: "Facebook", userDomain: userDomain, token: userToken, resource: "https://social-plug.hubofallthings.com", succesfulCallBack: checkPlugForToken, failCallBack: {_ in failCallBack()})
+        HATService.getApplicationTokenFor(serviceName: "Facebook", userDomain: userDomain, token: userToken, resource: "https://social-plug.hubofallthings.com", succesfulCallBack: checkPlugForToken, failCallBack: {(error) in
+            
+            failCallBack()
+            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+        })
     }
     
     /**
@@ -57,7 +65,11 @@ extension HATDataPlugsService {
             let offerClaimForToken = ensureOfferDataDebitEnabled(offerID: offerID, succesfulCallBack: succesfulCallBack, failCallBack: failCallBack)
             
             // get applicationToken async
-            HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: {_ in failCallBack()})
+            HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: {(error) in
+                
+                failCallBack()
+                _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+            })
         }
     }
     
@@ -96,7 +108,11 @@ extension HATDataPlugsService {
                                                                   succesfulCallBack: succesfulCallBack,
                                                                   failCallBack: failCallBack)
             // ensure offer is claimed
-            HATDataPlugsService.checkIfOfferIsClaimed(offerID: offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: {_ in claimOfferIfFailed()})
+            HATDataPlugsService.checkIfOfferIsClaimed(offerID: offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: {(error) in
+                
+                claimOfferIfFailed()
+                _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
+            })
         }
     }
     
@@ -114,7 +130,11 @@ extension HATDataPlugsService {
         return {
             
             // claim offer
-            HATDataPlugsService.claimOfferWithOfferID(offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: {_ in failCallBack()})
+            HATDataPlugsService.claimOfferWithOfferID(offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: {(error) in
+                
+                failCallBack()
+                _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
+            })
         }
     }
     
@@ -134,7 +154,11 @@ extension HATDataPlugsService {
             let userDomain = HATAccountService.TheUserHATDomain()
             
             // approve data debit
-            HATDataPlugsService.approveDataDebit(dataDebitID, userToken: userToken, userDomain: userDomain, succesfulCallBack: succesfulCallBack, failCallBack: {_ in failCallBack()})
+            HATDataPlugsService.approveDataDebit(dataDebitID, userToken: userToken, userDomain: userDomain, succesfulCallBack: succesfulCallBack, failCallBack: {(error) in
+                
+                failCallBack()
+            _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
+            })
         }
     }
     
@@ -212,10 +236,17 @@ extension HATDataPlugsService {
         
         let userDomain = HATAccountService.TheUserHATDomain()
         let userToken = HATAccountService.getUsersTokenFromKeychain()
-        // get token for facebook and twitter and check if they are active
-        HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: checkIfFacebookIsActive, failed: {_ in})
         
-        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: checkIfTwitterIsActive, failed: {_ in})
+        // get token for facebook and twitter and check if they are active
+        HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: checkIfFacebookIsActive, failed: {(error) in
+        
+            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+        })
+        
+        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: checkIfTwitterIsActive, failed: {(error) in
+        
+            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+        })
     }
     
     // MARK: - Filter available data plugs

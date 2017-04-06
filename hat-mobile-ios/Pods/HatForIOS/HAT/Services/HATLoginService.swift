@@ -44,10 +44,14 @@ public class HATLoginService: NSObject {
      - parameter successfulVerification: The function to execute on successful verification
      - parameter failedVerification: The function to execute on failed verification
      */
-    public class func logOnToHAT(userHATDomain: String, successfulVerification: @escaping (String) -> Void, failedVerification: @escaping (String) -> Void) {
+    public class func formatAndVerifyDomain(userHATDomain: String, successfulVerification: @escaping (String) -> Void, failedVerification: @escaping (String) -> Void) {
+        
+        // trim values
+        let characterSet = CharacterSet.init(charactersIn: " ")
+        let hatDomain = userHATDomain.trimmingCharacters(in: characterSet)
         
         // split text field text by .
-        var array = userHATDomain.components(separatedBy: ".")
+        var array = hatDomain.components(separatedBy: ".")
         // remove the first string
         array.remove(at: 0)
         

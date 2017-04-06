@@ -72,34 +72,25 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
         let alert = UIAlertController(title: "Select domain", message: nil, preferredStyle: .actionSheet)
         
-        let hubofallthingsAction = UIAlertAction(title: ".hubofallthings.net", style: .default, handler: {(alert: UIAlertAction) -> Void in
+        let hubofallthingsAction = UIAlertAction(title: ".hubofallthings.net", style: .default, handler: {[unowned self](alert: UIAlertAction) -> Void in
             
             self.domainButton.setTitle(".hubofallthings.net", for: .normal)
         })
         
-        let bsafeAction = UIAlertAction(title: ".bsafe.org", style: .default, handler: {(alert: UIAlertAction) -> Void in
+        let bsafeAction = UIAlertAction(title: ".bsafe.org", style: .default, handler: {[unowned self](alert: UIAlertAction) -> Void in
             
             self.domainButton.setTitle(".bsafe.org", for: .normal)
         })
         
-        let hubatAction = UIAlertAction(title: ".hubat.net", style: .default, handler: {(alert: UIAlertAction) -> Void in
+        let hubatAction = UIAlertAction(title: ".hubat.net", style: .default, handler: {[unowned self](alert: UIAlertAction) -> Void in
             
             self.domainButton.setTitle(".hubat.net", for: .normal)
         })
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        alert.addAction(hubofallthingsAction)
-        alert.addAction(bsafeAction)
-        alert.addAction(hubatAction)
-        alert.addAction(cancelAction)
-        
-        // if user is on ipad show as a pop up
-        if UI_USER_INTERFACE_IDIOM() == .pad {
-            
-            alert.popoverPresentationController?.sourceRect = self.domainButton.frame
-            alert.popoverPresentationController?.sourceView = self.domainButton
-        }
+        alert.addActions(actions: [hubofallthingsAction, bsafeAction, hubatAction, cancelAction])
+        alert.addiPadSupport(sourceRect: self.domainButton.frame, sourceView: self.domainButton)
         
         // present alert controller
         self.navigationController!.present(alert, animated: true, completion: nil)
@@ -150,7 +141,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
         func failed(error: String) {
             
-            self.createClassicOKAlertWith(alertMessage: "Please check your personal hat address again", alertTitle: "Wrong domain!", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "Please check your personal hat address again", alertTitle: "Wrong domain!", okTitle: "OK", proceedCompletion: {})
         }
         
         if self.inputUserHATDomain.text != "" {
@@ -158,7 +149,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
             let filteredDomain = self.removeDomainFromUserEnteredText(domain: self.inputUserHATDomain.text!)
 
-            HATLoginService.logOnToHAT(userHATDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, successfulVerification: self.authoriseUser, failedVerification: failed)
+            HATLoginService.formatAndVerifyDomain(userHATDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, successfulVerification: self.authoriseUser, failedVerification: failed)
         } else {
             
             self.createClassicOKAlertWith(alertMessage: "Please input your HAT domain", alertTitle: "HAT domain is empty!", okTitle: "Ok", proceedCompletion: {})
@@ -341,31 +332,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             
             self.hidePopUpLabel()
             
-            switch error {
-            case .cannotSplitToken(_):
-                
-                // no token in url callback redirect
-                self.createClassicOKAlertWith(alertMessage: "Token error!", alertTitle: "Cannot split token", okTitle: "OK", proceedCompletion: {})
-            case .cannotDecodeToken(_):
-                
-                // no token in url callback redirect
-                self.createClassicOKAlertWith(alertMessage: "Token error!", alertTitle: "Cannot decode token", okTitle: "OK", proceedCompletion: {})
-            case .generalError(_, let statusCode, let error):
-                
-                let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error!.localizedDescription)
-                self.createClassicOKAlertWith(alertMessage: msg, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {})
-            case .noIssuerDetectedError(_):
-                
-                // no token in url callback redirect
-                self.createClassicOKAlertWith(alertMessage: "Token error!", alertTitle: "Cannot detect issuer", okTitle: "OK", proceedCompletion: {})
-            case .noTokenDetectedError:
-                
-                // no token in url callback redirect
-                self.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_no_token_in_callback", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {})
-            case .tokenValidationFailed(_):
-                
-                self.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_invalid_token", comment: "auth"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {})
-            }
+            let alert = CrashLoggerHelper.authenticationErrorLog(error: error)
+            self.present(alert, animated: true, completion: nil)
         }
         
         // authorize with hat
@@ -382,7 +350,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
      */
     func enableLocationDataPlug(_ userDomain: String,_ HATDomainFromToken: String) {
         
-        func success(result: Bool){
+        func success(result: Bool) {
             
             // setting image to nil and everything to clear color because animation was laggy
             self.testImage.image = nil
@@ -396,17 +364,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         
         func failed(error: JSONParsingError) {
             
-            switch error {
-                
-            case .expectedFieldNotFound:
-                
-                self.hidePopUpLabel()
-                self.createClassicOKAlertWith(alertMessage: "Value not found", alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {})
-            case .generalError(_, _, _):
-                
-                self.hidePopUpLabel()
-                self.createClassicOKAlertWith(alertMessage: NSLocalizedString("auth_error_keychain_save", comment: "keychain"), alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {})
-            }
+            let alert = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+            self.present(alert, animated: true, completion: nil)
         }
         
         HATLocationService.enableLocationDataPlug(userDomain, HATDomainFromToken, success: success, failed: failed)

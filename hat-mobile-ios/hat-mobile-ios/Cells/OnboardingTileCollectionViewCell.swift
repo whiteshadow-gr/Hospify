@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import HatForIOS
 
 // MARK: Class
@@ -83,7 +82,7 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
             return "Coming soon"
         } else {
             
-            let price: Double = Double(Double(hatProvider.price)/100.0)
+            let price: Double = Double(Double(hatProvider.price) / 100.0)
             
             return "£ " + String(price)
         }

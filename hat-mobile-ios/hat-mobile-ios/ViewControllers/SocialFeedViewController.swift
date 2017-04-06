@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import SwiftyJSON
 import HatForIOS
 
@@ -56,9 +55,6 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         // every time this changes
         didSet {
             
-            // reload collection view with the saved filter
-            //self.reloadCollectionView(with: self.filterBy)
-            
             // fetch data from facebook with the saved token
             self.fetchTwitterData(appToken: self.twitterAppToken)
         }
@@ -77,9 +73,6 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         // every time this changes
         didSet {
             
-            // reload collection view with the saved filter
-            //self.reloadCollectionView(with: self.filterBy)
-            
             // fetch data from facebook with the saved token
             self.fetchFacebookData(appToken: self.facebookAppToken)
         }
@@ -96,30 +89,20 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         
         let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
         
-        let filterByAction = UIAlertAction(title: "Filter by", style: .default, handler: {(alert: UIAlertAction) -> Void
+        let filterByAction = UIAlertAction(title: "Filter by", style: .default, handler: {[unowned self] (alert: UIAlertAction) -> Void in
             
-            in
             self.filterSocialNetworksButtonAction()
         })
         
-        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[unowned self] (alert: UIAlertAction) -> Void in
             
-            in
             TabBarViewController.logoutUser(from: self)
         })
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        alertController.addAction(filterByAction)
-        alertController.addAction(logOutAction)
-        alertController.addAction(cancelAction)
-        
-        // if user is on ipad show as a pop up
-        if UI_USER_INTERFACE_IDIOM() == .pad {
-            
-            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
-            alertController.popoverPresentationController?.sourceView = self.view
-        }
+        alertController.addActions(actions: [filterByAction, logOutAction, cancelAction])
+        alertController.addiPadSupport(barButtonItem: self.navigationItem.rightBarButtonItem!, sourceView: self.view)
         
         // present alert controller
         self.navigationController!.present(alertController, animated: true, completion: nil)
@@ -146,9 +129,15 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         let userToken = HATAccountService.getUsersTokenFromKeychain()
         
         // get Token for plugs
-        HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: self.fetchFacebookData, failed: {_ in})
+        HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: self.fetchFacebookData, failed: {(error) in
         
-        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: self.fetchTwitterData, failed: {_ in})
+            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+        })
+        
+        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: self.fetchTwitterData, failed: {(error) in
+        
+            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+        })
         
         // set datasource and delegate to self
         self.collectionView.dataSource = self
@@ -201,7 +190,15 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         }
         
         // check if twitter is active
-        HATTwitterService.isTwitterDataPlugActive(token: appToken, successful: {_ in self.fetchTweets(parameters: parameters)}, failed: {_ in failed()})
+        HATTwitterService.isTwitterDataPlugActive(
+            token: appToken,
+            successful: {[weak self] _ in
+            
+                if self != nil {
+                    
+                    self!.fetchTweets(parameters: parameters)
+                }
+            }, failed: {_ in failed()})
     }
     
     /**
@@ -247,8 +244,18 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             }
         }
         
-        // delete data from hat and remove from table
-        HATAccountService.checkIfTokenIsActive(token: userToken, success: success, failed: failed)
+        let result = HATAccountService.checkIfTokenExpired(token: userToken)
+        
+        if result == userToken {
+            
+            success(token: userToken)
+        } else if result == "401" {
+            
+            failed(statusCode: 401)
+        } else {
+            
+            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+        }
     }
     
     /**
@@ -350,7 +357,13 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         // check if facebook is active
         HATFacebookService.isFacebookDataPlugActive(token: appToken,
                         successful:
-                            {(result: Bool) in _ = self.fetchPosts(parameters: parameters)},
+                            {[weak self] (result: Bool) in
+                                
+                                if self != nil {
+                                    
+                                    _ = self!.fetchPosts(parameters: parameters)
+                                }
+                        },
                         failed: {_ in failed()})
     }
     
@@ -431,8 +444,19 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             }
         }
         
-        // delete data from hat and remove from table
-        HATAccountService.checkIfTokenIsActive(token: userToken, success: success, failed: failed)
+        // check if the token has expired
+        let result = HATAccountService.checkIfTokenExpired(token: userToken)
+        
+        if result == userToken {
+            
+            success(token: userToken)
+        } else if result == "401" {
+            
+            failed(statusCode: 401)
+        } else {
+            
+            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+        }
     }
     
     /**
@@ -753,7 +777,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         let alert = UIAlertController(title: "Filter by:", message: "", preferredStyle: .actionSheet)
         
         // create actions
-        let facebookAction = UIAlertAction(title: "Facebook", style: .default, handler: { [weak self](action) -> Void in
+        let facebookAction = UIAlertAction(title: "Facebook", style: .default, handler: {[weak self] (action) -> Void in
             
             if let weakSelf = self {
                 
@@ -773,7 +797,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             }
         })
         
-        let twitterAction = UIAlertAction(title: "Twitter", style: .default, handler: { [weak self](action) -> Void in
+        let twitterAction = UIAlertAction(title: "Twitter", style: .default, handler: {[weak self] (action) -> Void in
             
              if let weakSelf = self {
                 
@@ -793,7 +817,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             }
         })
         
-        let allNetworksAction = UIAlertAction(title: "All", style: .default, handler: { [weak self](action) -> Void in
+        let allNetworksAction = UIAlertAction(title: "All", style: .default, handler: {[weak self] (action) -> Void in
             
             if let weakSelf = self {
                 
@@ -821,23 +845,10 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             }
         })
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
-            
-            return
-        })
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        // add actions to alert
-        alert.addAction(facebookAction)
-        alert.addAction(twitterAction)
-        alert.addAction(allNetworksAction)
-        alert.addAction(cancelAction)
-        
-        // if user is on ipad present the alert as a pop up
-        if UI_USER_INTERFACE_IDIOM() == .pad {
-            
-            alert.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
-            alert.popoverPresentationController?.sourceView = self.view
-        }
+        alert.addActions(actions: [facebookAction, twitterAction, allNetworksAction, cancelAction])
+        alert.addiPadSupport(barButtonItem: self.navigationItem.rightBarButtonItem!, sourceView: self.view)
         
         // present alert view controller
         self.navigationController!.present(alert, animated: true, completion: nil)

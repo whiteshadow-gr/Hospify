@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import HatForIOS
 
 // MARK: Class
@@ -37,22 +36,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     
     /// An IBOutlet for handling the collection view
     @IBOutlet weak var collectionView: UICollectionView!
-    
-    // MARK: - Cell methods
-    
-    override func awakeFromNib() {
-        
-        super.awakeFromNib()
-        // Initialization code
-    }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
     // MARK: - Setup cell
     
     /**

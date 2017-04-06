@@ -44,13 +44,19 @@ class FirstOnboardingViewController: UIViewController {
         
         AnimationHelper.animateView(self.view,
                                     duration: 0.2,
-                                    animations: {() -> Void in
+                                    animations: {[weak self] () -> Void in
 
-                                        self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.maxY, width: self.view.frame.width, height: self.view.frame.height)
-                                }, completion: {(bool: Bool) -> Void in
+                                        if let weakSelf = self {
+                                            
+                                            weakSelf.view.frame = CGRect(x: weakSelf.view.frame.origin.x, y: weakSelf.view.frame.maxY, width: weakSelf.view.frame.width, height: weakSelf.view.frame.height)
+                                        }
+                                }, completion: {[weak self] (bool: Bool) -> Void in
 
-                                        self.removeViewController()
-                                        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideNewbie.rawValue), object: nil)
+                                    if let weakSelf = self {
+                                        
+                                        weakSelf.removeViewController()
+                                        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideDataServicesInfo.rawValue), object: nil)
+                                    }
         })
         
     }
@@ -62,7 +68,7 @@ class FirstOnboardingViewController: UIViewController {
      */
     @IBAction func learnMoreButtonAction(_ sender: Any) {
         
-        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideNewbie.rawValue), object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(Constants.NotificationNames.hideDataServicesInfo.rawValue), object: nil)
     }
     
     // MARK: - View controller methods

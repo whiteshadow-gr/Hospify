@@ -29,15 +29,12 @@ struct KeychainHelper {
      */
     static func SetKeychainValue(key: String, value: String) -> Bool {
         
-        let keychain = KeychainSwift()
-        //keychain.synchronizable = true
-        if keychain.set(value, forKey: key, withAccess: .accessibleWhenUnlocked) {
+        if KeychainSwift().set(value, forKey: key, withAccess: .accessibleWhenUnlocked) {
             
             // Keychain item is saved successfully
             return true
         } else {
             
-            //let st: OSStatus = keychain.lastResultCode
             return false
         }
     }
@@ -51,8 +48,7 @@ struct KeychainHelper {
      */
     static func GetKeychainValue(key: String) -> String? {
         
-        let keychain = KeychainSwift()
-        return keychain.get(key)
+        return KeychainSwift().get(key)
     }
     
     /**
@@ -64,7 +60,6 @@ struct KeychainHelper {
      */
     static func ClearKeychainKey(key: String) -> Bool {
         
-        let keychain = KeychainSwift()
-        return keychain.delete(key)
+        return KeychainSwift().delete(key)
     }
 }

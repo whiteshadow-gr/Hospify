@@ -12,23 +12,35 @@
 
 import Photos
 
-class PhotosHelper: NSObject {
+// MARK: Class
 
-    static let albumName = "HAT"
+/// A class responsible for all photo related methods such as saving a photo, creating an album etc.
+class PhotosHelper: NSObject {
+    
+    // MARK: - Variables
+
+    /// The album name to create
+    private static let albumName = "HAT"
+    /// A signletone instance
     static let sharedInstance = PhotosHelper()
     
-    var assetCollection: PHAssetCollection!
+    /// The asset collection
+    private var assetCollection: PHAssetCollection!
+    
+    // MARK: - Initialisers
     
     override init() {
         
         super.init()
         
+        // get asset collection
         if let assetCollection = fetchAssetCollectionForAlbum() {
             
             self.assetCollection = assetCollection
             return
         }
         
+        // authorize
         if PHPhotoLibrary.authorizationStatus() != PHAuthorizationStatus.authorized {
             
             PHPhotoLibrary.requestAuthorization({ (status: PHAuthorizationStatus) -> Void in
@@ -37,6 +49,7 @@ class PhotosHelper: NSObject {
             })
         }
         
+        // if authorised create album else request authorasation
         if PHPhotoLibrary.authorizationStatus() == PHAuthorizationStatus.authorized {
             
             self.createAlbum()
@@ -46,7 +59,12 @@ class PhotosHelper: NSObject {
         }
     }
     
-    func requestAuthorizationHandler(status: PHAuthorizationStatus) {
+    /**
+     Request authorisation handler
+     
+     - parameter status: The returned authorisation status
+     */
+    private func requestAuthorizationHandler(status: PHAuthorizationStatus) {
         
         if PHPhotoLibrary.authorizationStatus() == PHAuthorizationStatus.authorized {
             
@@ -59,7 +77,12 @@ class PhotosHelper: NSObject {
         }
     }
     
-    func createAlbum() {
+    // MARK: - Create album
+    
+    /**
+     Creates an album in the photo library
+     */
+    private func createAlbum() {
         
         PHPhotoLibrary.shared().performChanges({
             
@@ -76,7 +99,14 @@ class PhotosHelper: NSObject {
         }
     }
     
-    func fetchAssetCollectionForAlbum() -> PHAssetCollection! {
+    // MARK: - Fetch collection
+    
+    /**
+     Fetches the assetCollection for the specified album
+     
+     - returns: PHAssetCollection
+     */
+    private func fetchAssetCollectionForAlbum() -> PHAssetCollection! {
         
         let fetchOptions = PHFetchOptions()
         fetchOptions.predicate = NSPredicate(format: "title = %@", PhotosHelper.albumName)
@@ -89,11 +119,19 @@ class PhotosHelper: NSObject {
         return nil
     }
     
+    // MARK: - Save image
+    
+    /**
+     Saves the image to the photo library
+     
+     - parameter image: The image to save to the photo library
+     - parameter metadata: The metadata of the image to save
+     */
     func saveImage(image: UIImage, metadata: NSDictionary) {
         
         if assetCollection == nil {
             
-            return                          // if there was an error upstream, skip the save
+            return
         }
         
         PHPhotoLibrary.shared().performChanges({

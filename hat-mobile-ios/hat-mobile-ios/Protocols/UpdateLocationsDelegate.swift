@@ -12,7 +12,16 @@
 
 import MapKit
 
+// MARK: Protocol
+
 protocol UpdateLocationsDelegate: class {
 
+    // MARK: - Update locations
+    
+    /**
+     Notifies the view that confront to this protocol about the new locations gather
+     
+     - parameter locations: The locations gather from the location manager
+     */
     func updateLocations(locations: [CLLocation])
 }

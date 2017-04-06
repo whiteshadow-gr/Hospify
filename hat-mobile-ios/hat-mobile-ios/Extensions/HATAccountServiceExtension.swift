@@ -10,13 +10,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import KeychainSwift
-import Alamofire
-import SwiftyJSON
-import Crashlytics
 import HatForIOS
+import JWTDecode
 
-// MARK: Class
+// MARK: Extension
+
 extension HATAccountService {
     
     // MARK: - User's settings
@@ -72,111 +70,29 @@ extension HATAccountService {
         return ""
     }
     
-    class func checkIfTokenIsActive(token: String, success: @escaping (String) -> Void, failed: @escaping (Int) -> Void) {
-        
-        let userDomain = HATAccountService.TheUserHATDomain()
-        
-        HATAccountService.checkHatTableExists(userDomain: userDomain, tableName: "notablesv1", sourceName: "rumpel", authToken: token, successCallback: {(_: NSNumber) -> Void in
-            
-            success(token)
-        }, errorCallback: {(error) -> Void in
-            
-            switch error {
-                
-            case .generalError(_, let statusCode, _) :
-                
-                if statusCode != nil {
-                    
-                    failed(statusCode!)
-                }
-            default:
-                break
-            }
-        })
-    }
+    // MARK: - Check if token is active
     
     /**
-     Logs any error found from triggering th update
+     Checks if token has expired
      
-     - parameter response: The DataResponse object returned from alamofire
+     - parameter token: The token to check if expired
+     - returns: The token if everything ok, 401 if token has expired or error if something went wrong
      */
-    private class func errorHandlingWith(response: DataResponse<String>) {
+    class func checkIfTokenExpired(token: String) -> String {
         
-        // handle error codes
-        print("Success: \(response.result.isSuccess)")
-        print("Response String: \(String(describing: response.result.value))")
-        
-        // check for numerous errors
-        var statusCode = response.response?.statusCode
-        if statusCode != nil {
+        do {
             
-            print(statusCode!)
-        }
-        if let error = response.result.error as? AFError {
-            
-            statusCode = error._code // statusCode private
-            switch error {
+            let jwt = try decode(jwt: token)
+            if jwt.expired {
                 
-            case .invalidURL(let url):
+                return "401"
+            } else {
                 
-                print("Invalid URL: \(url) - \(error.localizedDescription)")
-                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Invalid URL" : "\(url) - \(error.localizedDescription)"])
-            case .parameterEncodingFailed(let reason):
-                
-                print("Parameter encoding failed: \(error.localizedDescription)")
-                print("Failure Reason: \(reason)")
-                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Parameter encoding failed:" : "\(error.localizedDescription)", "Failure Reason:" : "\(reason)"])
-            case .multipartEncodingFailed(let reason):
-                
-                print("Multipart encoding failed: \(error.localizedDescription)")
-                print("Failure Reason: \(reason)")
-                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Multipart encoding failed:" : "\(error.localizedDescription)", "Failure Reason:" : "\(reason)"])
-            case .responseValidationFailed(let reason):
-                
-                print("Response validation failed: \(error.localizedDescription)")
-                print("Failure Reason: \(reason)")
-                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Response validation failed:" : "\(error.localizedDescription)", "Failure Reason:" : "\(reason)"])
-                switch reason {
-                    
-                case .dataFileNil, .dataFileReadFailed:
-                    
-                    print("Downloaded file could not be read")
-                    Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Failure Reason:" : "Downloaded file could not be read"])
-                case .missingContentType(let acceptableContentTypes):
-                    
-                    print("Content Type Missing: \(acceptableContentTypes)")
-                    Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Content Type Missing:" : "\(acceptableContentTypes)"])
-                case .unacceptableContentType(let acceptableContentTypes, let responseContentType):
-                    
-                    print("Response content type: \(responseContentType) was unacceptable: \(acceptableContentTypes)")
-                    Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Response content type:" : "\(responseContentType) was unacceptable: \(acceptableContentTypes)"])
-                case .unacceptableStatusCode(let code):
-                    
-                    print("Response status code was unacceptable: \(code)")
-                    statusCode = code
-                    Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Response status code was unacceptable:" : "\(code)"])
-                }
-            case .responseSerializationFailed(let reason):
-                
-                print("Response serialization failed: \(error.localizedDescription)")
-                print("Failure Reason: \(reason)")
-                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Response serialization failed:" : "\(error.localizedDescription)", "Failure Reason:" : "\(reason)"])
-                // statusCode = 3840 ???? maybe..
+                return token
             }
+        } catch {
             
-            print("Underlying error: \(String(describing: error.underlyingError))")
-            Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Underlying error:" : "\(String(describing: error.underlyingError))"])
-        } else if let error = response.result.error as? URLError {
-            
-            print("URLError occurred: \(error)")
-            Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["URLError occurred:" : "\(error)"])
-        } else {
-            
-            print("Unknown error: \(String(describing: response.result.error))")
-            if let error = response.result.error {
-                
-                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["Unknown error:" : "\(error)"])
-            }
+            return "error"
         }
     }
     
@@ -196,59 +112,6 @@ extension HATAccountService {
         }
         
         return false
-    }
-    
-    /**
-     Log in button pressed. Begin authorization
-     
-     - parameter userHATDomain: The user's domain
-     - parameter successfulVerification: The function to execute on successful verification
-     - parameter failedVerification: The function to execute on failed verification
-     */
-    class func logOnToHAT(userHATDomain: String?, successfulVerification: @escaping (String) -> Void, failedVerification: @escaping () -> Void) {
-        
-        var userDomain = userHATDomain
-        // trim values
-        guard let hatDomain = userDomain?.TrimString() else {
-            
-            return
-        }
-        
-        // username guard
-        guard let _userDomain = userDomain, !hatDomain.isEmpty else {
-            
-            userDomain = ""
-            return
-        }
-        
-        // split text field text by .
-        var array = hatDomain.components(separatedBy: ".")
-        // remove the first string
-        array.remove(at: 0)
-        
-        // form one string
-        var domain = ""
-        for section in array {
-            
-            domain += section + "."
-        }
-        
-        // chack if we are out of bounds and drop last leter
-        if domain.characters.count > 1 {
-            
-            domain = String(domain.characters.dropLast())
-        }
-        
-        // verify if the domain is what we want
-        if HATAccountService.verifyDomain(domain) {
-            
-            // authorise user
-            successfulVerification(_userDomain)
-        } else {
-            
-            //show alert
-            failedVerification()
-        }
     }
     
     // MARK: - Constructing URLs
@@ -271,7 +134,6 @@ extension HATAccountService {
      
      - parameter tableName: The table name
      - parameter sourceName: The source name
-     
      - returns: String
      */
     class func TheUserHATCheckIfTableExistsURL(tableName: String, sourceName: String) -> String {
@@ -293,7 +155,6 @@ extension HATAccountService {
      Constructs the URL to get a field from a table
      
      - parameter fieldID: The fieldID number
-     
      - returns: String
      */
     class func TheGetFieldInformationUsingTableIDURL(_ fieldID: Int) -> String {

@@ -65,7 +65,6 @@ class Constants {
         
         case reauthorised = "reauthorisedUser"
         case dataPlug = "dataPlugMessage"
-        case hideNewbie = "hideNewbiePageViewContoller"
         case hideGetAHATPopUp = "hideView"
         case hatProviders = "hatProviders"
         case hideInfoHATProvider = "hideInfoHATProvider"
@@ -73,6 +72,7 @@ class Constants {
         case disablePageControll = "disablePageControll"
         case hideCapabilitiesPageViewContoller = "hideCapabilitiesPageViewContoller"
         case hideLearnMore = "HideLearnMore"
+        case hideDataServicesInfo = "hideDataServicesInfo"
     }
     
     /**

@@ -12,8 +12,6 @@
 
 import SafariServices
 import HatForIOS
-import Photos
-import AssetsLibrary
 
 // MARK: Class
 
@@ -100,9 +98,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     /// An IBOutlet for handling the UITextView
     @IBOutlet weak var textView: UITextView!
     
-    /// An IBOutlet for handling the textViewAspectRationConstraint NSLayoutConstraint
-    @IBOutlet weak var textViewAspectRationConstraint: NSLayoutConstraint!
-    
     // MARK: - IBActions
     
     /**
@@ -115,17 +110,17 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         let alertController = UIAlertController(title: "Select options", message: "Select from where to upload image", preferredStyle: .actionSheet)
         
         // create alert actions
-        let cameraAction = UIAlertAction(title: "Take photo", style: .default, handler: { (action) -> Void in
+        let cameraAction = UIAlertAction(title: "Take photo", style: .default, handler: { [unowned self] (action) -> Void in
             
             self.presentImagePicker(buttonTitle: action.title!)
         })
         
-        let libraryAction = UIAlertAction(title: "Choose from library", style: .default, handler: { (action) -> Void in
+        let libraryAction = UIAlertAction(title: "Choose from library", style: .default, handler: { [unowned self] (action) -> Void in
             
             self.presentImagePicker(buttonTitle: action.title!)
         })
         
-        let locationAction = UIAlertAction(title: "Add Location", style: .default, handler: { (action) -> Void in
+        let locationAction = UIAlertAction(title: "Add Location", style: .default, handler: { [unowned self] (action) -> Void in
             
             self.performSegue(withIdentifier: "checkInSegue", sender: self)
         })
@@ -133,7 +128,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         alertController.addActions(actions: [cameraAction, libraryAction, locationAction, cancel])
-        
         alertController.addiPadSupport(sourceRect: self.addButton.frame, sourceView: self.shareForView)
         
         // present alert controller
@@ -169,27 +163,27 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         let alertController = UIAlertController(title: "Share for...", message: "Select the duration you want this note to be shared for", preferredStyle: .actionSheet)
         
         // create alert actions
-        let oneDayAction = UIAlertAction(title: "1 day", style: .default, handler: { (action) -> Void in
+        let oneDayAction = UIAlertAction(title: "1 day", style: .default, handler: { [unowned self] (action) -> Void in
             
             self.updateShareOptions(buttonTitle: action.title!, byAdding: .day, value: 1)
         })
         
-        let sevenDaysAction = UIAlertAction(title: "7 days", style: .default, handler: { (action) -> Void in
+        let sevenDaysAction = UIAlertAction(title: "7 days", style: .default, handler: { [unowned self] (action) -> Void in
             
             self.updateShareOptions(buttonTitle: action.title!, byAdding: .day, value: 7)
         })
         
-        let fourteenDaysAction = UIAlertAction(title: "14 days", style: .default, handler: { (action) -> Void in
+        let fourteenDaysAction = UIAlertAction(title: "14 days", style: .default, handler: { [unowned self] (action) -> Void in
             
             self.updateShareOptions(buttonTitle: action.title!, byAdding: .day, value: 14)
         })
         
-        let oneMonthAction = UIAlertAction(title: "1 month", style: .default, handler: { (action) -> Void in
+        let oneMonthAction = UIAlertAction(title: "1 month", style: .default, handler: { [unowned self] (action) -> Void in
             
             self.updateShareOptions(buttonTitle: action.title!, byAdding: .month, value: 1)
         })
         
-        let forEverAction = UIAlertAction(title: "Forever", style: .default, handler: { (action) -> Void in
+        let forEverAction = UIAlertAction(title: "Forever", style: .default, handler: { [unowned self] (action) -> Void in
             
             self.updateShareOptions(buttonTitle: action.title!, byAdding: nil, value: nil)
         })
@@ -266,9 +260,12 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // save text
                 self.receivedNote?.data.message = self.textView.text!
                 
-                HATNotablesService.postNote(userDomain: self.userDomain, userToken: self.token, note: self.receivedNote!, successCallBack: {() -> Void in
+                HATNotablesService.postNote(userDomain: self.userDomain, userToken: self.token, note: self.receivedNote!, successCallBack: {[weak self] () -> Void in
                     
-                    _ = self.navigationController?.popViewController(animated: true)
+                    if self != nil {
+                        
+                        _ = self!.navigationController?.popViewController(animated: true)
+                    }
                 })
             }
             
@@ -315,29 +312,34 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             }
         }
         
-        // delete data from hat and remove from table
-        HATAccountService.checkIfTokenIsActive(token: self.token, success: post, failed: self.checkIfReauthorisationIsNeeded(completion: post))
+        // check if the token has expired
+        let result = HATAccountService.checkIfTokenExpired(token: self.token)
+        
+        if result == self.token {
+            
+            post(token: self.token)
+        } else if result == "401" {
+            
+            self.checkIfReauthorisationIsNeeded(completion: post)
+        } else {
+            
+            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+        }
     }
     
-    func checkIfReauthorisationIsNeeded(completion: @escaping (String?) -> Void) -> (Int) -> Void {
+    func checkIfReauthorisationIsNeeded(completion: @escaping (String?) -> Void) {
         
-        return { (statusCode: Int) -> Void in
-            
-            if statusCode == 401 {
-                
-                let authoriseVC = AuthoriseUserViewController()
-                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
-                authoriseVC.view.layer.cornerRadius = 15
-                authoriseVC.completionFunc = completion
-                
-                // add the page view controller to self
-                self.addChildViewController(authoriseVC)
-                self.view.addSubview(authoriseVC.view)
-                authoriseVC.didMove(toParentViewController: self)
-                
-                self.publishButton.setTitle("Please try again", for: .normal)
-            }
-        }
+        let authoriseVC = AuthoriseUserViewController()
+        authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+        authoriseVC.view.layer.cornerRadius = 15
+        authoriseVC.completionFunc = completion
+        
+        // add the page view controller to self
+        self.addChildViewController(authoriseVC)
+        self.view.addSubview(authoriseVC.view)
+        authoriseVC.didMove(toParentViewController: self)
+        
+        self.publishButton.setTitle("Please try again", for: .normal)
     }
     
     /**
@@ -372,8 +374,19 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             }
         }
         
-        // delete data from hat and remove from table
-        HATAccountService.checkIfTokenIsActive(token: self.token, success: delete, failed: self.checkIfReauthorisationIsNeeded(completion: delete))
+        // check if the token has expired
+        let result = HATAccountService.checkIfTokenExpired(token: self.token)
+        
+        if result == self.token {
+            
+            delete(token: self.token)
+        } else if result == "401" {
+            
+            self.checkIfReauthorisationIsNeeded(completion: delete)
+        } else {
+            
+            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+        }
     }
     
     /**
@@ -493,7 +506,10 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                 }
                             }
                             
-                            HATDataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {_ in })
+                            HATDataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {(error) in
+                                
+                                _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
+                            })
                         }
                         
                         self.createClassicAlertWith(alertMessage: "You have to enable Facebook data plug before sharing on Facebook, do you want to enable now?", alertTitle: "Data plug not enabled", cancelTitle: "No", proceedTitle: "Yes", proceedCompletion: yesAction, cancelCompletion: noAction)
@@ -504,9 +520,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 
                 self.publishButton.setTitle("Please Wait..", for: .normal)
                 
-                HATFacebookService.getAppTokenForFacebook(token: self.token, userDomain: self.userDomain, successful: facebookTokenReceived, failed: {
+                HATFacebookService.getAppTokenForFacebook(token: self.token, userDomain: self.userDomain, successful: facebookTokenReceived, failed: {[weak self] (error) in
                     
-                        _ in self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {})
+                    if self != nil {
+                        
+                        self!.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {})
+                    }
+                    
+                    _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
                 })
                 
                 self.facebookButton.alpha = 1
@@ -550,34 +571,39 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
-        self.imagePicker.dismiss(animated: true, completion: nil)
-        self.imageSelected.image = (info[UIImagePickerControllerOriginalImage] as! UIImage)
-        
+        self.imagePicker.dismiss(animated: true, completion: nil)        
         self.imageSelected.image = info[UIImagePickerControllerOriginalImage] as? UIImage
         
-        //UIImageWriteToSavedPhotosAlbum((self.imageSelected.image)!, self, #selector(self.image(_:didFinishSavingWithError:contextInfo:)), nil)
         PhotosHelper.sharedInstance.saveImage(image: self.imageSelected.image!, metadata: info[UIImagePickerControllerMediaMetadata] as! NSDictionary)
         
-        HATAccountService.uploadFileToHAT(fileName: "rumpelPhoto", token: self.token, userDomain: self.userDomain,
-                                          completion: {(fileObject) -> Void in
-                                            
-                                            let data = UIImageJPEGRepresentation(self.imageSelected.image!, 1.0)
-                                            HATNetworkHelper.uploadFile(image: data!,
-                                                                        url: fileObject.contentURL,
-                                                                        progressUpdateHandler: {(progress) -> Void in
-                                                                        
-                                                                            print(progress)
-                                                                        },
-                                                                        completion: {(result) -> Void in
-                                                                            
-                                                                            print(fileObject)
-                                                                            HATAccountService.completeUploadFileToHAT(fileID: fileObject.fileID, token: self.token, userDomain: self.userDomain, completion: {(fileObject) -> Void in
-                                                                                
-                                                                                print(fileObject)
-                                                                            },
-                                                                        errorCallback: {(error) -> Void in return})
-                                            })
-        }, errorCallback: {(error) -> Void in return})
+        HATAccountService.uploadFileToHAT(
+              fileName: "rumpelPhoto",
+              token: self.token,
+              userDomain: self.userDomain,
+              completion: {[weak self](fileObject) -> Void in
+                
+                if self != nil {
+                    
+                    let data = UIImageJPEGRepresentation(self!.imageSelected.image!, 1.0)
+                    HATNetworkHelper.uploadFile(
+                        image: data!,
+                        url: fileObject.contentURL,
+                        progressUpdateHandler: {(progress) -> Void in
+                            
+                            print(progress)
+                        },completion: {[weak self](result) -> Void in
+                            
+                            if self != nil {
+                                
+                                HATAccountService.completeUploadFileToHAT(fileID: fileObject.fileID, token: self!.token, userDomain: self!.userDomain, completion: {_ in}, errorCallback: {(error) -> Void in return})
+                            }
+                            
+                    })
+                }
+        }, errorCallback: {(error) -> Void in
+            
+            _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+        })
     }
     
     func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
@@ -644,7 +670,10 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     }
                     
                     // get available data plugs
-                    HATDataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {_ in})
+                    HATDataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {(error) in
+                    
+                        _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
+                    })
                 }
                 
                 // show an alert
@@ -657,14 +686,18 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         self.changePublishButtonTo(title: "Please Wait..", userEnabled: false)
         // get app token for twitter
-        HATTwitterService.getAppTokenForTwitter(userDomain: self.userDomain, token: self.token, successful: checkDataPlug, failed: {
+        HATTwitterService.getAppTokenForTwitter(userDomain: self.userDomain, token: self.token, successful: checkDataPlug, failed: { [weak self] (error) in
             
-            _ in
-            // if something wrong show error
-            self.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {})
+            if self != nil {
+                
+                // if something wrong show error
+                self!.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {})
+                
+                // reset ui
+                self!.turnUIElementsOn()
+            }
             
-            // reset ui
-            self.turnUIElementsOn()
+            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
         })
     }
     
@@ -1096,6 +1129,10 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         // setup succesfulCallBack
         let offerClaimForToken = HATDataPlugsService.ensureOfferDataDebitEnabled(offerID: "32dde42f-5df9-4841-8257-5639db222e41", succesfulCallBack: {_ in}, failCallBack: failCallback)
         
-        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: self.userDomain, token: self.token, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: {_ in failCallback()})
+        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: self.userDomain, token: self.token, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: {(error) in
+            
+            failCallback()
+            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+        })
     }
 }

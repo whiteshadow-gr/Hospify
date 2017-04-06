@@ -57,14 +57,14 @@ struct AnimationHelper {
     }
     
     /**
-     <#Function Details#>
+     Performs the specified animations for the specified duration. 
      
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter view: The UIView to animate to
+     - parameter duration: The duration of the animation
+     - parameter animations: The animations to do
+     - parameter completion: An optional function to execute after the animations have complete
      */
-    static func animateView(_ view: UIView?, duration: TimeInterval, animations: @escaping (Void) -> Void, completion: @escaping (Bool) -> Void) {
+    static func animateView(_ view: UIView?, duration: TimeInterval, animations: @escaping (Void) -> Void, completion: ((Bool) -> Void)?) {
         
         if view != nil {
             
@@ -78,7 +78,10 @@ struct AnimationHelper {
                     },
                     completion: {(bool: Bool) -> Void in
                         
-                        completion(true)
+                        if completion != nil {
+                            
+                            completion!(true)
+                        }
                 })
             }
         }
@@ -87,10 +90,10 @@ struct AnimationHelper {
     // MARK: - Add blur to view
     
     /**
-     <#Function Details#>
+     Adds a blured UIView to the view
      
-     - parameter <#Parameter#>: <#Parameter description#>
-     - returns: <#Returns#>
+     - parameter view: The view to show the blur to
+     - returns: A UIVisualEffectView
      */
     static func addBlurToView(_ view: UIView) -> UIVisualEffectView {
         

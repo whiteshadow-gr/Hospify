@@ -19,9 +19,9 @@ extension UIAlertController {
     // MARK: - Functions
 
     /**
-     <#Function Details#>
+     Adds as many actions as we want to the alert controller that called this method
      
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter actions: The actions to add to the alert controller that called this method
      */
     func addActions(actions: [UIAlertAction]) {
         
@@ -32,10 +32,10 @@ extension UIAlertController {
     }
     
     /**
-     <#Function Details#>
+     Adds iPad support for the alert controller. In iPad the action sheet styled alert controller has a pop up bubble theme and therefore it's essential to provide the source rect and source view of that bubble.
      
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter sourceRect: The source rect that will show the bubble pop up
+     - parameter sourceView: The source view that will show the bubble pop up
      */
     func addiPadSupport(sourceRect: CGRect, sourceView: UIView) {
         
@@ -48,10 +48,10 @@ extension UIAlertController {
     }
     
     /**
-     <#Function Details#>
+     Adds iPad support for the alert controller. In iPad the action sheet styled alert controller has a pop up bubble theme and therefore it's essential to provide the source rect and source view of that bubble.
      
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter sourceRect: The source rect that will show the bubble pop up
+     - parameter sourceView: The source view that will show the bubble pop up
      */
     func addiPadSupport(barButtonItem: UIBarButtonItem, sourceView: UIView) {
         
@@ -61,5 +61,32 @@ extension UIAlertController {
             self.popoverPresentationController?.barButtonItem = barButtonItem
             self.popoverPresentationController?.sourceView = sourceView
         }
+    }
+    
+    /**
+     Creates an ok alert styled UIAlertController
+     
+     - parameter alertMessage: The desired alert message
+     - parameter alertTitle: The desired alert title
+     - parameter okTitle: The desired button title
+     - parameter proceedCompletion: The desired function to execute on button press
+     - returns: A UIAlertController ready to be presented from the view
+     */
+    class func createOKAlert(alertMessage: String, alertTitle: String, okTitle: String, proceedCompletion: @escaping () -> Void) -> UIAlertController {
+        
+        //change font
+        let attrTitleString = NSAttributedString(string: alertTitle, attributes: [NSFontAttributeName: UIFont(name: "OpenSans", size: 32)!])
+        let attrMessageString = NSAttributedString(string: alertMessage, attributes: [NSFontAttributeName: UIFont(name: "OpenSans", size: 32)!])
+        
+        // create the alert
+        let alert = UIAlertController(title: attrTitleString.string, message: attrMessageString.string, preferredStyle: .alert)
+        
+        // add the actions (buttons)
+        alert.addAction(UIAlertAction(title: okTitle, style: .default, handler: { (action: UIAlertAction) in
+            
+            proceedCompletion()
+        }))
+        
+        return alert
     }
 }

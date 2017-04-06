@@ -89,23 +89,18 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         
         let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
         
-        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[weak self] (alert: UIAlertAction) -> Void in
             
-            in
-            TabBarViewController.logoutUser(from: self)
+            if self != nil {
+                
+                TabBarViewController.logoutUser(from: self!)
+            }
         })
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        alertController.addAction(logOutAction)
-        alertController.addAction(cancelAction)
-        
-        // if user is on ipad show as a pop up
-        if UI_USER_INTERFACE_IDIOM() == .pad {
-            
-            alertController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
-            alertController.popoverPresentationController?.sourceView = self.view
-        }
+        alertController.addActions(actions: [logOutAction, cancelAction])
+        alertController.addiPadSupport(barButtonItem: self.navigationItem.rightBarButtonItem!, sourceView: self.view)
         
         // present alert controller
         self.navigationController!.present(alertController, animated: true, completion: nil)
@@ -140,16 +135,11 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
      */
     class func logoutUser(from viewController: UIViewController) -> Void {
         
-        let yesAction = { () -> Void in
+        let yesAction = {() -> Void in
             
             // delete keys from keychain
-            let clearUserToken = KeychainHelper.ClearKeychainKey(key: "UserToken")
+            _ = KeychainHelper.ClearKeychainKey(key: "UserToken")
             _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "false")
-            
-            if (!clearUserToken) {
-                
-                // show alert that the log out was not completed for some reason
-            }
             
             // reset the stack to avoid allowing back
             let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
@@ -160,11 +150,6 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             navigation?.pushViewController(loginViewController, animated: false)
         }
         
-        viewController.createClassicAlertWith(alertMessage: NSLocalizedString("logout_message_label", comment:  "logout message"),
-                                    alertTitle: NSLocalizedString("logout_label", comment:  "logout"),
-                                    cancelTitle: NSLocalizedString("no_label", comment:  "no"),
-                                    proceedTitle: NSLocalizedString("yes_label", comment:  "yes"),
-                                    proceedCompletion: yesAction,
-                                    cancelCompletion: {() -> Void in return})
+        viewController.createClassicAlertWith(alertMessage: NSLocalizedString("logout_message_label", comment:  "logout message"), alertTitle: NSLocalizedString("logout_label", comment:  "logout"), cancelTitle: NSLocalizedString("no_label", comment:  "no"), proceedTitle: NSLocalizedString("yes_label", comment:  "yes"), proceedCompletion: yesAction, cancelCompletion: {})
     }
 }

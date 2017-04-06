@@ -36,7 +36,7 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
         
         let startOfToday = Calendar.current.startOfDay(for: Date())
         let predicate = NSPredicate(format: "dateAdded >= %@", startOfToday as CVarArg)
-        dataResults = RealmHelper.GetResults(predicate)?.sorted(byKeyPath: "dateAdded", ascending: false)
+        dataResults = RealmHelper.getResults(predicate)?.sorted(byKeyPath: "dateAdded", ascending: false)
         reloadData()
     }
     
@@ -75,10 +75,5 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
         }
 
         return cell!
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        // do nothing
     }
 }

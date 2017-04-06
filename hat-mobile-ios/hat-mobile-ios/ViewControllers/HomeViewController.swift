@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import HatForIOS
 
 // MARK: Class
@@ -58,7 +57,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         
         let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
         
-        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void in
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[unowned self] (alert: UIAlertAction) -> Void in
             
             TabBarViewController.logoutUser(from: self)
         })
@@ -145,9 +144,6 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
 
         NotificationCenter.default.addObserver(self, selector: #selector(hidePopUp), name: NSNotification.Name("hideDataServicesInfo"), object: nil)
         
-        // add a notification observer in order to hide the second page view controller
-        NotificationCenter.default.addObserver(self, selector: #selector(hidePopUp), name: Notification.Name("hideNewbiePageViewContoller"), object: nil)
-        
         // pin header view of collection view to the top while scrolling
         (self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout).sectionHeadersPinToVisibleBounds = true
     }
@@ -204,10 +200,24 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             appDelegate.locationHelper.locationManager.requestAlwaysAuthorization()
             
             // check if the token has expired
-            HATAccountService.checkIfTokenIsActive(token: token, success: success, failed: failed)
+            let result = HATAccountService.checkIfTokenExpired(token: token)
+            
+            if result == token {
+                
+                success(token: token)
+            } else if result == "401" {
+                
+                failed(statusCode: 401)
+            } else {
+                
+                self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+            }
         }
         
-        HATService.getSystemStatus(userDomain: userDomain, authToken: token, completion: updateRingProgressBar, failCallBack: {(jsonError) -> Void in return })
+        HATService.getSystemStatus(userDomain: userDomain, authToken: token, completion: updateRingProgressBar, failCallBack: {(jsonError) -> Void in
+        
+            _ = CrashLoggerHelper.JSONParsingErrorLog(error: jsonError)
+        })
     }
     
     override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
@@ -251,15 +261,18 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         
         textPopUpViewController?.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.collectionView.frame.maxY, width: self.view.frame.width - 30, height: self.view.frame.height), color: .tealColor(), cornerRadius: 15)
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] () -> Void in
             
-            // add the page view controller to self
-            self.addBlurToView()
-            self.addViewController(textPopUpViewController!)
-            AnimationHelper.animateView(textPopUpViewController?.view, duration: 0.2, animations: {() -> Void in
+            if let weakSelf = self {
                 
-                textPopUpViewController?.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.collectionView.frame.origin.y, width: self.view.frame.width - 30, height: self.view.frame.height)
-            }, completion: {(bool: Bool) -> Void in return})
+                // add the page view controller to self
+                weakSelf.addBlurToView()
+                weakSelf.addViewController(textPopUpViewController!)
+                AnimationHelper.animateView(textPopUpViewController?.view, duration: 0.2, animations: {() -> Void in
+                    
+                    textPopUpViewController?.view.frame = CGRect(x: weakSelf.view.frame.origin.x + 15, y: weakSelf.collectionView.frame.origin.y, width: weakSelf.view.frame.width - 30, height: weakSelf.view.frame.height)
+                }, completion: {_ in return})
+            }
         }
     }
 

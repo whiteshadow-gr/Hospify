@@ -128,7 +128,7 @@ struct MapsHelper {
         var dblocation: CLLocation? = nil
         var timeInterval: TimeInterval = TimeInterval()
         
-        if let dbLastPoint = RealmHelper.GetLastDataPoint() {
+        if let dbLastPoint = RealmHelper.getLastDataPoint() {
             
             dblocation = CLLocation(latitude: (dbLastPoint.lat), longitude: (dbLastPoint.lng))
             let lastRecordedDate = dbLastPoint.dateAdded
@@ -153,7 +153,7 @@ struct MapsHelper {
                     
                     print("added")
                     // add data
-                    _ = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
+                    _ = RealmHelper.addData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
                     let syncHelper = SyncDataHelper()
                     _ = syncHelper.CheckNextBlockToSync()
                 }
@@ -161,7 +161,7 @@ struct MapsHelper {
                 
                 print("added")
                 // add data
-                _ = RealmHelper.AddData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
+                _ = RealmHelper.addData(Double(latestLocation.coordinate.latitude), longitude: Double(latestLocation.coordinate.longitude), accuracy: Double(latestLocation.horizontalAccuracy))
                 let syncHelper = SyncDataHelper()
                 _ = syncHelper.CheckNextBlockToSync()
             }

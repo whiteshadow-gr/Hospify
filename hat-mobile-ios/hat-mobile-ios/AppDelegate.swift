@@ -36,10 +36,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // if app was closed by iOS (low mem, etc), then receives a location update, and respawns your app, letting it know it respawned due to a location service
         if launchOptions?[UIApplicationLaunchOptionsKey.location] != nil {
             
-            self.locationHelper.startUpdatingLocation()
+            UpdateLocations.shared.resumeLocationServices()
         }
         
-        self.locationHelper.startMonitoringSignificantLocationChanges()
+        UpdateLocations.shared.resumeLocationServices()
         
         // change tab bar item font
         UITabBarItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans", size: 11)!], for: UIControlState.normal)
@@ -55,10 +55,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UIApplication.shared.registerUserNotificationSettings(notificationSettings)
         
         self.window?.tintColor = Constants.Colours.AppBase
-        
-        self.locationHelper.stopMonitoringAllRegions()
-        
-        self.locationHelper.requestLocation()
         
         UINavigationBar.appearance().isOpaque = true
         UINavigationBar.appearance().barTintColor = UIColor.tealColor()
@@ -124,7 +120,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // purge old data
         self.purgeUsingPredicate()
-        //self.startUpdatingLocation()
         self.endBackgroundUpdateTask(taskID: UIBackgroundTaskIdentifier.init())
     }
     
@@ -176,7 +171,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let predicate = NSPredicate(format: "dateAdded <= %@", lastWeek as CVarArg)
         
         // use _ to get rid of result is unused warnings
-        _ = RealmHelper.Purge(predicate)
+        _ = RealmHelper.purge(predicate)
     }
     
     // MARK: - Background Task Functions

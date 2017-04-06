@@ -30,7 +30,7 @@ class RealmHelper {
      
      - returns: The default Realm object
      */
-    class func GetRealm() -> Realm {
+    class func getRealm() -> Realm {
         
         // Get the default Realm
         let realm: Realm = try! Realm()
@@ -49,10 +49,10 @@ class RealmHelper {
      
      - returns: current item count
      */
-    class func AddData(_ latitude: Latitude, longitude: Longitude, accuracy: Accuracy) -> Int {
+    class func addData(_ latitude: Latitude, longitude: Longitude, accuracy: Accuracy) -> Int {
 
         // Get the default Realm
-        let realm = self.GetRealm()
+        let realm = self.getRealm()
         
         // data
         let dataPoint = DataPoint()
@@ -81,10 +81,10 @@ class RealmHelper {
      - parameter dataPoints:  Array of DataPoints
      - parameter lastUpdated: Date of last sync
      */
-    class func UpdateData(_ dataPoints: [DataPoint], lastUpdated: Date) -> Void {
+    class func updateData(_ dataPoints: [DataPoint], lastUpdated: Date) -> Void {
         
         // Get the default Realm
-        let realm = self.GetRealm()
+        let realm = self.getRealm()
         
         // iterate and update
         try! realm.write {
@@ -105,10 +105,10 @@ class RealmHelper {
      - parameter predicate: The predicate used to filter the data
      - returns: always true if sucessful
      */
-    class func Purge(_ predicate: NSPredicate?) -> Bool {
+    class func purge(_ predicate: NSPredicate?) -> Bool {
         
         // Get the default Realm
-        let realm: Realm = self.GetRealm()
+        let realm: Realm = self.getRealm()
 
         try! realm.write {
             
@@ -137,10 +137,10 @@ class RealmHelper {
      
      - returns: list of datapoints
      */
-    class func GetResults(_ predicate: NSPredicate) -> Results<DataPoint>? {
+    class func getResults(_ predicate: NSPredicate) -> Results<DataPoint>? {
         
         // Get the default Realm
-        let realm: Realm = self.GetRealm()
+        let realm: Realm = self.getRealm()
         
         let sortProperties = [SortDescriptor(keyPath: "dateAdded", ascending: true)]
         
@@ -152,10 +152,10 @@ class RealmHelper {
      
      - returns: A DataPoint object
      */
-    class func GetLastDataPoint() -> DataPoint! {
+    class func getLastDataPoint() -> DataPoint! {
         
         // Get the default Realm
-        let realm: Realm = self.GetRealm()
+        let realm: Realm = self.getRealm()
         
         return realm.objects(DataPoint.self).last
     }

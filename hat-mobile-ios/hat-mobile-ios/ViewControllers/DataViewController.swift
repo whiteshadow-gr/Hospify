@@ -36,10 +36,9 @@ class DataViewController: UIViewController {
                                     alertTitle: NSLocalizedString("purge_label", comment:  "purge"),
                                     cancelTitle: NSLocalizedString("no_label", comment:  "no"),
                                     proceedTitle: NSLocalizedString("yes_label", comment:  "yes"),
-                                    proceedCompletion: {
-                                                            () -> Void in
+                                    proceedCompletion: {[unowned self] () -> Void in
                                                             
-                                                            if (RealmHelper.Purge(nil)) {
+                                                            if (RealmHelper.purge(nil)) {
                                                                 
                                                                 self.dataTableView.reloadData()
                                                             }

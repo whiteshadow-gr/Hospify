@@ -61,9 +61,14 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
             self.darkView = AnimationHelper.addBlurToView(self.view)
             AnimationHelper.animateView(popUp.view,
                                         duration: 0.2,
-                                        animations: {
-                                            popUp.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.bounds.origin.y + 150, width: self.view.frame.width - 30, height: self.view.bounds.height)},
-                                        completion: {(bool) -> Void in return })
+                                        animations: { [weak self] () -> Void in
+                                            
+                                            if let weakSelf = self {
+                                                
+                                                popUp.view.frame = CGRect(x: weakSelf.view.frame.origin.x + 15, y: weakSelf.view.bounds.origin.y + 150, width: weakSelf.view.frame.width - 30, height: weakSelf.view.bounds.height)
+                                            }
+                                        },
+                                        completion: {_ in return })
             
             // add the page view controller to self
             self.addViewController(popUp)
@@ -189,8 +194,14 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
             
             AnimationHelper.animateView(pageItemController.view,
                                         duration: 0.2,
-                                        animations: {pageItemController.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.bounds.origin.y + 150, width: self.view.frame.width - 30, height: self.view.bounds.height - 130)},
-                                        completion: {(bool) -> Void in return})
+                                        animations: {[weak self] () -> Void in
+                                            
+                                            if let weakSelf = self {
+                                                
+                                                pageItemController.view.frame = CGRect(x: weakSelf.view.frame.origin.x + 15, y: weakSelf.view.bounds.origin.y + 150, width: weakSelf.view.frame.width - 30, height: weakSelf.view.bounds.height - 130)
+                                            }
+                                        },
+                                        completion: {_ in return})
             
             // add the page view controller to self
             self.addViewController(pageItemController)

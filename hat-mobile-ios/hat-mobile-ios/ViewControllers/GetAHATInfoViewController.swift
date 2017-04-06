@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
 import HatForIOS
 
 // MARK: Class
@@ -146,13 +145,20 @@ class GetAHATInfoViewController: UIViewController {
         
         AnimationHelper.animateView(self.view,
                                     duration: 0.2,
-                                    animations: {
+                                    animations: {[weak self] () -> Void in
                                         
-                                        self.view.frame = CGRect(x: self.view.frame.origin.x, y: self.view.frame.maxY, width: self.view.frame.width, height: self.view.frame.height) },
-                                    completion: {(bool) -> Void in
+                                        if let weakSelf = self {
+                                            
+                                            weakSelf.view.frame = CGRect(x: weakSelf.view.frame.origin.x, y: weakSelf.view.frame.maxY, width: weakSelf.view.frame.width, height: weakSelf.view.frame.height)
+                                        }
+                                    },
+                                    completion: {[weak self] (bool) -> Void in
                                         
-                                        self.removeViewController()
-                                        completion()
+                                        if self != nil {
+                                            
+                                            self!.removeViewController()
+                                            completion()
+                                        }
         })
     }
 }

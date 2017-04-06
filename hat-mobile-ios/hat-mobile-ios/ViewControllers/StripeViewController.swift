@@ -219,8 +219,6 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // config the arrowBar
         arrowBarImage.image = arrowBarImage.image!.withRenderingMode(.alwaysTemplate)

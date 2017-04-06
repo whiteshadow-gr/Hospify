@@ -29,6 +29,7 @@ extension UIImageView {
         contentMode = mode
         
         Alamofire.request(url).responseData {[weak self] response in
+            
             guard let data = response.result.value else { return }
             let image = UIImage(data: data)
             

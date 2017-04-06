@@ -12,8 +12,13 @@
 
 import UIKit
 
+// MARK: Class
+
+/// The collection view cell class for the photo viewer
 class PhotosCollectionViewCell: UICollectionViewCell {
     
-    @IBOutlet weak var image: UIImageView!
+    // MARK: - IBOutlets
     
+    /// The cell's imageView
+    @IBOutlet weak var image: UIImageView!
 }

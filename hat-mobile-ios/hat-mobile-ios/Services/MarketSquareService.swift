@@ -52,7 +52,11 @@ struct MarketSquareService {
         let userDomain = HATAccountService.TheUserHATDomain()
         let userToken = HATAccountService.getUsersTokenFromKeychain()
         
-        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: successful, failCallBack: {_ in failed()})
+        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: successful, failCallBack: {(error) in
+            
+            failed()
+            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+        })
     }
     
 }

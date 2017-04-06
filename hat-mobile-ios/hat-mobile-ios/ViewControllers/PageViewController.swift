@@ -59,8 +59,10 @@ class PageViewController: UIViewController {
         pageItemController.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.maxY, width: self.view.frame.width - 30, height: self.view.frame.height - 30), color: .tealColor(), cornerRadius: 15)
         AnimationHelper.animateView(pageItemController.view,
                                     duration: 0.2,
-                                    animations: {pageItemController.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.y + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30)},
-                                    completion: {(bool) -> Void in return})
+                                    animations: { [unowned self] () -> Void in
+                                        
+                                        pageItemController.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.y + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30)},
+                                    completion: {_ in return})
         
         // add the page view controller to self
         self.addViewController(pageItemController)
@@ -138,11 +140,17 @@ class PageViewController: UIViewController {
             
             AnimationHelper.animateView(view.view,
                                         duration: 0.2,
-                                        animations: {view.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.maxY, width: self.view.frame.width - 30, height: self.view.frame.height - 30)},
-                                        completion: {(bool) -> Void in
+                                        animations: {[unowned self] () -> Void in
                                             
-                                            view.removeViewController()
-                                            self.darkView?.removeFromSuperview()
+                                            view.view.frame = CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.maxY, width: self.view.frame.width - 30, height: self.view.frame.height - 30)
+                                        },
+                                        completion: {[weak self] (bool) -> Void in
+                                            
+                                            if self != nil {
+                                                
+                                                view.removeViewController()
+                                                self!.darkView?.removeFromSuperview()
+                                            }
             })
         }
     }

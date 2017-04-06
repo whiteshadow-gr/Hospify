@@ -40,7 +40,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         
         let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
         
-        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {(alert: UIAlertAction) -> Void in
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[unowned self](alert: UIAlertAction) -> Void in
             
             TabBarViewController.logoutUser(from: self)
         })
@@ -92,6 +92,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         HATDataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {(error) -> Void in
         
             failureCallBack()
+            _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
         })
     }
     

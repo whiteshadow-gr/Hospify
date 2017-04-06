@@ -30,8 +30,6 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // create view controller
         self.createPageViewController()
@@ -44,7 +42,7 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
         NotificationCenter.default.addObserver(self, selector: #selector(enablePageControll), name: Notification.Name(Constants.NotificationNames.enablePageControll.rawValue), object: nil)
         
         // change background color
-        self.view.backgroundColor = UIColor.tealColor()
+        self.view.backgroundColor = .tealColor()
     }
 
     override func didReceiveMemoryWarning() {
@@ -95,7 +93,7 @@ class ParentPageViewController: UIPageViewController, UIPageViewControllerDataSo
     
     func presentationCount(for pageViewController: UIPageViewController) -> Int {
         
-        return numberOfPages.count
+        return self.numberOfPages.count
     }
     
     func presentationIndex(for pageViewController: UIPageViewController) -> Int {

@@ -13,7 +13,7 @@
 // MARK: Protocol
 
 /// used to provide feedback while syncing data
-public protocol DataSyncDelegate {
+public protocol DataSyncDelegate: class {
     
     // MARK: - Protocol's functions
     

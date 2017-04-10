@@ -89,8 +89,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     private let clusteringManager = FBClusteringManager()
     /// The SyncDataHelper object constant
     private let syncDataHelper = SyncDataHelper()
-    /// The concurrentDataPointQueue object constant
-    private let concurrentDataPointQueue = DispatchQueue(label: "com.hat.app.data-point-queue", attributes: DispatchQueue.Attributes.concurrent)
     
     /// The timer DispatchSource object
     private var timer: DispatchSource!
@@ -102,10 +100,10 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     private var lastErrorMessage: String = ""
     
     /// The uidatepicker used in toolbar
-    private var datePicker: UIDatePicker = UIDatePicker()
+    private var datePicker: UIDatePicker? = nil
     
     /// The uidatepicker used in toolbar
-    private var segmentControl: UISegmentedControl = UISegmentedControl()
+    private var segmentControl: UISegmentedControl? = nil
     
     /// The start date to filter for points
     private var filterDataPointsFrom: Date? = nil
@@ -126,15 +124,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         // sync feedback delegate
         self.syncDataHelper.dataSyncDelegate = self
-    
-        self.startTimer()
         
         // cancel all notifications
         UIApplication.shared.cancelAllLocalNotifications()
         
         // add notification observer for refreshUI
-        NotificationCenter.default.addObserver( self, selector: #selector(refreshUI),
-            name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         NotificationCenter.default.addObserver( self, selector: #selector(goToSettings),
                                                 name: NSNotification.Name("goToSettings"), object: nil)
         
@@ -154,15 +148,15 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         self.calendarImageView.addGestureRecognizer(recogniser)
         
         datePicker = UIDatePicker(frame: CGRect(x: 0, y: 200, width: view.frame.width, height: 220))
-        datePicker.backgroundColor = .white
+        datePicker!.backgroundColor = .white
         
         // Set some of UIDatePicker properties
-        datePicker.timeZone = NSTimeZone.local
-        datePicker.backgroundColor = UIColor.white
-        datePicker.datePickerMode = .date
+        datePicker!.timeZone = NSTimeZone.local
+        datePicker!.backgroundColor = UIColor.white
+        datePicker!.datePickerMode = .date
         
         // Add an event to call onDidChangeDate function when value is changed.
-        datePicker.addTarget(self, action: #selector(self.datePickerValueChanged(sender:)), for: .valueChanged)
+        datePicker!.addTarget(self, action: #selector(self.datePickerValueChanged(sender:)), for: .valueChanged)
         
         let toolBar = UIToolbar()
         toolBar.barStyle = UIBarStyle.default
@@ -177,12 +171,12 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         spaceButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
         
         self.segmentControl = UISegmentedControl(items: ["From", "To"])
-        self.segmentControl.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
-        self.segmentControl.selectedSegmentIndex = 0
-        self.segmentControl.addTarget(self, action: #selector(segmentedControlDidChange(sender:)), for: UIControlEvents.valueChanged)
-        self.segmentControl.tintColor = .tealColor()
+        self.segmentControl!.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
+        self.segmentControl!.selectedSegmentIndex = 0
+        self.segmentControl!.addTarget(self, action: #selector(segmentedControlDidChange(sender:)), for: UIControlEvents.valueChanged)
+        self.segmentControl!.tintColor = .tealColor()
         
-        let barButtonSegmentedControll = UIBarButtonItem(customView: segmentControl)
+        let barButtonSegmentedControll = UIBarButtonItem(customView: segmentControl!)
         
         let spaceButton2 = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
         spaceButton2.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
@@ -195,6 +189,18 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         textField.inputView = datePicker
         textField.inputAccessoryView = toolBar
+    }
+    
+    deinit {
+        
+        self.mapView.removeFromSuperview()
+        self.mapView.removeAnnotations(self.mapView.annotations)
+        self.mapView.showsUserLocation = false
+        self.mapView.delegate = nil
+        self.mapView = nil
+        self.removeFromParentViewController()
+        
+        print("hello")
     }
     
     override func didReceiveMemoryWarning() {
@@ -212,17 +218,17 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
      */
     func segmentedControlDidChange(sender: UISegmentedControl) {
         
-        if self.segmentControl.selectedSegmentIndex == 0 {
+        if self.segmentControl!.selectedSegmentIndex == 0 {
             
             if self.filterDataPointsFrom != nil {
                 
-                self.datePicker.setDate(self.filterDataPointsFrom!, animated: true)
+                self.datePicker!.setDate(self.filterDataPointsFrom!, animated: true)
             }
         } else {
             
             if self.filterDataPointsTo != nil {
                 
-                self.datePicker.setDate(self.filterDataPointsTo!, animated: true)
+                self.datePicker!.setDate(self.filterDataPointsTo!, animated: true)
             }
         }
     }
@@ -292,7 +298,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
                 
                 view.removeFromSuperview()
                 _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
-                
             })
         }
         
@@ -324,16 +329,16 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
      */
     func datePickerValueChanged(sender: UIDatePicker) {
         
-        if self.segmentControl.selectedSegmentIndex == 0 {
+        if self.segmentControl!.selectedSegmentIndex == 0 {
             
-            self.filterDataPointsFrom = self.datePicker.date.startOfTheDay()
-            if let endOfDay = self.datePicker.date.endOfTheDay() {
+            self.filterDataPointsFrom = self.datePicker!.date.startOfTheDay()
+            if let endOfDay = self.datePicker!.date.endOfTheDay() {
                 
                 self.filterDataPointsTo = endOfDay
             }
         } else {
             
-            if let endOfDay = self.datePicker.date.endOfTheDay() {
+            if let endOfDay = self.datePicker!.date.endOfTheDay() {
                 
                 self.filterDataPointsTo = endOfDay
             }
@@ -371,14 +376,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     }
     
     // MARK: - Notification methods
-    
-    /**
-     Triggers a refresh in UI drawing the points on the map
-     */
-    @objc private func refreshUI() {
-        
-        self.mapView(self.mapView, regionDidChangeAnimated: true)
-    }
     
     /**
      Presents the settings view controller
@@ -518,18 +515,24 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
             }
         }
         
-        OperationQueue().addOperation({
+        OperationQueue().addOperation({ [weak self] () -> Void in
             
-            // calculate map size and scale
-            let mapBoundsWidth = Double(self.mapView.bounds.size.width)
-            let mapRectWidth: Double = self.mapView.visibleMapRect.size.width
-            let scale: Double = mapBoundsWidth / mapRectWidth
-            let annotationArray = self.clusteringManager.clusteredAnnotations(withinMapRect: self.mapView.visibleMapRect, zoomScale: scale)
-            DispatchQueue.main.sync(execute: { [unowned self] () -> Void in
+            if let wSelf = self {
                 
-                // display map
-                self.clusteringManager.display(annotations: annotationArray, onMapView: self.mapView)
-            })
+                // calculate map size and scale
+                let mapBoundsWidth = Double(wSelf.mapView.bounds.size.width)
+                let mapRectWidth: Double = wSelf.mapView.visibleMapRect.size.width
+                let scale: Double = mapBoundsWidth / mapRectWidth
+                let annotationArray = wSelf.clusteringManager.clusteredAnnotations(withinMapRect: wSelf.mapView.visibleMapRect, zoomScale: scale)
+                DispatchQueue.main.sync(execute: { [weak self] () -> Void in
+                    
+                    if let weakSelf = self {
+                        
+                        // display map
+                        weakSelf.clusteringManager.display(annotations: annotationArray, onMapView: weakSelf.mapView)
+                    }
+                })
+            }
         })
     }
     
@@ -543,13 +546,10 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
      */
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         
-        var reuseId = "Pin"
+        let reuseId = "Pin"
         if annotation.isKind(of: FBAnnotationCluster.self) {
             
-            reuseId = "Cluster"
-            var clusterView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId)
-            clusterView = FBAnnotationClusterView(annotation: annotation, reuseIdentifier: reuseId)
-            return clusterView
+            return FBAnnotationClusterView(annotation: annotation, reuseIdentifier: reuseId)
         } else {
             
             var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
@@ -613,7 +613,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
      */
     private func fetchAndClusterPoints(_ predicate: NSPredicate) -> Void {
         
-        concurrentDataPointQueue.async(flags: .barrier, execute: { [weak self] () -> Void in // 1
+        DispatchQueue.global().async { [weak self] () -> Void in
             
             if let weakSelf = self {
                 
@@ -633,7 +633,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
                     weakSelf.addPointsToMap(annottationArray: annottationArray)
                 }
             }
-        })
+        }
     }
     
     /**
@@ -649,11 +649,11 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         // force map changed to refresh the map and any pins
         self.mapView(self.mapView, regionDidChangeAnimated: true)
         
-        DispatchQueue.main.async(execute: { [unowned self] () -> Void in
+        DispatchQueue.main.async(execute: { [weak self] () -> Void in
             
             if(annottationArray.count > 0) {
                 
-                self.fitMapViewToAnnotaionList(annottationArray)
+                self!.fitMapViewToAnnotaionList(annottationArray)
             }
         })
     }
@@ -707,45 +707,5 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         // focus map on the added points
         mapView.setVisibleMapRect(zoomRect, edgePadding: mapEdgePadding, animated: true)
-    }
-    
-    // MARK: - Handle timers
-    
-    /**
-     Times for syncing data with HAT and timer to update UI to reflect any changes
-     */
-    private func startTimer() {
-        
-        let queue = DispatchQueue(label: "com.hat.app.timer", attributes: [])
-        
-        // user info
-        timer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: queue) /*Migrator FIXME: Use DispatchSourceTimer to avoid the cast*/ as! DispatchSource
-        timer.scheduleRepeating(deadline: DispatchTime.now(),
-                                interval: .seconds(10),
-                                leeway: .seconds(1)
-        )
-        timer.setEventHandler {
-            // update UI
-            self.displayLastDataPointTime()
-        }
-        timer.resume()
-        
-        // sync
-        timerSync = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(rawValue: UInt(0)), queue: queue) /*Migrator FIXME: Use DispatchSourceTimer to avoid the cast*/ as! DispatchSource
-       // timerSync.scheduleRepeating(start: DispatchTime.now(), interval: Constants.DataSync.DataSyncPeriod * NSEC_PER_SEC, leeway: 1 * NSEC_PER_SEC) // every 10 seconds, with leeway of 1 second
-        timerSync.scheduleRepeating(deadline: DispatchTime.now(),
-                                interval: .seconds(10),
-                                leeway: .seconds(1)
-        )
-        timerSync.setEventHandler {
-            
-            // sync with HAT
-            DispatchQueue.main.async(execute: { [unowned self]
-                () -> Void in
-                
-                _ = self.syncDataHelper.CheckNextBlockToSync()
-            })
-        }
-        timerSync.resume()
     }
 }

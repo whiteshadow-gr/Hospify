@@ -117,10 +117,11 @@ struct CrashLoggerHelper {
      */
     static func JSONParsingErrorLog(error: JSONParsingError) -> UIAlertController {
         
+        let crashlytics = Crashlytics.sharedInstance()
         switch error {
         case .expectedFieldNotFound:
             
-            Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["No value found in the response " : ""])
+            crashlytics.recordError(error, withAdditionalUserInfo: ["No value found in the response " : ""])
             
             // no token in url callback redirect
             return UIAlertController.createOKAlert(alertMessage: "Response error!", alertTitle: "No value found in the response", okTitle: "OK", proceedCompletion: {})
@@ -128,13 +129,13 @@ struct CrashLoggerHelper {
             
             if statusCode != nil  && errorReturned != nil {
                 
-                Crashlytics.sharedInstance().recordError(errorReturned!, withAdditionalUserInfo: ["General error. Error: " : "\(errorReturned!)", "status code: " : "\(statusCode!)", "description: " : "\(description)"])
+                crashlytics.recordError(errorReturned!, withAdditionalUserInfo: ["General error. Error: " : "\(errorReturned!)", "status code: " : "\(statusCode!)", "description: " : "\(description)"])
             } else if statusCode != nil {
                 
-                Crashlytics.sharedInstance().recordError(error, withAdditionalUserInfo: ["General error. Error: " : "\(error)", "status code: " : "\(statusCode!)", "description: " : "\(description)"])
+                crashlytics.recordError(error, withAdditionalUserInfo: ["General error. Error: " : "\(error)", "status code: " : "\(statusCode!)", "description: " : "\(description)"])
             } else if errorReturned != nil {
                 
-                Crashlytics.sharedInstance().recordError(errorReturned!, withAdditionalUserInfo: ["General error. Error: " : "\(errorReturned!)", "description: " : "\(description)"])
+                crashlytics.recordError(errorReturned!, withAdditionalUserInfo: ["General error. Error: " : "\(errorReturned!)", "description: " : "\(description)"])
             }
             
             // no token in url callback redirect

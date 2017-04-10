@@ -13,7 +13,7 @@
 // MARK: Struct
 
 /// A struct representing the location table received from JSON
-public class HATNotesPhotoData: Comparable {
+public struct HATNotesPhotoData: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -48,14 +48,14 @@ public class HATNotesPhotoData: Comparable {
     // MARK: - Variables
 
     /// the link to the photo
-    public var link: String
+    public var link: String = ""
     /// the source of the photo
-    public var source: String
+    public var source: String = ""
     /// the caption of the photo
-    public var caption: String
+    public var caption: String = ""
     
     /// if photo is shared
-    public var shared: Bool
+    public var shared: Bool = false
     
     // MARK: - Initialisers
     
@@ -73,9 +73,7 @@ public class HATNotesPhotoData: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(dict: Dictionary<String, String>) {
-        
-        self.init()
+    public init(dict: Dictionary<String, String>) {
         
         // check if shared exists and if is empty
         if let tempShared = dict["shared"] {

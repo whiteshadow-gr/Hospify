@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A class representing the data plug rating from data plug JSON file
-public class HATDataPlugRatingObject: Comparable {
+public struct HATDataPlugRatingObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -68,10 +68,8 @@ public class HATDataPlugRatingObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(dict: Dictionary<String, JSON>) {
-        
-        self.init()
-        
+    public init(dict: Dictionary<String, JSON>) {
+                
         if let tempUp = (dict["up"]?.intValue) {
             
             up = tempUp

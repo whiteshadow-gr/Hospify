@@ -86,7 +86,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         }
         
         // create loading pop up screen
-        self.loadingView = UIView.createLoadingView(with: CGRect(x: (self.collectionView?.frame.midX)! - 60, y: (self.collectionView?.frame.midY)! - 15, width: 120, height: 30), color: .tealColor(), cornerRadius: 15, in: self.view, with: "Getting data plugs...", textColor: .white, font: UIFont(name: "OpenSans", size: 12)!)
+        self.loadingView = UIView.createLoadingView(with: CGRect(x: (self.collectionView?.frame.midX)! - 70, y: (self.collectionView?.frame.midY)! - 15, width: 140, height: 30), color: .tealColor(), cornerRadius: 15, in: self.view, with: "Getting data plugs...", textColor: .white, font: UIFont(name: "OpenSans", size: 12)!)
         
         // get available data plugs from server
         HATDataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {(error) -> Void in
@@ -159,11 +159,11 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.CellReuseIDs.dataplug.rawValue, for: indexPath) as? DataPlugCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.CellReuseIDs.dataplug.rawValue, for: indexPath) as! DataPlugCollectionViewCell
     
         let orientation = UIInterfaceOrientation(rawValue: UIDevice.current.orientation.rawValue)!
         
-        return DataPlugCollectionViewCell.setUp(cell: cell!, indexPath: indexPath, dataPlug: self.dataPlugs[indexPath.row], orientation: orientation)
+        return DataPlugCollectionViewCell.setUp(cell: cell, indexPath: indexPath, dataPlug: self.dataPlugs[indexPath.row], orientation: orientation)
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

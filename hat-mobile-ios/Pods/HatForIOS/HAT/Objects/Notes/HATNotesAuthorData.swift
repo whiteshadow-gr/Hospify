@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A struct representing the author table received from JSON
-public class HATNotesAuthorData: Comparable {
+public struct HATNotesAuthorData: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -50,16 +50,16 @@ public class HATNotesAuthorData: Comparable {
     // MARK: - Variables
     
     /// the nickname of the author
-    public var nickName: String
+    public var nickName: String = ""
     /// the name of the author
-    public var name: String
+    public var name: String = ""
     /// the photo url of the author
-    public var photoURL: String
+    public var photoURL: String = ""
     /// the phata of the author. Required
-    public var phata: String
+    public var phata: String = ""
     
     /// the id of the author
-    public var id: Int
+    public var id: Int = 0
     
     // MARK: - Initialisers
     
@@ -78,10 +78,7 @@ public class HATNotesAuthorData: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(dict: Dictionary<String, JSON>) {
-        
-        // init optional JSON fields to default values
-        self.init()
+    public init(dict: Dictionary<String, JSON>) {
         
         // this field will always have a value no need to use if let
         if let tempPHATA = dict["phata"]?.string {

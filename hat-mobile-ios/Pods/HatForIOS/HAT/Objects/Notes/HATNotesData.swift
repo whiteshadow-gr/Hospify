@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A struct representing the outer notes JSON format
-public class HATNotesData: Comparable {
+public struct HATNotesData: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -50,16 +50,16 @@ public class HATNotesData: Comparable {
     // MARK: - Variables
     
     /// the note id
-    public var id: Int
+    public var id: Int = 0
     
     /// the name of the note
-    public var name: String
+    public var name: String  = ""
     
     /// the last updated date of the note
-    public var lastUpdated: Date
+    public var lastUpdated: Date = Date()
     
     /// the data of the note, such as tables about the author, location, photo etc
-    public var data: HATNotesNotablesData
+    public var data: HATNotesNotablesData = HATNotesNotablesData()
     
     // MARK: - Initialisers
     
@@ -71,15 +71,13 @@ public class HATNotesData: Comparable {
         id = 0
         name = ""
         lastUpdated = Date()
-        data = HATNotesNotablesData.init()
+        data = HATNotesNotablesData()
     }
     
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(dict: Dictionary<String, JSON>) {
-
-        self.init()
+    public init(dict: Dictionary<String, JSON>) {
         
         if let tempID = dict["id"]?.int {
             

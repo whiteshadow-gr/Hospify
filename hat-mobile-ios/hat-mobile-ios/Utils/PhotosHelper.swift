@@ -127,7 +127,7 @@ class PhotosHelper: NSObject {
      - parameter image: The image to save to the photo library
      - parameter metadata: The metadata of the image to save
      */
-    func saveImage(image: UIImage, metadata: NSDictionary) {
+    func saveImage(image: UIImage) {
         
         if assetCollection == nil {
             

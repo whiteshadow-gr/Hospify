@@ -33,7 +33,7 @@ extension HATDataPlugsService {
         
         // set up the succesfulCallBack
         let plugReadyContinue = ensureOfferEnabled(offerID: offerID, succesfulCallBack: succesfulCallBack, failCallBack: failCallBack)
-        let checkPlugForToken = HATDataPlugsService.checkSocialPlugAvailability(succesfulCallBack: plugReadyContinue, failCallBack: {(error) in
+        let checkPlugForToken = self.checkSocialPlugAvailability(succesfulCallBack: plugReadyContinue, failCallBack: {(error) in
             
             failCallBack()
             _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
@@ -108,10 +108,9 @@ extension HATDataPlugsService {
                                                                   succesfulCallBack: succesfulCallBack,
                                                                   failCallBack: failCallBack)
             // ensure offer is claimed
-            HATDataPlugsService.checkIfOfferIsClaimed(offerID: offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: {(error) in
+            self.checkIfOfferIsClaimed(offerID: offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: {(error) in
                 
                 claimOfferIfFailed()
-                _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
             })
         }
     }
@@ -130,7 +129,7 @@ extension HATDataPlugsService {
         return {
             
             // claim offer
-            HATDataPlugsService.claimOfferWithOfferID(offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: {(error) in
+            self.claimOfferWithOfferID(offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: {(error) in
                 
                 failCallBack()
                 _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
@@ -154,7 +153,7 @@ extension HATDataPlugsService {
             let userDomain = HATAccountService.TheUserHATDomain()
             
             // approve data debit
-            HATDataPlugsService.approveDataDebit(dataDebitID, userToken: userToken, userDomain: userDomain, succesfulCallBack: succesfulCallBack, failCallBack: {(error) in
+            self.approveDataDebit(dataDebitID, userToken: userToken, userDomain: userDomain, succesfulCallBack: succesfulCallBack, failCallBack: {(error) in
                 
                 failCallBack()
             _ = CrashLoggerHelper.dataPlugErrorLog(error: error)

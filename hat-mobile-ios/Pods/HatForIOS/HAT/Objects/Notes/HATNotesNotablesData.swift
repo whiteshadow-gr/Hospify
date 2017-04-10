@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A struct representing the notables table received from JSON
-public class HATNotesNotablesData: Comparable {
+public struct HATNotesNotablesData: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -53,30 +53,30 @@ public class HATNotesNotablesData: Comparable {
     // MARK: - Variables
     
     /// the author data
-    public var authorData: HATNotesAuthorData
+    public var authorData: HATNotesAuthorData = HATNotesAuthorData()
     
     /// the photo data
-    public var photoData: HATNotesPhotoData
+    public var photoData: HATNotesPhotoData = HATNotesPhotoData()
     
     /// the location data
-    public var locationData: HATNotesLocationData
+    public var locationData: HATNotesLocationData = HATNotesLocationData()
     
     /// creation date
-    public var createdTime: Date
+    public var createdTime: Date = Date()
     /// the date until this note will be public (don't know if it's optional or not)
-    public var publicUntil: Date?
+    public var publicUntil: Date? = nil
     /// the updated time of the note
-    public var updatedTime: Date
+    public var updatedTime: Date = Date()
     
     /// if true this note is shared to facebook etc.
-    public var shared: Bool
+    public var shared: Bool = false
     
     /// If shared, where is it shared? Coma seperated string (don't know if it's optional or not)
-    public var sharedOn: String
+    public var sharedOn: String = ""
     /// the actual message of the note
-    public var message: String
+    public var message: String = ""
     /// the kind of the note. 3 types available note, blog or list
-    public var kind: String
+    public var kind: String = ""
     
     // MARK: - Initialisers
     
@@ -100,10 +100,7 @@ public class HATNotesNotablesData: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(dict: Dictionary<String, JSON>) {
-
-        // the tables are optional fields in the json so init them and check if they exist in our json
-        self.init()
+    public init(dict: Dictionary<String, JSON>) {
         
         if let tempAuthorData = dict["authorv1"]?.dictionary {
             

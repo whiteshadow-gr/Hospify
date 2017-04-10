@@ -123,8 +123,8 @@ extension HATAccountService {
      */
     class func TheUserHATAccessTokenURL() -> Constants.UserHATAccessTokenURLAlias {
         
-        let url: Constants.UserHATAccessTokenURLAlias = "https://" + HATAccountService.TheUserHATDomain() +
-            "/users/access_token?username=" + HATAccountService.TheHATUsername() + "&password=" + HATAccountService.TheHATPassword()
+        let url: Constants.UserHATAccessTokenURLAlias = "https://" + self.TheUserHATDomain() +
+            "/users/access_token?username=" + self.TheHATUsername() + "&password=" + self.TheHATPassword()
         
         return url
     }
@@ -138,7 +138,7 @@ extension HATAccountService {
      */
     class func TheUserHATCheckIfTableExistsURL(tableName: String, sourceName: String) -> String {
         
-        return "https://" + HATAccountService.TheUserHATDomain() + "/data/table?name=" + tableName + "&source=" + sourceName
+        return "https://" + self.TheUserHATDomain() + "/data/table?name=" + tableName + "&source=" + sourceName
     }
     
     /**
@@ -148,7 +148,7 @@ extension HATAccountService {
      */
     class func TheConfigureNewDataSourceURL() -> String {
         
-        return "https://" + HATAccountService.TheUserHATDomain() + "/data/table"
+        return "https://" + self.TheUserHATDomain() + "/data/table"
     }
     
     /**
@@ -159,7 +159,7 @@ extension HATAccountService {
      */
     class func TheGetFieldInformationUsingTableIDURL(_ fieldID: Int) -> String {
         
-        return "https://" + HATAccountService.TheUserHATDomain() + "/data/table/" + String(fieldID)
+        return "https://" + self.TheUserHATDomain() + "/data/table/" + String(fieldID)
     }
     
     /**
@@ -169,6 +169,6 @@ extension HATAccountService {
      */
     class func ThePOSTDataToHATURL() -> String {
         
-        return "https://" + HATAccountService.TheUserHATDomain() + "/data/record/values"
+        return "https://" + self.TheUserHATDomain() + "/data/record/values"
     }
 }

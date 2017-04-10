@@ -269,8 +269,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         if self.isViewLoaded && (self.view.window != nil) {
             
             // switch to the background queue
-            DispatchQueue.global().async { [weak self]
-                () -> Void in
+            DispatchQueue.global().async { [weak self] () -> Void in
                 
                 if let weakSelf = self {
                     

@@ -14,7 +14,7 @@ import SwiftyJSON
 
 // MARK : Class
 
-public class FileUploadObject: NSObject {
+public struct FileUploadObject {
 
     // MARK: - Variables
     
@@ -36,7 +36,7 @@ public class FileUploadObject: NSObject {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    public override init() {
+    public init() {
         
         fileID = ""
         name = ""
@@ -55,9 +55,7 @@ public class FileUploadObject: NSObject {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(from dict: Dictionary<String, JSON>) {
-        
-        self.init()
+    public init(from dict: Dictionary<String, JSON>) {
         
         if let tempFileID = dict["fileId"]?.stringValue {
             

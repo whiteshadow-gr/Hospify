@@ -317,14 +317,14 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         let controller = NotablesTableViewCell()
         
         // setup cell
-        var cell = tableView.dequeueReusableCell(withIdentifier: "cellData", for: indexPath) as? NotablesTableViewCell
-        cell = controller.setUpCell(cell!, note: self.cachedNotesArray[indexPath.row], indexPath: indexPath)
+        var cell: NotablesTableViewCell = tableView.dequeueReusableCell(withIdentifier: "cellData", for: indexPath) as! NotablesTableViewCell
+        cell = controller.setUpCell(cell, note: self.cachedNotesArray[indexPath.row], indexPath: indexPath)
         
         // add cell to array
-        cells.append(cell!)
+        cells.append(cell)
         
         // return cell
-        return cell!
+        return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

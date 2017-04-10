@@ -23,7 +23,7 @@ extension UIColor {
      */
     public class func tealColor() -> UIColor {
         
-        return UIColor.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
+        return self.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
     }
     
     /**
@@ -31,7 +31,7 @@ extension UIColor {
      */
     public class func tealDarkerColor() -> UIColor {
         
-        return UIColor.init(colorLiteralRed: 2/255, green: 107/255, blue: 97/255, alpha: 1)
+        return self.init(colorLiteralRed: 2/255, green: 107/255, blue: 97/255, alpha: 1)
     }
     
     /**
@@ -39,7 +39,7 @@ extension UIColor {
      */
     public class func tealLighterColor() -> UIColor {
         
-        return UIColor.init(colorLiteralRed: 21/255, green: 130/255, blue: 120/255, alpha: 1)
+        return self.init(colorLiteralRed: 21/255, green: 130/255, blue: 120/255, alpha: 1)
     }
     
     /**
@@ -47,7 +47,7 @@ extension UIColor {
      */
     public class func rumpelLightGray() -> UIColor {
         
-        return UIColor.init(colorLiteralRed: 51/255, green: 74/255, blue: 79/255, alpha: 1)
+        return self.init(colorLiteralRed: 51/255, green: 74/255, blue: 79/255, alpha: 1)
     }
     
     /**
@@ -55,7 +55,7 @@ extension UIColor {
      */
     public class func rumpelDarkGray() -> UIColor {
         
-        return UIColor.init(colorLiteralRed: 29/255, green: 49/255, blue: 53/255, alpha: 1)
+        return self.init(colorLiteralRed: 29/255, green: 49/255, blue: 53/255, alpha: 1)
     }
     
     /**
@@ -63,7 +63,7 @@ extension UIColor {
      */
     public class func rumpelLighterDarkGray() -> UIColor {
         
-        return UIColor.init(colorLiteralRed: 39/255, green: 72/255, blue: 80/255, alpha: 1)
+        return self.init(colorLiteralRed: 39/255, green: 72/255, blue: 80/255, alpha: 1)
     }
     
     /**
@@ -71,7 +71,7 @@ extension UIColor {
      */
     public class func rumpelVeryLightGray() -> UIColor {
         
-        return UIColor.init(colorLiteralRed: 244/255, green: 244/255, blue: 244/255, alpha: 1)
+        return self.init(colorLiteralRed: 244/255, green: 244/255, blue: 244/255, alpha: 1)
     }
     
     /**
@@ -79,7 +79,7 @@ extension UIColor {
      */
     public class func fromRGB(_ rgbValue: UInt) -> UIColor {
         
-        return UIColor(
+        return self.init(
             
             red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
             green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,

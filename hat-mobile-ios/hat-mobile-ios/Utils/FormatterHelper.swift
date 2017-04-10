@@ -67,13 +67,7 @@ struct FormatterHelper {
      */
     static func formatDateStringToUsersDefinedDate(date: Date, dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = dateStyle
-        dateFormatter.timeStyle = timeStyle
-        
-        let dateString = dateFormatter.string(from: date)
-        
-        return dateString.replacingOccurrences(of: ",", with: " -")
+        return DateFormatter.localizedString(from: date, dateStyle: dateStyle, timeStyle: timeStyle).replacingOccurrences(of: ",", with: " -")
     }
     
     /**

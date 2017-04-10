@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Variables
     
     var window: UIWindow?
-    let locationHelper: UpdateLocations = UpdateLocations()
+    //let locationHelper: UpdateLocations = UpdateLocations()
     
     // MARK: - App Delegate methods
     
@@ -36,10 +36,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // if app was closed by iOS (low mem, etc), then receives a location update, and respawns your app, letting it know it respawned due to a location service
         if launchOptions?[UIApplicationLaunchOptionsKey.location] != nil {
             
-            UpdateLocations.shared.resumeLocationServices()
+            //self.locationHelper.startUpdatingLocation()
+            UpdateLocations.shared.startUpdatingLocation()
         }
         
         UpdateLocations.shared.resumeLocationServices()
+        //self.locationHelper.resumeLocationServices()()
         
         // change tab bar item font
         UITabBarItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans", size: 11)!], for: UIControlState.normal)
@@ -105,14 +107,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         localNotification.soundName = UILocalNotificationDefaultSoundName
         
         UIApplication.shared.scheduleLocalNotification(localNotification)
-        
-        locationHelper.stopUpdatingLocation()
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
         
-        self.locationHelper.requestLocation()
+        UpdateLocations.shared.requestLocation()
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -126,7 +126,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-        self.locationHelper.stopUpdatingLocation()
         _ = self.beginBackgroundUpdateTask()
     }
     

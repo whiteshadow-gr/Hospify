@@ -120,7 +120,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.presentImagePicker(buttonTitle: action.title!)
         })
         
-        let locationAction = UIAlertAction(title: "Add Location", style: .default, handler: { [unowned self] (action) -> Void in
+        let locationAction = UIAlertAction(title: "Add Location", style: .default, handler: { [unowned self] _ in
             
             self.performSegue(withIdentifier: "checkInSegue", sender: self)
         })
@@ -220,6 +220,9 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         if !userEnabled {
             
             self.publishButton.alpha = 0.5
+        } else {
+            
+            self.publishButton.alpha = 1.0
         }
     }
     
@@ -485,7 +488,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                 self.receivedNote?.data.sharedOn = (self.constructStringFromArray(array: self.shareOnSocial))
                             }
                             
-                            self.publishButton.setTitle("Save", for: .normal)
+                            self.changePublishButtonTo(title: "Save", userEnabled: true)
                         }
                         
                         func yesAction() {
@@ -499,7 +502,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                         let url = "https://" + self.userDomain + "/hatlogin?name=Facebook&redirect=" + dataPlugs[i].url.replacingOccurrences(of: "dataplug", with: "hat/authenticate")
                                         
                                         self.safariVC = SFSafariViewController(url: URL(string: url)!)
-                                        self.publishButton.setTitle("Save", for: .normal)
+                                        self.changePublishButtonTo(title: "Save", userEnabled: true)
                                         self.present(self.safariVC!, animated: true, completion: nil)
                                         self.claimOffer()
                                     }
@@ -574,7 +577,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         self.imagePicker.dismiss(animated: true, completion: nil)        
         self.imageSelected.image = info[UIImagePickerControllerOriginalImage] as? UIImage
         
-        PhotosHelper.sharedInstance.saveImage(image: self.imageSelected.image!, metadata: info[UIImagePickerControllerMediaMetadata] as! NSDictionary)
+        PhotosHelper.sharedInstance.saveImage(image: self.imageSelected.image!)
         
         HATAccountService.uploadFileToHAT(
               fileName: "rumpelPhoto",
@@ -630,7 +633,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             // data plug enabled, set up publish button accordingly
             func dataPlugIsEnabled() {
                 
-                self.publishButton.setTitle("Save", for: .normal)
+                self.changePublishButtonTo(title: "Save", userEnabled: true)
                 self.publishButton.isUserInteractionEnabled = true
             }
             
@@ -642,7 +645,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     
                     self.refreshTwitterButton()
                     
-                    self.publishButton.setTitle("Save", for: .normal)
+                    self.changePublishButtonTo(title: "Save", userEnabled: true)
                 }
                 
                 // set up data plug

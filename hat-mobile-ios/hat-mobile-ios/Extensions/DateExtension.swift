@@ -29,7 +29,7 @@ extension Date {
         
         // get calendar and now date
         let calendar = Calendar.current
-        let dateNow = Date()
+        let dateNow = self
         
         // calculate the earliest
         let earliestDate = (dateNow as NSDate).earlierDate(self)

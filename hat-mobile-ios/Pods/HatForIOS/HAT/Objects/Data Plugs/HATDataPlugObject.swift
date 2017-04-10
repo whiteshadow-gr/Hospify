@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A class representing the outer data plug JSON format
-public class HATDataPlugObject: Comparable {
+public struct HATDataPlugObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -115,10 +115,8 @@ public class HATDataPlugObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(dict: Dictionary<String, JSON>){
-        
-        self.init()
-        
+    public init(dict: Dictionary<String, JSON>){
+                
         if let tempUuid = (dict["uuid"]?.stringValue) {
             
             uuid = tempUuid

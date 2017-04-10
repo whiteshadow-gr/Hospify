@@ -47,8 +47,7 @@ public class HATLoginService: NSObject {
     public class func formatAndVerifyDomain(userHATDomain: String, successfulVerification: @escaping (String) -> Void, failedVerification: @escaping (String) -> Void) {
         
         // trim values
-        let characterSet = CharacterSet.init(charactersIn: " ")
-        let hatDomain = userHATDomain.trimmingCharacters(in: characterSet)
+        let hatDomain = userHATDomain.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         
         // split text field text by .
         var array = hatDomain.components(separatedBy: ".")
@@ -86,7 +85,7 @@ public class HATLoginService: NSObject {
      
      - parameter userDomain: The user's domain
      - parameter url: The url to connect
-     - parameter selfViewController: The UIViewController that calls this method
+     - parameter success: A function to execute after finishing
      */
     public class func loginToHATAuthorization(userDomain: String, url: NSURL, success: ((String?) -> Void)?, failed: ((AuthenicationError) -> Void)?) {
         

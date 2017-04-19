@@ -27,7 +27,7 @@ public class HATService: NSObject {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    public class func getApplicationTokenFor(serviceName: String, userDomain: String, token: String, resource: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) -> Void {
+    public class func getApplicationTokenFor(serviceName: String, userDomain: String, token: String, resource: String, succesfulCallBack: @escaping (String, String?) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) -> Void {
         
         // setup parameters and headers
         let parameters = ["name" : serviceName, "resource" : resource]
@@ -47,11 +47,11 @@ public class HATService: NSObject {
                 let message = NSLocalizedString("Server responded with error", comment: "")
                 failCallBack(.generalError(message, statusCode, error))
             // in case of success call the succesfulCallBack
-            case .isSuccess(let isSuccess, let statusCode, let result):
+            case .isSuccess(let isSuccess, let statusCode, let result, let token):
                 
                 if isSuccess {
                     
-                    succesfulCallBack(result["accessToken"].stringValue)
+                    succesfulCallBack(result["accessToken"].stringValue, token)
                 } else {
                     
                     failCallBack(.generalError(isSuccess.description, statusCode, nil))
@@ -65,7 +65,7 @@ public class HATService: NSObject {
     /**
      Fetches the available HAT providers
      */
-    public class func getAvailableHATProviders(succesfulCallBack: @escaping ([HATProviderObject]) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) {
+    public class func getAvailableHATProviders(succesfulCallBack: @escaping ([HATProviderObject], String?) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) {
         
         let url = "https://hatters.hubofallthings.com/api/products/hat"
         
@@ -79,7 +79,7 @@ public class HATService: NSObject {
                 let message = NSLocalizedString("Server returned error", comment: "")
                 failCallBack(.generalError(message, statusCode, error))
             // in case of success call the succesfulCallBack
-            case .isSuccess(let isSuccess, let statusCode, let result):
+            case .isSuccess(let isSuccess, let statusCode, let result, let token):
                 
                 if isSuccess {
                     
@@ -90,7 +90,7 @@ public class HATService: NSObject {
                         arrayToSendBack.append(HATProviderObject(from: item.dictionaryValue))
                     }
                     
-                    succesfulCallBack(arrayToSendBack)
+                    succesfulCallBack(arrayToSendBack, token)
                 } else {
                     
                     let message = NSLocalizedString("Server response was unexpected", comment: "")
@@ -105,7 +105,7 @@ public class HATService: NSObject {
     /**
      Fetches the available HAT providers
      */
-    public class func getSystemStatus(userDomain: String, authToken: String, completion: @escaping ([HATSystemStatusObject]) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) {
+    public class func getSystemStatus(userDomain: String, authToken: String, completion: @escaping ([HATSystemStatusObject], String?) -> Void, failCallBack: @escaping (JSONParsingError) -> Void) {
         
         let url = "https://" + userDomain + "/api/v2/system/status"
         let headers = ["X-Auth-Token" : authToken]
@@ -120,7 +120,7 @@ public class HATService: NSObject {
                 let message = NSLocalizedString("Server returned error", comment: "")
                 failCallBack(.generalError(message, statusCode, error))
             // in case of success call the succesfulCallBack
-            case .isSuccess(let isSuccess, let statusCode, let result):
+            case .isSuccess(let isSuccess, let statusCode, let result, let token):
                 
                 if isSuccess {
                     
@@ -131,7 +131,7 @@ public class HATService: NSObject {
                         arrayToSendBack.append(HATSystemStatusObject(from: item.dictionaryValue))
                     }
                     
-                    completion(arrayToSendBack)
+                    completion(arrayToSendBack, token)
                 } else {
                     
                     let message = NSLocalizedString("Server response was unexpected", comment: "")

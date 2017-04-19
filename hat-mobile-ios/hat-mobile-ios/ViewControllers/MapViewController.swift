@@ -164,7 +164,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         toolBar.tintColor = UIColor(red: 76/255, green: 217/255, blue: 100/255, alpha: 1)
         toolBar.sizeToFit()
         
-        let doneButton = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.donePickerButton(sender:)))
+        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(self.donePickerButton(sender:)))
         doneButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
         
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
@@ -181,7 +181,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         let spaceButton2 = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
         spaceButton2.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
         
-        let cancelButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.cancelPickerButton(sender:)))
+        let cancelButton = UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(self.cancelPickerButton(sender:)))
         cancelButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
 
         toolBar.setItems([cancelButton, spaceButton, barButtonSegmentedControll, spaceButton2, doneButton], animated: false)
@@ -253,9 +253,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         self.view.addSubview(view)
         
-        func getLocationsFromTable(tableID: NSNumber) { 
+        func getLocationsFromTable(tableID: NSNumber, renewedUserToken: String?) {
             
-            func receivedLocations(json: [JSON]) {
+            func receivedLocations(json: [JSON], renewedUserToken: String?) {
                 
                 var array: [HATLocationsObject] = []
                 
@@ -276,10 +276,16 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
                 let pins = self.createAnnotationsFrom(objects: array)
                 self.addPointsToMap(annottationArray: pins)
                 
+                // refresh user token
+                if renewedUserToken != nil {
+                    
+                    _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+                }
+                
                 view.removeFromSuperview()
             }
             
-            func requestLocations(token: String) {
+            func requestLocations(token: String, renewedUserToken: String?) {
                 
                 if self.filterDataPointsFrom != nil && self.filterDataPointsTo != nil {
                     

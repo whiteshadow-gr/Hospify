@@ -15,7 +15,7 @@ import UIKit
 // MARK: class
 
 /// The terms and conditions view controller class
-class TermsAndConditionsViewController: UIViewController {
+class TermsAndConditionsViewController: UIViewController, UIWebViewDelegate {
     
     // MARK: - Variables
     
@@ -37,7 +37,9 @@ class TermsAndConditionsViewController: UIViewController {
         if let url = URL(string: self.filePathURL) {
             
             let request = NSURLRequest(url: url)
+            self.webView.delegate = self
             self.webView.loadRequest(request as URLRequest)
+            
             // You might want to scale the page to fit
             self.webView.scalesPageToFit = true
         }
@@ -47,6 +49,11 @@ class TermsAndConditionsViewController: UIViewController {
         
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
+        
+        print(error)
     }
 
 }

@@ -13,6 +13,10 @@ public typealias Padding = SecPadding
 
 struct SwiftyRSAError: Error {
     let message: String
+    
+    init(message: String) {
+        self.message = message
+    }
 }
 
 extension CFString: Hashable {
@@ -39,6 +43,86 @@ enum SwiftyRSA {
         return lines.joined(separator: "")
     }
     
+    static func isValidKeyReference(_ reference: SecKey, forClass requiredClass: CFString) -> Bool {
+        
+        guard #available(iOS 10.0, *), #available(watchOS 3.0, *), #available(tvOS 10.0, *) else {
+            return true
+        }
+        
+        let attributes = SecKeyCopyAttributes(reference) as? [CFString: Any]
+        guard let keyType = attributes?[kSecAttrKeyType] as? String, let keyClass = attributes?[kSecAttrKeyClass] as? String else {
+            return false
+        }
+        
+        let isRSA = keyType == (kSecAttrKeyTypeRSA as String)
+        let isValidClass = keyClass == (requiredClass as String)
+        return isRSA && isValidClass
+    }
+    
+    static func format(keyData: Data, withPemType pemType: String) -> String {
+        
+        func split(_ str: String, byChunksOfLength length: Int) -> [String] {
+            return stride(from: 0, to: str.characters.count, by: length).map { index -> String in
+                let startIndex = str.index(str.startIndex, offsetBy: index)
+                let endIndex = str.index(startIndex, offsetBy: length, limitedBy: str.endIndex) ?? str.endIndex
+                return str[startIndex..<endIndex]
+            }
+        }
+        
+        // Line length is typically 64 characters, except the last line.
+        // See https://tools.ietf.org/html/rfc7468#page-6 (64base64char)
+        // See https://tools.ietf.org/html/rfc7468#page-11 (example)
+        let chunks = split(keyData.base64EncodedString(), byChunksOfLength: 64)
+        
+        let pem = [
+            "-----BEGIN \(pemType)-----",
+            chunks.joined(separator: "\n"),
+            "-----END \(pemType)-----"
+        ]
+        
+        return pem.joined(separator: "\n")
+    }
+    
+    static func data(forKeyReference reference: SecKey) throws -> Data {
+        
+        // On iOS+, we can use `SecKeyCopyExternalRepresentation` directly
+        if #available(iOS 10.0, *), #available(watchOS 3.0, *), #available(tvOS 10.0, *) {
+            
+            let data = SecKeyCopyExternalRepresentation(reference, nil)
+            guard let unwrappedData = data as Data? else {
+                throw SwiftyRSAError(message: "Couldn't retrieve key data from the keychain")
+            }
+            return unwrappedData
+        
+        // On iOS 8/9, we need to add the key again to the keychain with a temporary tag, grab the data,
+        // and delete the key again.
+        } else {
+            
+            let temporaryTag = UUID().uuidString
+            let addParams: [CFString: Any] = [
+                kSecValueRef: reference,
+                kSecReturnData: true,
+                kSecClass: kSecClassKey,
+                kSecAttrApplicationTag: temporaryTag
+            ]
+            
+            var data: AnyObject?
+            _ = SecItemAdd(addParams as CFDictionary, &data)
+            guard let unwrappedData = data as? Data else {
+                throw SwiftyRSAError(message: "Couldn't retrieve key data from the keychain")
+            }
+            
+            let deleteParams: [CFString: Any] = [
+                kSecClass: kSecClassKey,
+                kSecAttrApplicationTag: temporaryTag
+            ]
+            
+            _ = SecItemDelete(deleteParams as CFDictionary)
+            
+            return unwrappedData
+        }
+    }
+    
     static func addKey(_ keyData: Data, isPublic: Bool, tag: String) throws ->  SecKey {
         
         var keyData = keyData
@@ -52,11 +136,12 @@ enum SwiftyRSA {
         // On iOS 10+, we can use SecKeyCreateWithData without going through the keychain
         if #available(iOS 10.0, *), #available(watchOS 3.0, *), #available(tvOS 10.0, *) {
             
-            let sizeInBits = keyData.count * MemoryLayout<UInt8>.size
+            let sizeInBits = keyData.count * 8
             let keyDict: [CFString: Any] = [
                 kSecAttrKeyType: kSecAttrKeyTypeRSA,
                 kSecAttrKeyClass: keyClass,
-                kSecAttrKeySizeInBits: NSNumber(value: sizeInBits)
+                kSecAttrKeySizeInBits: NSNumber(value: sizeInBits),
+                kSecReturnPersistentRef: true
             ]
             
             guard let key = SecKeyCreateWithData(keyData as CFData, keyDict as CFDictionary, nil) else {
@@ -75,12 +160,12 @@ enum SwiftyRSA {
                 kSecAttrKeyType: kSecAttrKeyTypeRSA,
                 kSecValueData: keyData,
                 kSecAttrKeyClass: keyClass,
-                kSecReturnPersistentRef: NSNumber(value: true),
+                kSecReturnPersistentRef: true,
                 kSecAttrAccessible: kSecAttrAccessibleWhenUnlocked
             ]
             
-            var secStatus = SecItemAdd(keyAddDict as CFDictionary, persistKey)
-            if secStatus != noErr && secStatus != errSecDuplicateItem {
+            let secStatus = SecItemAdd(keyAddDict as CFDictionary, persistKey)
+            guard secStatus == errSecSuccess || secStatus == errSecDuplicateItem else {
                 throw SwiftyRSAError(message: "Provided key couldn't be added to the keychain")
             }
             
@@ -90,12 +175,12 @@ enum SwiftyRSA {
                 kSecAttrKeyType: kSecAttrKeyTypeRSA,
                 kSecAttrKeyClass: keyClass,
                 kSecAttrAccessible: kSecAttrAccessibleWhenUnlocked,
-                kSecReturnRef: NSNumber(value: true),
+                kSecReturnRef: true,
             ]
             
             // Now fetch the SecKeyRef version of the key
             var keyRef: AnyObject? = nil
-            secStatus = SecItemCopyMatching(keyCopyDict as CFDictionary, &keyRef)
+            _ = SecItemCopyMatching(keyCopyDict as CFDictionary, &keyRef)
             
             guard let unwrappedKeyRef = keyRef else {
                 throw SwiftyRSAError(message: "Couldn't get key reference from the keychain")
@@ -106,7 +191,7 @@ enum SwiftyRSA {
     }
     
     /**
-     This method strips the x509 from a provided ASN.1 DER public key.
+     This method strips the x509 header from a provided ASN.1 DER public key.
      If the key doesn't contain a header, the DER data is returned as is.
      
      Supported formats are:

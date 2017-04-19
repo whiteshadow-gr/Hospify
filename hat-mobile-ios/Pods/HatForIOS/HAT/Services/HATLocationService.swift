@@ -63,7 +63,7 @@ public class HATLocationService: NSObject {
         HATNetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: "application/json", parameters: parameters, headers: headers) { (r: HATNetworkHelper.ResultType) -> Void in
             
             switch r {
-            case .isSuccess(let isSuccess, let statusCode, let result):
+            case .isSuccess(let isSuccess, let statusCode, let result, _):
                 
                 if isSuccess {
                     

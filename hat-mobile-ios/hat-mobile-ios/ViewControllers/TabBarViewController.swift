@@ -75,7 +75,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             viewController!.navigationItem.leftBarButtonItems = nil
             viewController!.navigationItem.rightBarButtonItems = nil
             
-            let button = UIBarButtonItem(image: UIImage(named: "Settings"), style: .plain, target: self, action: #selector(setUpActionViewController))
+            let button = UIBarButtonItem(image: UIImage(named: "Settings"), style: .done, target: self, action: #selector(setUpActionViewController))
             
             // add buttons to navigation bar
             viewController!.navigationItem.rightBarButtonItem = button
@@ -89,7 +89,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         
         let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
         
-        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[weak self] (alert: UIAlertAction) -> Void in
+        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[weak self] _ in
             
             if self != nil {
                 

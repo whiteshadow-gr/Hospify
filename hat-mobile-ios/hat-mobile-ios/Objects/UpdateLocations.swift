@@ -75,17 +75,6 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
      */
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        UIApplication.shared.cancelAllLocalNotifications()
-        
-        let localNotification: UILocalNotification = UILocalNotification()
-        localNotification.alertAction = "Locations"
-        localNotification.alertBody = "New"
-        localNotification.fireDate = NSDate(timeIntervalSinceNow: 0) as Date
-        localNotification.timeZone = TimeZone.current
-        localNotification.soundName = UILocalNotificationDefaultSoundName
-        
-        UIApplication.shared.scheduleLocalNotification(localNotification)
-        
         // add locations gather to database
         MapsHelper.addLocationsToDatabase(locationManager: manager, locations: locations)
         

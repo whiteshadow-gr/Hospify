@@ -25,7 +25,7 @@ public class HATNotablesService: NSObject {
      
      - parameter authToken: The auth token from hat
      */
-    public class func fetchNotables(userDomain: String, authToken: String, structure: Dictionary<String, Any>, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void, failure: @escaping (HATTableError) -> Void ) -> Void {
+    public class func fetchNotables(userDomain: String, authToken: String, structure: Dictionary<String, Any>, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON], String?) -> Void, failure: @escaping (HATTableError) -> Void ) -> Void {
         
         HATAccountService.checkHatTableExists(userDomain: userDomain, tableName: "notablesv1",
             sourceName: "rumpel",
@@ -40,9 +40,9 @@ public class HATNotablesService: NSObject {
      - parameter token: The user's token
      - parameter tableID: The table id of the notes
      */
-    private class func getNotes(userDomain: String, token: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void) -> (_ tableID: NSNumber) -> Void {
+    private class func getNotes(userDomain: String, token: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON], String?) -> Void) -> (_ tableID: NSNumber, _ token: String?) -> Void {
         
-        return { (tableID: NSNumber) -> Void in
+        return { (tableID: NSNumber, returnedToken: String?) -> Void in
             
             HATAccountService.getHatTableValues(token: token, userDomain: userDomain, tableID: tableID, parameters: parameters, successCallback: success, errorCallback: showNotablesFetchError)
         }
@@ -79,7 +79,7 @@ public class HATNotablesService: NSObject {
      */
     public class func postNote(userDomain: String, userToken: String, note: HATNotesData, successCallBack: @escaping () -> Void) -> Void {
         
-        func posting(resultJSON: Dictionary<String, Any>) {
+        func posting(resultJSON: Dictionary<String, Any>, token: String?) {
             
             // create the headers
             let headers = ["Accept": ContentType.JSON,
@@ -97,7 +97,7 @@ public class HATNotablesService: NSObject {
                 // handle result
                 switch r {
                     
-                case .isSuccess(let isSuccess, _, _):
+                case .isSuccess(let isSuccess, _, _, _):
                     
                     if isSuccess {
                         

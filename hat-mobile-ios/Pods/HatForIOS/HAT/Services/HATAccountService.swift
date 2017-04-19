@@ -29,7 +29,7 @@ public class HATAccountService: NSObject {
      - parameter successCallback: A callback called when successful of type @escaping ([JSON]) -> Void
      - parameter errorCallback: A callback called when failed of type @escaping (Void) -> Void)
      */
-    public class func getHatTableValues(token: String, userDomain: String, tableID: NSNumber, parameters: Dictionary<String, String>, successCallback: @escaping ([JSON]) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
+    public class func getHatTableValues(token: String, userDomain: String, tableID: NSNumber, parameters: Dictionary<String, String>, successCallback: @escaping ([JSON], String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
                 
         // form the url
         let url = "https://" + userDomain + "/data/table/" + tableID.stringValue + "/values?pretty=true"
@@ -47,7 +47,7 @@ public class HATAccountService: NSObject {
                     
                     let message = NSLocalizedString("Server responded with error", comment: "")
                     errorCallback(.generalError(message, statusCode, error))
-                case .isSuccess(let isSuccess, _, let result):
+                case .isSuccess(let isSuccess, _, let result, let token):
                     
                     if isSuccess {
                         
@@ -57,7 +57,7 @@ public class HATAccountService: NSObject {
                             return
                         }
                         
-                        successCallback(array)
+                        successCallback(array, token)
                     }
                 }
         })
@@ -72,7 +72,7 @@ public class HATAccountService: NSObject {
      - parameter successCallback: A callback called when successful of type @escaping (NSNumber) -> Void
      - parameter errorCallback: A callback called when failed of type @escaping (Void) -> Void)
      */
-    public class func checkHatTableExists(userDomain: String, tableName: String, sourceName: String, authToken: String, successCallback: @escaping (NSNumber) -> Void, errorCallback: @escaping (HATTableError) -> Void) -> Void {
+    public class func checkHatTableExists(userDomain: String, tableName: String, sourceName: String, authToken: String, successCallback: @escaping (NSNumber, String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) -> Void {
         
         // create the url
         let tableURL = "https://" + userDomain + "/data/table?name=" + tableName + "&source=" + sourceName
@@ -103,7 +103,7 @@ public class HATAccountService: NSObject {
                         let message = NSLocalizedString("Server responded with error", comment: "")
                         errorCallback(.generalError(message, statusCode, error))
                     }
-                case .isSuccess(let isSuccess, let statusCode, let result):
+                case .isSuccess(let isSuccess, let statusCode, let result, let token):
                     
                     if isSuccess {
                         
@@ -115,7 +115,7 @@ public class HATAccountService: NSObject {
                             // get notes
                             if tableID != nil {
                                 
-                                successCallback(tableID!)
+                                successCallback(tableID!, token)
                             } else {
                                 
                                 errorCallback(.noTableIDFound)
@@ -157,7 +157,7 @@ public class HATAccountService: NSObject {
                 // handle result
                 switch r {
                     
-                case .isSuccess(let isSuccess, let statusCode, _):
+                case .isSuccess(let isSuccess, let statusCode, _, _):
                     
                     if isSuccess {
                         
@@ -203,7 +203,7 @@ public class HATAccountService: NSObject {
             // handle result
             switch r {
                 
-            case .isSuccess(let isSuccess, let statusCode, _):
+            case .isSuccess(let isSuccess, let statusCode, _, _):
                 
                 if isSuccess {
                     
@@ -250,7 +250,7 @@ public class HATAccountService: NSObject {
      - parameter successCallback: A callback called when successful of type @escaping (NSNumber) -> Void
      - parameter errorCallback: A callback called when failed of type @escaping (Void) -> Void)
      */
-    public class func checkHatTableExistsForUploading(userDomain: String, tableName: String, sourceName: String, authToken: String, successCallback: @escaping (Dictionary<String, Any>) -> Void, errorCallback: @escaping (HATTableError) -> Void) -> Void {
+    public class func checkHatTableExistsForUploading(userDomain: String, tableName: String, sourceName: String, authToken: String, successCallback: @escaping (Dictionary<String, Any>, String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) -> Void {
         
         // create the url
         let tableURL = "https://" + userDomain + "/data/table?name=" + tableName + "&source=" + sourceName
@@ -281,7 +281,7 @@ public class HATAccountService: NSObject {
                         let message = NSLocalizedString("Server responded with error", comment: "")
                         errorCallback(.generalError(message, statusCode, error))
                     }
-                case .isSuccess(let isSuccess, let statusCode, let result):
+                case .isSuccess(let isSuccess, let statusCode, let result, let token):
                     
                     if isSuccess {
                         
@@ -292,7 +292,7 @@ public class HATAccountService: NSObject {
                                 
                                 break
                             }
-                            successCallback(dictionary)
+                            successCallback(dictionary, token)
                         //table not found
                         } else if statusCode == 404 {
                             
@@ -322,7 +322,7 @@ public class HATAccountService: NSObject {
      - parameter completion: A function to execute on success, returning the object returned from the server
      - parameter errorCallback: A function to execute on failure, returning an error
      */
-    public class func uploadFileToHAT(fileName: String, token: String, userDomain: String, completion: @escaping (FileUploadObject) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
+    public class func uploadFileToHAT(fileName: String, token: String, userDomain: String, completion: @escaping (FileUploadObject, String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
         
         // create the url
         let uploadURL = "https://" + userDomain + "/api/v2/files/upload"
@@ -347,7 +347,7 @@ public class HATAccountService: NSObject {
                     
                     let message = NSLocalizedString("Server responded with error", comment: "")
                     errorCallback(.generalError(message, statusCode, error))
-                case .isSuccess(let isSuccess, let statusCode, let result):
+                case .isSuccess(let isSuccess, let statusCode, let result, let token):
                     
                     if isSuccess {
                         
@@ -356,7 +356,7 @@ public class HATAccountService: NSObject {
                         //table found
                         if statusCode == 200 {
                             
-                            completion(fileUploadJSON)
+                            completion(fileUploadJSON, token)
                         } else {
                             
                             let message = NSLocalizedString("Server responded with error", comment: "")
@@ -376,7 +376,7 @@ public class HATAccountService: NSObject {
      - parameter completion: A function to execute on success, returning the object returned from the server
      - parameter errorCallback: A function to execute on failure, returning an error
      */
-    public class func completeUploadFileToHAT(fileID: String, token: String, userDomain: String, completion: @escaping (FileUploadObject) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
+    public class func completeUploadFileToHAT(fileID: String, token: String, userDomain: String, completion: @escaping (FileUploadObject, String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
         
         // create the url
         let uploadURL = "https://" + userDomain + "/api/v2/files/file/" + fileID + "/complete"
@@ -400,7 +400,7 @@ public class HATAccountService: NSObject {
                     
                     let message = NSLocalizedString("Server responded with error", comment: "")
                     errorCallback(.generalError(message, statusCode, error))
-                case .isSuccess(let isSuccess, let statusCode, let result):
+                case .isSuccess(let isSuccess, let statusCode, let result, let token):
                     
                     if isSuccess {
                         
@@ -409,7 +409,7 @@ public class HATAccountService: NSObject {
                         //table found
                         if statusCode == 200 {
                             
-                            completion(fileUploadJSON)
+                            completion(fileUploadJSON, token)
                         } else {
                             
                             let message = NSLocalizedString("Server responded with error", comment: "")

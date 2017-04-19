@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Security
 
 typealias PEMString = String
 
@@ -16,17 +17,73 @@ public protocol Key {
 
 @objc public class PublicKey: NSObject, Key {
     
-    let reference: SecKey
-    let tag: String
+    /// Reference to the key within the keychain
+    public let reference: SecKey
     
-    /// Creates a public with a RSA public key data.
+    /// Data of the public key as provided when creating the key.
+    /// Note that if the key was created from a base64string / DER string / PEM file / DER file,
+    /// the data holds the actual bytes of the key, not any textual representation like PEM headers
+    /// or base64 characters.
+    public let originalData: Data?
+    
+    let tag: String? // Only used on iOS 8/9
+    
+    /// Data of the public key as returned by the keychain.
+    /// This method throws if SwiftyRSA cannot extract data from the key.
+    ///
+    /// - Returns: Data of the public key as returned by the keychain.
+    /// - Throws: SwiftyRSAError
+    @objc public func data() throws -> Data {
+        return try SwiftyRSA.data(forKeyReference: reference)
+    }
+    
+    /// Returns a PEM representation of the public key.
+    ///
+    /// - Returns: Data of the key, PEM-encoded
+    /// - Throws: SwiftyRSAError
+    @objc public func pemString() throws -> String {
+        let data = try self.data()
+        let pem = SwiftyRSA.format(keyData: data, withPemType: "RSA PUBLIC KEY")
+        return pem
+    }
+    
+    /// Returns a Base64 representation of the public key.
+    ///
+    /// - Returns: Data of the key, Base64-encoded
+    /// - Throws: SwiftyRSAError
+    @objc public func base64String() throws -> String {
+        return try data().base64EncodedString()
+    }
+    
+    /// Creates a public key with a keychain key reference.
+    /// This initializer will throw if the provided key reference is not a public RSA key.
+    ///
+    /// - Parameter reference: Reference to the key within the keychain.
+    /// - Throws: SwiftyRSAError
+    public init(reference: SecKey) throws {
+        
+        guard SwiftyRSA.isValidKeyReference(reference, forClass: kSecAttrKeyClassPublic) else {
+            throw SwiftyRSAError(message: "Provided key reference if not a valid RSA public key")
+        }
+        
+        self.reference = reference
+        self.tag = nil
+        self.originalData = nil
+    }
+    
+    /// Creates a public key with a RSA public key data.
     ///
     /// - Parameter data: Public key data
     /// - Throws: SwiftyRSAError
     required public init(data: Data) throws {
-        tag = UUID().uuidString
-        let data = try SwiftyRSA.stripPublicKeyHeader(keyData: data)
-    	reference = try SwiftyRSA.addKey(data, isPublic: true, tag: tag)
+        
+        let tag = UUID().uuidString
+        self.tag = tag
+        
+        self.originalData = data
+        let dataWithoutHeader = try SwiftyRSA.stripPublicKeyHeader(keyData: data)
+        
+    	reference = try SwiftyRSA.addKey(dataWithoutHeader, isPublic: true, tag: tag)
     }
     
     /// Creates a public key with a base64-encoded string.
@@ -124,21 +181,74 @@ public protocol Key {
     }
     
     deinit {
-        SwiftyRSA.removeKey(tag: tag)
+        if let tag = tag {
+            SwiftyRSA.removeKey(tag: tag)
+        }
     }
 }
 
 @objc public class PrivateKey: NSObject, Key {
     
-    let reference: SecKey
-    let tag: String
+    /// Reference to the key within the keychain
+    public let reference: SecKey
+    
+    /// Original data of the private key.
+    /// Note that it does not contain PEM headers and holds data as bytes, not as a base 64 string.
+    public let originalData: Data?
+    
+    let tag: String?
+    
+    /// Data of the private key as returned by the keychain.
+    /// This method throws if SwiftyRSA cannot extract data from the key.
+    ///
+    /// - Returns: Data of the public key as returned by the keychain.
+    /// - Throws: SwiftyRSAError
+    @objc public func data() throws -> Data {
+        return try SwiftyRSA.data(forKeyReference: reference)
+    }
+    
+    /// Returns a Base64 representation of the private key.
+    ///
+    /// - Returns: Data of the key, Base64-encoded
+    /// - Throws: SwiftyRSAError
+    @objc public func base64String() throws -> String {
+        return try data().base64EncodedString()
+    }
+    
+    /// Returns a PEM representation of the private key.
+    ///
+    /// - Returns: Data of the key, PEM-encoded
+    /// - Throws: SwiftyRSAError
+    @objc public func pemString() throws -> String {
+        let data = try self.data()
+        let pem = SwiftyRSA.format(keyData: data, withPemType: "RSA PRIVATE KEY")
+        return pem
+    }
+    
+    /// Creates a private key with a keychain key reference.
+    /// This initializer will throw if the provided key reference is not a private RSA key.
+    ///
+    /// - Parameter reference: Reference to the key within the keychain.
+    /// - Throws: SwiftyRSAError
+    public init(reference: SecKey) throws {
+        
+        guard SwiftyRSA.isValidKeyReference(reference, forClass: kSecAttrKeyClassPrivate) else {
+            throw SwiftyRSAError(message: "Provided key reference if not a valid RSA private key")
+        }
+        
+        self.reference = reference
+        self.tag = nil
+        self.originalData = nil
+    }
     
     /// Creates a private key with a RSA public key data.
     ///
     /// - Parameter data: Private key data
     /// - Throws: SwiftyRSAError
     required public init(data: Data) throws {
-        tag = UUID().uuidString
+        self.originalData = data
+        let tag = UUID().uuidString
+        self.tag = tag
         reference = try SwiftyRSA.addKey(data, isPublic: false, tag: tag)
     }
     
@@ -191,6 +301,8 @@ public protocol Key {
     }
     
     deinit {
-        SwiftyRSA.removeKey(tag: tag)
+        if let tag = tag {
+            SwiftyRSA.removeKey(tag: tag)
+        }
     }
 }

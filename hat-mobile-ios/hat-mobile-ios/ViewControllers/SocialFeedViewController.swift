@@ -56,7 +56,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         didSet {
             
             // fetch data from facebook with the saved token
-            self.fetchTwitterData(appToken: self.twitterAppToken)
+            self.fetchTwitterData(appToken: self.twitterAppToken, renewedUserToken: nil)
         }
     }
     
@@ -74,7 +74,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         didSet {
             
             // fetch data from facebook with the saved token
-            self.fetchFacebookData(appToken: self.facebookAppToken)
+            self.fetchFacebookData(appToken: self.facebookAppToken, renewedUserToken: nil)
         }
     }
 
@@ -165,7 +165,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      
      - parameter appToken: The twitter app token
      */
-    private func fetchTwitterData(appToken: String) {
+    private func fetchTwitterData(appToken: String, renewedUserToken: String?) {
         
         // save twitter app token for later use
         self.twitterAppToken = appToken
@@ -199,6 +199,12 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                     self!.fetchTweets(parameters: parameters)
                 }
             }, failed: {_ in failed()})
+        
+        // refresh user token
+        if renewedUserToken != nil {
+            
+            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+        }
     }
     
     /**
@@ -263,7 +269,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      
      - parameter array: The array that the request returned
      */
-    private func showTweets(array: [JSON]) {
+    private func showTweets(array: [JSON], renewedUserToken: String?) {
         
         // check if the view is loaded and visible, else don't bother showing the data
         if self.isViewLoaded && (self.view.window != nil) {
@@ -329,7 +335,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      
      - parameter appToken: The facebook app token
      */
-    private func fetchFacebookData(appToken: String) {
+    private func fetchFacebookData(appToken: String, renewedUserToken: String?) {
         
         // save facebok app token for later use
         self.facebookAppToken = appToken
@@ -364,6 +370,12 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                                 }
                         },
                         failed: {_ in failed()})
+        
+        // refresh user token
+        if renewedUserToken != nil {
+            
+            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+        }
     }
     
     /**
@@ -397,7 +409,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                     if weakSelf2.facebookProfileImage == nil {
                         
                         // the returned array for the request
-                        func success(array: [JSON]) -> Void {
+                        func success(array: [JSON], renewedUserToken: String?) -> Void {
                             
                             if array.count > 0 {
                                 
@@ -413,6 +425,12 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                                     // set image to nil
                                     weakSelf2.facebookProfileImage = nil
                                 }
+                            }
+                            
+                            // refresh user token
+                            if renewedUserToken != nil {
+                                
+                                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
                             }
                         }
                         // fetch facebook image
@@ -463,7 +481,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      
      - parameter array: The array that the request returned
      */
-    private func showPosts(array: [JSON]) {
+    private func showPosts(array: [JSON], renewedUserToken: String?) {
         
         // check if the view is loaded and visible, else don't bother showing the data
          if self.isViewLoaded && (self.view.window != nil) {
@@ -518,6 +536,12 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                         weakSelf.facebookEndTime = nil
                         // removes duplicates
                         weakSelf.reloadCollectionView(with: weakSelf.filterBy)
+                    }
+                    
+                    // refresh user token
+                    if renewedUserToken != nil {
+                        
+                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
                     }
                 }
             }

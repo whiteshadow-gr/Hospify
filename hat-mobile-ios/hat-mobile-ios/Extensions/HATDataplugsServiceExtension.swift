@@ -33,11 +33,15 @@ extension HATDataPlugsService {
         
         // set up the succesfulCallBack
         let plugReadyContinue = ensureOfferEnabled(offerID: offerID, succesfulCallBack: succesfulCallBack, failCallBack: failCallBack)
-        let checkPlugForToken = self.checkSocialPlugAvailability(succesfulCallBack: plugReadyContinue, failCallBack: {(error) in
+        
+        func checkPlugForToken(appToken: String, renewedUserToken: String?) {
             
-            failCallBack()
-            _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
-        })
+            self.checkSocialPlugAvailability(succesfulCallBack: plugReadyContinue, failCallBack: {(error) in
+                
+                failCallBack()
+                _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
+            })(appToken)
+        }
         
         // get token async
         HATService.getApplicationTokenFor(serviceName: "Facebook", userDomain: userDomain, token: userToken, resource: "https://social-plug.hubofallthings.com", succesfulCallBack: checkPlugForToken, failCallBack: {(error) in
@@ -62,7 +66,10 @@ extension HATDataPlugsService {
             let userToken = HATAccountService.getUsersTokenFromKeychain()
             
             // setup succesfulCallBack
-            let offerClaimForToken = ensureOfferDataDebitEnabled(offerID: offerID, succesfulCallBack: succesfulCallBack, failCallBack: failCallBack)
+            func offerClaimForToken(appToken: String, renewedUserToken: String?) {
+                
+                ensureOfferDataDebitEnabled(offerID: offerID, succesfulCallBack: succesfulCallBack, failCallBack: failCallBack)(appToken)
+            }
             
             // get applicationToken async
             HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: {(error) in
@@ -196,7 +203,7 @@ extension HATDataPlugsService {
     public class func checkDataPlugsIfActive(completion: @escaping (String, Bool) -> Void) {
         
         /// Check if facebook is active
-        func checkIfFacebookIsActive(appToken: String) {
+        func checkIfFacebookIsActive(appToken: String, renewedUserToken: String?) {
             
             /// if facebook active, enable the checkmark
             func enableCheckMarkOnFacebook(result: Bool) {
@@ -215,7 +222,7 @@ extension HATDataPlugsService {
         }
         
         /// Check if twitter is active
-        func checkIfTwitterIsActive(appToken: String) {
+        func checkIfTwitterIsActive(appToken: String, renewedUserToken: String?) {
             
             /// if twitter active, enable the checkmark
             func enableCheckMarkOnTwitter() {

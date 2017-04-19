@@ -11,7 +11,7 @@ PODS:
     - SwiftyJSON
     - SwiftyRSA
   - JWTDecode (2.0.0)
-  - KeychainSwift (7.0.0)
+  - KeychainSwift (8.0.2)
   - Mockingjay (2.0.0):
     - Mockingjay/Core (= 2.0.0)
     - Mockingjay/XCTest (= 2.0.0)
@@ -19,16 +19,16 @@ PODS:
     - URITemplate (~> 2.0)
   - Mockingjay/XCTest (2.0.0):
     - Mockingjay/Core
-  - Realm (2.5.1):
-    - Realm/Headers (= 2.5.1)
-  - Realm/Headers (2.5.1)
-  - RealmSwift (2.5.1):
-    - Realm (= 2.5.1)
+  - Realm (2.6.1):
+    - Realm/Headers (= 2.6.1)
+  - Realm/Headers (2.6.1)
+  - RealmSwift (2.6.1):
+    - Realm (= 2.6.1)
   - Stripe (10.0.1)
   - SwiftyJSON (3.1.4)
-  - SwiftyRSA (1.0.0)
+  - SwiftyRSA (1.1.1)
   - Toaster (2.0.3)
-  - URITemplate (2.0.0)
+  - URITemplate (2.0.1)
   - zxcvbn-ios (1.0.4)
 
 DEPENDENCIES:
@@ -60,7 +60,7 @@ CHECKOUT OPTIONS:
     :commit: cc3b6524156f8e0d8653688423fba2fdf0944bc8
     :git: https://github.com/ribl/FBAnnotationClusteringSwift/
   HatForIOS:
-    :commit: 11878daa015865fe99f2b193c7c28f7daf443d4d
+    :commit: 7a41645088f1d9d23dd99afbf49f620bc0c9d80c
     :git: https://github.com/whiteshadow-gr/HatForIOS.git
 
 SPEC CHECKSUMS:
@@ -71,17 +71,17 @@ SPEC CHECKSUMS:
   FBAnnotationClusteringSwift: '0698ddcee46d1c28f14336909b2b0af4906b213f'
   HatForIOS: 741a6aa226fb96e93042b6b31d5429b89671f49e
   JWTDecode: 178e47e5d28d3abcff778bacced8342858cd6cb5
-  KeychainSwift: b6947435dd78cc442c64a84ae648dd0e871cf448
+  KeychainSwift: 213db04dfe7244988e61f77c72a2afb2f775954a
   Mockingjay: 7122a3fc0597aa63438e4cd9b71b7bc8aac05b87
-  Realm: 32f86104d37c8521f864d4274050b38ba6190733
-  RealmSwift: f719e7511c902b8908593e8f143f59e47931bdb6
+  Realm: 9abfd4f87519376daa5ae3a4603155de408bf8b3
+  RealmSwift: a54d3e8931cf7d3afa5a1fac9c8f88109d7f02b3
   Stripe: dd6df0e2c6a8463e2f1ca9b15dc246e5ae1eee64
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
-  SwiftyRSA: 3ec69b6a1bd2edf2b8fcb2fcdfd63e00b971e5eb
+  SwiftyRSA: 40b6eca6677ca432356a97d4e7659e15203708fb
   Toaster: 77c0b03d78e680bbbab0071c9c7ee392b0034010
-  URITemplate: a5acb3f76c6a2338116fde88b658d83f91bbac45
+  URITemplate: 720b8a56a281494d7c2d31ee33183986eaed2c67
   zxcvbn-ios: fef98b7c80f1512ff0eec47ac1fa399fc00f7e3c
 
 PODFILE CHECKSUM: 0c6d4fa6abda8ba2a9584c0baa0b0b51b1d99398
 
-COCOAPODS: 1.2.1.beta.1
+COCOAPODS: 1.2.1

@@ -260,7 +260,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      
      - parameter array: The fetched notables
      */
-    private func showNotables(array: [JSON]) {
+    private func showNotables(array: [JSON], renewedUserToken: String?) {
         
         if self.isViewLoaded && (self.view.window != nil) {
             
@@ -304,6 +304,12 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     }
                     
                     weakSelf.showReceivedNotesFrom(array: array)
+                    
+                    // refresh user token
+                    if renewedUserToken != nil {
+                        
+                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+                    }
                 }
             }
         }

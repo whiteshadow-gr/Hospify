@@ -69,13 +69,19 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         super.viewWillAppear(animated)
                 
         /// method to execute on a successful callback
-        func successfullCallBack(data: [HATDataPlugObject]) {
+        func successfullCallBack(data: [HATDataPlugObject], renewedUserToken: String?) {
             
             // remove the existing dataplugs from array
             self.dataPlugs = HATDataPlugsService.filterAvailableDataPlugs(dataPlugs: data)
             
             // check if dataplugs are active
             self.checkDataPlugsIfActive()
+            
+            // refresh user token
+            if renewedUserToken != nil {
+                
+                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+            }
         }
         
         /// method to execute on a failed callback

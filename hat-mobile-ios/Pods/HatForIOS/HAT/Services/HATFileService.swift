@@ -19,22 +19,22 @@ public class HATFileService: NSObject {
     // MARK: - Functions
     
     /**
-     <#Function Details#>
+     Searches and returns the files we want
      
-     - parameter <#Parameter#>: <#Parameter description#>
-     - returns: <#Returns#>
+     - parameter token: The authorisation token to authenticate with the hat
+     - parameter userDomain: The user's HAT domain
+     - parameter successCallback: An @escaping ([FileUploadObject]) -> Void function to execute when the server has returned the files we were looking for
+     - parameter errorCallBack: An @escaping (HATError) -> Void to execute when something went wrong
      */
-    public class func searchFiles(userDomain: String, token: String, successCallback: @escaping ([FileUploadObject]) -> Void, errorCallBack: @escaping (HATError) -> Void) {
+    public class func searchFiles(userDomain: String, token: String, successCallback: @escaping ([FileUploadObject], String?) -> Void, errorCallBack: @escaping (HATError) -> Void) {
         
         let url: String = "https://" + userDomain + "/api/v2/files/search"
         let headers = ["X-Auth-Token" : token]
-        HATNetworkHelper.AsynchronousRequest(url, method: .post, encoding: Alamofire.JSONEncoding.default, contentType: "application/json", parameters: ["source" : "iPhone", "name": ""], headers: headers, completion: {
-            
-            (r) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .post, encoding: Alamofire.JSONEncoding.default, contentType: ContentType.JSON, parameters: ["source" : "iPhone", "name": ""], headers: headers, completion: { (r) -> Void in
             // handle result
             switch r {
                 
-            case .isSuccess(let isSuccess, let statusCode, let result):
+            case .isSuccess(let isSuccess, let statusCode, let result, let token):
                 
                 if isSuccess {
                     
@@ -45,7 +45,7 @@ public class HATFileService: NSObject {
                         images.append(FileUploadObject(from: image.dictionaryValue))
                     }
                     
-                    successCallback(images)
+                    successCallback(images, token)
                 } else {
                     
                     let message = "Server returned unexpected respone"
@@ -56,8 +56,140 @@ public class HATFileService: NSObject {
                 
                 let message = "Server returned unexpected respone"
                 errorCallBack(.generalError(message, statusCode, error))
-                print("error res: \(error)")
             }
         })
     }
+    
+    /**
+     Deletes a file, with the specified ID, from the server
+     
+     - parameter fileID: The ID of the file to delete
+     - parameter token: The authorisation token to authenticate with the hat
+     - parameter userDomain: The user's HAT domain
+     - parameter successCallback: An @escaping (Bool) -> Void function to execute when the file has been deleted
+     - parameter errorCallBack: An @escaping (HATError) -> Void to execute when something went wrong
+     */
+    public class func deleteFile(fileID: String, token: String, userDomain: String, successCallback: @escaping (Bool, String?) -> Void, errorCallBack: @escaping (HATError) -> Void) {
+        
+        let url: String = "https://" + userDomain + "/api/v2/files/file/" + fileID
+        let headers = ["X-Auth-Token" : token]
+
+        HATNetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: headers, completion: { (r) -> Void in
+            // handle result
+            switch r {
+                
+            case .isSuccess(let isSuccess, let statusCode, _, let token):
+                
+                if isSuccess {
+                    
+                    if statusCode == 200 {
+                        
+                        successCallback(true, token)
+                    } else {
+                        
+                        let message = "Server returned unexpected respone"
+                        errorCallBack(.generalError(message, statusCode, nil))
+                    }
+                } else {
+                    
+                    let message = "Server returned unexpected respone"
+                    errorCallBack(.generalError(message, statusCode, nil))
+                }
+                
+            case .error(let error, let statusCode):
+                
+                let message = "Server returned unexpected respone"
+                errorCallBack(.generalError(message, statusCode, error))
+            }
+        })
+    }
+    
+    /**
+     Makes an already uploaded file public
+     
+     - parameter fileID: The ID of the file to change
+     - parameter token: The authorisation token to authenticate with the hat
+     - parameter userDomain: The user's HAT domain
+     - parameter successCallback: An @escaping (Bool) -> Void function to execute when the file has been made public
+     - parameter errorCallBack: An @escaping (HATError) -> Void to execute when something went wrong
+     */
+    public class func makeFilePublic(fileID: String, token: String, userDomain: String, successCallback: @escaping (Bool) -> Void, errorCallBack: @escaping (HATError) -> Void) {
+        
+        let url: String = "https://" + userDomain + "/api/v2/files/allowAccessPublic/" + fileID
+        let headers = ["X-Auth-Token" : token]
+        
+        HATNetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: headers, completion: { (r) -> Void in
+            // handle result
+            switch r {
+                
+            case .isSuccess(let isSuccess, let statusCode, _, _):
+                
+                if isSuccess {
+                    
+                    if statusCode == 200 {
+                        
+                        successCallback(true)
+                    } else {
+                        
+                        let message = "Server returned unexpected respone"
+                        errorCallBack(.generalError(message, statusCode, nil))
+                    }
+                } else {
+                    
+                    let message = "Server returned unexpected respone"
+                    errorCallBack(.generalError(message, statusCode, nil))
+                }
+                
+            case .error(let error, let statusCode):
+                
+                let message = "Server returned unexpected respone"
+                errorCallBack(.generalError(message, statusCode, error))
+            }
+        })
+    }
+    
+    /**
+     Makes an already uploaded file private
+     
+     - parameter fileID: The ID of the file to change
+     - parameter token: The authorisation token to authenticate with the hat
+     - parameter userDomain: The user's HAT domain
+     - parameter successCallback: An @escaping (Bool) -> Void function to execute when the file has been made private
+     - parameter errorCallBack: An @escaping (HATError) -> Void to execute when something went wrong
+     */
+    public class func makeFilePrivate(fileID: String, token: String, userDomain: String, successCallback: @escaping (Bool) -> Void, errorCallBack: @escaping (HATError) -> Void) {
+        
+        let url: String = "https://" + userDomain + "/api/v2/files/restrictAccessPublic/" + fileID
+        let headers = ["X-Auth-Token" : token]
+        
+        HATNetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: headers, completion: { (r) -> Void in
+            // handle result
+            switch r {
+                
+            case .isSuccess(let isSuccess, let statusCode, _, _):
+                
+                if isSuccess {
+                    
+                    if statusCode == 200 {
+                        
+                        successCallback(true)
+                    } else {
+                        
+                        let message = "Server returned unexpected respone"
+                        errorCallBack(.generalError(message, statusCode, nil))
+                    }
+                } else {
+                    
+                    let message = "Server returned unexpected respone"
+                    errorCallBack(.generalError(message, statusCode, nil))
+                }
+                
+            case .error(let error, let statusCode):
+                
+                let message = "Server returned unexpected respone"
+                errorCallBack(.generalError(message, statusCode, error))
+            }
+        })
+    }
+    
 }

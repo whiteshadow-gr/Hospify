@@ -209,7 +209,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                 failed(statusCode: 401)
             } else {
                 
-                self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+                self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
             }
         }
         
@@ -303,14 +303,14 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
      
      - parameter data: The objects received from the server
      */
-    private func updateRingProgressBar(from data: [HATSystemStatusObject]) {
+    private func updateRingProgressBar(from data: [HATSystemStatusObject], renewedUserToken: String?) {
         
         if data.count > 0 {
             
             var attributedString: NSAttributedString = NSAttributedString(string: self.helloLabel.text! + "\n")
             self.helloLabel.text = attributedString.combineWith(attributedText: NSAttributedString(string: "Total space " + data[2].kind.metric + " " + data[2].kind.units!)).string
             attributedString = NSAttributedString(string: self.helloLabel.text! + "\n")
-            self.helloLabel.text = attributedString.combineWith(attributedText: NSAttributedString(string: "Used space " + String(describing: Int(Float(data[4].kind.metric)!)) + " " + data[4].kind.units!)).string
+            self.helloLabel.text = attributedString.combineWith(attributedText: NSAttributedString(string: "Used space " + String(describing: Int(Float(data[4].kind.metric)!.rounded())) + " " + data[4].kind.units!)).string
             
             let fullCircle = 2.0 * CGFloat(Double.pi)
             self.ringProgressBar.startPoint = -0.25 * fullCircle
@@ -322,7 +322,14 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                 
                 self.ringProgressBar.endPoint = (0.01 * fullCircle) + self.ringProgressBar.startPoint
             }
-            self.ringProgressBar.update()
+            
+            self.ringProgressBar.update(end: endPoint)
+        }
+        
+        // refresh user token
+        if renewedUserToken != nil {
+            
+            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
         }
     }
     

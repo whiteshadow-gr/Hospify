@@ -16,9 +16,20 @@ import HatForIOS
 // MARK: Class
 
 /// The share options view controller
-class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafariViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafariViewControllerDelegate, PhotoPickerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, SendLocationDataDelegate {
     
+    func locationDataReceived(latitude: Double, longitude: Double, accuracy: Double) {
+        
+        self.receivedNote?.data.locationData.latitude = latitude
+        self.receivedNote?.data.locationData.longitude = longitude
+        self.receivedNote?.data.locationData.accuracy = accuracy
+    }
+
     // MARK: - Variables
+    
+    private var loadingScr: LoadingScreenWithProgressRingViewController?
+    
+    private let photosViewController = PhotosHelperViewController()
     
     /// An array of strings holding the selected social networks to share the note
     private var shareOnSocial: [String] = []
@@ -26,11 +37,12 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     /// An array of strings holding the available data plugs
     private var dataPlugs: [HATDataPlugObject] = []
     
-    /// A variable holding a reference to the image picker view used to present the photo library or camera
-    private var imagePicker: UIImagePickerController!
+    private var imagesToUpload: [UIImage] = []
     
     /// A variable holding the selected image from the image picker
     private var imageSelected: UIImageView = UIImageView()
+    private var selectedImage: UIImage?
+    private var differenceHeightSize: CGFloat? = nil
     
     /// A string passed from Notables view controller about the kind of the note
     var kind: String = "note"
@@ -71,9 +83,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     
     /// An IBOutlet for handling the public/private switch
     @IBOutlet weak var publicSwitch: UISwitch!
+    @IBOutlet weak var collectionView: UICollectionView!
     
-    /// An IBOutlet for handling the cancel button
-    @IBOutlet weak var cancelButton: UIButton!
     /// An IBOutlet for handling the delete button
     @IBOutlet weak var deleteButtonOutlet: UIButton!
     /// An IBOutlet for handling the facebook button
@@ -86,11 +97,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     @IBOutlet weak var publishButton: UIButton!
     /// An IBOutlet for handling the add button
     @IBOutlet weak var addButton: UIButton!
+    @IBOutlet weak var addImageButton: UIButton!
+    @IBOutlet weak var addLocationButton: UIButton!
     
     /// An IBOutlet for handling the action view
     @IBOutlet weak var actionsView: UIView!
     /// An IBOutlet for handling the shareForView
     @IBOutlet weak var shareForView: UIView!
+    @IBOutlet weak var settingsContentView: UIView!
     
     /// An IBOutlet for handling the scroll view
     @IBOutlet weak var scrollView: UIScrollView!
@@ -100,6 +114,37 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     
     // MARK: - IBActions
     
+    @IBAction func addImageButtonAction(_ sender: Any) {
+        
+        let alertController = UIAlertController(title: "Select options", message: "Select from where to upload image", preferredStyle: .actionSheet)
+        
+        // create alert actions
+        let cameraAction = UIAlertAction(title: "Take photo", style: .default, handler: { [unowned self] (action) -> Void in
+            
+            let picker = self.photosViewController.presentPicker(sourceType: .camera)
+            self.present(picker, animated: true, completion: nil)
+        })
+        
+        let libraryAction = UIAlertAction(title: "Choose from library", style: .default, handler: { [unowned self] (action) -> Void in
+            
+            let picker = self.photosViewController.presentPicker(sourceType: .photoLibrary)
+            self.present(picker, animated: true, completion: nil)
+        })
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addActions(actions: [cameraAction, libraryAction, cancel])
+        alertController.addiPadSupport(sourceRect: self.addButton.frame, sourceView: self.shareForView)
+        
+        // present alert controller
+        self.navigationController!.present(alertController, animated: true, completion: nil)
+    }
+    
+    @IBAction func addLocationButtonAction(_ sender: Any) {
+        
+        self.performSegue(withIdentifier: "checkInSegue", sender: self)
+    }
+    
     /**
      This function is called when the user touches the add media button
      
@@ -107,31 +152,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     @IBAction func addButtonAction(_ sender: Any) {
         
-        let alertController = UIAlertController(title: "Select options", message: "Select from where to upload image", preferredStyle: .actionSheet)
-        
-        // create alert actions
-        let cameraAction = UIAlertAction(title: "Take photo", style: .default, handler: { [unowned self] (action) -> Void in
-            
-            self.presentImagePicker(buttonTitle: action.title!)
-        })
-        
-        let libraryAction = UIAlertAction(title: "Choose from library", style: .default, handler: { [unowned self] (action) -> Void in
-            
-            self.presentImagePicker(buttonTitle: action.title!)
-        })
-        
-        let locationAction = UIAlertAction(title: "Add Location", style: .default, handler: { [unowned self] _ in
-            
-            self.performSegue(withIdentifier: "checkInSegue", sender: self)
-        })
-        
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alertController.addActions(actions: [cameraAction, libraryAction, locationAction, cancel])
-        alertController.addiPadSupport(sourceRect: self.addButton.frame, sourceView: self.shareForView)
-        
-        // present alert controller
-        self.navigationController!.present(alertController, animated: true, completion: nil)
     }
     
     /**
@@ -199,16 +219,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         self.navigationController!.present(alertController, animated: true, completion: nil)
     }
     
-    /**
-     This function is called when the user touches the cancel button
-     
-     - parameter sender: The object that called this function
-     */
-    @IBAction func cancelButton(_ sender: Any) {
-        
-        _ = self.navigationController?.popViewController(animated: true)
-    }
-    
     func changePublishButtonTo(title: String, userEnabled: Bool) {
         
         self.previousPublishButtonTitle = self.publishButton.titleLabel?.text
@@ -269,6 +279,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                         
                         _ = self!.navigationController?.popViewController(animated: true)
                     }
+                    
+                    if self?.loadingScr != nil {
+                        
+                        self?.loadingScr?.removeFromParentViewController()
+                        self?.loadingScr?.view.removeFromSuperview()
+                        _ = self!.navigationController?.popViewController(animated: true)
+                    }
                 })
             }
             
@@ -286,9 +303,51 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: postNote, cancelCompletion: defaultCancelAction)
                 } else {
                     
-                    postNote()
+                    if self.imagesToUpload.count > 0 {
+                        
+                        self.showProgressRing()
+                        
+                        HATAccountService.uploadFileToHATWrapper(token: self.token, userDomain: self.userDomain, fileToUpload: self.imageSelected.image!, progressUpdater: {[weak self](completion) -> Void in
+                            
+                            if self != nil {
+                                
+                                self!.updateProgressRing(completion: completion)
+                            }
+                        }, completion: {[weak self](fileUploaded, renewedUserToken) -> Void in
+                            
+                            if let weakSelf = self {
+                                
+                                if (weakSelf.receivedNote?.data.shared)! {
+                                    
+                                    // do another call to make image public
+                                    HATFileService.makeFilePublic(fileID: fileUploaded.fileID, token: weakSelf.token, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
+                                        
+                                        _ = CrashLoggerHelper.hatErrorLog(error: error)
+                                    })
+                                }
+                                
+                                // add image to note
+                                weakSelf.receivedNote?.data.photoData.link = "https://" + weakSelf.userDomain + "/api/v2/files/content/" + fileUploaded.fileID
+                                
+                                // post note
+                                postNote()
+                            }
+                            
+                            // refresh user token
+                            if renewedUserToken != nil {
+                                
+                                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+                            }
+                        }, errorCallBack: {(error) -> Void in
+                        
+                            _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                        })
+                    } else {
+                        
+                        postNote()
+                    }
                 }
-                // else delete the existing note and post a new one
+            // else delete the existing note and post a new one
             } else {
                 
                 func proceedCompletion() {
@@ -296,7 +355,53 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     // delete note
                     HATNotablesService.deleteNote(id: (receivedNote?.id)!, tkn: self.token, userDomain: self.userDomain)
                     
-                    postNote()
+                    if self.imagesToUpload.count > 0 {
+                        
+                        HATAccountService.uploadFileToHATWrapper(token: self.token, userDomain: self.userDomain, fileToUpload: self.imageSelected.image!, progressUpdater: {[weak self](completion) -> Void in
+                        
+                            if self != nil {
+                                
+                                self!.updateProgressRing(completion: completion)
+                            }
+                        }, completion: {[weak self](fileUploaded, renewedUserToken) -> Void in
+                        
+                            if let weakSelf = self {
+                                
+                                if (weakSelf.receivedNote?.data.shared)! {
+                                    
+                                    // do another call to make image public
+                                    HATFileService.makeFilePublic(fileID: fileUploaded.fileID, token: weakSelf.token, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
+                                        
+                                        _ = CrashLoggerHelper.hatErrorLog(error: error)
+                                    })
+                                } else {
+                                    
+                                    HATFileService.makeFilePrivate(fileID: fileUploaded.fileID, token: weakSelf.token, userDomain: weakSelf.token, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
+                                        
+                                        _ = CrashLoggerHelper.hatErrorLog(error: error)
+                                    })
+                                }
+                                
+                                // add image to note
+                                weakSelf.receivedNote?.data.photoData.link = "https://" + weakSelf.userDomain + "/api/v2/files/content/" + fileUploaded.fileID
+                                
+                                // post note
+                                postNote()
+                            }
+                            
+                            // refresh user token
+                            if renewedUserToken != nil {
+                                
+                                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+                            }
+                        }, errorCallBack: {(error) -> Void in
+                            
+                            _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                        })
+                    } else {
+                        
+                        postNote()
+                    }
                 }
                 
                 // if note is shared and user has changed the text show alert message
@@ -462,7 +567,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // else select it and add it to the array
             } else {
                 
-                func facebookTokenReceived(token: String) {
+                func facebookTokenReceived(token: String, renewedUserToken: String?) {
+                    
+                    // refresh user token
+                    if renewedUserToken != nil {
+                        
+                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+                    }
                     
                     func successfulCallback() {
                         
@@ -493,7 +604,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                         
                         func yesAction() {
                             
-                            func successfullCallBack(dataPlugs: [HATDataPlugObject]) {
+                            func successfullCallBack(dataPlugs: [HATDataPlugObject], renewedUserToken: String?) {
                                 
                                 for i in 0 ... dataPlugs.count - 1 {
                                     
@@ -506,6 +617,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                         self.present(self.safariVC!, animated: true, completion: nil)
                                         self.claimOffer()
                                     }
+                                }
+                                
+                                if renewedUserToken != nil {
+                                    
+                                    _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
                                 }
                             }
                             
@@ -572,44 +688,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     
     // MARK: - Image picker Controller
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        
-        self.imagePicker.dismiss(animated: true, completion: nil)        
-        self.imageSelected.image = info[UIImagePickerControllerOriginalImage] as? UIImage
-        
-        PhotosHelper.sharedInstance.saveImage(image: self.imageSelected.image!)
-        
-        HATAccountService.uploadFileToHAT(
-              fileName: "rumpelPhoto",
-              token: self.token,
-              userDomain: self.userDomain,
-              completion: {[weak self](fileObject) -> Void in
-                
-                if self != nil {
-                    
-                    let data = UIImageJPEGRepresentation(self!.imageSelected.image!, 1.0)
-                    HATNetworkHelper.uploadFile(
-                        image: data!,
-                        url: fileObject.contentURL,
-                        progressUpdateHandler: {(progress) -> Void in
-                            
-                            print(progress)
-                        },completion: {[weak self](result) -> Void in
-                            
-                            if self != nil {
-                                
-                                HATAccountService.completeUploadFileToHAT(fileID: fileObject.fileID, token: self!.token, userDomain: self!.userDomain, completion: {_ in}, errorCallback: {(error) -> Void in return})
-                            }
-                            
-                    })
-                }
-        }, errorCallback: {(error) -> Void in
-            
-            _ = CrashLoggerHelper.hatTableErrorLog(error: error)
-        })
-    }
-    
-    func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+    func didFinishWithError(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
         
         if let error = error {
             
@@ -620,6 +699,20 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         }
     }
     
+    func didChooseImageWithInfo(_ info: [String : Any]) {
+        
+        if self.imagesToUpload.count > 0 {
+            
+            self.imagesToUpload.removeAll()
+        }
+        
+        self.imageSelected.image = (info[UIImagePickerControllerOriginalImage] as! UIImage)
+        
+        self.imagesToUpload.append(self.imageSelected.image!)
+        self.collectionView.isHidden = false
+        self.collectionView.reloadData()
+    }
+    
     // MARK: - Check if twitter is available
     
     /**
@@ -628,7 +721,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     private func isTwitterEnabled() {
         
         // check data plug
-        func checkDataPlug(appToken: String) {
+        func checkDataPlug(appToken: String, renewedUserToken: String?) {
+            
+            // refresh user token
+            if renewedUserToken != nil {
+                
+                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+            }
             
             // data plug enabled, set up publish button accordingly
             func dataPlugIsEnabled() {
@@ -651,7 +750,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // set up data plug
                 func yesAction() {
                     
-                    func successfullCallBack(data: [HATDataPlugObject]) {
+                    func successfullCallBack(data: [HATDataPlugObject], renewedUserToken: String?) {
                         
                         for i in 0 ... data.count - 1 {
                             
@@ -688,6 +787,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         }
         
         self.changePublishButtonTo(title: "Please Wait..", userEnabled: false)
+        
         // get app token for twitter
         HATTwitterService.getAppTokenForTwitter(userDomain: self.userDomain, token: self.token, successful: checkDataPlug, failed: { [weak self] (error) in
             
@@ -764,27 +864,32 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     override func viewDidLoad() {
         
         super.viewDidLoad()
-                
+        
+        self.photosViewController.delegate = self
+        
         // set title in the navigation bar
         self.navigationItem.title = self.kind.capitalized
         
         // set image fonts
-        self.publicImageLabel.attributedText = NSAttributedString(string: "\u{1F512}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
-        self.shareImageLabel.attributedText = NSAttributedString(string: "\u{23F2}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 21)!])
+        self.publicImageLabel.attributedText = NSAttributedString(string: "\u{1F512}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 22)!])
+        self.publicImageLabel.sizeToFit()
+        self.shareImageLabel.attributedText = NSAttributedString(string: "\u{23F2}", attributes: [NSForegroundColorAttributeName: UIColor.lightGray, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 22)!])
+        self.shareImageLabel.sizeToFit()
         
         // setup text field
         self.textView.keyboardAppearance = .dark
         
         // add gesture recognizer to share For view
-        let tapGestureToShareForAction = UITapGestureRecognizer(target: self, action:  #selector (self.shareForDurationAction(_:)))
+        let tapGestureToShareForAction = UITapGestureRecognizer(target: self, action: #selector (self.shareForDurationAction(_:)))
+        tapGestureToShareForAction.cancelsTouchesInView = false
         self.shareForView.addGestureRecognizer(tapGestureToShareForAction)
         
         // add gesture recognizer to text view
-        let tapGestureTextView = UITapGestureRecognizer(target: self, action:  #selector (self.enableEditingTextView))
+        let tapGestureTextView = UITapGestureRecognizer(target: self, action: #selector (self.enableEditingTextView))
+        tapGestureTextView.cancelsTouchesInView = false
         self.textView.addGestureRecognizer(tapGestureTextView)
         
         // add borders to buttons
-        self.cancelButton.addBorderToButton(width: 1, color: .white)
         self.deleteButtonOutlet.addBorderToButton(width: 1, color: .white)
         
         // change title in publish button
@@ -842,6 +947,30 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.textView.textColor = .lightGray
             self.textView.text = "What's on your mind?"
         }
+    }
+    
+    func showProgressRing() {
+        
+        self.loadingScr = LoadingScreenWithProgressRingViewController.customInit(completion: 0, from: self.storyboard!)
+        
+        self.loadingScr!.view.createFloatingView(frame:CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160), color: .tealColor(), cornerRadius: 15)
+        
+        self.addViewController(self.loadingScr!)
+    }
+    
+    func updateProgressRing(completion: Double) {
+        
+        self.loadingScr?.updateView(completion: completion)
+    }
+    
+    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+        
+        self.loadingScr?.view.frame = CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160)
+    }
+    
+    override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
+        
+        self.loadingScr?.view.frame = CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160)
     }
     
     override func didReceiveMemoryWarning() {
@@ -1022,23 +1151,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         self.shareForLabel.text = "Share for..."
     }
     
-    private func presentImagePicker(buttonTitle: String) {
-        
-        self.imagePicker =  UIImagePickerController()
-        self.imagePicker.delegate = self
-        
-        if buttonTitle == "Choose from library" {
-            
-            self.imagePicker.sourceType = .photoLibrary
-            self.imagePicker.mediaTypes = UIImagePickerController.availableMediaTypes(for: UIImagePickerControllerSourceType.photoLibrary)!
-        } else {
-            
-            self.imagePicker.sourceType = .camera
-        }
-        
-        self.present(self.imagePicker, animated: true, completion: nil)
-    }
-    
     // MARK: - Keyboard handling
     
     override func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -1055,7 +1167,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         keyboardFrame = self.view.convert(keyboardFrame, from: nil)
         
         self.scrollView.contentInset.bottom = keyboardFrame.size.height
-        print(String(describing: keyboardFrame.size.height))
         
         let desiredOffset = CGPoint(x: 0, y: self.scrollView.contentInset.top)
         self.scrollView.setContentOffset(desiredOffset, animated: true)
@@ -1098,6 +1209,41 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         }
     }
     
+    override func viewWillLayoutSubviews() {
+        
+        super.viewWillLayoutSubviews()
+        
+        if self.differenceHeightSize == nil {
+            
+            self.differenceHeightSize = self.textView.frame.height
+        }
+        
+        self.collectionView.frame = CGRect(x: textView.frame.origin.x, y: textView.frame.origin.y + self.textView.frame.height, width: self.textView.frame.width, height: 110)
+        
+        let orientation = UIInterfaceOrientation(rawValue: UIDevice.current.orientation.rawValue)!
+        
+        if orientation == .landscapeLeft || orientation == .landscapeRight {
+            
+            self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.view.frame.height + self.differenceHeightSize!)
+            self.settingsContentView.frame = CGRect(x: self.settingsContentView.frame.origin.x, y: (self.settingsContentView.frame.origin.y + self.differenceHeightSize!), width: self.settingsContentView.frame.width, height: self.settingsContentView.frame.height)
+        }
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        
+        let fixedWidth = textView.frame.size.width
+        textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        
+        self.differenceHeightSize = newSize.height - textView.frame.size.height
+        
+        var newFrame = textView.frame
+        newFrame.size = CGSize(width: max(newSize.width, fixedWidth), height: newSize.height)
+        textView.frame = newFrame
+        
+        self.viewWillLayoutSubviews()
+    }
+    
     func textViewDidEndEditing(_ textView: UITextView) {
         
         if textView.text == "" {
@@ -1129,13 +1275,80 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.createClassicOKAlertWith(alertMessage: "There was a problem enabling offer. Please try again later", alertTitle: "Error enabling offer", okTitle: "OK", proceedCompletion: {})
         }
         
-        // setup succesfulCallBack
-        let offerClaimForToken = HATDataPlugsService.ensureOfferDataDebitEnabled(offerID: "32dde42f-5df9-4841-8257-5639db222e41", succesfulCallBack: {_ in}, failCallBack: failCallback)
+        func success(appToken: String, renewedUserToken: String?) {
+            
+            HATDataPlugsService.ensureOfferDataDebitEnabled(offerID: "32dde42f-5df9-4841-8257-5639db222e41", succesfulCallBack: {_ in}, failCallBack: failCallback)(appToken)
+        }
         
-        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: self.userDomain, token: self.token, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: {(error) in
+        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: self.userDomain, token: self.token, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: success, failCallBack: {(error) in
             
             failCallback()
             _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
         })
+    }
+    
+    // MARK: - UICollectionView methods
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        return self.imagesToUpload.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "addedImageCell", for: indexPath) as? ShareOptionsSelectedImageCollectionViewCell
+        
+        // Configure the cell
+        cell?.selectedImage.image = self.imagesToUpload[indexPath.row]
+        
+        let tapGestureToShareForAction = UITapGestureRecognizer(target: self, action: #selector (self.didTapOnCell(sender:)))
+        tapGestureToShareForAction.cancelsTouchesInView = false
+        cell?.addGestureRecognizer(tapGestureToShareForAction)
+        
+        return cell!
+    }
+    
+    func didTapOnCell(sender: UITapGestureRecognizer) {
+        
+        //using sender, we can get the point in respect to the table view
+        let tapLocation = sender.location(in: self.collectionView)
+        
+        //if tapLocation.point.
+        if tapLocation.x < 80 && tapLocation.y > 35 {
+            
+            //using the tapLocation, we retrieve the corresponding indexPath
+            let indexPath = self.collectionView.indexPathForItem(at: tapLocation)
+            
+            self.selectedImage = self.imagesToUpload[(indexPath?.row)!]
+            
+            self.performSegue(withIdentifier: "goToFullScreenSegue", sender: self)
+        } else {
+            
+            self.imagesToUpload.removeAll()
+            self.collectionView.reloadData()
+        }
+    }
+    
+    // MARK: - Navigation
+    
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if segue.identifier == "checkInSegue" {
+            
+            let checkInMapVC = segue.destination as? CheckInMapViewController
+            
+            checkInMapVC?.noteOptionsDelegate = self
+        } else if segue.identifier == "goToFullScreenSegue" {
+            
+            let fullScreenPhotoVC = segue.destination as? PhotoFullScreenViewerViewController
+            
+            fullScreenPhotoVC?.image = self.selectedImage
+        }
     }
 }

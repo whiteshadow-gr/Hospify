@@ -27,7 +27,7 @@ public class HATTwitterService: NSObject {
      - parameter parameters: The parameters to use in the request
      - parameter success: An @escaping (_ array: [JSON]) -> Void) method executed on a successful response
      */
-    public class func checkTwitterDataPlugTable(authToken: String, userDomain: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void) -> Void {
+    public class func checkTwitterDataPlugTable(authToken: String, userDomain: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON], String?) -> Void) -> Void {
         
         HATAccountService.checkHatTableExists(userDomain: userDomain,
                                               tableName: Twitter.tableName,
@@ -57,7 +57,7 @@ public class HATTwitterService: NSObject {
             // act upon response
             switch r {
                 
-            case .isSuccess(_, let statusCode, _):
+            case .isSuccess(_, let statusCode, _, _):
                 
                 if statusCode == 200 {
                     
@@ -85,9 +85,9 @@ public class HATTwitterService: NSObject {
      - parameter parameters: The parameters to use in the request
      - parameter success: An @escaping (_ array: [JSON]) -> Void) method executed on a successful response
      */
-    private class func getTweets(token: String, userDomain: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON]) -> Void) -> (_ tableID: NSNumber) -> Void  {
+    private class func getTweets(token: String, userDomain: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON], String?) -> Void) -> (_ tableID: NSNumber, _ token: String?) -> Void  {
         
-        return {(tableID: NSNumber) -> Void in
+        return {(tableID: NSNumber, returnedToken: String?) -> Void in
             
             HATAccountService.getHatTableValues(token: token, userDomain: userDomain, tableID: tableID, parameters: parameters, successCallback: success, errorCallback: {(error: HATTableError) -> Void in return})
         }
@@ -101,7 +101,7 @@ public class HATTwitterService: NSObject {
      - parameter successful: An @escaping (String) -> Void method executed on a successful response
      - parameter failed: An @escaping (Void) -> Void) method executed on a failed response
      */
-    public class func getAppTokenForTwitter(userDomain: String, token: String, successful: @escaping (String) -> Void, failed: @escaping (JSONParsingError) -> Void) {
+    public class func getAppTokenForTwitter(userDomain: String, token: String, successful: @escaping (String, String?) -> Void, failed: @escaping (JSONParsingError) -> Void) {
         
         HATService.getApplicationTokenFor(serviceName: Twitter.serviceName, userDomain: userDomain, token: token, resource: Twitter.dataPlugURL, succesfulCallBack: successful, failCallBack: failed)
     }

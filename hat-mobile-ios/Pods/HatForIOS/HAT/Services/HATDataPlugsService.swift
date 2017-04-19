@@ -25,7 +25,7 @@ public class HATDataPlugsService: NSObject {
      - parameter succesfulCallBack: A function of type ([HATDataPlugObject]) -> Void, executed on a successful result
      - parameter failCallBack: A function of type (Void) -> Void, executed on an unsuccessful result
      */
-    public class func getAvailableDataPlugs(succesfulCallBack: @escaping ([HATDataPlugObject]) -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> Void {
+    public class func getAvailableDataPlugs(succesfulCallBack: @escaping ([HATDataPlugObject], String?) -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> Void {
         
         let url: String = "https://marketsquare.hubofallthings.com/api/dataplugs"
         
@@ -39,7 +39,7 @@ public class HATDataPlugsService: NSObject {
                 let message = NSLocalizedString("Server responded with error", comment: "")
                 failCallBack(.generalError(message, statusCode, error))
             // in case of success call the succesfulCallBack
-            case .isSuccess(let isSuccess, let statusCode, let result):
+            case .isSuccess(let isSuccess, let statusCode, let result, let token):
                 
                 if isSuccess {
                     
@@ -50,7 +50,7 @@ public class HATDataPlugsService: NSObject {
                         returnValue.append(HATDataPlugObject(dict: item.dictionaryValue))
                     }
                     
-                    succesfulCallBack(returnValue)
+                    succesfulCallBack(returnValue, token)
                 } else {
                     
                     let message = NSLocalizedString("Server response was unexpected", comment: "")
@@ -97,7 +97,7 @@ public class HATDataPlugsService: NSObject {
                     failCallBack(.generalError(message, statusCode, error))
                 }
             // in case of success call succesfulCallBack
-            case .isSuccess(let isSuccess, let statusCode, let result):
+            case .isSuccess(let isSuccess, let statusCode, let result, _):
                 
                 if isSuccess {
                     
@@ -152,7 +152,7 @@ public class HATDataPlugsService: NSObject {
                 let message = NSLocalizedString("Server responded with error", comment: "")
                 failCallBack(.generalError(message, statusCode, error))
             // in case of success call succesfulCallBack
-            case .isSuccess(let isSuccess, let statusCode, let result):
+            case .isSuccess(let isSuccess, let statusCode, let result, _):
                 
                 if isSuccess {
                     
@@ -202,7 +202,7 @@ public class HATDataPlugsService: NSObject {
                 let message = NSLocalizedString("Server responded with error", comment: "")
                 failCallBack(.generalError(message, statusCode, error))
             // in case of success call succesfulCallBack
-            case .isSuccess(let isSuccess, let statusCode, _):
+            case .isSuccess(let isSuccess, let statusCode, _, _):
                 
                 if isSuccess {
                     
@@ -250,7 +250,7 @@ public class HATDataPlugsService: NSObject {
                     failCallBack(.generalError(message, statusCode, error))
                 }
             // in case of success call succesfulCallBack
-            case .isSuccess(let isSuccess, let statusCode, let result):
+            case .isSuccess(let isSuccess, let statusCode, let result, _):
                 
                 if isSuccess {
                     
@@ -307,7 +307,7 @@ public class HATDataPlugsService: NSObject {
                         failCallBack(.generalError(message, statusCode, error))
                     }
                 // in case of success call succesfulCallBack
-                case .isSuccess(let isSuccess, let statusCode, let result):
+                case .isSuccess(let isSuccess, let statusCode, let result, _):
                     
                     if isSuccess {
                         

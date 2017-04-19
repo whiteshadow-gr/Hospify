@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Variables
     
     var window: UIWindow?
-    //let locationHelper: UpdateLocations = UpdateLocations()
+    let locationHelper: UpdateLocations = UpdateLocations()
     
     // MARK: - App Delegate methods
     
@@ -36,12 +36,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // if app was closed by iOS (low mem, etc), then receives a location update, and respawns your app, letting it know it respawned due to a location service
         if launchOptions?[UIApplicationLaunchOptionsKey.location] != nil {
             
-            //self.locationHelper.startUpdatingLocation()
-            UpdateLocations.shared.startUpdatingLocation()
+            self.locationHelper.startUpdatingLocation()
+            //UpdateLocations.shared.startUpdatingLocation()
         }
         
-        UpdateLocations.shared.resumeLocationServices()
-        //self.locationHelper.resumeLocationServices()()
+        //UpdateLocations.shared.resumeLocationServices()
+        self.locationHelper.resumeLocationServices()
         
         // change tab bar item font
         UITabBarItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans", size: 11)!], for: UIControlState.normal)

@@ -11,6 +11,7 @@
  */
 
 import Alamofire
+import HatForIOS
 
 // MARK: Extension
 
@@ -26,9 +27,11 @@ extension UIImageView {
      */
     public func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit, completion: ((Void) -> Void)?) {
         
+        let userToken = HATAccountService.getUsersTokenFromKeychain()
+        let headers = ["X-Auth-Token" : userToken]
         contentMode = mode
         
-        Alamofire.request(url).responseData {[weak self] response in
+        Alamofire.request(url, method: .get, parameters: nil, encoding: Alamofire.JSONEncoding.default, headers: headers).responseData(completionHandler: {[weak self] response in
             
             guard let data = response.result.value else { return }
             let image = UIImage(data: data)
@@ -42,7 +45,7 @@ extension UIImageView {
                 
                 completion!()
             }
-        }
+        })
 
     }
 }

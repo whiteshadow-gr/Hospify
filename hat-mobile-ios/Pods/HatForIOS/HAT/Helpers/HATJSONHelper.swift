@@ -413,6 +413,58 @@ public struct HATJSONHelper {
     }
     
     /**
+     Updates the photo of the note json file
+     
+     - parameter file: The json file to update
+     - parameter photoURL: The link to the uploaded photo
+     
+     - returns: JSON
+     */
+    public static func updatePhotosOfNoteOnJSON(file: JSON, photoURL: String) -> JSON {
+        
+        var jsonFile = file
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["name"] == "link" {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(photoURL)
+            }
+        }
+        
+        return jsonFile
+    }
+    
+    /**
+     Updates the photo of the note json file
+     
+     - parameter file: The json file to update
+     - parameter photoURL: The link to the uploaded photo
+     
+     - returns: JSON
+     */
+    public static func updateLocationsOfNoteOnJSON(file: JSON, latitude: Double, longitude: Double, accuracy: Double) -> JSON {
+        
+        var jsonFile = file
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["name"] == "latitude" {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(String(latitude))
+            } else if jsonFile["values"][itemNumber]["field"]["name"] == "longitude" {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(String(longitude))
+            } else if jsonFile["values"][itemNumber]["field"]["name"] == "accuracy" {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(String(accuracy))
+            }
+        }
+        
+        return jsonFile
+    }
+    
+    /**
      Adds all the info about the note we want to add to the JSON file
      
      - parameter file: The JSON file in a Dictionary<String, Any>
@@ -438,6 +490,10 @@ public struct HATJSONHelper {
         jsonFile = HATJSONHelper.updateSharedOnDateOfNoteOnJSON(file: jsonFile, socialString: noteFile.data.sharedOn)
         //update phata
         jsonFile = HATJSONHelper.updatePhataOfNoteOnJSON(file: jsonFile, phata: userDomain)
+        //update image file
+        jsonFile = HATJSONHelper.updatePhotosOfNoteOnJSON(file: jsonFile, photoURL: noteFile.data.photoData.link)
+        //update location
+        jsonFile = HATJSONHelper.updateLocationsOfNoteOnJSON(file: jsonFile, latitude: noteFile.data.locationData.latitude, longitude: noteFile.data.locationData.longitude, accuracy: noteFile.data.locationData.accuracy)
         
         return jsonFile.dictionaryObject!
     }
@@ -453,13 +509,11 @@ public struct HATJSONHelper {
     static func createFileUploadingJSONFrom(fileName: String) -> Dictionary <String, Any> {
         
         // the final JSON file to be returned
-        let json: Dictionary = [
+        return [
             
             "name" : fileName,
             "source" : "iPhone"
             ] as [String : Any]
-        
-        return json
     }
     
 }

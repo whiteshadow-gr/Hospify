@@ -37,8 +37,8 @@
 		601FFD791E3A7E3600441EAD /* FirstOnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601FFD781E3A7E3600441EAD /* FirstOnboardingViewController.swift */; };
 		60236C751E1BA2A6003B4B92 /* GetAHATViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60236C741E1BA2A6003B4B92 /* GetAHATViewController.swift */; };
 		60275BA01E6DB3740098B66C /* TextPopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60275B9F1E6DB3740098B66C /* TextPopUpViewController.swift */; };
+		6028B4F31EA616B800018D49 /* MoreTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6028B4F21EA616B800018D49 /* MoreTableViewController.swift */; };
 		602CB4461E8BAF3B00903F33 /* UIAlertControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602CB4451E8BAF3B00903F33 /* UIAlertControllerExtension.swift */; };
-		602CB4481E8BF1AB00903F33 /* PhotosViewerCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602CB4471E8BF1AB00903F33 /* PhotosViewerCollectionViewController.swift */; };
 		602CB44A1E8BF3AB00903F33 /* PhotosCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602CB4491E8BF3AB00903F33 /* PhotosCollectionViewCell.swift */; };
 		603926D21E603D3600DC1816 /* HomeScreenObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603926D11E603D3600DC1816 /* HomeScreenObject.swift */; };
 		603926D41E604C3500DC1816 /* HomeHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603926D31E604C3500DC1816 /* HomeHeaderCollectionReusableView.swift */; };
@@ -75,16 +75,24 @@
 		606528D31DDA037400026EA6 /* JSONHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606528D21DDA037400026EA6 /* JSONHelper.swift */; };
 		607C107B1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C107A1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift */; };
 		607C107D1E1BCC7D001D1E8E /* GetAHATInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607C107C1E1BCC7D001D1E8E /* GetAHATInfoViewController.swift */; };
+		607DC4551E9E7288002E348D /* LoadingScreenWithProgressRingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607DC4541E9E7288002E348D /* LoadingScreenWithProgressRingViewController.swift */; };
 		6088ED191E3A66FE00BCE607 /* FirstOnboardingPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6088ED181E3A66FE00BCE607 /* FirstOnboardingPageViewController.swift */; };
 		608EAAA61DFEA7ED00234C60 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608EAAA51DFEA7ED00234C60 /* StringExtension.swift */; };
 		608EAAA81DFEA8AD00234C60 /* ViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 608EAAA71DFEA8AD00234C60 /* ViewControllerExtension.swift */; };
 		6090D4661E31316F004FD1E2 /* MarketSquareService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6090D4651E31316F004FD1E2 /* MarketSquareService.swift */; };
 		6090D4681E3140D4004FD1E2 /* FutureTimeIntervalObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6090D4671E3140D4004FD1E2 /* FutureTimeIntervalObject.swift */; };
+		60938DB81E9B96AA0058F6CC /* PhotoViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60938DB71E9B96AA0058F6CC /* PhotoViewerViewController.swift */; };
+		60938DBA1E9BA3B10058F6CC /* PhotosHelperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60938DB91E9BA3B10058F6CC /* PhotosHelperViewController.swift */; };
+		60938DBC1E9BA4190058F6CC /* PhotoPickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60938DBB1E9BA4190058F6CC /* PhotoPickerDelegate.swift */; };
+		60938DBE1E9BD2750058F6CC /* PhotoFullScreenViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60938DBD1E9BD2750058F6CC /* PhotoFullScreenViewerViewController.swift */; };
+		60938DC01E9CE60E0058F6CC /* ShareOptionsSelectedImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60938DBF1E9CE60E0058F6CC /* ShareOptionsSelectedImageCollectionViewCell.swift */; };
 		6097C0661E3273E9000E771A /* 2.1 HATTermsofService v1.0.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6097C0641E3273E9000E771A /* 2.1 HATTermsofService v1.0.pdf */; };
 		6097C0671E3273E9000E771A /* Rumpel Lite iOS Application Terms of Service.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6097C0651E3273E9000E771A /* Rumpel Lite iOS Application Terms of Service.pdf */; };
 		6097C0691E327506000E771A /* TermsAndConditionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6097C0681E327506000E771A /* TermsAndConditionsViewController.swift */; };
 		60A727BD1DDF47ED008AF409 /* FormatterHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A727BC1DDF47EC008AF409 /* FormatterHelper.swift */; };
 		60AAA5B81E83D70A0080D0D5 /* HATProviderObjectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60AAA5B71E83D70A0080D0D5 /* HATProviderObjectExtension.swift */; };
+		60AFA1E81E9F6CE100AFA28B /* SendLocationDataDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60AFA1E71E9F6CE100AFA28B /* SendLocationDataDelegate.swift */; };
+		60AFA1EA1E9F85E900AFA28B /* UpdateSelectedImagesDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60AFA1E91E9F85E900AFA28B /* UpdateSelectedImagesDelegate.swift */; };
 		60B470101E2E4D0F0016F956 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B4700F1E2E4D0F0016F956 /* ProfileViewController.swift */; };
 		60B486251E1D341000914AD2 /* PurchaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B486241E1D341000914AD2 /* PurchaseModel.swift */; };
 		60B486311E1D6E7B00914AD2 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B486301E1D6E7B00914AD2 /* UIImageViewExtension.swift */; };
@@ -174,8 +182,8 @@
 		601FFD781E3A7E3600441EAD /* FirstOnboardingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FirstOnboardingViewController.swift; path = ViewControllers/FirstOnboardingViewController.swift; sourceTree = "<group>"; };
 		60236C741E1BA2A6003B4B92 /* GetAHATViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GetAHATViewController.swift; path = ViewControllers/GetAHATViewController.swift; sourceTree = "<group>"; };
 		60275B9F1E6DB3740098B66C /* TextPopUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TextPopUpViewController.swift; path = ViewControllers/TextPopUpViewController.swift; sourceTree = "<group>"; };
+		6028B4F21EA616B800018D49 /* MoreTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MoreTableViewController.swift; path = ViewControllers/MoreTableViewController.swift; sourceTree = "<group>"; };
 		602CB4451E8BAF3B00903F33 /* UIAlertControllerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIAlertControllerExtension.swift; path = Extensions/UIAlertControllerExtension.swift; sourceTree = "<group>"; };
-		602CB4471E8BF1AB00903F33 /* PhotosViewerCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhotosViewerCollectionViewController.swift; path = ViewControllers/PhotosViewerCollectionViewController.swift; sourceTree = "<group>"; };
 		602CB4491E8BF3AB00903F33 /* PhotosCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhotosCollectionViewCell.swift; path = Cells/PhotosCollectionViewCell.swift; sourceTree = "<group>"; };
 		603926D11E603D3600DC1816 /* HomeScreenObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HomeScreenObject.swift; path = Objects/HomeScreenObject.swift; sourceTree = "<group>"; };
 		603926D31E604C3500DC1816 /* HomeHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HomeHeaderCollectionReusableView.swift; path = Cells/HomeHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
@@ -213,16 +221,24 @@
 		606528D21DDA037400026EA6 /* JSONHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSONHelper.swift; path = Utils/JSONHelper.swift; sourceTree = "<group>"; };
 		607C107A1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OnboardingTileCollectionViewCell.swift; path = Cells/OnboardingTileCollectionViewCell.swift; sourceTree = "<group>"; };
 		607C107C1E1BCC7D001D1E8E /* GetAHATInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GetAHATInfoViewController.swift; path = ViewControllers/GetAHATInfoViewController.swift; sourceTree = "<group>"; };
+		607DC4541E9E7288002E348D /* LoadingScreenWithProgressRingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LoadingScreenWithProgressRingViewController.swift; path = ViewControllers/LoadingScreenWithProgressRingViewController.swift; sourceTree = "<group>"; };
 		6088ED181E3A66FE00BCE607 /* FirstOnboardingPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FirstOnboardingPageViewController.swift; path = ViewControllers/FirstOnboardingPageViewController.swift; sourceTree = "<group>"; };
 		608EAAA51DFEA7ED00234C60 /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StringExtension.swift; path = Extensions/StringExtension.swift; sourceTree = "<group>"; };
 		608EAAA71DFEA8AD00234C60 /* ViewControllerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ViewControllerExtension.swift; path = Extensions/ViewControllerExtension.swift; sourceTree = "<group>"; };
 		6090D4651E31316F004FD1E2 /* MarketSquareService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MarketSquareService.swift; path = Services/MarketSquareService.swift; sourceTree = "<group>"; };
 		6090D4671E3140D4004FD1E2 /* FutureTimeIntervalObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FutureTimeIntervalObject.swift; path = Objects/FutureTimeIntervalObject.swift; sourceTree = "<group>"; };
+		60938DB71E9B96AA0058F6CC /* PhotoViewerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhotoViewerViewController.swift; path = ViewControllers/PhotoViewerViewController.swift; sourceTree = "<group>"; };
+		60938DB91E9BA3B10058F6CC /* PhotosHelperViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhotosHelperViewController.swift; path = ViewControllers/PhotosHelperViewController.swift; sourceTree = "<group>"; };
+		60938DBB1E9BA4190058F6CC /* PhotoPickerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhotoPickerDelegate.swift; path = Protocols/PhotoPickerDelegate.swift; sourceTree = "<group>"; };
+		60938DBD1E9BD2750058F6CC /* PhotoFullScreenViewerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhotoFullScreenViewerViewController.swift; path = ViewControllers/PhotoFullScreenViewerViewController.swift; sourceTree = "<group>"; };
+		60938DBF1E9CE60E0058F6CC /* ShareOptionsSelectedImageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ShareOptionsSelectedImageCollectionViewCell.swift; path = Cells/ShareOptionsSelectedImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		6097C0641E3273E9000E771A /* 2.1 HATTermsofService v1.0.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "2.1 HATTermsofService v1.0.pdf"; sourceTree = "<group>"; };
 		6097C0651E3273E9000E771A /* Rumpel Lite iOS Application Terms of Service.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Rumpel Lite iOS Application Terms of Service.pdf"; sourceTree = "<group>"; };
 		6097C0681E327506000E771A /* TermsAndConditionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TermsAndConditionsViewController.swift; path = ViewControllers/TermsAndConditionsViewController.swift; sourceTree = "<group>"; };
 		60A727BC1DDF47EC008AF409 /* FormatterHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FormatterHelper.swift; path = Utils/FormatterHelper.swift; sourceTree = "<group>"; };
 		60AAA5B71E83D70A0080D0D5 /* HATProviderObjectExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATProviderObjectExtension.swift; path = Extensions/HATProviderObjectExtension.swift; sourceTree = "<group>"; };
+		60AFA1E71E9F6CE100AFA28B /* SendLocationDataDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SendLocationDataDelegate.swift; path = Protocols/SendLocationDataDelegate.swift; sourceTree = "<group>"; };
+		60AFA1E91E9F85E900AFA28B /* UpdateSelectedImagesDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UpdateSelectedImagesDelegate.swift; path = Protocols/UpdateSelectedImagesDelegate.swift; sourceTree = "<group>"; };
 		60B4700F1E2E4D0F0016F956 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProfileViewController.swift; path = ViewControllers/ProfileViewController.swift; sourceTree = "<group>"; };
 		60B486241E1D341000914AD2 /* PurchaseModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PurchaseModel.swift; path = Objects/PurchaseModel.swift; sourceTree = "<group>"; };
 		60B486301E1D6E7B00914AD2 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIImageViewExtension.swift; path = Extensions/UIImageViewExtension.swift; sourceTree = "<group>"; };
@@ -414,6 +430,7 @@
 			children = (
 				60FAC76A1E223AA700532C01 /* DataPlugCollectionViewCell.swift */,
 				602CB4491E8BF3AB00903F33 /* PhotosCollectionViewCell.swift */,
+				60938DBF1E9CE60E0058F6CC /* ShareOptionsSelectedImageCollectionViewCell.swift */,
 				601142781E5F967D00A9D982 /* HomeCollectionViewCell.swift */,
 				603926D31E604C3500DC1816 /* HomeHeaderCollectionReusableView.swift */,
 				607C107A1E1BB6DE001D1E8E /* OnboardingTileCollectionViewCell.swift */,
@@ -516,12 +533,16 @@
 				601142761E5F877500A9D982 /* HomeViewController.swift */,
 				603FDD501E43E7840086559B /* InfoHatProvidersViewController.swift */,
 				6045FBBD1E2EDAE300086926 /* LearnMorePHATAViewController.swift */,
+				607DC4541E9E7288002E348D /* LoadingScreenWithProgressRingViewController.swift */,
 				B51CC9271D1D7895000C9E48 /* LoginViewController.swift */,
 				B564E99F1D198C4D00EDB8F1 /* MapViewController.swift */,
+				6028B4F21EA616B800018D49 /* MoreTableViewController.swift */,
 				6041B20B1DD4AC040018CC31 /* NotablesViewController.swift */,
 				603CE7491DF6FA7400421429 /* PageViewController.swift */,
 				603CE74B1DF7091500421429 /* ParentPageViewController.swift */,
-				602CB4471E8BF1AB00903F33 /* PhotosViewerCollectionViewController.swift */,
+				60938DBD1E9BD2750058F6CC /* PhotoFullScreenViewerViewController.swift */,
+				60938DB91E9BA3B10058F6CC /* PhotosHelperViewController.swift */,
+				60938DB71E9B96AA0058F6CC /* PhotoViewerViewController.swift */,
 				60DD7F691E27C719000C1B1E /* ProfileCollectionViewController.swift */,
 				60B4700F1E2E4D0F0016F956 /* ProfileViewController.swift */,
 				B51CC9231D1D5749000C9E48 /* SettingsViewController.swift */,
@@ -575,7 +596,10 @@
 				B56E2FAB1D23DED900546C7E /* DataSyncDelegate.swift */,
 				B51CC9251D1D620C000C9E48 /* MapSettingsDelegate.swift */,
 				605EE0331E8DBF8600B265F6 /* UpdateLocationsDelegate.swift */,
+				60AFA1E71E9F6CE100AFA28B /* SendLocationDataDelegate.swift */,
+				60AFA1E91E9F85E900AFA28B /* UpdateSelectedImagesDelegate.swift */,
 				B5E97D9A1D1C03A000CFD1C8 /* UpdateCountDelegate.swift */,
+				60938DBB1E9BA4190058F6CC /* PhotoPickerDelegate.swift */,
 			);
 			name = Protocols;
 			sourceTree = "<group>";
@@ -927,6 +951,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				603D3A731DE879E600C973D8 /* SocialImageCollectionViewCell.swift in Sources */,
+				60938DBC1E9BA4190058F6CC /* PhotoPickerDelegate.swift in Sources */,
+				60AFA1EA1E9F85E900AFA28B /* UpdateSelectedImagesDelegate.swift in Sources */,
 				601142771E5F877500A9D982 /* HomeViewController.swift in Sources */,
 				602CB4461E8BAF3B00903F33 /* UIAlertControllerExtension.swift in Sources */,
 				606435DB1E1B196F001A5D14 /* DateExtension.swift in Sources */,
@@ -937,18 +963,20 @@
 				60236C751E1BA2A6003B4B92 /* GetAHATViewController.swift in Sources */,
 				B56E2FA31D22D1C400546C7E /* JSONDataSourceRequestField.swift in Sources */,
 				6044931B1DE9FE5C00B2FE7B /* UIButtonExtension.swift in Sources */,
-				602CB4481E8BF1AB00903F33 /* PhotosViewerCollectionViewController.swift in Sources */,
 				603926D41E604C3500DC1816 /* HomeHeaderCollectionReusableView.swift in Sources */,
 				60DD7F701E27D790000C1B1E /* ProfileCollectionViewCell.swift in Sources */,
 				60113D331E856EB2000EAF89 /* HATAccountServiceExtension.swift in Sources */,
 				601BDFD01E8D4D5A00213E37 /* CheckInMapViewController.swift in Sources */,
 				B591368C1D19F13500E9EDD0 /* DataViewController.swift in Sources */,
+				60938DB81E9B96AA0058F6CC /* PhotoViewerViewController.swift in Sources */,
 				6090D4661E31316F004FD1E2 /* MarketSquareService.swift in Sources */,
 				B564E9A01D198C4D00EDB8F1 /* MapViewController.swift in Sources */,
 				B54EA6181D19F2750018EE47 /* DataPointsTableView.swift in Sources */,
 				608EAAA61DFEA7ED00234C60 /* StringExtension.swift in Sources */,
 				60DD7F6C1E27CE56000C1B1E /* ProfileObject.swift in Sources */,
+				6028B4F31EA616B800018D49 /* MoreTableViewController.swift in Sources */,
 				6041B20D1DD4AC040018CC31 /* NotablesViewController.swift in Sources */,
+				60938DBE1E9BD2750058F6CC /* PhotoFullScreenViewerViewController.swift in Sources */,
 				60B486311E1D6E7B00914AD2 /* UIImageViewExtension.swift in Sources */,
 				604D68DE1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift in Sources */,
 				603CE74E1DF85E1600421429 /* LearnMoreObject.swift in Sources */,
@@ -957,6 +985,7 @@
 				B56E2FAA1D23D9FF00546C7E /* SyncDataHelper.swift in Sources */,
 				B54EA61A1D19F5450018EE47 /* DataPointTableViewCell.swift in Sources */,
 				60FAC7691E223A1D00532C01 /* DataPlugsCollectionViewController.swift in Sources */,
+				60938DC01E9CE60E0058F6CC /* ShareOptionsSelectedImageCollectionViewCell.swift in Sources */,
 				603D08B11E6D5E350077E90C /* AnimationHelper.swift in Sources */,
 				604237DF1E114F2D00E19109 /* UIColorExtension.swift in Sources */,
 				60E2679E1E55B9B900B6D626 /* AuthoriseUserViewController.swift in Sources */,
@@ -967,6 +996,7 @@
 				601FFD791E3A7E3600441EAD /* FirstOnboardingViewController.swift in Sources */,
 				6041DB0B1E2914EA00FF6D32 /* CustomSwitch.swift in Sources */,
 				603A10071E720FA0003B62D4 /* SafariViewControllerExtension.swift in Sources */,
+				60AFA1E81E9F6CE100AFA28B /* SendLocationDataDelegate.swift in Sources */,
 				6044B2181DDB3151003A1263 /* TabBarViewController.swift in Sources */,
 				6097C0691E327506000E771A /* TermsAndConditionsViewController.swift in Sources */,
 				603CE74C1DF7091500421429 /* ParentPageViewController.swift in Sources */,
@@ -984,6 +1014,7 @@
 				603D55BD1E69861D00CCEBEB /* UIViewExtension.swift in Sources */,
 				6090D4681E3140D4004FD1E2 /* FutureTimeIntervalObject.swift in Sources */,
 				60DDE16D1E30E19300AB9E18 /* CompletePurchaseViewController.swift in Sources */,
+				60938DBA1E9BA3B10058F6CC /* PhotosHelperViewController.swift in Sources */,
 				B564E9691D19717900EDB8F1 /* AppDelegate.swift in Sources */,
 				603D55BF1E69879300CCEBEB /* LabelExtension.swift in Sources */,
 				60FAC76B1E223AA700532C01 /* DataPlugCollectionViewCell.swift in Sources */,
@@ -1004,6 +1035,7 @@
 				6041B2101DD4AC190018CC31 /* NotablesTableViewCell.swift in Sources */,
 				60D317691E35FE52008E0A5F /* SocialFeedCollectionViewCell.swift in Sources */,
 				B51CC9261D1D620C000C9E48 /* MapSettingsDelegate.swift in Sources */,
+				607DC4551E9E7288002E348D /* LoadingScreenWithProgressRingViewController.swift in Sources */,
 				60B470101E2E4D0F0016F956 /* ProfileViewController.swift in Sources */,
 				B5E97D9B1D1C03A000CFD1C8 /* UpdateCountDelegate.swift in Sources */,
 				603926D21E603D3600DC1816 /* HomeScreenObject.swift in Sources */,

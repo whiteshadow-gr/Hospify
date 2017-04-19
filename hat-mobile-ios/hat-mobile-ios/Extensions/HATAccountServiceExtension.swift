@@ -171,4 +171,44 @@ extension HATAccountService {
         
         return "https://" + self.TheUserHATDomain() + "/data/record/values"
     }
+    
+    class func uploadFileToHATWrapper(token: String, userDomain: String, fileToUpload: UIImage, progressUpdater: ((Double) -> Void)?, completion: ((FileUploadObject, String?) -> Void)?, errorCallBack: ((HATTableError) -> Void)?) {
+        
+        HATAccountService.uploadFileToHAT(
+            fileName: "rumpelPhoto",
+            token: token,
+            userDomain: userDomain,
+            completion: {(fileObject, renewedUserToken) -> Void in
+                
+                let data = UIImageJPEGRepresentation(fileToUpload, 1.0)
+                HATNetworkHelper.uploadFile(
+                    image: data!,
+                    url: fileObject.contentURL,
+                    progressUpdateHandler: {(progress) -> Void in
+                        
+                        progressUpdater?(progress)
+                },completion: {(result) -> Void in
+                    
+                    HATAccountService.completeUploadFileToHAT(fileID: fileObject.fileID, token: token, userDomain: userDomain, completion: {(uploadedFile, renewedUserToken) -> Void in
+                    
+                        // refresh user token
+                        if renewedUserToken != nil {
+                            
+                            completion?(uploadedFile, renewedUserToken!)
+                        } else {
+                            
+                            completion?(uploadedFile, nil)
+                        }
+                    }, errorCallback: {(error) -> Void in
+                    
+                        _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                        errorCallBack?(error)
+                    })
+                })
+            }, errorCallback: {(error) -> Void in
+                
+                _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                errorCallBack?(error)
+        })
+    }
 }

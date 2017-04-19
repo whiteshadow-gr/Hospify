@@ -23,13 +23,13 @@ public class HATNetworkHelper: NSObject {
     /**
      JSON Result from HTTP requests
      
-     - IsSuccess: A tuple containing: isSuccess: Bool, statusCode: Int?, result: JSON
+     - IsSuccess: A tuple containing: isSuccess: Bool, statusCode: Int?, result: JSON, token: String?
      - Error: A tuple containing: error: Error, statusCode: Int?
      */
     public enum ResultType {
         
         /// when the result is success. A tuple containing: isSuccess: Bool, statusCode: Int?, result: JSON
-        case isSuccess(isSuccess: Bool, statusCode: Int?, result: JSON)
+        case isSuccess(isSuccess: Bool, statusCode: Int?, result: JSON, token: String?)
         /// when the result is error. A tuple containing: error: Error, statusCode: Int?
         case error(error: Error, statusCode: Int?)
     }
@@ -37,13 +37,13 @@ public class HATNetworkHelper: NSObject {
     /**
      String Result from HTTP requests
      
-     - IsSuccess: A tuple containing: isSuccess: Bool, statusCode: Int?, result: String
+     - IsSuccess: A tuple containing: isSuccess: Bool, statusCode: Int?, result: String, token: String?
      - Error: A tuple containing: error: Error, statusCode: Int?
      */
     public enum ResultTypeString {
         
         /// when the result is success. A tuple containing: isSuccess: Bool, statusCode: Int?, result: String
-        case isSuccess(isSuccess: Bool, statusCode: Int?, result: String)
+        case isSuccess(isSuccess: Bool, statusCode: Int?, result: String, token: String?)
         /// when the result is error. A tuple containing: error: Error, statusCode: Int?
         case error(error: Error, statusCode: Int?)
     }
@@ -91,15 +91,31 @@ public class HATNetworkHelper: NSObject {
                 switch response.result {
                 case .success(_):
                     
+                    let header = response.response?.allHeaderFields
+                    let token = header?["X-Auth-Token"] as? String
+                    
                     // check if we have a value and return it
                     if let value = response.result.value {
                         
                         let json = JSON(value)
-                        completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json))
+                        if token != nil {
+                            
+                            completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json, token: token!))
+                        } else {
+                            
+                            completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json, token: nil))
+                        }
+                        
                         // else return isSuccess: false and nil for value
                     } else {
                         
-                        completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                        if token != nil {
+                            
+                            completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: "", token: token!))
+                        } else {
+                            
+                            completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: "", token: nil))
+                        }
                     }
                     
                 // in case of failure return the error but check for internet connection or unauthorised status and let the user know
@@ -163,14 +179,29 @@ public class HATNetworkHelper: NSObject {
                 switch response.result {
                 case .success(_):
                     
+                    let header = response.response?.allHeaderFields
+                    let token = header?["X-Auth-Token"] as? String
+                    
                     // check if we have a value and return it
                     if let value = response.result.value {
                         
-                        completion(HATNetworkHelper.ResultTypeString.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: value))
+                        if token != nil {
+                            
+                            completion(HATNetworkHelper.ResultTypeString.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: value, token: token!))
+                        } else {
+                            
+                            completion(HATNetworkHelper.ResultTypeString.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: value, token: nil))
+                        }
                         // else return isSuccess: false and nil for value
                     } else {
                         
-                        completion(HATNetworkHelper.ResultTypeString.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                        if token != nil {
+                            
+                            completion(HATNetworkHelper.ResultTypeString.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: "", token: token!))
+                        } else {
+                            
+                            completion(HATNetworkHelper.ResultTypeString.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: "", token: nil))
+                        }
                     }
                 // return the error
                 case .failure(let error):
@@ -205,17 +236,20 @@ public class HATNetworkHelper: NSObject {
             }
         }).responseString(completionHandler: {(response) in
         
+            let header = response.response?.allHeaderFields
+            let token = header?["X-Auth-Token"] as! String
+            
             switch response.result {
             case .success(_):
                 
                 // check if we have a value and return it
                 if let value = response.result.value {
                     
-                    completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: JSON(value)))
+                    completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: JSON(value), token: token))
                     // else return isSuccess: false and nil for value
                 } else {
                     
-                    completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                    completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: "", token: token))
                 }
             // return the error
             case .failure(let error):

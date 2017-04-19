@@ -113,10 +113,16 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
      
      - parameter dataReceived: A callback executed when data received
      */
-    private func refreshCollectionView(dataReceived: [HATProviderObject]) {
+    private func refreshCollectionView(dataReceived: [HATProviderObject], renewedUserToken: String?) {
         
         self.hatProviders = dataReceived
         self.collectionView.reloadData()
+        
+        // refresh user token
+        if renewedUserToken != nil {
+            
+            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+        }
     }
     
     // MARK: - Hide pop up

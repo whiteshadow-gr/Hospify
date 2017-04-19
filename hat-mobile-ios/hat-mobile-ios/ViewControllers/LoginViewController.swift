@@ -77,9 +77,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             self.domainButton.setTitle(".hubofallthings.net", for: .normal)
         })
         
-        let bsafeAction = UIAlertAction(title: ".bsafe.org", style: .default, handler: {[unowned self](alert: UIAlertAction) -> Void in
+        let bsafeAction = UIAlertAction(title: ".bheard.org", style: .default, handler: {[unowned self](alert: UIAlertAction) -> Void in
             
-            self.domainButton.setTitle(".bsafe.org", for: .normal)
+            self.domainButton.setTitle(".bheard.org", for: .normal)
         })
         
         let hubatAction = UIAlertAction(title: ".hubat.net", style: .default, handler: {[unowned self](alert: UIAlertAction) -> Void in

@@ -28,6 +28,12 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
     /// A bool to determine if the map is focused on the user's location
     private var isFocusedToUsersPosition: Bool = false
     
+    private var latitude: Double?
+    private var longitude: Double?
+    private var accuracy: Double?
+    
+    weak var noteOptionsDelegate: ShareOptionsViewController?
+    
     // MARK: - IBOutlets
 
     /// An IBOutler for the searchBar
@@ -44,7 +50,12 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
      */
     @IBAction func doneButtonAction(_ sender: Any) {
         
+        if self.latitude != nil && self.longitude != nil && self.accuracy != nil {
+            
+            noteOptionsDelegate?.locationDataReceived(latitude: self.latitude!, longitude: self.longitude!, accuracy: self.accuracy!)
+        }
         
+        _ = self.navigationController?.popViewController(animated: true)
     }
     
     /**
@@ -162,6 +173,18 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
             
             // get the last onee
             let lastLocation = locations.last
+            
+            if self.accuracy == nil {
+                
+                self.latitude = lastLocation?.coordinate.latitude
+                self.longitude = lastLocation?.coordinate.longitude
+                self.accuracy = lastLocation?.horizontalAccuracy
+            } else if self.accuracy! > Double((lastLocation?.horizontalAccuracy)!) {
+                
+                self.latitude = lastLocation?.coordinate.latitude
+                self.longitude = lastLocation?.coordinate.longitude
+                self.accuracy = lastLocation?.horizontalAccuracy
+            }
             
             // reverse geocode from the coordinates to get address etc.
             CLGeocoder().reverseGeocodeLocation(lastLocation!, completionHandler: {[weak self](placemarks, error) -> Void in

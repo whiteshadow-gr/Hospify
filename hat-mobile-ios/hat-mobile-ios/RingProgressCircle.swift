@@ -164,8 +164,23 @@ import UIKit
         AnimationHelper.animateCircle(TimeInterval(self.animationDuration), arc: mainArc)
     }
     
-    func update() {
+    func update(end: CGFloat) {
         
-        self.draw(self.frame)
+        //get the mid position of the view
+        let X = self.bounds.midX
+        let Y = self.bounds.midY
+        let oldEndPoint = self.endPoint 
+        
+        //create the background path of the circle
+        let backgroundRingPath = UIBezierPath(arcCenter: CGPoint(x: X, y: Y), radius: self.ringRadius, startAngle: (CGFloat(-Double.pi / 2)), endAngle: CGFloat(3 * (Double.pi / 2)), clockwise: true).cgPath
+        //create the background path of the circle
+        let path = UIBezierPath(arcCenter: CGPoint(x: X, y: Y), radius: self.ringRadius, startAngle: self.startPoint, endAngle: self.endPoint, clockwise: true).cgPath
+        //add a full background circle
+        _ = self.addOval(self.ringLineWidth + 1, path: backgroundRingPath, strokeStart: 0, strokeEnd: 1, strokeColor: self.backgroundRingColor, fillColor: self.backgroundRingFillColor, shadowRadius: self.ringShadowRadius, shadowOpacity: self.ringShadowOpacity, shadowOffset: self.ringShadowOffset)
+        //add a second cirlce representing the value we want
+        let mainArc = self.addOval(self.ringLineWidth, path: path, strokeStart: oldEndPoint, strokeEnd: end, strokeColor: self.ringColor, fillColor: self.ringFillColor, shadowRadius: self.ringShadowRadius, shadowOpacity: self.ringShadowOpacity, shadowOffset: self.ringShadowOffset)
+        
+        //animate main circle
+        AnimationHelper.animateCircle(TimeInterval(self.animationDuration), arc: mainArc)
     }
 }

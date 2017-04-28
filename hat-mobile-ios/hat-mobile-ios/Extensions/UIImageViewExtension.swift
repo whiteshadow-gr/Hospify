@@ -31,7 +31,10 @@ extension UIImageView {
         let headers = ["X-Auth-Token" : userToken]
         contentMode = mode
         
-        Alamofire.request(url, method: .get, parameters: nil, encoding: Alamofire.JSONEncoding.default, headers: headers).responseData(completionHandler: {[weak self] response in
+        Alamofire.request(url, method: .get, parameters: nil, encoding: Alamofire.JSONEncoding.default, headers: headers).downloadProgress(closure: {progress in
+            
+                print(progress)
+        }).responseData(completionHandler: {[weak self] response in
             
             guard let data = response.result.value else { return }
             let image = UIImage(data: data)
@@ -47,5 +50,41 @@ extension UIImageView {
             }
         })
 
+    }
+    
+    // MARK: - Crop image 
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     */
+    public func cropImage(width: CGFloat, height: CGFloat) {
+        
+        if self.image != nil {
+            
+            let rect = CGRect(x: 0,y: 0, width: Int(width), height: Int(height))
+            let scale = width / (self.image?.size.width)!
+            let newHeight = (self.image?.size.height)! * scale
+            UIGraphicsBeginImageContext(CGSize(width: width, height: newHeight))
+            self.image?.draw(in: CGRect(x: 0,y: 0, width: width, height: newHeight))
+            let context = UIGraphicsGetCurrentContext()
+            context?.setStrokeColor(UIColor.white.cgColor)
+            context?.setLineWidth(1)
+            context?.stroke(rect)
+            let newImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            if let unwrapImage = newImage, let unwrapCGImage = unwrapImage.cgImage {
+                
+                let imageRef = unwrapCGImage.cropping(to: rect)
+                if imageRef != nil {
+                    
+                    let croppedImage: UIImage = UIImage(cgImage: imageRef!)
+                    self.image = croppedImage
+                }
+            }
+        }
     }
 }

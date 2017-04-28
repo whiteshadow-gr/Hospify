@@ -13,15 +13,23 @@
 import HatForIOS
 import MessageUI
 
+// MARK: Class
+
 class MoreTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, MFMailComposeViewControllerDelegate {
     
-    let sections: [[String]] = [["PHATA"], ["Storage Info", "Change Password", "Delete HAT"], ["Show Data", "Location Settings"], ["Release Notes", "Rumpel Terms of Service", "HAT Terms of Service"], ["Report Problem", "Log Out", "Version"]]
-    let headers: [String] = ["PHATA", "HAT", "Location", "About", ""]
-    let footers: [String] = []
+    // MARK: - Variables
+    
+    private let sections: [[String]] = [["PHATA"], ["Storage Info", "Change Password"], ["Show Data", "Location Settings"], ["Release Notes", "Rumpel Terms of Service", "HAT Terms of Service"], ["Report Problem", "Log Out", "Version"]]
+    private let headers: [String] = ["PHATA", "HAT", "Location", "About", ""]
+    private let footers: [String] = []
     
     private var fileURL: String?
+    
+    // MARK: - IBOutlets
 
     @IBOutlet weak var tableView: UITableView!
+    
+    // MARK: - View controller methods
     
     override func viewDidLoad() {
         
@@ -34,7 +42,7 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
         // Dispose of any resources that can be recreated.
     }
 
-    // MARK: - Table view data source
+    // MARK: - Table view methods
 
     func numberOfSections(in tableView: UITableView) -> Int {
         
@@ -53,109 +61,18 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
         return setUpCell(cell: cell, indexPath: indexPath)
     }
     
-    func setUpCell(cell: UITableViewCell, indexPath: IndexPath) -> UITableViewCell {
-        
-        cell.textLabel?.text = self.sections[indexPath.section][indexPath.row]
-
-        if indexPath.section == 0 {
-            
-            cell.accessoryType = .disclosureIndicator
-            
-            cell.textLabel?.textColor = .black
-        } else if indexPath.section == 1 {
-            
-            cell.textLabel?.textColor = .black
-            
-            cell.accessoryType = .none
-            
-            cell.isUserInteractionEnabled = true
-            
-            if self.sections[indexPath.section][indexPath.row] == "Storage Info" {
-                
-                cell.textLabel?.textColor = .lightGray
-                cell.isUserInteractionEnabled = false
-                
-                let userDomain = HATAccountService.TheUserHATDomain()
-                let userToken = HATAccountService.getUsersTokenFromKeychain()
-                cell.textLabel?.text = "Getting storage info..."
-                HATService.getSystemStatus(userDomain: userDomain, authToken: userToken, completion: self.updateSystemStatusLabel(cell: cell), failCallBack: {error in
-                    
-                    cell.textLabel?.text = "Unable to get storage info"
-                    _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
-                })
-            } else if self.sections[indexPath.section][indexPath.row] == "Change Password" {
-                
-                cell.accessoryType = .disclosureIndicator
-            } else if self.sections[indexPath.section][indexPath.row] == "Delete HAT" {
-                
-                cell.textLabel?.textColor = .red
-            }
-        } else if indexPath.section == 2 {
-            
-            cell.textLabel?.textColor = .black
-            
-            cell.accessoryType = .disclosureIndicator
-            
-            cell.isUserInteractionEnabled = true
-        } else if indexPath.section == 3 {
-            
-            cell.textLabel?.textColor = .black
-            
-            cell.accessoryType = .disclosureIndicator
-            
-            cell.isUserInteractionEnabled = true
-        } else if indexPath.section == 4 {
-            
-            cell.accessoryType = .none
-            cell.isUserInteractionEnabled = true
-            
-            if self.sections[indexPath.section][indexPath.row] == "Report Problem" {
-                
-                cell.textLabel?.textColor = .tealColor()
-            } else if self.sections[indexPath.section][indexPath.row] == "Log Out" {
-                
-                cell.textLabel?.textColor = .red
-            } else if self.sections[indexPath.section][indexPath.row] == "Version" {
-                
-                cell.textLabel?.textColor = .lightGray
-                cell.isUserInteractionEnabled = false
-                
-                // app version
-                if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
-                    
-                    cell.textLabel?.text = "Version " + version
-                }
-            }
-        }
-        
-        return cell
-    }
-    
-    func updateSystemStatusLabel(cell: UITableViewCell) -> (([HATSystemStatusObject], String?) -> Void) {
-        
-        return { (systemStatusFile, renewedUserToken) in
-        
-            if systemStatusFile.count > 0 {
-                
-                let totalSpaceAvailable = systemStatusFile[2].kind.metric + " " + systemStatusFile[2].kind.units!
-                let usedSpace = String(describing: Int(Float(systemStatusFile[4].kind.metric)!)) + " " + systemStatusFile[4].kind.units!
-                let freeSpace = (Float(systemStatusFile[2].kind.metric)! * 1024) - Float(systemStatusFile[4].kind.metric)!.rounded()
-                
-                if freeSpace < 1024 {
-                    
-                    cell.textLabel?.text = "\(usedSpace) / \(totalSpaceAvailable) (\(Int(freeSpace)) MB available)"
-                } else {
-                    
-                    let formattedFreeSpace = floor((freeSpace / 1024) / 0.01) * 0.01
-                    cell.textLabel?.text = "\(usedSpace) / \(totalSpaceAvailable) (\(formattedFreeSpace) GB available)"
-                }
-            }
-        }
-    }
-
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if indexPath.section == 2 {
+        if indexPath.section == 0 {
+            
+            self.performSegue(withIdentifier: "phataSegue", sender: self)
+        } else if indexPath.section == 1 {
+            
+            if indexPath.row == 1 {
+                
+                self.performSegue(withIdentifier: "moreToResetPasswordSegue", sender: self)
+            }
+        } else if indexPath.section == 2 {
             
             if self.sections[indexPath.section][indexPath.row] == "Show Data" {
                 
@@ -221,7 +138,114 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
         return nil
     }
     
-    // MARK: - Mail View controller
+    // MARK: - Update cell
+    
+    func setUpCell(cell: UITableViewCell, indexPath: IndexPath) -> UITableViewCell {
+        
+        cell.textLabel?.text = self.sections[indexPath.section][indexPath.row]
+
+        if indexPath.section == 0 {
+            
+            cell.accessoryType = .disclosureIndicator
+            
+            cell.textLabel?.textColor = .black
+        } else if indexPath.section == 1 {
+            
+            cell.textLabel?.textColor = .black
+            
+            cell.accessoryType = .none
+            
+            cell.isUserInteractionEnabled = true
+            
+            if self.sections[indexPath.section][indexPath.row] == "Storage Info" {
+                
+                cell.textLabel?.textColor = .lightGray
+                cell.isUserInteractionEnabled = false
+                
+                let userDomain = HATAccountService.TheUserHATDomain()
+                let userToken = HATAccountService.getUsersTokenFromKeychain()
+                cell.textLabel?.text = "Getting storage info..."
+                HATService.getSystemStatus(userDomain: userDomain, authToken: userToken, completion: self.updateSystemStatusLabel(cell: cell), failCallBack: {error in
+                    
+                    cell.textLabel?.text = "Unable to get storage info"
+                    _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+                })
+            } else if self.sections[indexPath.section][indexPath.row] == "Change Password" {
+                
+                cell.accessoryType = .disclosureIndicator
+            }
+        } else if indexPath.section == 2 {
+            
+            cell.textLabel?.textColor = .black
+            
+            cell.accessoryType = .disclosureIndicator
+            
+            cell.isUserInteractionEnabled = true
+        } else if indexPath.section == 3 {
+            
+            cell.textLabel?.textColor = .black
+            
+            cell.accessoryType = .disclosureIndicator
+            
+            cell.isUserInteractionEnabled = true
+        } else if indexPath.section == 4 {
+            
+            cell.accessoryType = .none
+            cell.isUserInteractionEnabled = true
+            
+            if self.sections[indexPath.section][indexPath.row] == "Report Problem" {
+                
+                cell.textLabel?.textColor = .tealColor()
+            } else if self.sections[indexPath.section][indexPath.row] == "Log Out" {
+                
+                cell.textLabel?.textColor = .red
+            } else if self.sections[indexPath.section][indexPath.row] == "Version" {
+                
+                cell.textLabel?.textColor = .lightGray
+                cell.isUserInteractionEnabled = false
+                
+                // app version
+                if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+                    
+                    cell.textLabel?.text = "Version " + version
+                }
+            }
+        }
+        
+        return cell
+    }
+    
+    // MARK: - Update system status
+    
+    func updateSystemStatusLabel(cell: UITableViewCell) -> (([HATSystemStatusObject], String?) -> Void) {
+        
+        return { (systemStatusFile, renewedUserToken) in
+        
+            if systemStatusFile.count > 0 {
+                
+                let totalSpaceAvailable = systemStatusFile[2].kind.metric + " " + systemStatusFile[2].kind.units!
+                let usedSpace = String(describing: Int(Float(systemStatusFile[4].kind.metric)!)) + " " + systemStatusFile[4].kind.units!
+                let freeSpace = (Float(systemStatusFile[2].kind.metric)! * 1024) - Float(systemStatusFile[4].kind.metric)!.rounded()
+                
+                if freeSpace < 1024 {
+                    
+                    cell.textLabel?.text = "\(usedSpace) / \(totalSpaceAvailable) (\(Int(freeSpace)) MB available)"
+                } else {
+                    
+                    let formattedFreeSpace = floor((freeSpace / 1024) / 0.01) * 0.01
+                    cell.textLabel?.text = "\(usedSpace) / \(totalSpaceAvailable) (\(formattedFreeSpace) GB available)"
+                }
+            }
+            
+            // refresh user token
+            if renewedUserToken != nil {
+                
+                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+            }
+        }
+    }
+    
+    // MARK: - Mail View controller methods
     
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         // Check the result or perform other tasks.
@@ -234,9 +258,6 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
         
         if segue.identifier == "moreToTermsSegue" && self.fileURL != nil {
             

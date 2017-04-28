@@ -152,7 +152,6 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         
         super.viewWillAppear(animated)
         
-        self.title = "Data Services"
         self.ringProgressBar.isHidden = true
         
         func success(token: String?) {
@@ -188,8 +187,14 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             let loginViewController = self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
             _ = self.navigationController?.popToRootViewController(animated: false)
             self.navigationController?.pushViewController(loginViewController, animated: false)
+            
+            UpdateLocations.shared.stopMonitoringSignificantLocationChanges()
+            UpdateLocations.shared.stopMonitoringAllRegions()
+            UpdateLocations.shared.stopUpdatingLocation()
         // user logged in, set up view
         } else {
+            
+            UpdateLocations.shared.resumeLocationServices()
             
             // set up elements
             let usersHAT = userDomain.components(separatedBy: ".")[0]
@@ -307,6 +312,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         
         if data.count > 0 {
             
+            self.ringProgressBar.isHidden = false
+
             var attributedString: NSAttributedString = NSAttributedString(string: self.helloLabel.text! + "\n")
             self.helloLabel.text = attributedString.combineWith(attributedText: NSAttributedString(string: "Total space " + data[2].kind.metric + " " + data[2].kind.units!)).string
             attributedString = NSAttributedString(string: self.helloLabel.text! + "\n")
@@ -314,14 +321,11 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             
             let fullCircle = 2.0 * CGFloat(Double.pi)
             self.ringProgressBar.startPoint = -0.25 * fullCircle
+            self.ringProgressBar.animationDuration = 0.2
             
-            let endPoint = CGFloat(Float(data[6].kind.metric)!)
-            self.ringProgressBar.isHidden = false
+            let endPoint = CGFloat(max(Float(data[6].kind.metric)!, 1.0)) / 100
+            
             self.ringProgressBar.endPoint = (endPoint * fullCircle) + self.ringProgressBar.startPoint
-            if self.ringProgressBar.endPoint <= CGFloat(0.0) {
-                
-                self.ringProgressBar.endPoint = (0.01 * fullCircle) + self.ringProgressBar.startPoint
-            }
             
             self.ringProgressBar.update(end: endPoint)
         }

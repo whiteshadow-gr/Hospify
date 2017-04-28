@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// A class representing the application that this post came from
-public class HATFacebookDataPostsApplicationSocialFeedObject: Comparable {
+public struct HATFacebookDataPostsApplicationSocialFeedObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -77,7 +77,7 @@ public class HATFacebookDataPostsApplicationSocialFeedObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(from dictionary: Dictionary<String, JSON>) {
+    public init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()
         

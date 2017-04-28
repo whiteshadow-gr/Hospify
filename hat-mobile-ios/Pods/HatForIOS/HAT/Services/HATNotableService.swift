@@ -87,9 +87,9 @@ public class HATNotablesService: NSObject {
                            "X-Auth-Token": userToken]
             
             // create JSON file for posting with default values
-            let hatDataStructure = HATJSONHelper.createJSONForPostingOnNotables(hatTableStructure: resultJSON)
+            let hatDataStructure = HATJSONHelper.createJSONForPosting(hatTableStructure: resultJSON)
             // update JSON file with the values needed
-            let hatData = HATJSONHelper.updateJSONFile(file: hatDataStructure, noteFile: note, userDomain: userDomain)
+            let hatData = HATJSONHelper.updateNotesJSONFile(file: hatDataStructure, noteFile: note, userDomain: userDomain)
             
             // make async request
             HATNetworkHelper.AsynchronousRequest("https://" + userDomain + "/data/record/values", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: ContentType.JSON, parameters: hatData, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
@@ -134,15 +134,18 @@ public class HATNotablesService: NSObject {
         // the array to return
         var arrayToReturn: [HATNotesData] = []
         
-        // go through each tweet object in the array
+        // go through each note object in the array
         for note in array {
             
             // check if the arrayToReturn it contains that value and if not add it
             let result = arrayToReturn.contains(where: {(note2: HATNotesData) -> Bool in
                 
-                if (note.data.createdTime == note2.data.createdTime) && (note.data.message == note2.data.message) {
+                if (note.data.createdTime == note2.data.createdTime) && (note.data == note2.data) {
                     
-                    return true
+                    if (note.lastUpdated < note2.lastUpdated) || (note.id == note2.id) {
+                        
+                        return true
+                    }
                 }
                 
                 return false
@@ -177,7 +180,7 @@ public class HATNotablesService: NSObject {
             }
         }
         
-        return HATNotablesService.sortNotables(notes: arrayToReturn)
+        return arrayToReturn
     }
     
     // MARK: - Sort notables
@@ -190,6 +193,6 @@ public class HATNotablesService: NSObject {
      */
     public class func sortNotables(notes: [HATNotesData]) -> [HATNotesData] {
         
-        return notes.sorted{ $0.data.updatedTime < $1.data.updatedTime }
+        return notes.sorted{ $0.lastUpdated > $1.lastUpdated }
     }
 }

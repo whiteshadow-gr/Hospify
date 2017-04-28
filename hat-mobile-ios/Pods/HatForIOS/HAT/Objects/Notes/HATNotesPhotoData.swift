@@ -78,9 +78,9 @@ public struct HATNotesPhotoData: Comparable {
         // check if shared exists and if is empty
         if let tempShared = dict["shared"] {
             
-            if tempShared != "" {
+            if let boolResult = Bool(tempShared) {
                 
-                shared = true
+               shared = boolResult
             }
         }
         

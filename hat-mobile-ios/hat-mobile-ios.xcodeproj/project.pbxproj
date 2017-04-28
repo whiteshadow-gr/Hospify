@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0D5637F6A801923583665846 /* Pods_hat_mobile_iosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77786464C54765E0CEAD1CF0 /* Pods_hat_mobile_iosTests.framework */; };
+		600015541EAE62AE000A084F /* ResetPasswordTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600015531EAE62AE000A084F /* ResetPasswordTableViewController.swift */; };
+		600015561EAE63CD000A084F /* ResetPasswordTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600015551EAE63CD000A084F /* ResetPasswordTableViewCell.swift */; };
 		6000CE5D1DE728580076E173 /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6000CE531DE728580076E173 /* OpenSans-Bold.ttf */; };
 		6000CE5E1DE728580076E173 /* OpenSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6000CE541DE728580076E173 /* OpenSans-BoldItalic.ttf */; };
 		6000CE5F1DE728580076E173 /* OpenSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6000CE551DE728580076E173 /* OpenSans-ExtraBold.ttf */; };
@@ -64,6 +66,11 @@
 		6043F6D71E1D114D00C5BAD9 /* StripeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6043F6D61E1D114D00C5BAD9 /* StripeViewController.swift */; };
 		6044931B1DE9FE5C00B2FE7B /* UIButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6044931A1DE9FE5C00B2FE7B /* UIButtonExtension.swift */; };
 		6044B2181DDB3151003A1263 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6044B2171DDB3151003A1263 /* TabBarViewController.swift */; };
+		604504CF1EAE0872003B76C3 /* AboutTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604504CE1EAE0872003B76C3 /* AboutTableViewController.swift */; };
+		604504D11EAE087B003B76C3 /* SocialLinksTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604504D01EAE087B003B76C3 /* SocialLinksTableViewController.swift */; };
+		604504D31EAE0DBB003B76C3 /* ProfileInfoTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604504D21EAE0DBB003B76C3 /* ProfileInfoTableViewController.swift */; };
+		604504D51EAE10A7003B76C3 /* EmergencyContactTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604504D41EAE10A7003B76C3 /* EmergencyContactTableViewController.swift */; };
+		604504D71EAE16D5003B76C3 /* PhataPictureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604504D61EAE16D5003B76C3 /* PhataPictureViewController.swift */; };
 		6045FBBE1E2EDAE300086926 /* LearnMorePHATAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6045FBBD1E2EDAE300086926 /* LearnMorePHATAViewController.swift */; };
 		604D68DE1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604D68DD1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift */; };
 		604D68E01DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604D68DF1DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift */; };
@@ -96,6 +103,12 @@
 		60B470101E2E4D0F0016F956 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B4700F1E2E4D0F0016F956 /* ProfileViewController.swift */; };
 		60B486251E1D341000914AD2 /* PurchaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B486241E1D341000914AD2 /* PurchaseModel.swift */; };
 		60B486311E1D6E7B00914AD2 /* UIImageViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B486301E1D6E7B00914AD2 /* UIImageViewExtension.swift */; };
+		60CDCBEA1EAACA9500035882 /* PhataTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CDCBE91EAACA9500035882 /* PhataTableViewController.swift */; };
+		60CDCBEC1EAAE92500035882 /* PhataTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CDCBEB1EAAE92500035882 /* PhataTableViewCell.swift */; };
+		60CDCBF11EAAEA5500035882 /* NameTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CDCBF01EAAEA5500035882 /* NameTableViewController.swift */; };
+		60CDCC0B1EAB731100035882 /* EmailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CDCC0A1EAB731100035882 /* EmailTableViewController.swift */; };
+		60CDCC0D1EAB760F00035882 /* PhoneTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CDCC0C1EAB760F00035882 /* PhoneTableViewController.swift */; };
+		60CDCC0F1EAB798A00035882 /* AddressTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60CDCC0E1EAB798A00035882 /* AddressTableViewController.swift */; };
 		60D317691E35FE52008E0A5F /* SocialFeedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D317681E35FE52008E0A5F /* SocialFeedCollectionViewCell.swift */; };
 		60D3176B1E35FF7F008E0A5F /* SocialFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D3176A1E35FF7F008E0A5F /* SocialFeedViewController.swift */; };
 		60DD7F6A1E27C719000C1B1E /* ProfileCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60DD7F691E27C719000C1B1E /* ProfileCollectionViewController.swift */; };
@@ -159,6 +172,8 @@
 		38701F920BAE76DFF5463629 /* Pods_hat_mobile_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_hat_mobile_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B2D42BB42DCB166E7846D00 /* Pods-hat-mobile-iosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hat-mobile-iosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-hat-mobile-iosTests/Pods-hat-mobile-iosTests.release.xcconfig"; sourceTree = "<group>"; };
 		58252B1549E6585555A90CEC /* Pods-hat-mobile-iosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hat-mobile-iosUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-hat-mobile-iosUITests/Pods-hat-mobile-iosUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		600015531EAE62AE000A084F /* ResetPasswordTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ResetPasswordTableViewController.swift; path = ViewControllers/ResetPasswordTableViewController.swift; sourceTree = "<group>"; };
+		600015551EAE63CD000A084F /* ResetPasswordTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ResetPasswordTableViewCell.swift; path = Cells/ResetPasswordTableViewCell.swift; sourceTree = "<group>"; };
 		6000CE531DE728580076E173 /* OpenSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Bold.ttf"; sourceTree = "<group>"; };
 		6000CE541DE728580076E173 /* OpenSans-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-BoldItalic.ttf"; sourceTree = "<group>"; };
 		6000CE551DE728580076E173 /* OpenSans-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-ExtraBold.ttf"; sourceTree = "<group>"; };
@@ -210,6 +225,11 @@
 		6043F6D61E1D114D00C5BAD9 /* StripeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StripeViewController.swift; path = ViewControllers/StripeViewController.swift; sourceTree = "<group>"; };
 		6044931A1DE9FE5C00B2FE7B /* UIButtonExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIButtonExtension.swift; path = Utils/UIButtonExtension.swift; sourceTree = "<group>"; };
 		6044B2171DDB3151003A1263 /* TabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TabBarViewController.swift; path = ViewControllers/TabBarViewController.swift; sourceTree = "<group>"; };
+		604504CE1EAE0872003B76C3 /* AboutTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AboutTableViewController.swift; path = ViewControllers/AboutTableViewController.swift; sourceTree = "<group>"; };
+		604504D01EAE087B003B76C3 /* SocialLinksTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SocialLinksTableViewController.swift; path = ViewControllers/SocialLinksTableViewController.swift; sourceTree = "<group>"; };
+		604504D21EAE0DBB003B76C3 /* ProfileInfoTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProfileInfoTableViewController.swift; path = ViewControllers/ProfileInfoTableViewController.swift; sourceTree = "<group>"; };
+		604504D41EAE10A7003B76C3 /* EmergencyContactTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EmergencyContactTableViewController.swift; path = ViewControllers/EmergencyContactTableViewController.swift; sourceTree = "<group>"; };
+		604504D61EAE16D5003B76C3 /* PhataPictureViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhataPictureViewController.swift; path = ViewControllers/PhataPictureViewController.swift; sourceTree = "<group>"; };
 		6045FBBD1E2EDAE300086926 /* LearnMorePHATAViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LearnMorePHATAViewController.swift; path = ViewControllers/LearnMorePHATAViewController.swift; sourceTree = "<group>"; };
 		604D68DD1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATCapabilitiesPageViewController.swift; path = ViewControllers/HATCapabilitiesPageViewController.swift; sourceTree = "<group>"; };
 		604D68DF1DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HATCapabilitiesViewController.swift; path = ViewControllers/HATCapabilitiesViewController.swift; sourceTree = "<group>"; };
@@ -243,6 +263,12 @@
 		60B486241E1D341000914AD2 /* PurchaseModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PurchaseModel.swift; path = Objects/PurchaseModel.swift; sourceTree = "<group>"; };
 		60B486301E1D6E7B00914AD2 /* UIImageViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIImageViewExtension.swift; path = Extensions/UIImageViewExtension.swift; sourceTree = "<group>"; };
 		60CD68431E47C71300E60429 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/hat-mobile-ios-frfzhyzzkbkdtfefxyylmuufmmbq/Build/Products/Debug-iphonesimulator/SwiftyJSON/SwiftyJSON.framework"; sourceTree = "<group>"; };
+		60CDCBE91EAACA9500035882 /* PhataTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhataTableViewController.swift; path = ViewControllers/PhataTableViewController.swift; sourceTree = "<group>"; };
+		60CDCBEB1EAAE92500035882 /* PhataTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhataTableViewCell.swift; path = Cells/PhataTableViewCell.swift; sourceTree = "<group>"; };
+		60CDCBF01EAAEA5500035882 /* NameTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NameTableViewController.swift; path = ViewControllers/NameTableViewController.swift; sourceTree = "<group>"; };
+		60CDCC0A1EAB731100035882 /* EmailTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EmailTableViewController.swift; path = ViewControllers/EmailTableViewController.swift; sourceTree = "<group>"; };
+		60CDCC0C1EAB760F00035882 /* PhoneTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhoneTableViewController.swift; path = ViewControllers/PhoneTableViewController.swift; sourceTree = "<group>"; };
+		60CDCC0E1EAB798A00035882 /* AddressTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AddressTableViewController.swift; path = ViewControllers/AddressTableViewController.swift; sourceTree = "<group>"; };
 		60D317651E32DD84008E0A5F /* hat-mobile-ios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "hat-mobile-ios.entitlements"; sourceTree = "<group>"; };
 		60D317681E35FE52008E0A5F /* SocialFeedCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SocialFeedCollectionViewCell.swift; path = Cells/SocialFeedCollectionViewCell.swift; sourceTree = "<group>"; };
 		60D3176A1E35FF7F008E0A5F /* SocialFeedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SocialFeedViewController.swift; path = ViewControllers/SocialFeedViewController.swift; sourceTree = "<group>"; };
@@ -417,10 +443,49 @@
 			name = Assets;
 			sourceTree = "<group>";
 		};
+		60BB8F051EB335BD007E8045 /* Pop up view controllers */ = {
+			isa = PBXGroup;
+			children = (
+				60E2679D1E55B9B800B6D626 /* AuthoriseUserViewController.swift */,
+				607DC4541E9E7288002E348D /* LoadingScreenWithProgressRingViewController.swift */,
+				60275B9F1E6DB3740098B66C /* TextPopUpViewController.swift */,
+			);
+			name = "Pop up view controllers";
+			sourceTree = "<group>";
+		};
+		60BB8F061EB33605007E8045 /* Learn More View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				6045FBBD1E2EDAE300086926 /* LearnMorePHATAViewController.swift */,
+			);
+			name = "Learn More View Controllers";
+			sourceTree = "<group>";
+		};
+		60CDCBED1EAAEA0000035882 /* MoreViewController */ = {
+			isa = PBXGroup;
+			children = (
+				604504CE1EAE0872003B76C3 /* AboutTableViewController.swift */,
+				60CDCC0E1EAB798A00035882 /* AddressTableViewController.swift */,
+				60CDCC0A1EAB731100035882 /* EmailTableViewController.swift */,
+				6028B4F21EA616B800018D49 /* MoreTableViewController.swift */,
+				60CDCBF01EAAEA5500035882 /* NameTableViewController.swift */,
+				604504D61EAE16D5003B76C3 /* PhataPictureViewController.swift */,
+				600015531EAE62AE000A084F /* ResetPasswordTableViewController.swift */,
+				604504D41EAE10A7003B76C3 /* EmergencyContactTableViewController.swift */,
+				60CDCBE91EAACA9500035882 /* PhataTableViewController.swift */,
+				604504D21EAE0DBB003B76C3 /* ProfileInfoTableViewController.swift */,
+				60CDCC0C1EAB760F00035882 /* PhoneTableViewController.swift */,
+				604504D01EAE087B003B76C3 /* SocialLinksTableViewController.swift */,
+			);
+			name = MoreViewController;
+			sourceTree = "<group>";
+		};
 		60DD7F6D1E27CEE3000C1B1E /* TableView */ = {
 			isa = PBXGroup;
 			children = (
 				6041B20F1DD4AC190018CC31 /* NotablesTableViewCell.swift */,
+				600015551EAE63CD000A084F /* ResetPasswordTableViewCell.swift */,
+				60CDCBEB1EAAE92500035882 /* PhataTableViewCell.swift */,
 			);
 			name = TableView;
 			sourceTree = "<group>";
@@ -519,7 +584,9 @@
 		B564E99A1D19888A00EDB8F1 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				60E2679D1E55B9B800B6D626 /* AuthoriseUserViewController.swift */,
+				60BB8F061EB33605007E8045 /* Learn More View Controllers */,
+				60BB8F051EB335BD007E8045 /* Pop up view controllers */,
+				60CDCBED1EAAEA0000035882 /* MoreViewController */,
 				601BDFCF1E8D4D5A00213E37 /* CheckInMapViewController.swift */,
 				60DDE16C1E30E19300AB9E18 /* CompletePurchaseViewController.swift */,
 				60FAC7681E223A1D00532C01 /* DataPlugsCollectionViewController.swift */,
@@ -532,11 +599,8 @@
 				604D68DF1DFAD2CC00D7FFED /* HATCapabilitiesViewController.swift */,
 				601142761E5F877500A9D982 /* HomeViewController.swift */,
 				603FDD501E43E7840086559B /* InfoHatProvidersViewController.swift */,
-				6045FBBD1E2EDAE300086926 /* LearnMorePHATAViewController.swift */,
-				607DC4541E9E7288002E348D /* LoadingScreenWithProgressRingViewController.swift */,
 				B51CC9271D1D7895000C9E48 /* LoginViewController.swift */,
 				B564E99F1D198C4D00EDB8F1 /* MapViewController.swift */,
-				6028B4F21EA616B800018D49 /* MoreTableViewController.swift */,
 				6041B20B1DD4AC040018CC31 /* NotablesViewController.swift */,
 				603CE7491DF6FA7400421429 /* PageViewController.swift */,
 				603CE74B1DF7091500421429 /* ParentPageViewController.swift */,
@@ -551,7 +615,6 @@
 				6043F6D61E1D114D00C5BAD9 /* StripeViewController.swift */,
 				6044B2171DDB3151003A1263 /* TabBarViewController.swift */,
 				6097C0681E327506000E771A /* TermsAndConditionsViewController.swift */,
-				60275B9F1E6DB3740098B66C /* TextPopUpViewController.swift */,
 				605EE0351E8DC02F00B265F6 /* UpdateLocations.swift */,
 			);
 			name = ViewControllers;
@@ -952,11 +1015,13 @@
 			files = (
 				603D3A731DE879E600C973D8 /* SocialImageCollectionViewCell.swift in Sources */,
 				60938DBC1E9BA4190058F6CC /* PhotoPickerDelegate.swift in Sources */,
+				604504D71EAE16D5003B76C3 /* PhataPictureViewController.swift in Sources */,
 				60AFA1EA1E9F85E900AFA28B /* UpdateSelectedImagesDelegate.swift in Sources */,
 				601142771E5F877500A9D982 /* HomeViewController.swift in Sources */,
 				602CB4461E8BAF3B00903F33 /* UIAlertControllerExtension.swift in Sources */,
 				606435DB1E1B196F001A5D14 /* DateExtension.swift in Sources */,
 				603D55C41E69ADBB00CCEBEB /* NSAttributedStringExtension.swift in Sources */,
+				600015561EAE63CD000A084F /* ResetPasswordTableViewCell.swift in Sources */,
 				B56E2FAC1D23DED900546C7E /* DataSyncDelegate.swift in Sources */,
 				607C107D1E1BCC7D001D1E8E /* GetAHATInfoViewController.swift in Sources */,
 				60D3176B1E35FF7F008E0A5F /* SocialFeedViewController.swift in Sources */,
@@ -973,11 +1038,13 @@
 				B564E9A01D198C4D00EDB8F1 /* MapViewController.swift in Sources */,
 				B54EA6181D19F2750018EE47 /* DataPointsTableView.swift in Sources */,
 				608EAAA61DFEA7ED00234C60 /* StringExtension.swift in Sources */,
+				60CDCBEC1EAAE92500035882 /* PhataTableViewCell.swift in Sources */,
 				60DD7F6C1E27CE56000C1B1E /* ProfileObject.swift in Sources */,
 				6028B4F31EA616B800018D49 /* MoreTableViewController.swift in Sources */,
 				6041B20D1DD4AC040018CC31 /* NotablesViewController.swift in Sources */,
 				60938DBE1E9BD2750058F6CC /* PhotoFullScreenViewerViewController.swift in Sources */,
 				60B486311E1D6E7B00914AD2 /* UIImageViewExtension.swift in Sources */,
+				60CDCC0F1EAB798A00035882 /* AddressTableViewController.swift in Sources */,
 				604D68DE1DFAD2B300D7FFED /* HATCapabilitiesPageViewController.swift in Sources */,
 				603CE74E1DF85E1600421429 /* LearnMoreObject.swift in Sources */,
 				605EE03E1E93EB3500B265F6 /* CrashLoggerHelper.swift in Sources */,
@@ -995,6 +1062,7 @@
 				B51CC9241D1D5749000C9E48 /* SettingsViewController.swift in Sources */,
 				601FFD791E3A7E3600441EAD /* FirstOnboardingViewController.swift in Sources */,
 				6041DB0B1E2914EA00FF6D32 /* CustomSwitch.swift in Sources */,
+				604504D31EAE0DBB003B76C3 /* ProfileInfoTableViewController.swift in Sources */,
 				603A10071E720FA0003B62D4 /* SafariViewControllerExtension.swift in Sources */,
 				60AFA1E81E9F6CE100AFA28B /* SendLocationDataDelegate.swift in Sources */,
 				6044B2181DDB3151003A1263 /* TabBarViewController.swift in Sources */,
@@ -1003,15 +1071,21 @@
 				B591368A1D19DE6C00E9EDD0 /* RealmHelper.swift in Sources */,
 				606528D31DDA037400026EA6 /* JSONHelper.swift in Sources */,
 				603FDD511E43E7840086559B /* InfoHatProvidersViewController.swift in Sources */,
+				600015541EAE62AE000A084F /* ResetPasswordTableViewController.swift in Sources */,
+				604504D11EAE087B003B76C3 /* SocialLinksTableViewController.swift in Sources */,
+				60CDCBF11EAAEA5500035882 /* NameTableViewController.swift in Sources */,
 				B59136851D19D3BB00E9EDD0 /* Constants.swift in Sources */,
 				603D08AF1E6D5CFF0077E90C /* RingProgressCircle.swift in Sources */,
 				605EE0341E8DBF8600B265F6 /* UpdateLocationsDelegate.swift in Sources */,
+				60CDCC0D1EAB760F00035882 /* PhoneTableViewController.swift in Sources */,
 				608EAAA81DFEA8AD00234C60 /* ViewControllerExtension.swift in Sources */,
 				60A727BD1DDF47ED008AF409 /* FormatterHelper.swift in Sources */,
+				60CDCBEA1EAACA9500035882 /* PhataTableViewController.swift in Sources */,
 				60F1D7E71E6828DA0009CF1F /* AuthenticationHelper.swift in Sources */,
 				603CE74A1DF6FA7400421429 /* PageViewController.swift in Sources */,
 				B5138ACE1D1ECA2C00CD1530 /* NetworkHelper.swift in Sources */,
 				603D55BD1E69861D00CCEBEB /* UIViewExtension.swift in Sources */,
+				604504CF1EAE0872003B76C3 /* AboutTableViewController.swift in Sources */,
 				6090D4681E3140D4004FD1E2 /* FutureTimeIntervalObject.swift in Sources */,
 				60DDE16D1E30E19300AB9E18 /* CompletePurchaseViewController.swift in Sources */,
 				60938DBA1E9BA3B10058F6CC /* PhotosHelperViewController.swift in Sources */,
@@ -1023,6 +1097,7 @@
 				60B486251E1D341000914AD2 /* PurchaseModel.swift in Sources */,
 				6045FBBE1E2EDAE300086926 /* LearnMorePHATAViewController.swift in Sources */,
 				605EE0361E8DC02F00B265F6 /* UpdateLocations.swift in Sources */,
+				604504D51EAE10A7003B76C3 /* EmergencyContactTableViewController.swift in Sources */,
 				60DDE1711E31006600AB9E18 /* MapsHelper.swift in Sources */,
 				60AAA5B81E83D70A0080D0D5 /* HATProviderObjectExtension.swift in Sources */,
 				60113D2F1E856BBA000EAF89 /* HATDataplugsServiceExtension.swift in Sources */,
@@ -1034,6 +1109,7 @@
 				B51CC9281D1D7895000C9E48 /* LoginViewController.swift in Sources */,
 				6041B2101DD4AC190018CC31 /* NotablesTableViewCell.swift in Sources */,
 				60D317691E35FE52008E0A5F /* SocialFeedCollectionViewCell.swift in Sources */,
+				60CDCC0B1EAB731100035882 /* EmailTableViewController.swift in Sources */,
 				B51CC9261D1D620C000C9E48 /* MapSettingsDelegate.swift in Sources */,
 				607DC4551E9E7288002E348D /* LoadingScreenWithProgressRingViewController.swift in Sources */,
 				60B470101E2E4D0F0016F956 /* ProfileViewController.swift in Sources */,

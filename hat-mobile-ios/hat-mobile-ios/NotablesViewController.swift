@@ -204,7 +204,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     // MARK: - Show Notes
@@ -321,10 +320,17 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         // get cell from the reusable id
         let controller = NotablesTableViewCell()
+        var cell: NotablesTableViewCell
         
-        // setup cell
-        var cell: NotablesTableViewCell = tableView.dequeueReusableCell(withIdentifier: "cellData", for: indexPath) as! NotablesTableViewCell
-        cell = controller.setUpCell(cell, note: self.cachedNotesArray[indexPath.row], indexPath: indexPath)
+        if self.cachedNotesArray[indexPath.row].data.photoData.link != "" {
+            
+            cell = tableView.dequeueReusableCell(withIdentifier: "cellDataWithImage", for: indexPath) as! NotablesTableViewCell
+            cell = controller.setUpCell(cell, note: self.cachedNotesArray[indexPath.row], indexPath: indexPath)
+        } else {
+            
+            cell = tableView.dequeueReusableCell(withIdentifier: "cellData", for: indexPath) as! NotablesTableViewCell
+            cell = controller.setUpCell(cell, note: self.cachedNotesArray[indexPath.row], indexPath: indexPath)
+        }
         
         // add cell to array
         cells.append(cell)
@@ -406,6 +412,16 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        if self.cachedNotesArray[indexPath.row].data.photoData.link != "" {
+            
+            return 235
+        }
+        
+        return 139
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         // deselect selected row
@@ -478,11 +494,17 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             
             weak var destinationVC = segue.destination as? ShareOptionsViewController
 
-            if segue.identifier == "editNoteSegue" {
+            if segue.identifier == "editNoteSegue" || segue.identifier == "editNoteSegueWithImage" {
                 
                 let cellIndexPath = self.tableView.indexPath(for: sender as! UITableViewCell)
                 destinationVC?.receivedNote = self.cachedNotesArray[(cellIndexPath?.row)!]
                 destinationVC?.isEditingExistingNote = true
+                
+                let cell = self.tableView.cellForRow(at: cellIndexPath!) as! NotablesTableViewCell
+                if cell.attachedImage?.image != nil {
+                    
+                    destinationVC?.selectedImage = cell.attachedImage?.image
+                }
             } else {
                 
                 destinationVC?.kind = self.kind
@@ -563,7 +585,9 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     
                     weakSelf.cachedNotesArray.removeAll()
                     
-                    weakSelf.cachedNotesArray = HATNotablesService.removeDuplicatesFrom(array: temp)
+                    temp = HATNotablesService.removeDuplicatesFrom(array: temp)
+                    
+                    weakSelf.cachedNotesArray = HATNotablesService.sortNotables(notes: temp)
                     
                     weakSelf.notesArray.removeAll()
                     

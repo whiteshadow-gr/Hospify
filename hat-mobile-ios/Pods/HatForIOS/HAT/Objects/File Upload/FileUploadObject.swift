@@ -14,7 +14,42 @@ import SwiftyJSON
 
 // MARK : Class
 
-public struct FileUploadObject {
+public struct FileUploadObject: Comparable {
+    
+    // MARK: - Comparable protocol
+    
+    /// Returns a Boolean value indicating whether two values are equal.
+    ///
+    /// Equality is the inverse of inequality. For any values `a` and `b`,
+    /// `a == b` implies that `a != b` is `false`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func ==(lhs: FileUploadObject, rhs: FileUploadObject) -> Bool {
+        
+        return (lhs.dateCreated == rhs.dateCreated)
+    }
+    
+    /// Returns a Boolean value indicating whether the value of the first
+    /// argument is less than that of the second argument.
+    ///
+    /// This function is the only requirement of the `Comparable` protocol. The
+    /// remainder of the relational operator functions are implemented by the
+    /// standard library for any type that conforms to `Comparable`.
+    ///
+    /// - Parameters:
+    ///   - lhs: A value to compare.
+    ///   - rhs: Another value to compare.
+    public static func <(lhs: FileUploadObject, rhs: FileUploadObject) -> Bool {
+        
+        if lhs.lastUpdated != nil && rhs.lastUpdated != nil {
+            
+            return lhs.lastUpdated! < rhs.lastUpdated!
+        }
+        
+        return false
+    }
 
     // MARK: - Variables
     

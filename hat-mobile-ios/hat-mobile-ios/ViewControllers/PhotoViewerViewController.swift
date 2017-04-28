@@ -18,12 +18,22 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
     
     // MARK: - Variables
     
+    private var images: [(UIImage, Date)] = []
     /// The files, images, to show in the cells
-    private var files: [FileUploadObject] = []
+    private var files: [FileUploadObject] = [] {
+        
+        didSet {
+            
+            self.collectionView.reloadData()
+        }
+    }
     
+    private var loadingScr: LoadingScreenWithProgressRingViewController?
+    private let userDomain = HATAccountService.TheUserHATDomain()
+    
+    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     /// The reuse identifier of the cell
     private let reuseIdentifier = "photosCell"
-    private let userDomain: String = HATAccountService.TheUserHATDomain()
     
     private let photoPicker = PhotosHelperViewController()
     
@@ -79,20 +89,20 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         
         super.viewWillAppear(animated)
         
-        // get the user domain and token
-        let userDomain = HATAccountService.TheUserHATDomain()
-        let token = HATAccountService.getUsersTokenFromKeychain()
-        
         func success(filesReceived: [FileUploadObject], userToken: String?) {
             
             if filesReceived.count > 0 {
                 
                 self.collectionView.isHidden = false
-                // save the files received and reload data
-                self.files = filesReceived
-                self.collectionView?.reloadData()
+                
+                // save the files received
+                if self.files != filesReceived {
+                    
+                    self.files = filesReceived
+                }
             } else {
                 
+                self.files = []
                 self.collectionView.isHidden = true
             }
             
@@ -110,13 +120,33 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         }
         
         // search for available files on hat
-        HATFileService.searchFiles(userDomain: userDomain, token: token, successCallback: success, errorCallBack: failed)
+        HATFileService.searchFiles(userDomain: userDomain, token: userToken, successCallback: success, errorCallBack: failed)
     }
 
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    }
+    
+    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+        
+        self.loadingScr?.view.frame = CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160)
+    }
+    
+    override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
+        
+        self.loadingScr?.view.frame = CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160)
+    }
+    
+    // MARK: - Show progress ring
+    
+    private func showProgressRing() {
+        
+        self.loadingScr = LoadingScreenWithProgressRingViewController.customInit(completion: 0, from: self.storyboard!)
+        
+        self.loadingScr!.view.createFloatingView(frame:CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160), color: .tealColor(), cornerRadius: 15)
+        
+        self.addViewController(self.loadingScr!)
     }
     
     // MARK: - Image picker methods
@@ -128,20 +158,27 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
     
     func didChooseImageWithInfo(_ info: [String : Any]) {
         
-        let userDomain = HATAccountService.TheUserHATDomain()
-        let userToken = HATAccountService.getUsersTokenFromKeychain()
         let image = (info[UIImagePickerControllerOriginalImage] as! UIImage)
-        HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: image,
+        
+        self.showProgressRing()
+        
+        HATAccountService.uploadFileToHATWrapper(token: self.userToken, userDomain: self.userDomain, fileToUpload: image,
             progressUpdater: {progress in
                 
-                print(progress)
+                self.loadingScr?.updateView(completion: progress)
             },
             completion: {[weak self] (file, renewedUserToken) in
         
+                if self?.loadingScr != nil {
+                    
+                    self?.loadingScr?.removeFromParentViewController()
+                    self?.loadingScr?.view.removeFromSuperview()
+                    self?.loadingScr = nil
+                }
+                
                 if let weakSelf = self {
                     
                     weakSelf.files.append(file)
-                    weakSelf.collectionView.reloadData()
                 }
                 
                 // refresh user token
@@ -175,8 +212,20 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         
         let imageURL: String = "https://" + self.userDomain + "/api/v2/files/content/" + self.files[indexPath.row].fileID
         
-        // Configure the cell
-        cell!.image.downloadedFrom(url: URL(string: imageURL)!, completion: {})
+        if cell?.image.image == UIImage(named: "Image Placeholder") {
+            
+            cell!.image.downloadedFrom(url: URL(string: imageURL)!, completion: {[weak self] in
+            
+                if self != nil {
+                    
+                    cell?.image.cropImage(width: (cell?.image.frame.size.width)!, height: (cell?.image.frame.size.height)!)
+                    self!.images.append(((cell?.image.image)!, (self?.files[indexPath.row].lastUpdated)!))
+                }
+            })
+        } else {
+            
+            cell?.image.image = self.images[indexPath.row].0
+        }
         
         return cell!
     }
@@ -192,8 +241,6 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
         if segue.destination is PhotoFullScreenViewerViewController {
             
             weak var destinationVC = segue.destination as? PhotoFullScreenViewerViewController

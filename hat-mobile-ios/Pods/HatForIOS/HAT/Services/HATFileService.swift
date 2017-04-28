@@ -23,14 +23,15 @@ public class HATFileService: NSObject {
      
      - parameter token: The authorisation token to authenticate with the hat
      - parameter userDomain: The user's HAT domain
+     - parameter status: The status of the file, Completed or Deleted. Default value is Completed
      - parameter successCallback: An @escaping ([FileUploadObject]) -> Void function to execute when the server has returned the files we were looking for
      - parameter errorCallBack: An @escaping (HATError) -> Void to execute when something went wrong
      */
-    public class func searchFiles(userDomain: String, token: String, successCallback: @escaping ([FileUploadObject], String?) -> Void, errorCallBack: @escaping (HATError) -> Void) {
+    public class func searchFiles(userDomain: String, token: String, status: String? = "Completed", successCallback: @escaping ([FileUploadObject], String?) -> Void, errorCallBack: @escaping (HATError) -> Void) {
         
         let url: String = "https://" + userDomain + "/api/v2/files/search"
         let headers = ["X-Auth-Token" : token]
-        HATNetworkHelper.AsynchronousRequest(url, method: .post, encoding: Alamofire.JSONEncoding.default, contentType: ContentType.JSON, parameters: ["source" : "iPhone", "name": ""], headers: headers, completion: { (r) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .post, encoding: Alamofire.JSONEncoding.default, contentType: ContentType.JSON, parameters: ["source" : "iPhone", "name": "", "status" : ["status" : status!, "size" : 0]], headers: headers, completion: { (r) -> Void in
             // handle result
             switch r {
                 

@@ -17,7 +17,8 @@ class PhotoFullScreenViewerViewController: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var deleteButton: UIButton!
     
-    var image: UIImage?
+    var imageURL: String?
+    private var loadingRing: LoadingScreenWithProgressRingViewController? = nil
     
     var file: FileUploadObject?
     
@@ -65,14 +66,24 @@ class PhotoFullScreenViewerViewController: UIViewController {
             let imageURL: String = "https://" + userDomain + "/api/v2/files/content/" + file!.fileID
             
             self.imageView!.downloadedFrom(url: URL(string: imageURL)!, completion: nil)
-        } else if self.image != nil {
+        } else if self.imageURL != nil {
             
-            self.imageView.image = self.image
-            self.deleteButton.isHidden = true
-            self.deleteButton = nil
+            let url = URL(string: self.imageURL!)
+            
+            self.imageView.downloadedFrom(url: url!, completion: {
+            
+                self.deleteButton.isHidden = true
+                self.deleteButton = nil
+            })
         }
         
         self.view.backgroundColor = .black
+        
+        self.loadingRing = LoadingScreenWithProgressRingViewController.customInit(completion: 0, from: self.storyboard!)
+        self.loadingRing!.view.backgroundColor = .clear
+        self.loadingRing?.percentageLabel.isHidden = true
+        self.loadingRing?.cancelButton.isHidden = true
+        self.addViewController(self.loadingRing!)
     }
     
     @objc private func hideUI() {

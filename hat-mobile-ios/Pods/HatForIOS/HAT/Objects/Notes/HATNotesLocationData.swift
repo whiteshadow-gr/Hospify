@@ -45,7 +45,12 @@ public struct HATNotesLocationData: Comparable {
     ///   - rhs: Another value to compare.
     public static func <(lhs: HATNotesLocationData, rhs: HATNotesLocationData) -> Bool {
         
-        return (lhs.latitude < rhs.latitude && lhs.longitude < rhs.longitude)
+        if lhs.latitude != nil && lhs.longitude != nil && rhs.latitude != nil && rhs.longitude != nil {
+            
+            return (lhs.latitude! < rhs.latitude! && lhs.longitude! < rhs.longitude!)
+        }
+        
+        return false
     }
     
     // MARK: - Variables
@@ -55,11 +60,11 @@ public struct HATNotesLocationData: Comparable {
     /// the altitude accuracy at the time of creating the note. This value is optional
     public var altitudeAccuracy: Double = 0
     /// the latitude at the time of creating the note
-    public var latitude: Double = 0
+    public var latitude: Double? = nil
     /// the accuracy at the time of creating the note
     public var accuracy: Double = 0
     /// the longitude at the time of creating the note
-    public var longitude: Double = 0
+    public var longitude: Double? = nil
     /// the speed at the time of creating the note. This value is optional
     public var speed: Double = 0
     
@@ -78,11 +83,11 @@ public struct HATNotesLocationData: Comparable {
         
         altitude = 0
         altitudeAccuracy = 0
-        latitude = 0
+        latitude = nil
         heading = ""
         shared = false
         accuracy = 0
-        longitude = 0
+        longitude = nil
         speed = 0
     }
     

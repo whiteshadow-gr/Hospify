@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// A class representing the system status kind object
-public class HATSystemStatusKindObject: Comparable {
+public struct HATSystemStatusKindObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -71,7 +71,7 @@ public class HATSystemStatusKindObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(from dictionary: Dictionary<String, JSON>) {
+    public init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()
         

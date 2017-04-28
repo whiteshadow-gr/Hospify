@@ -12,9 +12,292 @@
 
 import SwiftyJSON
 
+// MARK: Struct
+
 public struct HATJSONHelper {
         
     // MARK: - Create JSON files functions
+    
+    /**
+     Creates the profile JSON file
+     
+     - returns: Dictionary<String, Any>
+     */
+    public static func createProfileTableJSON() -> Dictionary<String, Any> {
+        
+        let fieldsJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let facebookProfilePhoto: Any = [
+            
+            "name" : "fb_profile_photo",
+            "source" : "rumpel",
+            "fields" : fieldsJSON
+        ]
+        
+        let personalJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","title")),
+            Dictionary.init(dictionaryLiteral: ("name","first_name")),
+            Dictionary.init(dictionaryLiteral: ("name","middle_name")),
+            Dictionary.init(dictionaryLiteral: ("name","last_name")),
+            Dictionary.init(dictionaryLiteral: ("name","preferred_name")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let personal: Any = [
+            
+            "name" : "personal",
+            "source" : "rumpel",
+            "fields" : personalJSON
+        ]
+        
+        let nickJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","name")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let nick: Any = [
+            
+            "name" : "nick",
+            "source" : "rumpel",
+            "fields" : nickJSON
+        ]
+        
+        let birthJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","date")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let birth: Any = [
+            
+            "name" : "birth",
+            "source" : "rumpel",
+            "fields" : birthJSON
+        ]
+        
+        let genderJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","type")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let gender: Any = [
+            
+            "name" : "gender",
+            "source" : "rumpel",
+            "fields" : genderJSON
+        ]
+        
+        let ageJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","group")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let age: Any = [
+            
+            "name" : "age",
+            "source" : "rumpel",
+            "fields" : ageJSON
+        ]
+        
+        let emailJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","value")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let primaryEmail: Any = [
+            
+            "name" : "primary_email",
+            "source" : "rumpel",
+            "fields" : emailJSON
+        ]
+        
+        let alternativeEmail: Any = [
+            
+            "name" : "alternative_email",
+            "source" : "rumpel",
+            "fields" : emailJSON
+        ]
+        
+        let phoneJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","no")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let homePhone: Any = [
+            
+            "name" : "home_phone",
+            "source" : "rumpel",
+            "fields" : phoneJSON
+        ]
+        
+        let mobile: Any = [
+            
+            "name" : "mobile",
+            "source" : "rumpel",
+            "fields" : phoneJSON
+        ]
+        
+        let addressDetailsJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","no")),
+            Dictionary.init(dictionaryLiteral: ("name","street")),
+            Dictionary.init(dictionaryLiteral: ("name","postcode")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let addressDetails: Any = [
+            
+            "name" : "address_details",
+            "source" : "rumpel",
+            "fields" : addressDetailsJSON
+        ]
+        
+        let addressGlobalJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","city")),
+            Dictionary.init(dictionaryLiteral: ("name","county")),
+            Dictionary.init(dictionaryLiteral: ("name","country")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let addressGlobal: Any = [
+            
+            "name" : "address_global",
+            "source" : "rumpel",
+            "fields" : addressGlobalJSON
+        ]
+        
+        let socialJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","link")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let website: Any = [
+            
+            "name" : "website",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let blog: Any = [
+            
+            "name" : "blog",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let facebook: Any = [
+            
+            "name" : "facebook",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let twitter: Any = [
+            
+            "name" : "twitter",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let google: Any = [
+            
+            "name" : "google",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let youtube: Any = [
+            
+            "name" : "youtube",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let linkedIn: Any = [
+            
+            "name" : "linkedin",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let aboutJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","title")),
+            Dictionary.init(dictionaryLiteral: ("name","body")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let about: Any = [
+            
+            "name" : "about",
+            "source" : "rumpel",
+            "fields" : aboutJSON
+        ]
+        
+        let emergencyContactJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","first_name")),
+            Dictionary.init(dictionaryLiteral: ("name","last_name")),
+            Dictionary.init(dictionaryLiteral: ("name","mobile")),
+            Dictionary.init(dictionaryLiteral: ("name","relationship")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let emergencyContact: Any = [
+            
+            "name" : "emergency_contact",
+            "source" : "rumpel",
+            "fields" : emergencyContactJSON
+        ]
+        
+        let subtables: Array = [
+            
+            facebookProfilePhoto,
+            personal,
+            nick,
+            birth,
+            gender,
+            age,
+            primaryEmail,
+            alternativeEmail,
+            homePhone,
+            mobile,
+            addressDetails,
+            addressGlobal,
+            website,
+            blog,
+            facebook,
+            twitter,
+            google,
+            linkedIn,
+            youtube,
+            emergencyContact,
+            about
+        ]
+        
+        // create the final json file
+        let JSON: Dictionary = [
+            
+            "name": "profile",
+            "source": "rumpel",
+            "fields":fieldsJSON,
+            "subTables":subtables
+            ] as [String : Any]
+        
+        // return the json file
+        return JSON
+    }
     
     /**
      Creates the notables JSON file
@@ -114,13 +397,15 @@ public struct HATJSONHelper {
         return JSON
     }
     
+    
+    
     /**
      Creates the json file to update a note
      
      - parameter hatTableStructure: Dictionary<String, Any>
      - returns: Dictionary<String, Any>
      */
-    public static func createJSONForPostingOnNotables(hatTableStructure: Dictionary<String, Any>) -> Dictionary<String, Any> {
+    public static func createJSONForPosting(hatTableStructure: Dictionary<String, Any>) -> Dictionary<String, Any> {
         
         // init array
         var valuesArray: [Dictionary<String, Any>] = []
@@ -153,7 +438,7 @@ public struct HATJSONHelper {
                     let messageFieldDictionary: Dictionary = [
                         
                         "id": Int(dict.dictionary!["id"]!.number!),
-                        "name":dict.dictionary!["name"]!.string!
+                        "name": dict.dictionary!["name"]!.string!
                         ] as [String : Any]
                     
                     // create the message table
@@ -187,8 +472,8 @@ public struct HATJSONHelper {
                         // create the message field
                         let messageFieldDictionary: Dictionary = [
                             
-                            "id":Int(field.dictionary!["id"]!.number!),
-                            "name":field.dictionary!["name"]!.string!
+                            "id": Int(field.dictionary!["id"]!.number!),
+                            "name": field.dictionary!["name"]!.string!
                             ] as [String : Any]
                         
                         // create the message table
@@ -207,8 +492,8 @@ public struct HATJSONHelper {
         // add everything in a dictionary
         let arrayDictionary: Dictionary = [
             
-            "record":recordDictionary,
-            "values":valuesArray
+            "record": recordDictionary,
+            "values": valuesArray
             ] as [String : Any]
         
         // return the dictionary
@@ -470,7 +755,7 @@ public struct HATJSONHelper {
      - parameter file: The JSON file in a Dictionary<String, Any>
      - returns: Dictionary<String, Any>
      */
-    public static func updateJSONFile(file: Dictionary<String, Any>, noteFile: HATNotesData, userDomain: String) -> Dictionary<String, Any> {
+    public static func updateNotesJSONFile(file: Dictionary<String, Any>, noteFile: HATNotesData, userDomain: String) -> Dictionary<String, Any> {
         
         var jsonFile = JSON(file)
         
@@ -493,9 +778,171 @@ public struct HATJSONHelper {
         //update image file
         jsonFile = HATJSONHelper.updatePhotosOfNoteOnJSON(file: jsonFile, photoURL: noteFile.data.photoData.link)
         //update location
-        jsonFile = HATJSONHelper.updateLocationsOfNoteOnJSON(file: jsonFile, latitude: noteFile.data.locationData.latitude, longitude: noteFile.data.locationData.longitude, accuracy: noteFile.data.locationData.accuracy)
+        if let latitude = noteFile.data.locationData.latitude, let longitude = noteFile.data.locationData.longitude {
+            
+            jsonFile = HATJSONHelper.updateLocationsOfNoteOnJSON(file: jsonFile, latitude: latitude, longitude: longitude, accuracy: noteFile.data.locationData.accuracy)
+        }
         
         return jsonFile.dictionaryObject!
+    }
+    
+    /**
+     Adds all the info about the profile we want to add to the JSON file
+     
+     - parameter file: The JSON file in a Dictionary<String, Any>
+     - returns: Dictionary<String, Any>
+     */
+    public static func updateProfileJSONFile(file: Dictionary<String, Any>, profileFile: HATProfileObject) -> Dictionary<String, Any> {
+        
+        var jsonFile = JSON(file)
+        
+        // update profile
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.isPrivateTuple)
+        
+        // update profile picture
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.facebookProfilePhoto.isPrivateTuple)
+        
+        // update name
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.personal.firstNameTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.personal.lastNameTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.personal.middleNameTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.personal.prefferedNameTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.personal.titleTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.personal.isPrivateTuple)
+        
+        // update email addresses
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.primaryEmail.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.primaryEmail.valueTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.alternativeEmail.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.alternativeEmail.valueTuple)
+        
+        // update address
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.addressDetails.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.addressDetails.numberTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.addressDetails.postCodeTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.addressDetails.streetTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.addressGlobal.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.addressGlobal.cityTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.addressGlobal.countyTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.addressGlobal.countryTuple)
+        
+        // update phone number
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.homePhone.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.homePhone.numberTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.mobile.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.mobile.numberTuple)
+        
+        // update profile info
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.age.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.age.groupTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.gender.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.gender.typeTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.birth.dateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.birth.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.nick.nameTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.nick.isPrivateTuple)
+        
+        // update emergency contact
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.emergencyContact.firstNameTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.emergencyContact.lastNameTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.emergencyContact.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.emergencyContact.mobileTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.emergencyContact.relationshipTuple)
+        
+        // update social networks and websites
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.facebook.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.facebook.linkTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.twitter.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.twitter.linkTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.linkedIn.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.linkedIn.linkTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.google.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.google.linkTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.blog.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.blog.linkTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.website.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.website.linkTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.youtube.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.youtube.linkTuple)
+        
+        // update about info
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.about.isPrivateTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.about.bodyTuple)
+        jsonFile = HATJSONHelper.updateFieldOnJSON(jsonFile, field: profileFile.data.about.titleTuple)
+        
+        return jsonFile.dictionaryObject!
+    }
+    
+    /**
+     Updates the photo of the note json file
+     
+     - parameter file: The json file to update
+     - parameter firstName: The first name entered in profile
+     
+     - returns: JSON
+     */
+    public static func updateFieldOnJSON(_ file: JSON, field: (String, Int)) -> JSON {
+        
+        var jsonFile = file
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["id"].stringValue == String(describing: field.1) {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(field.0)
+            }
+        }
+        
+        return jsonFile
+    }
+    
+    /**
+     Updates the photo of the note json file
+     
+     - parameter file: The json file to update
+     - parameter firstName: The first name entered in profile
+     
+     - returns: JSON
+     */
+    public static func updateFieldOnJSON(_ file: JSON, field: (Date?, Int)) -> JSON {
+        
+        var jsonFile = file
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["id"].stringValue == String(describing: field.1) {
+                
+                if field.0 != nil {
+                    
+                    jsonFile["values"][itemNumber]["value"] = JSON(HATFormatterHelper.formatDateToISO(date: field.0!))
+                }
+            }
+        }
+        
+        return jsonFile
+    }
+    
+    /**
+     Updates the photo of the note json file
+     
+     - parameter file: The json file to update
+     - parameter firstName: The first name entered in profile
+     
+     - returns: JSON
+     */
+    public static func updateFieldOnJSON(_ file: JSON, field: (Bool, Int)) -> JSON {
+        
+        var jsonFile = file
+        
+        for itemNumber in 0...jsonFile["values"].count {
+            
+            if jsonFile["values"][itemNumber]["field"]["id"].stringValue == String(describing: field.1) {
+                
+                jsonFile["values"][itemNumber]["value"] = JSON(String(describing: field.0))
+            }
+        }
+        
+        return jsonFile
     }
     
     // MARK: - Create JSON for file uploading

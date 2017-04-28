@@ -135,7 +135,16 @@ public struct HATNotesNotablesData: Comparable {
                 createdTime = returnedDate!
             }
         }
-
+        
+        if let tempUpdatedTime = dict["updated_time"]?.string {
+            
+            let returnedDate = HATFormatterHelper.formatStringToDate(string: tempUpdatedTime)
+            if returnedDate != nil {
+                
+                updatedTime = returnedDate!
+            }
+        }
+        
         if let tempDict = dict["shared"]?.string {
             
             if tempDict == "" {

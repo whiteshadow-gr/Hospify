@@ -195,8 +195,8 @@ import UIKit
             let labelWidth = self.bounds.width / 2 - self.padding * 2
             
             // set up on and of labels frame
-            self.labelOn.frame = CGRect(x: 0, y: 0, width: labelWidth, height: self.frame.height)
-            self.labelOff.frame = CGRect(x: self.frame.width - labelWidth, y: 0, width: labelWidth, height: self.frame.height)
+            self.labelOn.frame = CGRect(x: 2, y: 2, width: labelWidth, height: self.frame.height)
+            self.labelOff.frame = CGRect(x: -2 + self.frame.width - labelWidth, y: 2, width: labelWidth, height: self.frame.height)
         }
     }
     
@@ -221,16 +221,16 @@ import UIKit
         let labelWidth = self.bounds.width / 2 - self.padding * 2
         
         // set their frame
-        self.labelOn.frame = CGRect(x: 0, y: 0, width: labelWidth, height: self.frame.height)
-        self.labelOff.frame = CGRect(x: self.frame.width - labelWidth, y: 0, width: labelWidth, height: self.frame.height)
+        self.labelOn.frame = CGRect(x: 2, y: 2, width: labelWidth, height: self.frame.height)
+        self.labelOff.frame = CGRect(x: -2 + self.frame.width - labelWidth, y: 2, width: labelWidth, height: self.frame.height)
         
         // run size to fit to draw the view correctly
         self.labelOff.sizeToFit()
         self.labelOn.sizeToFit()
         
         // set their icons
-        self.labelOff.attributedText = NSAttributedString(string: "\u{1F512}", attributes: [NSForegroundColorAttributeName: UIColor.white, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 16)!])
-        self.labelOn.attributedText = NSAttributedString(string: "\u{1F513}", attributes: [NSForegroundColorAttributeName: UIColor.white, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 16)!])
+        self.labelOff.attributedText = NSAttributedString(string: "\u{1F512}", attributes: [NSForegroundColorAttributeName: UIColor.white, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 15.5)!])
+        self.labelOn.attributedText = NSAttributedString(string: "\u{1F513}", attributes: [NSForegroundColorAttributeName: UIColor.white, NSFontAttributeName: UIFont(name: "SSGlyphish-Filled", size: 15.5)!])
         
         // align them in center
         self.labelOff.textAlignment = .center

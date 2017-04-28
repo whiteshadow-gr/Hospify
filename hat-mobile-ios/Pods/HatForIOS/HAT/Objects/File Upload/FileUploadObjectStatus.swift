@@ -14,7 +14,7 @@ import SwiftyJSON
 
 // MARK: Class
 
-public class FileUploadObjectStatus: NSObject {
+public struct FileUploadObjectStatus {
 
     // MARK: - Variables
     
@@ -26,7 +26,7 @@ public class FileUploadObjectStatus: NSObject {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    public override init() {
+    public init() {
         
         status = ""
         size = nil
@@ -35,7 +35,7 @@ public class FileUploadObjectStatus: NSObject {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(from dict: Dictionary<String, JSON>) {
+    public init(from dict: Dictionary<String, JSON>) {
         
         self.init()
         

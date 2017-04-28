@@ -14,7 +14,7 @@ import SwiftyJSON
 
 // MARK: Class
 
-public class FileUploadObjectPermissions: NSObject {
+public struct FileUploadObjectPermissions {
     
     // MARK: - Variables
     
@@ -26,7 +26,7 @@ public class FileUploadObjectPermissions: NSObject {
     /**
      The default initialiser. Initialises everything to default values.
      */
-    public override init() {
+    public init() {
         
         userID = ""
     }
@@ -34,7 +34,7 @@ public class FileUploadObjectPermissions: NSObject {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(from dict: Dictionary<String, JSON>) {
+    public init(from dict: Dictionary<String, JSON>) {
         
         self.init()
         

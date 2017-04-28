@@ -237,7 +237,7 @@ public class HATNetworkHelper: NSObject {
         }).responseString(completionHandler: {(response) in
         
             let header = response.response?.allHeaderFields
-            let token = header?["X-Auth-Token"] as! String
+            let token = header?["X-Auth-Token"] as? String
             
             switch response.result {
             case .success(_):
@@ -245,11 +245,23 @@ public class HATNetworkHelper: NSObject {
                 // check if we have a value and return it
                 if let value = response.result.value {
                     
-                    completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: JSON(value), token: token))
+                    if token != nil {
+                        
+                        completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: JSON(value), token: token!))
+                    } else {
+                        
+                        completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: JSON(value), token: nil))
+                    }
                     // else return isSuccess: false and nil for value
                 } else {
                     
-                    completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: "", token: token))
+                    if token != nil {
+                        
+                        completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: "", token: token!))
+                    } else {
+                        
+                        completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: "", token: nil))
+                    }
                 }
             // return the error
             case .failure(let error):

@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// A class representing the data of facebook
-public class HATFacebookDataSocialFeedObject: Comparable, HATSocialFeedObject {
+public struct HATFacebookDataSocialFeedObject: Comparable, HATSocialFeedObject {
     
     /// The last date updated of the record
     public var protocolLastUpdate: Date?

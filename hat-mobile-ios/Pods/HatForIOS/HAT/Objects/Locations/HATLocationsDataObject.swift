@@ -13,7 +13,7 @@
 import SwiftyJSON
 
 /// A class representing the data of the locations object
-public class HATLocationsDataObject: Equatable {
+public struct HATLocationsDataObject: Equatable {
     
     // MARK: - Equatable protocol
     
@@ -48,7 +48,7 @@ public class HATLocationsDataObject: Equatable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(dict: Dictionary<String, JSON>) {
+    public init(dict: Dictionary<String, JSON>) {
         
         // init optional JSON fields to default values
         self.init()

@@ -19,7 +19,8 @@ class LoadingScreenWithProgressRingViewController: UIViewController {
 
     @IBOutlet weak var progressRing: RingProgressCircle!
     @IBOutlet weak var percentageLabel: UILabel!
-    
+    @IBOutlet weak var cancelButton: UIButton!
+
     @IBAction func cancelButtonAction(_ sender: Any) {
         
         self.removeFromParentViewController()
@@ -59,13 +60,15 @@ class LoadingScreenWithProgressRingViewController: UIViewController {
     
     func updateView(completion: Double) {
         
-        let fullCircle = 2.0 * CGFloat(Double.pi)
-        let endPoint = CGFloat(completion)
         self.progressRing.isHidden = false
-        let end = (endPoint * fullCircle) + self.progressRing.startPoint
         
-        let currentRatio = Double(completion) * 100
-        self.percentageLabel.text = String(format: "%.2f" + " %", currentRatio)
+        let end = (CGFloat(completion))
+        
+        print("completion: \(end)")
+        
+        let currentRatio = String(describing: floor(CGFloat(completion) * 100))
+        self.percentageLabel.text = currentRatio + " %"
+        print("currentRatio: \(currentRatio)")
 
         self.progressRing.update(end: end)
     }

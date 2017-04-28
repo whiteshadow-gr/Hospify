@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A class representing the hat provider kind object
-public class HATProviderKindObject: Comparable {
+public struct HATProviderKindObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -74,7 +74,7 @@ public class HATProviderKindObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(from dictionary: Dictionary<String, JSON>) {
+    public init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()
         

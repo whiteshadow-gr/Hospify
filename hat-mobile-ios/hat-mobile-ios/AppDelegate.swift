@@ -22,7 +22,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Variables
     
     var window: UIWindow?
-    let locationHelper: UpdateLocations = UpdateLocations()
     
     // MARK: - App Delegate methods
     
@@ -36,12 +35,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // if app was closed by iOS (low mem, etc), then receives a location update, and respawns your app, letting it know it respawned due to a location service
         if launchOptions?[UIApplicationLaunchOptionsKey.location] != nil {
             
-            self.locationHelper.startUpdatingLocation()
-            //UpdateLocations.shared.startUpdatingLocation()
+            UpdateLocations.shared.resumeLocationServices()
         }
-        
-        //UpdateLocations.shared.resumeLocationServices()
-        self.locationHelper.resumeLocationServices()
         
         // change tab bar item font
         UITabBarItem.appearance().setTitleTextAttributes([NSFontAttributeName: UIFont(name: "OpenSans", size: 11)!], for: UIControlState.normal)
@@ -91,28 +86,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         
-        // cancel all notifications
-        UIApplication.shared.cancelAllLocalNotifications()
-        
-        // date
-        let timeInterval: TimeInterval = FutureTimeInterval.init(days: Double(3), timeType: TimeType.future).interval
-        let futureDate = Date().addingTimeInterval(timeInterval) // e.g. 3 days from now
-        
-        // add new
-        let localNotification: UILocalNotification = UILocalNotification()
-        localNotification.alertAction = NSLocalizedString("sync_reminder_title", comment: "title")
-        localNotification.alertBody = NSLocalizedString("sync_reminder_message", comment: "message")
-        localNotification.fireDate = futureDate
-        localNotification.timeZone = TimeZone.current
-        localNotification.soundName = UILocalNotificationDefaultSoundName
-        
-        UIApplication.shared.scheduleLocalNotification(localNotification)
+//        // cancel all notifications
+//        UIApplication.shared.cancelAllLocalNotifications()
+//        
+//        // date
+//        let timeInterval: TimeInterval = FutureTimeInterval.init(days: Double(3), timeType: TimeType.future).interval
+//        let futureDate = Date().addingTimeInterval(timeInterval) // e.g. 3 days from now
+//        
+//        // add new
+//        let localNotification: UILocalNotification = UILocalNotification()
+//        localNotification.alertAction = NSLocalizedString("sync_reminder_title", comment: "title")
+//        localNotification.alertBody = NSLocalizedString("sync_reminder_message", comment: "message")
+//        localNotification.fireDate = futureDate
+//        localNotification.timeZone = TimeZone.current
+//        localNotification.soundName = UILocalNotificationDefaultSoundName
+//        
+//        UIApplication.shared.scheduleLocalNotification(localNotification)
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
         
-        UpdateLocations.shared.requestLocation()
+        //UpdateLocations.shared.requestLocation()
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {

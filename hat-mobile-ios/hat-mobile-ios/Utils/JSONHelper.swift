@@ -283,4 +283,285 @@ struct JSONHelper {
         
         return json
     }
+
+    /**
+     Creates the profile JSON file
+     
+     - returns: Dictionary<String, Any>
+     */
+    public static func createProfileTableJSON() -> Dictionary<String, Any> {
+        
+        let fieldsJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let facebookProfilePhoto: Any = [
+            
+            "name" : "fb_profile_photo",
+            "source" : "rumpel",
+            "fields" : fieldsJSON
+        ]
+        
+        let personalJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","title")),
+            Dictionary.init(dictionaryLiteral: ("name","first_name")),
+            Dictionary.init(dictionaryLiteral: ("name","middle_name")),
+            Dictionary.init(dictionaryLiteral: ("name","last_name")),
+            Dictionary.init(dictionaryLiteral: ("name","preferred_name")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let personal: Any = [
+            
+            "name" : "personal",
+            "source" : "rumpel",
+            "fields" : personalJSON
+        ]
+        
+        let nickJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","name")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let nick: Any = [
+            
+            "name" : "nick",
+            "source" : "rumpel",
+            "fields" : nickJSON
+        ]
+        
+        let birthJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","date")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let birth: Any = [
+            
+            "name" : "birth",
+            "source" : "rumpel",
+            "fields" : birthJSON
+        ]
+        
+        let genderJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","type")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let gender: Any = [
+            
+            "name" : "gender",
+            "source" : "rumpel",
+            "fields" : genderJSON
+        ]
+        
+        let ageJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","group")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let age: Any = [
+            
+            "name" : "age",
+            "source" : "rumpel",
+            "fields" : ageJSON
+        ]
+        
+        let emailJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","value")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let primaryEmail: Any = [
+            
+            "name" : "primary_email",
+            "source" : "rumpel",
+            "fields" : emailJSON
+        ]
+        
+        let alternativeEmail: Any = [
+            
+            "name" : "alternative_email",
+            "source" : "rumpel",
+            "fields" : emailJSON
+        ]
+        
+        let phoneJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","no")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let homePhone: Any = [
+            
+            "name" : "home_phone",
+            "source" : "rumpel",
+            "fields" : phoneJSON
+        ]
+        
+        let mobile: Any = [
+            
+            "name" : "mobile",
+            "source" : "rumpel",
+            "fields" : phoneJSON
+        ]
+        
+        let addressDetailsJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","no")),
+            Dictionary.init(dictionaryLiteral: ("name","street")),
+            Dictionary.init(dictionaryLiteral: ("name","postcode")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let addressDetails: Any = [
+            
+            "name" : "address_details",
+            "source" : "rumpel",
+            "fields" : addressDetailsJSON
+        ]
+        
+        let addressGlobalJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","city")),
+            Dictionary.init(dictionaryLiteral: ("name","county")),
+            Dictionary.init(dictionaryLiteral: ("name","country")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let addressGlobal: Any = [
+            
+            "name" : "address_global",
+            "source" : "rumpel",
+            "fields" : addressGlobalJSON
+        ]
+        
+        let socialJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","link")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let website: Any = [
+            
+            "name" : "website",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let blog: Any = [
+            
+            "name" : "blog",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let facebook: Any = [
+            
+            "name" : "facebook",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let twitter: Any = [
+            
+            "name" : "twitter",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let google: Any = [
+            
+            "name" : "google",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let youtube: Any = [
+            
+            "name" : "youtube",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let linkedIn: Any = [
+            
+            "name" : "linkedin",
+            "source" : "rumpel",
+            "fields" : socialJSON
+        ]
+        
+        let aboutJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","title")),
+            Dictionary.init(dictionaryLiteral: ("name","body")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let about: Any = [
+            
+            "name" : "about",
+            "source" : "rumpel",
+            "fields" : aboutJSON
+        ]
+        
+        let emergencyContactJSON: Array = [
+            
+            Dictionary.init(dictionaryLiteral: ("name","first_name")),
+            Dictionary.init(dictionaryLiteral: ("name","last_name")),
+            Dictionary.init(dictionaryLiteral: ("name","mobile")),
+            Dictionary.init(dictionaryLiteral: ("name","relationship")),
+            Dictionary.init(dictionaryLiteral: ("name","private"))
+        ]
+        
+        let emergencyContact: Any = [
+            
+            "name" : "emergency_contact",
+            "source" : "rumpel",
+            "fields" : emergencyContactJSON
+        ]
+        
+        let subtables: Array = [
+            
+            facebookProfilePhoto,
+            personal,
+            nick,
+            birth,
+            gender,
+            age,
+            primaryEmail,
+            alternativeEmail,
+            homePhone,
+            mobile,
+            addressDetails,
+            addressGlobal,
+            website,
+            blog,
+            facebook,
+            twitter,
+            google,
+            linkedIn,
+            youtube,
+            emergencyContact,
+            about
+        ]
+        
+        // create the final json file
+        let JSON: Dictionary = [
+            
+            "name": "profile",
+            "source": "rumpel",
+            "fields":fieldsJSON,
+            "subTables":subtables
+        ] as [String : Any]
+        
+        // return the json file
+        return JSON
+    }
 }

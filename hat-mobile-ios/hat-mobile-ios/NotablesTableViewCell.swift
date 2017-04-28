@@ -20,7 +20,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     // MARK: - Variables
     
     /// an array to hold the social networks that this note is shared on
-    var sharedOn: [String] = []
+    private var sharedOn: [String] = []
     
     // MARK: - IBOutlets
 
@@ -30,6 +30,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     @IBOutlet weak var postDataLabel: UILabel!
     /// An IBOutlet for handling the username of the post
     @IBOutlet weak var usernameLabel: UILabel!
+    @IBOutlet weak var attachedImage: UIImageView!
     
     /// An IBOutlet for handling the profile image of the post
     @IBOutlet weak var profileImage: UIImageView!
@@ -51,10 +52,28 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         
         let newCell = self.initCellToNil(cell: cell)
         
+        if note.data.photoData.link != "" {
+            
+            if let url = URL(string: note.data.photoData.link) {
+                
+                newCell.attachedImage.downloadedFrom(url: url, completion: {
+                    
+                    newCell.attachedImage.cropImage(width: 143, height: 143)
+                })
+            }
+        }
+        
         // if the note is shared get the shared on string as well
         if note.data.shared {
             
             newCell.sharedOn = note.data.sharedOn.stringToArray().sorted()
+            self.sharedOn = newCell.sharedOn
+        }
+        
+        let locationData = note.data.locationData
+        if locationData.longitude != nil && locationData.latitude != nil && (locationData.longitude != 0 && locationData.latitude != 0 && locationData.accuracy != 0) {
+            
+            newCell.sharedOn.append("location")
             self.sharedOn = newCell.sharedOn
         }
         
@@ -106,6 +125,9 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         } else if self.sharedOn[indexPath.row] == "twitter" {
             
             cell.socialImage.image = UIImage(named: "Twitter")
+        } else if self.sharedOn[indexPath.row] == "location" {
+            
+            cell.socialImage.image = UIImage(named: "gps filled")
         }
         
         // flip the image to appear correctly

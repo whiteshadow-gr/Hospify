@@ -388,7 +388,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                 
                 self.firstNameTextField.resignFirstResponder()
             }
-            self.createClassicOKAlertWith(alertMessage: "Please fill your first name", alertTitle: "First Name field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "Please fill your first name", alertTitle: "First Name field is empty", okTitle: "OK", proceedCompletion: {})
             
             return false
         }
@@ -399,7 +399,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                 
                 self.lastNameTextField.resignFirstResponder()
             }
-            self.createClassicOKAlertWith(alertMessage: "Please fill your last name", alertTitle: "Last Name field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "Please fill your last name", alertTitle: "Last Name field is empty", okTitle: "OK", proceedCompletion: {})
             
             return false
         }
@@ -410,7 +410,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                 
                 self.emailTextField.resignFirstResponder()
             }
-            self.createClassicOKAlertWith(alertMessage: "Please fill your email", alertTitle: "Email field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "Please fill your email", alertTitle: "Email field is empty", okTitle: "OK", proceedCompletion: {})
             
             return false
         }
@@ -421,7 +421,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                 
                 self.personalHATAddressTextField.resignFirstResponder()
             }
-            self.createClassicOKAlertWith(alertMessage: "Please fill your personal HAT address", alertTitle: "Personal HAT address field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "Please fill your personal HAT address", alertTitle: "Personal HAT address field is empty", okTitle: "OK", proceedCompletion: {})
             
             return false
         }
@@ -432,7 +432,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                 
                 self.passwordTextField.resignFirstResponder()
             }
-            self.createClassicOKAlertWith(alertMessage: "Please fill your password", alertTitle: "Password field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "Please fill your password", alertTitle: "Password field is empty", okTitle: "OK", proceedCompletion: {})
             
             return false
         }
@@ -443,7 +443,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                 
                 self.confirmPasswordTextField.resignFirstResponder()
             }
-            self.createClassicOKAlertWith(alertMessage: "Please type your password again", alertTitle: "Passwords don't match", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "Please type your password again", alertTitle: "Passwords don't match", okTitle: "OK", proceedCompletion: {})
             
             return false
         }
@@ -454,28 +454,28 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                 
                 self.countryTextField.resignFirstResponder()
             }
-            self.createClassicOKAlertWith(alertMessage: "Please fill your desired location for your HAT", alertTitle: "Desired location field is empty", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "Please fill your desired location for your HAT", alertTitle: "Desired location field is empty", okTitle: "OK", proceedCompletion: {})
             
             return false
         }
         
         if countryTextField.text != "United Kingdom" {
             
-            self.createClassicOKAlertWith(alertMessage: "Currently we have servers in United Kingdom only", alertTitle: "Sorry we don't have servers in this country yet", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "Currently we have servers in United Kingdom only", alertTitle: "Sorry we don't have servers in this country yet", okTitle: "OK", proceedCompletion: {})
             
             return false
         }
         
         if self.hatTermsCheckBox.on == false || self.rumpelLiteCheckBox.on == false {
             
-            self.createClassicOKAlertWith(alertMessage: "You have to accept both terms and condition first.", alertTitle: "Please accept Terms & Conditions", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "You have to accept both terms and condition first.", alertTitle: "Please accept Terms & Conditions", okTitle: "OK", proceedCompletion: {})
             
             return false
         }
         
         if self.score < 2 {
             
-            self.createClassicOKAlertWith(alertMessage: "Good passwords are hard to guess. Use uncommon words or inside jokes, non-standard uPPercasing, creative spelling, and non-obvious numbers and symbols.", alertTitle: "Password too weak", okTitle: "OK", proceedCompletion: {() -> Void in return})
+            self.createClassicOKAlertWith(alertMessage: "Good passwords are hard to guess. Use uncommon words or inside jokes, non-standard uPPercasing, creative spelling, and non-obvious numbers and symbols.", alertTitle: "Password too weak", okTitle: "OK", proceedCompletion: {})
             
             return false
         }
@@ -497,6 +497,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         if textField.tag == 10 {
             
             let zxcvbn = DBPasswordStrengthMeterView(frame: CGRect(x: 0, y: 0, width: 15, height: 30))
+            zxcvbn.setLightColor(.rumpelDarkGray(), darkColor: .tealColor())
             zxcvbn.scorePassword(textField.text)
             
             textField.rightViewMode = .always

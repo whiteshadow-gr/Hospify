@@ -144,10 +144,13 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             // reset the stack to avoid allowing back
             let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
             let loginViewController = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
-            viewController.navigationController?.title = ""
             let navigation = viewController.navigationController
             _ = viewController.navigationController?.popToRootViewController(animated: false)
             navigation?.pushViewController(loginViewController, animated: false)
+            
+            UpdateLocations.shared.stopUpdatingLocation()
+            UpdateLocations.shared.stopMonitoringAllRegions()
+            UpdateLocations.shared.stopMonitoringSignificantLocationChanges()
         }
         
         viewController.createClassicAlertWith(alertMessage: NSLocalizedString("logout_message_label", comment:  "logout message"), alertTitle: NSLocalizedString("logout_label", comment:  "logout"), cancelTitle: NSLocalizedString("no_label", comment:  "no"), proceedTitle: NSLocalizedString("yes_label", comment:  "yes"), proceedCompletion: yesAction, cancelCompletion: {})

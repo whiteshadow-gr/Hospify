@@ -41,7 +41,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     
     /// A variable holding the selected image from the image picker
     private var imageSelected: UIImageView = UIImageView()
-    private var selectedImage: UIImage?
+    var selectedImage: UIImage?
     private var differenceHeightSize: CGFloat? = nil
     
     /// A string passed from Notables view controller about the kind of the note
@@ -142,7 +142,15 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     
     @IBAction func addLocationButtonAction(_ sender: Any) {
         
-        self.performSegue(withIdentifier: "checkInSegue", sender: self)
+        if self.receivedNote?.data.locationData.latitude != 0 && self.receivedNote?.data.locationData.longitude != 0 && self.receivedNote?.data.locationData.accuracy != 0 {
+            
+            self.receivedNote?.data.locationData.latitude = 0
+            self.receivedNote?.data.locationData.longitude = 0
+            self.receivedNote?.data.locationData.accuracy = 0
+        } else {
+            
+            self.performSegue(withIdentifier: "checkInSegue", sender: self)
+        }
     }
     
     /**
@@ -275,15 +283,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 
                 HATNotablesService.postNote(userDomain: self.userDomain, userToken: self.token, note: self.receivedNote!, successCallBack: {[weak self] () -> Void in
                     
-                    if self != nil {
-                        
-                        _ = self!.navigationController?.popViewController(animated: true)
-                    }
-                    
                     if self?.loadingScr != nil {
                         
                         self?.loadingScr?.removeFromParentViewController()
                         self?.loadingScr?.view.removeFromSuperview()
+                    }
+                    
+                    if self != nil {
+                        
                         _ = self!.navigationController?.popViewController(animated: true)
                     }
                 })
@@ -356,6 +363,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     HATNotablesService.deleteNote(id: (receivedNote?.id)!, tkn: self.token, userDomain: self.userDomain)
                     
                     if self.imagesToUpload.count > 0 {
+                        
+                        self.showProgressRing()
                         
                         HATAccountService.uploadFileToHATWrapper(token: self.token, userDomain: self.userDomain, fileToUpload: self.imageSelected.image!, progressUpdater: {[weak self](completion) -> Void in
                         
@@ -916,6 +925,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     self.shareForLabel.text = "Shared until"
                 }
             }
+            
+            if self.selectedImage != nil {
+                
+                self.imageSelected.image = self.selectedImage
+                self.imagesToUpload.append(self.imageSelected.image!)
+                self.collectionView.isHidden = false
+            }
             // else init a new value
         } else {
             
@@ -1330,6 +1346,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         } else {
             
             self.imagesToUpload.removeAll()
+            self.receivedNote?.data.photoData.link = ""
             self.collectionView.reloadData()
         }
     }
@@ -1348,7 +1365,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             
             let fullScreenPhotoVC = segue.destination as? PhotoFullScreenViewerViewController
             
-            fullScreenPhotoVC?.image = self.selectedImage
+            fullScreenPhotoVC?.imageURL = self.receivedNote?.data.photoData.link
         }
     }
 }

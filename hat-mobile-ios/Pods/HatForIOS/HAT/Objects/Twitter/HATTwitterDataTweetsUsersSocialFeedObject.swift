@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// A class representing the user's info of a tweet
-public class HATTwitterDataTweetsUsersSocialFeedObject: Comparable {
+public struct HATTwitterDataTweetsUsersSocialFeedObject: Comparable {
     
     // MARK: - Comparable protocol
     
@@ -90,7 +90,7 @@ public class HATTwitterDataTweetsUsersSocialFeedObject: Comparable {
     /**
      It initialises everything from the received JSON file from the HAT
      */
-    public convenience init(from dictionary: Dictionary<String, JSON>) {
+    public init(from dictionary: Dictionary<String, JSON>) {
         
         self.init()
         

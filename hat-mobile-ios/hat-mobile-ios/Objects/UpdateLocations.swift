@@ -15,7 +15,7 @@ import MapKit
 // MARK: Class
 
 /// A class responsible for handling the gps tracking
-class UpdateLocations: UIViewController, CLLocationManagerDelegate {
+class UpdateLocations: NSObject, CLLocationManagerDelegate {
     
     // MARK: - Variables
 
@@ -47,21 +47,11 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
     
     // MARK: - View controller methods
     
-    override func viewDidLoad() {
+    override init() {
         
-        super.viewDidLoad()
+        super.init()
         
-        self.stopMonitoringAllRegions()
-
-        UpdateLocations.shared.startUpdatingLocation()
-        UpdateLocations.shared.locationManager.startMonitoringSignificantLocationChanges()
-        UpdateLocations.shared.locationManager.requestLocation()
-    }
-    
-    override func didReceiveMemoryWarning() {
-        
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        self.resumeLocationServices()
     }
     
     // MARK: - Location Manager Delegate Functions
@@ -79,24 +69,24 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
         MapsHelper.addLocationsToDatabase(locationManager: manager, locations: locations)
         
         // stop monitoring for regions
-        UpdateLocations.shared.stopMonitoringAllRegions()
-        
+        self.stopMonitoringAllRegions()
+        self.locationManager.stopUpdatingLocation()
         // create a new region
-        UpdateLocations.shared.region = CLCircularRegion(center: locations[locations.count - 1].coordinate, radius: 150, identifier: "UpdateCircle")
-        UpdateLocations.shared.region!.notifyOnExit = true
+        self.region = CLCircularRegion(center: locations[locations.count - 1].coordinate, radius: 150, identifier: "UpdateCircle")
+        self.region!.notifyOnExit = true
         
         // call delegate method
-        UpdateLocations.shared.locationDelegate?.updateLocations(locations: locations)
+        self.locationDelegate?.updateLocations(locations: locations)
         
         // stop using gps and start monitoring for the new region
-        locationManager.stopUpdatingLocation()
-        locationManager.startMonitoring(for: region!)
+        self.locationManager.stopUpdatingLocation()
+        self.locationManager.startMonitoring(for: region!)
         
         // if a completion was specified execute it
-        if UpdateLocations.shared.completion != nil {
+        if self.completion != nil {
             
-            UpdateLocations.shared.completion!(locations.last!)
-            UpdateLocations.shared.completion = nil
+            self.completion!(locations.last!)
+            self.completion = nil
         }
     }
     
@@ -105,7 +95,7 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
         // create a new region everytime the user exits the region
         if region is CLCircularRegion {
             
-            UpdateLocations.shared.locationManager.requestLocation()
+           self.locationManager.requestLocation()
         }
     }
     
@@ -151,11 +141,11 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
                 }
             } else {
                 
-                _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "true")
-                UpdateLocations.shared.stopMonitoringAllRegions()
-                UpdateLocations.shared.locationManager.stopUpdatingLocation()
-                UpdateLocations.shared.locationManager = nil
-                UpdateLocations.shared.locationManager.stopMonitoringSignificantLocationChanges()
+                _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "false")
+                self.stopMonitoringAllRegions()
+                self.locationManager.stopUpdatingLocation()
+                self.locationManager = nil
+                self.locationManager.stopMonitoringSignificantLocationChanges()
             }
         }
     }
@@ -165,7 +155,7 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
      */
     public func stopUpdatingLocation() {
         
-        UpdateLocations.shared.locationManager.stopUpdatingLocation()
+        self.locationManager.stopUpdatingLocation()
     }
     
     /**
@@ -177,10 +167,10 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
         
         for region in regions {
             
-            UpdateLocations.shared.locationManager.stopMonitoring(for: region)
+            self.locationManager.stopMonitoring(for: region)
         }
         
-        UpdateLocations.shared.region = nil
+        self.region = nil
     }
     
     /**
@@ -188,7 +178,7 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
      */
     public func startMonitoringSignificantLocationChanges() {
         
-        UpdateLocations.shared.locationManager.startMonitoringSignificantLocationChanges()
+        self.locationManager.startMonitoringSignificantLocationChanges()
     }
     
     /**
@@ -196,7 +186,7 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
      */
     public func stopMonitoringSignificantLocationChanges() {
         
-        UpdateLocations.shared.locationManager.stopMonitoringSignificantLocationChanges()
+        self.locationManager.stopMonitoringSignificantLocationChanges()
     }
     
     /**
@@ -204,7 +194,7 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
      */
     public func requestLocation() {
         
-        UpdateLocations.shared.locationManager.requestLocation()
+        self.locationManager.requestLocation()
     }
     
     /**
@@ -216,15 +206,15 @@ class UpdateLocations: UIViewController, CLLocationManagerDelegate {
         
         if result == "true" {
             
-            UpdateLocations.shared.startUpdatingLocation()
-            UpdateLocations.shared.startMonitoringSignificantLocationChanges()
-            
+            self.locationManager.startUpdatingLocation()
+            self.locationManager.startMonitoringSignificantLocationChanges()
+            self.locationManager.requestLocation()
         } else {
             
-            UpdateLocations.shared.stopMonitoringAllRegions()
-            UpdateLocations.shared.stopUpdatingLocation()
-            UpdateLocations.shared.stopMonitoringSignificantLocationChanges()
-            UpdateLocations.shared.locationManager = nil
+            self.stopMonitoringAllRegions()
+            self.locationManager.stopUpdatingLocation()
+            self.locationManager.stopMonitoringSignificantLocationChanges()
+            self.locationManager = nil
         }
     }
     

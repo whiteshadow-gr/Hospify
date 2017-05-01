@@ -28,8 +28,11 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
     /// A bool to determine if the map is focused on the user's location
     private var isFocusedToUsersPosition: Bool = false
     
+    /// A Double variable containing the latitude of the point to return
     private var latitude: Double?
+    /// A Double variable containing the longitude of the point to return
     private var longitude: Double?
+    /// A Double variable containing the accuracy of the point to return
     private var accuracy: Double?
     
     weak var noteOptionsDelegate: ShareOptionsViewController?

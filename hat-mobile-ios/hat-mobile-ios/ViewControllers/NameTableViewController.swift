@@ -14,18 +14,26 @@ import HatForIOS
 
 // MARK: Class
 
+/// A class responsible for the name UITableViewController of the PHATA section
 class NameTableViewController: UITableViewController {
     
     // MARK: - Variables
 
+    /// The sections of the table view
     private let sections: [[String]] = [[""], [""], [""], [""], ["Make those fields public?"]]
+    /// The headers of the table view
     private let headers: [String] = ["First Name", "Last Name", "Middle Name", "Title", "Privacy"]
-    var profile: HATProfileObject? = nil
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
+    /// The loading view pop up
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
+    /// User's domain
+    private let userDomain = HATAccountService.TheUserHATDomain()
+    /// User's token
+    private let userToken = HATAccountService.getUsersTokenFromKeychain()
+    
+    /// User's profile passed on from previous view controller
+    var profile: HATProfileObject? = nil
     
     // MARK: - IBActions
     
@@ -168,11 +176,10 @@ class NameTableViewController: UITableViewController {
             cell.tag = 2
         } else if indexPath.section == 3 {
             
-            cell.isThisTitleTextField = true
             cell.dataSourceForPickerView = ["", "Mr.", "Mrs.", "Miss", "Dr."]
             cell.textField.text = self.profile?.data.personal.title
             cell.privateSwitch.isHidden = true
-            cell.tag = 3
+            cell.tag = 10
         } else if indexPath.section == 4 {
             
             cell.textField.text = self.sections[indexPath.section][indexPath.row]

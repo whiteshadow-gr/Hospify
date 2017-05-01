@@ -12,41 +12,12 @@
 
 import Alamofire
 import SwiftyJSON
+import HatForIOS
 
 // MARK: Class
 
 /// All network related methods
 class NetworkHelper {
-    
-    // MARK: - Enums
-    
-    /**
-     JSON Result from HTTP requests
-     
-     - IsSuccess: A tuple containing: isSuccess: Bool, statusCode: Int?, result: JSON
-     - Error: A tuple containing: error: Error, statusCode: Int?
-     */
-    enum ResultType {
-        
-        /// when the result is success. A tuple containing: isSuccess: Bool, statusCode: Int?, result: JSON
-        case isSuccess(isSuccess: Bool, statusCode: Int?, result: JSON)
-        /// when the result is error. A tuple containing: error: Error, statusCode: Int?
-        case error(error: Error, statusCode: Int?)
-    }
-    
-    /**
-     String Result from HTTP requests
-     
-     - IsSuccess: A tuple containing: isSuccess: Bool, statusCode: Int?, result: String
-     - Error: A tuple containing: error: Error, statusCode: Int?
-     */
-    enum ResultTypeString {
-        
-        /// when the result is success. A tuple containing: isSuccess: Bool, statusCode: Int?, result: String
-        case isSuccess(isSuccess: Bool, statusCode: Int?, result: String)
-        /// when the result is error. A tuple containing: error: Error, statusCode: Int?
-        case error(error: Error, statusCode: Int?)
-    }
     
     // MARK: - Friendly exception message
     
@@ -86,26 +57,6 @@ class NetworkHelper {
         }
     }
     
-    // MARK: - Query from string
-    
-    /**
-     Gets a param value from a url
-     
-     - parameter url: The url to extract the parameters from
-     - parameter param: The parameter
-     
-     - returns: String or nil if not found
-     */
-    class func GetQueryStringParameter(url: String?, param: String) -> String? {
-        
-        if let url = url, let urlComponents = NSURLComponents(string: url), let queryItems = (urlComponents.queryItems as [URLQueryItem]!) {
-            
-            return queryItems.filter({ (item) in item.name == param }).first?.value!
-        }
-        
-        return nil
-    }
-    
     // MARK: - Construct request headers
     
     /**
@@ -119,162 +70,6 @@ class NetworkHelper {
         
         return ["Accept": Constants.ContentType.JSON, "Content-Type": Constants.ContentType.JSON, "X-Auth-Token": xAuthToken]
     }
-    
-    // MARK: - Request methods
-    
-    /**
-     Makes ansychronous JSON request
-     Closure for caller to handle
-     
-     - parameter url: The URL to connect to
-     - parameter method: The method to use in connecting with the URL
-     - parameter encoding: The encoding to use in the request
-     - parameter contentType: The content type of the request
-     - parameter parameters: The parameters in the request
-     - parameter headers: The headers in the request
-     - parameter completion: The completion handler to execute upon completing the request
-     */
-    class func AsynchronousRequest(
-        
-            _ url: String,
-            method: HTTPMethod,
-            encoding: ParameterEncoding,
-            contentType: String,
-            parameters: Dictionary<String, Any>,
-            headers: Dictionary<String, String>,
-            completion: @escaping (_ r: NetworkHelper.ResultType) -> Void) -> Void {
-        
-        UIApplication.shared.isNetworkActivityIndicatorVisible = true
-        // do a post
-        Alamofire.request(
-            url, /* request url */
-            method: method, /* GET, POST, etc*/
-            parameters: parameters, /* parameters to POST*/
-            encoding: encoding, /* encoding type, JSON, URLEncoded, etc*/
-            headers: headers /* request header */
-            )
-            .validate(statusCode: 200..<300)
-            .validate(contentType: [contentType])
-            .responseJSON { response in
-                //print(response.request)  // original URL request
-                //print(response.response) // URL response
-                //print(response.data)     // server data
-                //print(response.result)   // result of response serialization
-                
-            switch response.result {
-            case .success(_):
-                
-                let headers = response.response?.allHeaderFields
-                if let tokenHeader = headers?["X-Auth-Token"] as? String {
-                    
-                    let result = AuthenticationHelper.decodeToken(token: tokenHeader, networkResponse: "")
-                    if result.message == "refreshToken" && result.scope == "owner" {
-                        
-                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: tokenHeader)
-                    }
-                }
-                
-                // check if we have a value and return it
-                if let value = response.result.value {
-                
-                    let json = JSON(value)
-                    completion(NetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: json))
-                // else return isSuccess: false and nil for value
-                } else {
-                    
-                    completion(NetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
-                }
-                
-            // in case of failure return the error but check for internet connection or unauthorised status and let the user know
-            case .failure(let error):
-                
-                if error.localizedDescription == "The Internet connection appears to be offline." {
-                    
-                    NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "The Internet connection appears to be offline.")
-                } else if response.response?.statusCode == 401 {
-                    
-                     NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "Unauthorized. Please sign out and try again.")
-                    _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "expired")
-                }
-                
-                completion(NetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
-            }
-            
-            UIApplication.shared.isNetworkActivityIndicatorVisible = false
-        }
-    }
-    
-    /**
-     Makes ansychronous string request
-     Closure for caller to handle
-     
-     - parameter url: The URL to connect to
-     - parameter method: The method to use in connecting with the URL
-     - parameter encoding: The encoding to use in the request
-     - parameter contentType: The content type of the request
-     - parameter parameters: The parameters in the request
-     - parameter headers: The headers in the request
-     - parameter completion: The completion handler to execute upon completing the request
-     */
-    class func AsynchronousStringRequest(
-        
-        _ url: String,
-        method: HTTPMethod,
-        encoding: ParameterEncoding,
-        contentType: String,
-        parameters: Dictionary<String, Any>,
-        headers: Dictionary<String, String>,
-        completion: @escaping (_ r: NetworkHelper.ResultTypeString) -> Void) -> Void {
-        
-        UIApplication.shared.isNetworkActivityIndicatorVisible = true
-        // do a post
-        Alamofire.request(
-            url, /* request url */
-            method: method, /* GET, POST, etc*/
-            parameters: parameters, /* parameters to POST*/
-            encoding: encoding, /* encoding type, JSON, URLEncoded, etc*/
-            headers: headers /* request header */
-            )
-            .validate(statusCode: 200..<300)
-            .validate(contentType: [contentType])
-            .responseString { response in
-            //print(response.request)  // original URL request
-            //print(response.response) // URL response
-            //print(response.data)     // server data
-            //print(response.result)   // result of response serialization
-            
-            switch response.result {
-            case .success(_):
-                
-                let headers = response.response?.allHeaderFields
-                if let tokenHeader = headers?["X-Auth-Token"] as? String {
-                    
-                    let result = AuthenticationHelper.decodeToken(token: tokenHeader, networkResponse: "")
-                    if result.message == "refreshToken" && result.scope == "owner" {
-                        
-                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: tokenHeader)
-                    }
-                }
-                
-                // check if we have a value and return it
-                if let value = response.result.value {
-                    
-                    completion(NetworkHelper.ResultTypeString.isSuccess(isSuccess: true, statusCode: response.response?.statusCode, result: value))
-                // else return isSuccess: false and nil for value
-                } else {
-                    
-                    completion(NetworkHelper.ResultTypeString.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
-                }
-            // return the error
-            case .failure(let error):
-                
-                completion(NetworkHelper.ResultTypeString.error(error: error, statusCode: response.response?.statusCode))
-            }
-                
-            UIApplication.shared.isNetworkActivityIndicatorVisible = false
-        }
-    }
-    
     /**
      Makes ansychronous data request
      used to POST data TO HAT
@@ -298,7 +93,7 @@ class NetworkHelper {
         parameters: [AnyObject],
         headers: Dictionary<String, String>,
         userHATAccessToken: String,
-        completion: @escaping (_ r: NetworkHelper.ResultType) -> Void) -> Void {
+        completion: @escaping (_ r: HATNetworkHelper.ResultType) -> Void) -> Void {
         
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         
@@ -321,12 +116,13 @@ class NetworkHelper {
             case .success(_):
                 
                 let headers = response.response?.allHeaderFields
-                if let tokenHeader = headers?["X-Auth-Token"] as? String {
+                let tokenHeader = headers?["X-Auth-Token"] as? String
+                if tokenHeader != nil {
                     
-                    let result = AuthenticationHelper.decodeToken(token: tokenHeader, networkResponse: "")
+                    let result = AuthenticationHelper.decodeToken(token: tokenHeader!, networkResponse: "")
                     if result.message == "refreshToken" && result.scope == "owner" {
                         
-                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: tokenHeader)
+                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: tokenHeader!)
                     }
                 }
                 
@@ -334,16 +130,16 @@ class NetworkHelper {
                 if let value = response.result.value {
                     
                     let json = JSON(value)
-                    completion(NetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response!.statusCode, result: json))
+                    completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: true, statusCode: response.response!.statusCode, result: json, token: tokenHeader))
                 // else return isSuccess: false and nil for value
                 } else {
                     
-                    completion(NetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: ""))
+                    completion(HATNetworkHelper.ResultType.isSuccess(isSuccess: false, statusCode: response.response?.statusCode, result: "", token: tokenHeader))
                 }
             // return the error
             case .failure(let error):
                 
-                completion(NetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
+                completion(HATNetworkHelper.ResultType.error(error: error, statusCode: response.response?.statusCode))
             }
           
             UIApplication.shared.isNetworkActivityIndicatorVisible = false

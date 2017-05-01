@@ -16,18 +16,37 @@ import UIKit
 
 /// The class responsible for the loading ring progress bar pop up view controller
 class LoadingScreenWithProgressRingViewController: UIViewController {
+    
+    // MARK: - Variables
+    
+    /// The percentage of the proccess completed
+    private var completionPercentage: Double?
+    
+    // MARK: - IBOutlets
 
+    /// An IBOutlet for handling the RingProgressCircle
     @IBOutlet weak var progressRing: RingProgressCircle!
+    
+    /// An IBOutlet for handling the percentage UILabel
     @IBOutlet weak var percentageLabel: UILabel!
+    
+    /// An IBOutlet for handling the cancel UIButton
     @IBOutlet weak var cancelButton: UIButton!
+    
+    // MARK: - IBActions
 
+    /**
+     It hides the loading ring progress bar
+     
+     - parameter sender: The object that called this method
+     */
     @IBAction func cancelButtonAction(_ sender: Any) {
         
         self.removeFromParentViewController()
         self.view.removeFromSuperview()
     }
     
-    private var completionPercentage: Double?
+    // MARK: - View controller methods
     
     override func viewDidLoad() {
         
@@ -47,7 +66,6 @@ class LoadingScreenWithProgressRingViewController: UIViewController {
         super.viewDidAppear(animated)
         
         var frame = self.percentageLabel.frame
-        
         frame.size.height = 21
         
         self.percentageLabel.frame = frame
@@ -58,6 +76,15 @@ class LoadingScreenWithProgressRingViewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
+    // MARK: - Update view
+    
+    /**
+     Updates the ring view with new values
+     
+     - parameter completion: The percentage of the circle from 0 to 1
+     - parameter animateFrom: The positions to start animating from
+     - parameter removePreviousRingLayer: A bool value determing if removes the previous ring or adds one on top
+     */
     func updateView(completion: Double, animateFrom: Float, removePreviousRingLayer: Bool) {
         
         self.progressRing.isHidden = false

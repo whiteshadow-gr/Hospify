@@ -12,32 +12,26 @@
 
 import UIKit
 
+// MARK: Class
+
+/// A class responsible for handling the photo picker
 class PhotosHelperViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
+    // MARK: - Variables
+    
+    /// The photo picker delegate
     weak var delegate: PhotoPickerDelegate?
+    /// The source type of the photo picker
     private var sourceType: UIImagePickerControllerSourceType?
     
     /// A variable holding a reference to the image picker view used to present the photo library or camera
     private var imagePicker: UIImagePickerController!
     
+    // MARK: - View controller methods
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
-    }
-    
-    func presentPicker(sourceType: UIImagePickerControllerSourceType) -> UIImagePickerController {
-        
-        self.imagePicker = UIImagePickerController()
-        self.imagePicker.delegate = self
-        self.imagePicker.sourceType = sourceType
-        self.sourceType = sourceType
-        
-        if sourceType == .photoLibrary {
-            
-            self.imagePicker.mediaTypes = UIImagePickerController.availableMediaTypes(for: UIImagePickerControllerSourceType.photoLibrary)!
-        }
-        
-        return self.imagePicker
     }
 
     override func didReceiveMemoryWarning() {
@@ -69,6 +63,21 @@ class PhotosHelperViewController: UIViewController, UIImagePickerControllerDeleg
             ac.addAction(UIAlertAction(title: "OK", style: .default))
             present(ac, animated: true)
         }
+    }
+    
+    func presentPicker(sourceType: UIImagePickerControllerSourceType) -> UIImagePickerController {
+        
+        self.imagePicker = UIImagePickerController()
+        self.imagePicker.delegate = self
+        self.imagePicker.sourceType = sourceType
+        self.sourceType = sourceType
+        
+        if sourceType == .photoLibrary {
+            
+            self.imagePicker.mediaTypes = UIImagePickerController.availableMediaTypes(for: UIImagePickerControllerSourceType.photoLibrary)!
+        }
+        
+        return self.imagePicker
     }
 
 }

@@ -172,6 +172,18 @@ extension HATAccountService {
         return "https://" + self.TheUserHATDomain() + "/data/record/values"
     }
     
+    // MARK: - Upload file to hat
+    
+    /**
+     Uploads a file to HAT
+     
+     - parameter token: The user's token
+     - parameter userDomain: The user's domain
+     - parameter fileToUpload: The image to upload
+     - parameter progressUpdater: A function to execute on the progress of the upload is moving forward
+     - parameter completion: A function to execute on success
+     - parameter errorCallBack: A Function to execute on failure
+     */
     class func uploadFileToHATWrapper(token: String, userDomain: String, fileToUpload: UIImage, progressUpdater: ((Double) -> Void)?, completion: ((FileUploadObject, String?) -> Void)?, errorCallBack: ((HATTableError) -> Void)?) {
         
         HATAccountService.uploadFileToHAT(

@@ -12,19 +12,26 @@
 
 import UIKit
 
-class ResetPasswordTableViewCell: UITableViewCell {
+// MARK: Class
 
+/// The class responsible for the reset password table view cell
+class ResetPasswordTableViewCell: UITableViewCell {
+    
+    // MARK: - IBOutlets
+
+    /// The textField that the user writes the old or new password
     @IBOutlet weak var textField: UITextField!
     
+    // MARK: - UITableViewCell methods
+    
     override func awakeFromNib() {
+        
         super.awakeFromNib()
-        // Initialization code
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
+        
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
 
 }

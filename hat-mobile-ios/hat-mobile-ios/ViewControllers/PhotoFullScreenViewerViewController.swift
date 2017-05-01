@@ -12,22 +12,43 @@
 
 import HatForIOS
 
+// MARK: Class
+
+/// A class responsible for the full screen viewer UIViewController
 class PhotoFullScreenViewerViewController: UIViewController {
     
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var deleteButton: UIButton!
-    @IBOutlet weak var ringProgressBar: RingProgressCircle!
+    // MARK: - Variables
     
+    /// The image URL to download, passed on from previous view controller
     var imageURL: String?
     
+    /// The file object, passed on from previous view controller
     var file: FileUploadObject?
     
+    /// A Bool value to determine of the ui is visible or not
     private var isUIHidden: Bool = false
     
-    private let token = HATAccountService.getUsersTokenFromKeychain()
-    
+    /// User's domain
     private let userDomain = HATAccountService.TheUserHATDomain()
+    /// User's token
+    private let userToken = HATAccountService.getUsersTokenFromKeychain()
+    
+    // MARK: - IBOutlets
+    
+    /// An IBOutlet for handling the image view
+    @IBOutlet weak var imageView: UIImageView!
+    /// An IBOutlet for handling the delete button
+    @IBOutlet weak var deleteButton: UIButton!
+    /// An IBOutlet for handling the ring progress bar
+    @IBOutlet weak var ringProgressBar: RingProgressCircle!
+    
+    // MARK: - IBActions
 
+    /**
+     Deletes the image visible
+     
+     - parameter sender: The object that called this method
+     */
     @IBAction func deleteButtonAction(_ sender: Any) {
         
         if file != nil {
@@ -48,9 +69,11 @@ class PhotoFullScreenViewerViewController: UIViewController {
                 _ = CrashLoggerHelper.hatErrorLog(error: error)
             }
             
-            HATFileService.deleteFile(fileID: file!.fileID, token: self.token, userDomain: self.userDomain, successCallback: success, errorCallBack: fail)
+            HATFileService.deleteFile(fileID: file!.fileID, token: self.userToken, userDomain: self.userDomain, successCallback: success, errorCallBack: fail)
         }
     }
+    
+    // MARK: - View controller methods
     
     override func viewDidLoad() {
         
@@ -100,7 +123,17 @@ class PhotoFullScreenViewerViewController: UIViewController {
         
         self.view.backgroundColor = .black
     }
+
+    override func didReceiveMemoryWarning() {
+        
+        super.didReceiveMemoryWarning()
+    }
     
+    // MARK: - Hide UI
+    
+    /**
+     Hides the navigation bar, tab bar and delete button
+     */
     @objc private func hideUI() {
         
         self.navigationController?.isNavigationBarHidden = !(self.isUIHidden)
@@ -111,11 +144,6 @@ class PhotoFullScreenViewerViewController: UIViewController {
             self.deleteButton.isHidden = !(self.isUIHidden)
         }
         self.isUIHidden = !(self.isUIHidden)
-    }
-
-    override func didReceiveMemoryWarning() {
-        
-        super.didReceiveMemoryWarning()
     }
 
 }

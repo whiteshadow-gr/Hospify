@@ -233,7 +233,6 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     // MARK: - Show pop up screens

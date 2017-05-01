@@ -20,7 +20,7 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
     // MARK: - Variables
     
     /// the data points from Realm
-    private var dataResults : Results<DataPoint>!
+    private var dataResults: Results<DataPoint>!
     /// the cell identifier
     private let basicCellIdentifier = "DataPointTableViewCell"
     
@@ -49,7 +49,7 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        var cell : DataPointTableViewCell? = tableView.dequeueReusableCell(withIdentifier: basicCellIdentifier) as! DataPointTableViewCell?
+        var cell: DataPointTableViewCell? = tableView.dequeueReusableCell(withIdentifier: basicCellIdentifier) as! DataPointTableViewCell?
         
         if (cell == nil) {
             

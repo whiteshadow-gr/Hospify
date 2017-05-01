@@ -15,13 +15,18 @@ import zxcvbn_ios
 
 // MARK: Class
 
+/// A class responsible for the reset password UITableViewController of the PHATA section
 class ResetPasswordTableViewController: UITableViewController, UITextFieldDelegate {
     
     // MARK: - Variables
 
+    /// The sections of the table view
     private let sections: [[String]] = [[""], ["", ""]]
+    /// The headers of the table view
     private let headers: [String] = ["Existing Password", "New Password"]
+    /// The password strength score
     private var score: Int = 0
+    /// The loading view pop up
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()

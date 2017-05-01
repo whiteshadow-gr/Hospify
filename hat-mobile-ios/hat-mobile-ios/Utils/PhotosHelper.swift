@@ -59,6 +59,8 @@ class PhotosHelper: NSObject {
         }
     }
     
+    // MARK: - Authorisation
+    
     /**
      Request authorisation handler
      

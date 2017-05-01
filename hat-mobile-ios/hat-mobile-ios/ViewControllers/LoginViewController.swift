@@ -342,6 +342,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         HATLoginService.loginToHATAuthorization(userDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, url: url, success: success, failed: failed)
     }
     
+    // MARK: - Enable location data plug
+    
     /**
      Saves the hatdomain from token to keychain for easy log in
      

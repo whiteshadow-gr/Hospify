@@ -39,8 +39,6 @@ class LearnMorePHATAViewController: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
         // set the desired text
         self.details.text = "PHATA is your personal HAT address (e.g. YourHATname.hubofallthings.net). It is similar to a PO Box or a nickname for your HAT server. \n\n It is what you use to sign in on to HAT-ready services on the internet. You can set up your PHATA page and it can then be your personal home page on the Internet. Customise what information you wish to share on your PHATA page here. "
@@ -49,6 +47,5 @@ class LearnMorePHATAViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 }

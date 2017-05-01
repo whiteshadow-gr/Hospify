@@ -17,8 +17,12 @@ import Foundation
 /// A stuct to init a time interval in the future
 struct FutureTimeInterval {
     
+    // MARK: - Variable
+    
     /// the interval in the future
     var interval: TimeInterval
+    
+    // MARK: - Initialiser
     
     /**
      Custom initializer of FutureTimeInterval

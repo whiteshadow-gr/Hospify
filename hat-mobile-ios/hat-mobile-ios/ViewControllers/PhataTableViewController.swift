@@ -15,15 +15,22 @@ import SwiftyJSON
 
 // MARK: Class
 
+/// A class responsible for the phata UITableViewController of the more tab bar
 class PhataTableViewController: UITableViewController {
     
     // MARK: - Variables
     
+    /// The sections of the table view
     private let sections: [[String]] = [["PHATA"], ["Email Address", "Mobile Number"], ["Full Name", "Info", "Picture"], ["Emergency Contact"], ["Address"], ["About"], ["Social Links"]]
+    /// The headers of the table view
     private let headers: [String] = ["PHATA", "Contact Info", "Profile", "Emergency Contact", "Address", "About", "Social Links"]
-    private var profile: HATProfileObject? = nil
-    let userDomain = HATAccountService.TheUserHATDomain()
-    let userToken = HATAccountService.getUsersTokenFromKeychain()
+    /// User's domain
+    private let userDomain = HATAccountService.TheUserHATDomain()
+    /// User's token
+    private let userToken = HATAccountService.getUsersTokenFromKeychain()
+    
+    /// User's profile passed on from previous view controller
+    var profile: HATProfileObject? = nil
     
     // MARK: - Update profile responses
     
@@ -46,7 +53,7 @@ class PhataTableViewController: UITableViewController {
         switch error {
         case .tableDoesNotExist:
             
-            let tableJSON = JSONHelper.createProfileTableJSON()
+            let tableJSON = HATJSONHelper.createProfileTableJSON()
             HATAccountService.createHatTable(userDomain: userDomain, token: userToken, notablesTableStructure: tableJSON, failed: {(error) in
             
                 print(error)

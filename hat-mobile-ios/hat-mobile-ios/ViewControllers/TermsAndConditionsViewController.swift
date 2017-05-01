@@ -51,6 +51,8 @@ class TermsAndConditionsViewController: UIViewController, UIWebViewDelegate {
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - WebView delegate
+    
     func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
         
         print(error)

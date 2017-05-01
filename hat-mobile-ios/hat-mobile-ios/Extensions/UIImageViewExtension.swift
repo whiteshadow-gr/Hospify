@@ -55,10 +55,10 @@ extension UIImageView {
     // MARK: - Crop image 
     
     /**
-     <#Function Details#>
+     Crops image to the specified width and height
      
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter width: The width of the cropped image
+     - parameter height: The height of the cropped image
      */
     public func cropImage(width: CGFloat, height: CGFloat) {
         

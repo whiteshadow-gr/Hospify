@@ -45,7 +45,7 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
         return locationManager
     }()
     
-    // MARK: - View controller methods
+    // MARK: - Initialiser
     
     override init() {
         

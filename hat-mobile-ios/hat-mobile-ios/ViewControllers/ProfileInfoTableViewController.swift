@@ -14,18 +14,26 @@ import HatForIOS
 
 // MARK: Class
 
+/// A class responsible for the profile info UITableViewController of the PHATA section
 class ProfileInfoTableViewController: UITableViewController {
     
     // MARK: - Variables
 
+    /// The sections of the table view
     private let sections: [[String]] = [["Age"], ["Gender"], ["Birth"]]
+    /// The headers of the table view
     private let headers: [String] = ["Age", "Gender", "Birth"]
-    var profile: HATProfileObject? = nil
+    /// The loading view pop up
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
+    /// User's domain
     private let userDomain = HATAccountService.TheUserHATDomain()
+    /// User's token
     private let userToken = HATAccountService.getUsersTokenFromKeychain()
+    
+    /// User's profile passed on from previous view controller
+    var profile: HATProfileObject? = nil
     
     // MARK: - IBAction
     
@@ -158,7 +166,6 @@ class ProfileInfoTableViewController: UITableViewController {
                 array.append(String(describing: i))
             }
             cell.dataSourceForPickerView = array
-            cell.isThisAgeTextField = true
             cell.textField.text = self.profile?.data.age.group
             cell.privateSwitch.isOn = !(self.profile?.data.age.isPrivate)!
             cell.tag = 0
@@ -166,13 +173,11 @@ class ProfileInfoTableViewController: UITableViewController {
             
             let array: [String] = ["", "Male", "Female", "Other"]
             cell.dataSourceForPickerView = array
-            cell.isThisGenderTextField = true
             cell.textField.text = self.profile?.data.gender.type
             cell.privateSwitch.isOn = !(self.profile?.data.gender.isPrivate)!
             cell.tag = 1
         } else if indexPath.section == 2 {
             
-            cell.isThisBirthTextField = true
             if self.profile?.data.birth.date != nil {
                 
                 cell.textField.text = self.profile?.data.birth.date

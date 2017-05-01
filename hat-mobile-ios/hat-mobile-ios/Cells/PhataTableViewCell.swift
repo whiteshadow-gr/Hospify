@@ -12,14 +12,35 @@
 
 import UIKit
 
+// MARK: Class
+
+/// A class responsible for handling the phata table view cell
 class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     
+    // MARK: - Variables
+    
+    /// The options of the picker view
     var dataSourceForPickerView: [String] = ["", "Mr.", "Mrs.", "Miss", "Dr."]
-
-    var isThisTitleTextField: Bool = false
-    var isThisAgeTextField: Bool = false
-    var isThisBirthTextField: Bool = false
-    var isThisGenderTextField: Bool = false
+    
+    // MARK: - IBOutlets
+    
+    /// An IBOutlet for handling the switch
+    @IBOutlet weak var privateSwitch: CustomSwitch!
+    /// An IBOutlet for handling the textField
+    @IBOutlet weak var textField: UITextField!
+    
+    // MARK: - IBActions
+    
+    /**
+     A function called everytime the value of the switch has changed
+     
+     - parameter sender: The object that called this function
+     */
+    @IBAction func valueDidChange(_ sender: Any) {
+        
+    }
+    
+    // MARK: - PickerView methods
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         
@@ -40,14 +61,8 @@ class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDele
         
         self.textField.text = self.dataSourceForPickerView[row]
     }
-
-    @IBOutlet weak var privateSwitch: CustomSwitch!
-    @IBOutlet weak var textField: UITextField!
     
-    @IBAction func valueDidChange(_ sender: Any) {
-        
-        print(self.privateSwitch.isOn)
-    }
+    // MARK: - TableViewCell methods
     
     override func awakeFromNib() {
         
@@ -61,20 +76,29 @@ class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDele
         super.setSelected(selected, animated: animated)
     }
     
+    // MARK: - Picker did update date
+    
+    /**
+     Updates the textField according to the selection of the datePicker
+     
+     - parameter datePicker: The datePicker that called this method
+     */
     func datePickerDidUpdateDate(datePicker: UIDatePicker) {
         
         self.textField.text = FormatterHelper.formatDateStringToUsersDefinedDate(date: datePicker.date, dateStyle: .short, timeStyle: .none)
     }
+    
+    // MARK: - TextField delegate method
 
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         
-        if isThisTitleTextField || isThisAgeTextField || isThisGenderTextField {
+        if textField.tag == 10 || textField.tag == 0 || textField.tag == 1 {
             
             let pickerView = UIPickerView()
             pickerView.delegate = self
             pickerView.dataSource = self
             textField.inputView = pickerView
-        } else if isThisBirthTextField {
+        } else if textField.tag == 2 {
             
             let datePickerView = UIDatePicker()
             datePickerView.addTarget(self, action: #selector(datePickerDidUpdateDate(datePicker:)) , for: .valueChanged)

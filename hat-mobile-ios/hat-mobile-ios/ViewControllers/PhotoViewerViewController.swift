@@ -18,6 +18,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
     
     // MARK: - Variables
     
+    /// An array of tuple with type (UIImage, Date) used to matching
     private var images: [(UIImage, Date)] = []
     /// The files, images, to show in the cells
     private var files: [FileUploadObject] = [] {
@@ -28,27 +29,39 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         }
     }
     
+    /// A loading ring progress bar used while uploading a new image
     private var loadingScr: LoadingScreenWithProgressRingViewController?
+    /// User's domain
     private let userDomain = HATAccountService.TheUserHATDomain()
-    
+    /// User's token
     private let userToken = HATAccountService.getUsersTokenFromKeychain()
     /// The reuse identifier of the cell
     private let reuseIdentifier = "photosCell"
     
+    /// The Photo picker used to upload a new photo
     private let photoPicker = PhotosHelperViewController()
     
+    /// The selected image file to view full screen
     private var selectedFileToView: FileUploadObject?
     
     // MARK: - IBOutlets
     
+    /// An IBOutlet for handling the collection view
     @IBOutlet weak var collectionView: UICollectionView!
     
+    /// An IBOutlet for handling the imageView
     @IBOutlet weak var addFirstPhotoFileImageView: UIImageView!
     
+    /// An IBOutlet for handling the add picture button
     @IBOutlet weak var addPictureButtonOutlet: UIButton!
     
     // MARK: - IBActions
 
+    /**
+     Upload picture to hat
+     
+     - parameter sender: The object that called this method
+     */
     @IBAction func addPictureButtonAction(_ sender: Any) {
         
         let alertController = UIAlertController(title: "Select options", message: "Select from where to upload image", preferredStyle: .actionSheet)

@@ -145,14 +145,14 @@ class SyncDataHelper {
         let url = HATAccountService.TheUserHATAccessTokenURL()
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: headers) { (r: NetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: headers) { (r: HATNetworkHelper.ResultType) -> Void in
             
             // the result from asynchronous call to login
             let checkResult: String = "accessToken"
             
             switch r {
                 
-            case .isSuccess(let isSuccess, _, let result):
+            case .isSuccess(let isSuccess, _, let result, _):
                 
                 if isSuccess{
                     
@@ -220,14 +220,14 @@ class SyncDataHelper {
         let url = HATAccountService.TheUserHATCheckIfTableExistsURL(tableName: Constants.HATDataSource().name, sourceName: Constants.HATDataSource().source)
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:] , headers: headers) { (r: NetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:] , headers: headers) { (r: HATNetworkHelper.ResultType) -> Void in
             
             // the result from asynchronous call to login
             let checkResult: String = "id"
             
             switch r {
                 
-            case .isSuccess(let isSuccess, _, let result):
+            case .isSuccess(let isSuccess, _, let result, _):
                 
                 if isSuccess{
                     
@@ -305,13 +305,13 @@ class SyncDataHelper {
         let url = HATAccountService.TheConfigureNewDataSourceURL()
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers) { (r: NetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: parameters, headers: headers) { (r: HATNetworkHelper.ResultType) -> Void in
                 
             // the result from asynchronous call to login
             let checkResult: String = "name"
             
             switch r {
-            case .isSuccess(let isSuccess, _, let result):
+            case .isSuccess(let isSuccess, _, let result, _):
                 
                 if isSuccess {
                     
@@ -375,13 +375,13 @@ class SyncDataHelper {
         let url = HATAccountService.TheGetFieldInformationUsingTableIDURL(fieldID)
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: headers) {(r: NetworkHelper.ResultType) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: HTTPMethod.get, encoding: Alamofire.URLEncoding.default, contentType: Constants.ContentType.JSON, parameters: [:], headers: headers) {(r: HATNetworkHelper.ResultType) -> Void in
             
             let checkResult: String = "fields"
             
             switch r {
                 
-            case .isSuccess(let isSuccess, _, let result):
+            case .isSuccess(let isSuccess, _, let result, _):
                 
                 if isSuccess{
                     
@@ -494,14 +494,14 @@ class SyncDataHelper {
         let url = HATAccountService.ThePOSTDataToHATURL()
         
         // make asynchronous call to get token
-        NetworkHelper.AsynchronousRequestData(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: dataToPOSTToHAT.arrayObject! as [AnyObject], headers: headers, userHATAccessToken:  userHATAccessToken) {(r: NetworkHelper.ResultType) -> Void in
+        NetworkHelper.AsynchronousRequestData(url, method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: Constants.ContentType.JSON, parameters: dataToPOSTToHAT.arrayObject! as [AnyObject], headers: headers, userHATAccessToken:  userHATAccessToken) {(r: HATNetworkHelper.ResultType) -> Void in
             
             // the result from asynchronous call to login
             let checkResult: String = "record"
             
             switch r {
                 
-            case .isSuccess(let isSuccess, let statusCode, let result):
+            case .isSuccess(let isSuccess, let statusCode, let result, _):
                 
                 if isSuccess {
                     

@@ -30,11 +30,14 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     @IBOutlet weak var postDataLabel: UILabel!
     /// An IBOutlet for handling the username of the post
     @IBOutlet weak var usernameLabel: UILabel!
-    @IBOutlet weak var attachedImage: UIImageView!
-    @IBOutlet weak var ringProgressBar: RingProgressCircle!
     
+    /// An IBOutlet for the attached image of the note, if any
+    @IBOutlet weak var attachedImage: UIImageView!
     /// An IBOutlet for handling the profile image of the post
     @IBOutlet weak var profileImage: UIImageView!
+    
+    /// An IBOutlet for showing the download completion of the image
+    @IBOutlet weak var ringProgressBar: RingProgressCircle!
     
     /// An IBOutlet for handling the collection view
     @IBOutlet weak var collectionView: UICollectionView!
@@ -58,6 +61,9 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
             if let url = URL(string: note.data.photoData.link) {
                 
                 newCell.ringProgressBar.isHidden = false
+                newCell.ringProgressBar.ringRadius = 10
+                newCell.ringProgressBar.ringLineWidth = 4
+                newCell.ringProgressBar.ringColor = .white
                 
                 newCell.attachedImage.downloadedFrom(url: url, progressUpdater: { progress in
                 

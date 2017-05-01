@@ -12,11 +12,25 @@
 
 import UIKit
 
+// MARK: Class
+
+/// The class responsible for the selected images to upload in the shareOptionsViewController
 class ShareOptionsSelectedImageCollectionViewCell: UICollectionViewCell {
     
+    // MARK: - IBOutlets
+    
+    /// The selected image to upload
     @IBOutlet weak var selectedImage: UIImageView!
+    /// A button to remove the image from uploading
     @IBOutlet weak var cancelButton: UIButton!
     
+    // MARK: - IBActions
+    
+    /**
+     Removes the image from the uploading list
+     
+     - parameter sender: The object that called this method
+     */
     @IBAction func cancelButtonAction(_ sender: Any) {
         
         self.selectedImage.image = nil

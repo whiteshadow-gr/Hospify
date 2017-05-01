@@ -14,18 +14,26 @@ import HatForIOS
 
 // MARK: Class
 
+/// A class responsible for the emergency contact UITableViewController of the PHATA section
 class EmergencyContactTableViewController: UITableViewController {
     
     // MARK: - Variables
 
+    /// The sections of the table view
     private let sections: [[String]] = [[""], [""], [""], [""], ["Make those fields public?"]]
+    /// The headers of the table view
     private let headers: [String] = ["First Name", "Last Name", "Relationship", "Phone Number", "Privacy"]
-    var profile: HATProfileObject? = nil
+    /// The loading view pop up
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
+    /// User's domain
     private let userDomain = HATAccountService.TheUserHATDomain()
+    /// User's token
     private let userToken = HATAccountService.getUsersTokenFromKeychain()
+    
+    /// User's profile passed on from previous view controller
+    var profile: HATProfileObject? = nil
     
     // MARK: - IBActions
     

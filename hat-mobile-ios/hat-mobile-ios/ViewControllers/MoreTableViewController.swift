@@ -15,18 +15,24 @@ import MessageUI
 
 // MARK: Class
 
+/// A class responsible for the more tab in the tab bar controller
 class MoreTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, MFMailComposeViewControllerDelegate {
     
     // MARK: - Variables
     
+    /// The sections of the table view
     private let sections: [[String]] = [["PHATA"], ["Storage Info", "Change Password"], ["Show Data", "Location Settings"], ["Release Notes", "Rumpel Terms of Service", "HAT Terms of Service"], ["Report Problem", "Log Out", "Version"]]
+    /// The headers of the table view
     private let headers: [String] = ["PHATA", "HAT", "Location", "About", ""]
+    /// The footers of the table view
     private let footers: [String] = []
     
+    /// The file url, used to show the pdf file for terms of service
     private var fileURL: String?
     
     // MARK: - IBOutlets
 
+    /// An IBOutlet for handling the table view
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: - View controller methods

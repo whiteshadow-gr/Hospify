@@ -15,20 +15,28 @@ import SwiftyJSON
 
 // MARK: Class
 
+/// A class responsible for the profile picture UIViewController of the PHATA section
 class PhataPictureViewController: UIViewController {
     
     // MARK: - Variables
     
-    var profile: HATProfileObject? = nil
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
+    /// The loading view pop up
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
+    /// User's domain
+    private let userDomain = HATAccountService.TheUserHATDomain()
+    /// User's token
+    private let userToken = HATAccountService.getUsersTokenFromKeychain()
+    
+    /// User's profile passed on from previous view controller
+    var profile: HATProfileObject? = nil
     
     // MARK: - IBoutlets
 
+    /// An IBOutlet for handling the image view
     @IBOutlet weak var imageView: UIImageView!
+    /// An IBOutlet for handling the custom switch
     @IBOutlet weak var customSwitch: CustomSwitch!
     
     // MARK: - IBActions

@@ -1,14 +1,27 @@
-//
-//  SendLocationDataDelegate.swift
-//  hat-mobile-ios
-//
-//  Created by Marios-Andreas Tsekis on 13/4/17.
-//  Copyright © 2017 HATDeX. All rights reserved.
-//
+/**
+ * Copyright (C) 2017 HAT Data Exchange Ltd
+ *
+ * SPDX-License-Identifier: MPL2
+ *
+ * This file is part of the Hub of All Things project (HAT).
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/
+ */
 
-import HatForIOS
+// MARK: Protocol
 
 protocol SendLocationDataDelegate {
+    
+    // MARK: - Protocol's functions
 
+    /**
+     Executed when the app has updated the user's location according to the regions
+     
+     - parameter latitude: The latitude of the location point
+     - parameter longitude: The longitude of the location point
+     - parameter accuracy: The accuracy of the location point
+     */
     func locationDataReceived(latitude: Double, longitude: Double, accuracy: Double)
 }

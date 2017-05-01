@@ -1596,7 +1596,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="45 of 100 remaining" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GnN-qq-yd7">
-                                                    <rect key="frame" x="32" y="131" width="97.5" height="21"/>
+                                                    <rect key="frame" x="31.5" y="131" width="97.5" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="bOz-Tp-KHz"/>
                                                     </constraints>
@@ -2525,17 +2525,17 @@
                                                 <constraint firstItem="VlX-dU-mIM" firstAttribute="leading" secondItem="ldp-5W-JGH" secondAttribute="trailing" constant="16" id="2vf-mT-Fwd"/>
                                                 <constraint firstItem="dG7-tH-HR5" firstAttribute="trailing" secondItem="E93-lQ-Zbe" secondAttribute="trailingMargin" id="8M4-Vl-dZb"/>
                                                 <constraint firstItem="VlX-dU-mIM" firstAttribute="top" secondItem="E93-lQ-Zbe" secondAttribute="top" constant="29" id="9gn-vE-wBx"/>
+                                                <constraint firstItem="Im9-et-VJk" firstAttribute="centerX" secondItem="dG7-tH-HR5" secondAttribute="centerX" id="9wJ-Xh-Ouu"/>
                                                 <constraint firstItem="ldp-5W-JGH" firstAttribute="leading" secondItem="E93-lQ-Zbe" secondAttribute="leadingMargin" id="EWl-eV-nuf"/>
                                                 <constraint firstItem="j9t-Hw-jA0" firstAttribute="trailing" secondItem="E93-lQ-Zbe" secondAttribute="trailingMargin" constant="-156" id="ExC-RA-slM"/>
+                                                <constraint firstItem="Im9-et-VJk" firstAttribute="centerY" secondItem="dG7-tH-HR5" secondAttribute="centerY" id="N5G-qB-sq8"/>
                                                 <constraint firstItem="ldp-5W-JGH" firstAttribute="top" secondItem="E93-lQ-Zbe" secondAttribute="topMargin" constant="12" id="Wds-rP-vNs"/>
                                                 <constraint firstAttribute="trailing" secondItem="VlX-dU-mIM" secondAttribute="trailing" id="WjA-ND-HLR"/>
-                                                <constraint firstItem="Im9-et-VJk" firstAttribute="centerX" secondItem="E93-lQ-Zbe" secondAttribute="centerX" constant="81" id="Xjn-nn-hAi"/>
                                                 <constraint firstAttribute="trailing" secondItem="8ld-CT-2ay" secondAttribute="trailing" constant="8" id="cPj-dA-LBa"/>
                                                 <constraint firstItem="8o1-1h-tKF" firstAttribute="leading" secondItem="ldp-5W-JGH" secondAttribute="trailing" constant="16" id="cvj-M2-GKn"/>
                                                 <constraint firstItem="8ld-CT-2ay" firstAttribute="top" secondItem="E93-lQ-Zbe" secondAttribute="top" constant="3" id="cxP-EY-D8c"/>
                                                 <constraint firstItem="8o1-1h-tKF" firstAttribute="top" secondItem="VlX-dU-mIM" secondAttribute="bottom" constant="4" id="dky-mF-e6N"/>
                                                 <constraint firstItem="j9t-Hw-jA0" firstAttribute="leading" secondItem="E93-lQ-Zbe" secondAttribute="leadingMargin" id="eua-tQ-kQL"/>
-                                                <constraint firstItem="Im9-et-VJk" firstAttribute="centerY" secondItem="E93-lQ-Zbe" secondAttribute="centerY" constant="39.75" id="kUe-Jz-mA5"/>
                                                 <constraint firstItem="j9t-Hw-jA0" firstAttribute="top" secondItem="ldp-5W-JGH" secondAttribute="bottom" constant="8" id="mlq-kO-SlU"/>
                                                 <constraint firstItem="j9t-Hw-jA0" firstAttribute="top" secondItem="8o1-1h-tKF" secondAttribute="bottom" constant="3" id="pvp-gm-2Uz"/>
                                             </constraints>

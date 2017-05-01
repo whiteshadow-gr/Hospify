@@ -134,7 +134,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         
         // view controller title
         self.title = "Notes"
@@ -292,7 +291,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                         
                         // fetch notes
                         let userDomain = HATAccountService.TheUserHATDomain()
-                        HATNotablesService.fetchNotables(userDomain: userDomain, authToken: weakSelf.token, structure: JSONHelper.createNotablesTableJSON(), parameters: weakSelf.parameters, success: weakSelf.showNotables, failure: {_ in})
+                        HATNotablesService.fetchNotables(userDomain: userDomain, authToken: weakSelf.token, structure: HATJSONHelper.createNotablesTableJSON(), parameters: weakSelf.parameters, success: weakSelf.showNotables, failure: {_ in})
                         
                     } else {
                         
@@ -449,7 +448,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             self.showEmptyTableLabelWith(message: "Accessing your HAT...")
             
             let userDomain = HATAccountService.TheUserHATDomain()
-            HATNotablesService.fetchNotables(userDomain: userDomain, authToken: self.token, structure: JSONHelper.createNotablesTableJSON(), parameters: self.parameters, success: self.showNotables, failure: {[weak self] error in
+            HATNotablesService.fetchNotables(userDomain: userDomain, authToken: self.token, structure: HATJSONHelper.createNotablesTableJSON(), parameters: self.parameters, success: self.showNotables, failure: {[weak self] error in
                 
                 switch error {
                     
@@ -468,7 +467,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     
                     if self != nil {
                         
-                        HATAccountService.createHatTable(userDomain: userDomain, token: self!.token, notablesTableStructure: JSONHelper.createNotablesTableJSON(), failed: {(createTableError: HATTableError) -> Void in
+                        HATAccountService.createHatTable(userDomain: userDomain, token: self!.token, notablesTableStructure: HATJSONHelper.createNotablesTableJSON(), failed: {(createTableError: HATTableError) -> Void in
                             
                             _ = CrashLoggerHelper.hatTableErrorLog(error: createTableError)
                         })()

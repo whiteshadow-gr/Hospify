@@ -51,7 +51,7 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
         
         // get image from url and set it to the image view
         let url: URL = URL(string: "https://hatters.hubofallthings.com/assets" + hatProvider.illustration)!
-        cell.hatProviderImage.downloadedFrom(url: url, completion: nil)
+        cell.hatProviderImage.downloadedFrom(url: url, progressUpdater: nil, completion: nil)
         
         // return cell
         return cell

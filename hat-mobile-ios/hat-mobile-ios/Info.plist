@@ -64,7 +64,6 @@
 	<string>Push location data into your HAT</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>FontAwesome.otf</string>
 		<string>OpenSans-CondLightItalic.ttf</string>
 		<string>OpenSans-CondLight.ttf</string>
 		<string>OpenSans-CondBold.ttf</string>

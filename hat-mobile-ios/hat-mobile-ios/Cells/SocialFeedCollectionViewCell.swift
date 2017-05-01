@@ -62,7 +62,7 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
                 
                 if let url = URL(string: post.data.posts.fullPicture) {
                     
-                    cell.socialNetworkImage.downloadedFrom(url: url, completion: nil)
+                    cell.socialNetworkImage.downloadedFrom(url: url, progressUpdater: nil, completion: nil)
                 }
             }
             

@@ -21,4 +21,7 @@ class PhotosCollectionViewCell: UICollectionViewCell {
     
     /// The cell's imageView
     @IBOutlet weak var image: UIImageView!
+    @IBOutlet weak var ringProgressView: RingProgressCircle!
+    
+    //var progressRing: LoadingScreenWithProgressRingViewController? = nil
 }

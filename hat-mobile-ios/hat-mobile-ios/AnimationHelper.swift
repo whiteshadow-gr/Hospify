@@ -30,7 +30,7 @@ struct AnimationHelper {
      - version: 1.0
      - copyright: Copyright © 2016 Marios-Andreas Tsekis. All rights reserved.
      */
-    static func animateCircle(_ duration: TimeInterval, arc: CAShapeLayer) {
+    static func animateCircle(from: Float, to: Float, duration: TimeInterval, arc: CAShapeLayer) {
         
         // We want to animate the strokeEnd property of the circleLayer
         let animation = CABasicAnimation(keyPath: "strokeEnd")
@@ -39,8 +39,8 @@ struct AnimationHelper {
         animation.duration = duration
         
         // Animate from 0 (no circle) to 1 (full circle)
-        animation.fromValue = 0
-        animation.toValue = 1
+        animation.fromValue = from
+        animation.toValue = to
         
         // Do a linear animation (i.e. the speed of the animation stays the same)
         animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionLinear)

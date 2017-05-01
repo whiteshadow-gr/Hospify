@@ -149,6 +149,7 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.accessoryType = .disclosureIndicator
             
             cell.textLabel?.textColor = .black
+            cell.isUserInteractionEnabled = true
         } else if indexPath.section == 1 {
             
             cell.textLabel?.textColor = .black

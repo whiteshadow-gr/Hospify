@@ -327,7 +327,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             
             self.ringProgressBar.endPoint = (endPoint * fullCircle) + self.ringProgressBar.startPoint
             
-            self.ringProgressBar.update(end: endPoint)
+            self.ringProgressBar.updateCircle(end: endPoint, animate: 0, to: Float(self.ringProgressBar.endPoint), removePreviousLayer: true)
         }
         
         // refresh user token

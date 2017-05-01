@@ -419,7 +419,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                                 if let url = URL(string: array[0]["data"]["profile_picture"]["url"].stringValue) {
                                     
                                     // download image
-                                    weakSelf2.facebookProfileImage?.downloadedFrom(url: url, completion: nil)
+                                    weakSelf2.facebookProfileImage?.downloadedFrom(url: url, progressUpdater: nil, completion: nil)
                                 } else {
                                     
                                     // set image to nil

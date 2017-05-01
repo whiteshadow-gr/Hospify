@@ -31,6 +31,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     /// An IBOutlet for handling the username of the post
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var attachedImage: UIImageView!
+    @IBOutlet weak var ringProgressBar: RingProgressCircle!
     
     /// An IBOutlet for handling the profile image of the post
     @IBOutlet weak var profileImage: UIImageView!
@@ -56,8 +57,15 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
             
             if let url = URL(string: note.data.photoData.link) {
                 
-                newCell.attachedImage.downloadedFrom(url: url, completion: {
+                newCell.ringProgressBar.isHidden = false
+                
+                newCell.attachedImage.downloadedFrom(url: url, progressUpdater: { progress in
+                
+                    let completion = Float(progress)
+                    newCell.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(newCell.ringProgressBar.endPoint), to: completion, removePreviousLayer: false)
+                }, completion: {
                     
+                    newCell.ringProgressBar.isHidden = true
                     newCell.attachedImage.cropImage(width: 143, height: 143)
                 })
             }

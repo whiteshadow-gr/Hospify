@@ -58,19 +58,16 @@ class LoadingScreenWithProgressRingViewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
-    func updateView(completion: Double) {
+    func updateView(completion: Double, animateFrom: Float, removePreviousRingLayer: Bool) {
         
         self.progressRing.isHidden = false
         
         let end = (CGFloat(completion))
         
-        print("completion: \(end)")
-        
-        let currentRatio = String(describing: floor(CGFloat(completion) * 100))
+        let currentRatio = String(describing: floor(end * 100))
         self.percentageLabel.text = currentRatio + " %"
-        print("currentRatio: \(currentRatio)")
 
-        self.progressRing.update(end: end)
+        self.progressRing.updateCircle(end: end, animate: animateFrom, to: Float(end), removePreviousLayer: removePreviousRingLayer)
     }
 
     // MARK: - Init view

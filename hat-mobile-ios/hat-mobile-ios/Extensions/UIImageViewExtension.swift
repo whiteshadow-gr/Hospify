@@ -25,7 +25,7 @@ extension UIImageView {
      - parameter url: The url to download the image from
      - parameter mode: The content mode of the image, default value = scaleAspectFit
      */
-    public func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit, completion: ((Void) -> Void)?) {
+    public func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit, progressUpdater: ((Double) -> Void)?, completion: ((Void) -> Void)?) {
         
         let userToken = HATAccountService.getUsersTokenFromKeychain()
         let headers = ["X-Auth-Token" : userToken]
@@ -33,7 +33,7 @@ extension UIImageView {
         
         Alamofire.request(url, method: .get, parameters: nil, encoding: Alamofire.JSONEncoding.default, headers: headers).downloadProgress(closure: {progress in
             
-                print(progress)
+                progressUpdater?(progress.fractionCompleted)
         }).responseData(completionHandler: {[weak self] response in
             
             guard let data = response.result.value else { return }

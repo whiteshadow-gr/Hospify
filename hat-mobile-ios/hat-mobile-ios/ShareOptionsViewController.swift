@@ -976,7 +976,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     
     func updateProgressRing(completion: Double) {
         
-        self.loadingScr?.updateView(completion: completion)
+        self.loadingScr?.updateView(completion: completion, animateFrom: Float((self.loadingScr?.progressRing.endPoint)!), removePreviousRingLayer: false)
     }
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {

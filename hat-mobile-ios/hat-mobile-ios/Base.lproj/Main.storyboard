@@ -1596,7 +1596,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="45 of 100 remaining" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GnN-qq-yd7">
-                                                    <rect key="frame" x="31.5" y="131" width="97.5" height="21"/>
+                                                    <rect key="frame" x="32" y="131" width="97.5" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="bOz-Tp-KHz"/>
                                                     </constraints>
@@ -2509,6 +2509,14 @@
                                                         <constraint firstAttribute="width" constant="142" id="hNS-oM-C7O"/>
                                                     </constraints>
                                                 </imageView>
+                                                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Im9-et-VJk" customClass="RingProgressCircle" customModule="hat_mobile_ios" customModuleProvider="target">
+                                                    <rect key="frame" x="216" y="132" width="50" height="50"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="50" id="Oi3-xV-Dv4"/>
+                                                        <constraint firstAttribute="width" constant="50" id="Qbb-a1-MqH"/>
+                                                    </constraints>
+                                                </view>
                                             </subviews>
                                             <color key="backgroundColor" red="0.1137254902" green="0.19215686269999999" blue="0.20784313730000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
@@ -2521,11 +2529,13 @@
                                                 <constraint firstItem="j9t-Hw-jA0" firstAttribute="trailing" secondItem="E93-lQ-Zbe" secondAttribute="trailingMargin" constant="-156" id="ExC-RA-slM"/>
                                                 <constraint firstItem="ldp-5W-JGH" firstAttribute="top" secondItem="E93-lQ-Zbe" secondAttribute="topMargin" constant="12" id="Wds-rP-vNs"/>
                                                 <constraint firstAttribute="trailing" secondItem="VlX-dU-mIM" secondAttribute="trailing" id="WjA-ND-HLR"/>
+                                                <constraint firstItem="Im9-et-VJk" firstAttribute="centerX" secondItem="E93-lQ-Zbe" secondAttribute="centerX" constant="81" id="Xjn-nn-hAi"/>
                                                 <constraint firstAttribute="trailing" secondItem="8ld-CT-2ay" secondAttribute="trailing" constant="8" id="cPj-dA-LBa"/>
                                                 <constraint firstItem="8o1-1h-tKF" firstAttribute="leading" secondItem="ldp-5W-JGH" secondAttribute="trailing" constant="16" id="cvj-M2-GKn"/>
                                                 <constraint firstItem="8ld-CT-2ay" firstAttribute="top" secondItem="E93-lQ-Zbe" secondAttribute="top" constant="3" id="cxP-EY-D8c"/>
                                                 <constraint firstItem="8o1-1h-tKF" firstAttribute="top" secondItem="VlX-dU-mIM" secondAttribute="bottom" constant="4" id="dky-mF-e6N"/>
                                                 <constraint firstItem="j9t-Hw-jA0" firstAttribute="leading" secondItem="E93-lQ-Zbe" secondAttribute="leadingMargin" id="eua-tQ-kQL"/>
+                                                <constraint firstItem="Im9-et-VJk" firstAttribute="centerY" secondItem="E93-lQ-Zbe" secondAttribute="centerY" constant="39.75" id="kUe-Jz-mA5"/>
                                                 <constraint firstItem="j9t-Hw-jA0" firstAttribute="top" secondItem="ldp-5W-JGH" secondAttribute="bottom" constant="8" id="mlq-kO-SlU"/>
                                                 <constraint firstItem="j9t-Hw-jA0" firstAttribute="top" secondItem="8o1-1h-tKF" secondAttribute="bottom" constant="3" id="pvp-gm-2Uz"/>
                                             </constraints>
@@ -2536,6 +2546,7 @@
                                             <outlet property="postDataLabel" destination="j9t-Hw-jA0" id="h5N-hB-Kdd"/>
                                             <outlet property="postInfoLabel" destination="8o1-1h-tKF" id="aIg-5u-iAY"/>
                                             <outlet property="profileImage" destination="ldp-5W-JGH" id="vT9-Xh-PNe"/>
+                                            <outlet property="ringProgressBar" destination="Im9-et-VJk" id="2Qk-c0-WSU"/>
                                             <outlet property="usernameLabel" destination="VlX-dU-mIM" id="vTC-Ec-StA"/>
                                             <segue destination="omu-es-gVw" kind="show" identifier="editNoteSegueWithImage" id="cWt-PU-EXW"/>
                                         </connections>
@@ -3743,7 +3754,7 @@
                             <collectionView hidden="YES" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="cEo-p1-swv">
                                 <rect key="frame" x="0.0" y="64" width="323" height="413"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="2" minimumInteritemSpacing="2" id="Zfo-us-y1q">
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="5" minimumInteritemSpacing="5" id="Zfo-us-y1q">
                                     <size key="itemSize" width="100" height="100"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
@@ -3760,16 +3771,44 @@
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Image Placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="SRf-ZB-ClW">
                                                     <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
                                                 </imageView>
+                                                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VMd-rN-zA6" customClass="RingProgressCircle" customModule="hat_mobile_ios" customModuleProvider="target">
+                                                    <rect key="frame" x="25" y="25" width="50" height="50"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="50" id="31v-Ig-Tew"/>
+                                                        <constraint firstAttribute="width" constant="50" id="xWS-65-zVQ"/>
+                                                    </constraints>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="ringRadius">
+                                                            <real key="value" value="20"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="color" keyPath="ringColor">
+                                                            <color key="value" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="color" keyPath="ringFillColor">
+                                                            <color key="value" red="0.43529412150000002" green="0.4431372583" blue="0.47450980539999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="ringLineWidth">
+                                                            <real key="value" value="3"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="animationDuration">
+                                                            <real key="value" value="0.20000000000000001"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
+                                                </view>
                                             </subviews>
                                         </view>
                                         <constraints>
+                                            <constraint firstItem="VMd-rN-zA6" firstAttribute="centerY" secondItem="Oxk-QE-u8p" secondAttribute="centerY" id="1mN-EY-YnZ"/>
                                             <constraint firstItem="SRf-ZB-ClW" firstAttribute="top" secondItem="Oxk-QE-u8p" secondAttribute="top" id="L4X-kw-zX9"/>
                                             <constraint firstItem="SRf-ZB-ClW" firstAttribute="leading" secondItem="Oxk-QE-u8p" secondAttribute="leading" id="LHe-Eu-gmt"/>
                                             <constraint firstAttribute="trailing" secondItem="SRf-ZB-ClW" secondAttribute="trailing" id="Ml0-tW-btj"/>
                                             <constraint firstAttribute="bottom" secondItem="SRf-ZB-ClW" secondAttribute="bottom" id="hkC-MC-tAW"/>
+                                            <constraint firstItem="VMd-rN-zA6" firstAttribute="centerX" secondItem="Oxk-QE-u8p" secondAttribute="centerX" id="y8S-8Q-2Zf"/>
                                         </constraints>
                                         <connections>
                                             <outlet property="image" destination="SRf-ZB-ClW" id="DPo-Hd-NC7"/>
+                                            <outlet property="ringProgressView" destination="VMd-rN-zA6" id="PLa-Y6-o44"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -3843,7 +3882,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Mvz-Tw-qZO">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="616"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gh7-JM-uwE">
                                 <rect key="frame" x="258" y="481" width="46" height="30"/>
@@ -3855,25 +3894,36 @@
                                     <action selector="deleteButtonAction:" destination="v77-9E-bTS" eventType="touchUpInside" id="edt-G2-RsN"/>
                                 </connections>
                             </button>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HjS-U2-UNr" customClass="RingProgressCircle" customModule="hat_mobile_ios" customModuleProvider="target">
+                                <rect key="frame" x="135" y="259" width="50" height="50"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="Czz-Ll-awN"/>
+                                    <constraint firstAttribute="height" constant="50" id="a6c-e8-PjO"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="Mvz-Tw-qZO" firstAttribute="top" secondItem="8Li-iN-dOR" secondAttribute="top" id="57q-zf-9sh"/>
                             <constraint firstAttribute="bottom" secondItem="Gh7-JM-uwE" secondAttribute="bottom" constant="57" id="9gI-by-Om3"/>
+                            <constraint firstItem="HjS-U2-UNr" firstAttribute="centerX" secondItem="8Li-iN-dOR" secondAttribute="centerX" id="Il8-pU-Pwt"/>
+                            <constraint firstItem="HjS-U2-UNr" firstAttribute="centerY" secondItem="8Li-iN-dOR" secondAttribute="centerY" id="LwB-vJ-UdW"/>
                             <constraint firstAttribute="trailing" secondItem="Mvz-Tw-qZO" secondAttribute="trailing" id="XUR-BN-edZ"/>
                             <constraint firstItem="Gh7-JM-uwE" firstAttribute="trailing" secondItem="8Li-iN-dOR" secondAttribute="trailingMargin" id="dPR-WE-yXW"/>
                             <constraint firstItem="Mvz-Tw-qZO" firstAttribute="leading" secondItem="8Li-iN-dOR" secondAttribute="leading" id="fBk-Nn-Jir"/>
-                            <constraint firstAttribute="bottomMargin" secondItem="Mvz-Tw-qZO" secondAttribute="bottom" constant="-48" id="pDn-DP-xOm"/>
+                            <constraint firstAttribute="bottomMargin" secondItem="Mvz-Tw-qZO" secondAttribute="bottom" id="pDn-DP-xOm"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="deleteButton" destination="Gh7-JM-uwE" id="dDh-Lk-Kmd"/>
                         <outlet property="imageView" destination="Mvz-Tw-qZO" id="r6P-vX-PVN"/>
+                        <outlet property="ringProgressBar" destination="HjS-U2-UNr" id="5H6-zN-lCO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0ny-N5-DIz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1281" y="-2745"/>
+            <point key="canvasLocation" x="1280.625" y="-2745.4225352112676"/>
         </scene>
         <!--Data Plugs-->
         <scene sceneID="gxZ-yf-ioO">

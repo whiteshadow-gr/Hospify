@@ -130,12 +130,8 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         
-        self.loadingScr?.view.frame = CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160)
-    }
-    
-    override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
-        
-        self.loadingScr?.view.frame = CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160)
+        self.loadingScr?.view.frame = CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 80, width: 150, height: 160)
+        self.collectionView.reloadData()
     }
     
     // MARK: - Show progress ring
@@ -144,7 +140,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         
         self.loadingScr = LoadingScreenWithProgressRingViewController.customInit(completion: 0, from: self.storyboard!)
         
-        self.loadingScr!.view.createFloatingView(frame:CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160), color: .tealColor(), cornerRadius: 15)
+        self.loadingScr!.view.createFloatingView(frame:CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 80, width: 150, height: 160), color: .tealColor(), cornerRadius: 15)
         
         self.addViewController(self.loadingScr!)
     }
@@ -165,7 +161,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         HATAccountService.uploadFileToHATWrapper(token: self.userToken, userDomain: self.userDomain, fileToUpload: image,
             progressUpdater: {progress in
                 
-                self.loadingScr?.updateView(completion: progress)
+                self.loadingScr?.updateView(completion: progress, animateFrom: Float((self.loadingScr?.progressRing.endPoint)!), removePreviousRingLayer: false)
             },
             completion: {[weak self] (file, renewedUserToken) in
         
@@ -214,15 +210,30 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         
         if cell?.image.image == UIImage(named: "Image Placeholder") {
             
-            cell!.image.downloadedFrom(url: URL(string: imageURL)!, completion: {[weak self] in
+            cell?.ringProgressView.isHidden = false
+            cell?.ringProgressView?.ringRadius = 15
+            cell?.ringProgressView?.animationDuration = 0
+            cell?.ringProgressView?.ringLineWidth = 4
+            cell?.ringProgressView?.ringColor = .white
+            cell?.ringProgressView.animationDuration = 0.2
+
+            cell!.image.downloadedFrom(url: URL(string: imageURL)!,
+                    progressUpdater: {progress in
             
-                if self != nil {
-                    
-                    cell?.image.cropImage(width: (cell?.image.frame.size.width)!, height: (cell?.image.frame.size.height)!)
-                    self!.images.append(((cell?.image.image)!, (self?.files[indexPath.row].lastUpdated)!))
-                }
-            })
-        } else {
+                        let completion = CGFloat(progress)
+                        cell?.ringProgressView.updateCircle(end: completion, animate: Float((cell?.ringProgressView.endPoint)!), to: Float(progress), removePreviousLayer: false)
+                    },
+                    completion: {[weak self] in
+            
+                        if self != nil {
+                        
+                            cell?.image.cropImage(width: (cell?.image.frame.size.width)!, height: (cell?.image.frame.size.height)!)
+                            self!.images.append(((cell?.image.image)!, (self?.files[indexPath.row].lastUpdated)!))
+                        }
+                        
+                        cell?.ringProgressView.isHidden = true
+                })
+        } else if indexPath.row <= self.images.count - 1 {
             
             cell?.image.image = self.images[indexPath.row].0
         }

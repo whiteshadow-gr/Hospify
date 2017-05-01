@@ -49,7 +49,11 @@ import UIKit
     ///The UILabel in the middle of the UIView
     private var label: UILabel! = UILabel()
     private var path: CGPath? = nil
+    private var backgroundPath: CGPath? = nil
     private var previousArc: CAShapeLayer? = nil
+    private var previousBackgroundArc: CAShapeLayer? = nil
+    private var hasAnimationFinished: Bool = true
+    private var timer: Timer? = nil
     
     // MARK: - Inits
     
@@ -147,27 +151,32 @@ import UIKit
     
     override open func draw(_ rect: CGRect) {
         
-        // TODO: Limit size of the ring, in some devices it might get squared!
-        
         //get the mid position of the view
         let X = self.bounds.midX
         let Y = self.bounds.midY
         let offset = -Double.pi / 2
         
         //create the background path of the circle
-        let backgroundRingPath = UIBezierPath(arcCenter: CGPoint(x: X, y: Y), radius: self.ringRadius, startAngle: (CGFloat(0 + offset)), endAngle: CGFloat((Double.pi * 2) + offset), clockwise: true).cgPath
+        self.backgroundPath = UIBezierPath(arcCenter: CGPoint(x: X, y: Y), radius: self.ringRadius, startAngle: (CGFloat(0 + offset)), endAngle: CGFloat((Double.pi * 2) + offset), clockwise: true).cgPath
         //create the background path of the circle
         self.path = UIBezierPath(arcCenter: CGPoint(x: X, y: Y), radius: self.ringRadius, startAngle: self.startPoint, endAngle: self.endPoint, clockwise: true).cgPath
+        
         //add a full background circle
-        _ = self.addOval(self.ringLineWidth + 1, path: backgroundRingPath, strokeStart: 0, strokeEnd: 1, strokeColor: self.backgroundRingColor, fillColor: self.backgroundRingFillColor, shadowRadius: self.ringShadowRadius, shadowOpacity: self.ringShadowOpacity, shadowOffset: self.ringShadowOffset)
+        self.previousBackgroundArc = self.addOval(self.ringLineWidth + 1, path: self.backgroundPath!, strokeStart: 0, strokeEnd: 1, strokeColor: self.backgroundRingColor, fillColor: self.backgroundRingFillColor, shadowRadius: self.ringShadowRadius, shadowOpacity: self.ringShadowOpacity, shadowOffset: self.ringShadowOffset)
+        
         //add a second cirlce representing the value we want
         let mainArc = self.addOval(self.ringLineWidth, path: self.path!, strokeStart: self.startPoint, strokeEnd: self.endPoint, strokeColor: self.ringColor, fillColor: self.ringFillColor, shadowRadius: self.ringShadowRadius, shadowOpacity: self.ringShadowOpacity, shadowOffset: self.ringShadowOffset)
         
         //animate main circle
-        AnimationHelper.animateCircle(TimeInterval(self.animationDuration), arc: mainArc)
+        AnimationHelper.animateCircle(from: 0, to: 1, duration: TimeInterval(self.animationDuration), arc: mainArc)
     }
     
-    func update(end: CGFloat) {
+    func animationFisnished() {
+        
+        self.hasAnimationFinished = true
+    }
+    
+    func updateCircle(end: CGFloat, animate from: Float, to: Float, removePreviousLayer: Bool) {
         
         //get the mid position of the view
         let X = self.bounds.midX
@@ -176,17 +185,24 @@ import UIKit
         
         self.path = UIBezierPath(arcCenter: CGPoint(x: X, y: Y), radius: self.ringRadius, startAngle: (CGFloat(0 + offset)), endAngle: (CGFloat(Double(end) * (Double.pi * 2) + offset)), clockwise: true).cgPath
         
-        if self.previousArc != nil {
+        if self.previousArc != nil && removePreviousLayer {
     
             self.previousArc?.removeFromSuperlayer()
             self.previousArc?.removeAllAnimations()
-            self.previousArc = nil
         }
         
-        //add a second cirlce representing the value we want
-        self.previousArc = self.addOval(self.ringLineWidth, path: self.path!, strokeStart: (CGFloat(0 + offset)), strokeEnd: (CGFloat(Double(end) * (Double.pi * 2) + offset)), strokeColor: self.ringColor, fillColor: self.ringFillColor, shadowRadius: self.ringShadowRadius, shadowOpacity: self.ringShadowOpacity, shadowOffset: self.ringShadowOffset)
+        if self.hasAnimationFinished {
+            
+            self.timer = Timer.scheduledTimer(timeInterval: TimeInterval(0.5), target: self, selector: #selector(animationFisnished), userInfo: nil, repeats: false)
+            
+            //add a second cirlce representing the value we want
+            self.previousArc = self.addOval(self.ringLineWidth, path: self.path!, strokeStart: (CGFloat(0 + offset)), strokeEnd: (CGFloat(Double(end) * (Double.pi * 2) + offset)), strokeColor: self.ringColor, fillColor: self.ringFillColor, shadowRadius: self.ringShadowRadius, shadowOpacity: self.ringShadowOpacity, shadowOffset: self.ringShadowOffset)
         
-        //animate main circle
-        AnimationHelper.animateCircle(TimeInterval(self.animationDuration), arc: self.previousArc!)
+            //animate main circle
+        
+            AnimationHelper.animateCircle(from: from, to: Float(end), duration: TimeInterval(self.animationDuration), arc: self.previousArc!)
+            
+            self.hasAnimationFinished = false
+        }
     }
 }

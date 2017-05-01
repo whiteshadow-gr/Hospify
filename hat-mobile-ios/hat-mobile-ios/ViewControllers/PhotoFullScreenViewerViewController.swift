@@ -16,9 +16,9 @@ class PhotoFullScreenViewerViewController: UIViewController {
     
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var deleteButton: UIButton!
+    @IBOutlet weak var ringProgressBar: RingProgressCircle!
     
     var imageURL: String?
-    private var loadingRing: LoadingScreenWithProgressRingViewController? = nil
     
     var file: FileUploadObject?
     
@@ -60,30 +60,45 @@ class PhotoFullScreenViewerViewController: UIViewController {
         
         self.imageView.isUserInteractionEnabled = true
         self.imageView.addGestureRecognizer(gesture)
+
+        self.ringProgressBar.ringRadius = 20
+        self.ringProgressBar.animationDuration = 0.2
+        self.ringProgressBar.ringLineWidth = 4
+        self.ringProgressBar.ringColor = .white
         
         if self.file != nil {
             
             let imageURL: String = "https://" + userDomain + "/api/v2/files/content/" + file!.fileID
             
-            self.imageView!.downloadedFrom(url: URL(string: imageURL)!, completion: nil)
+            self.ringProgressBar.isHidden = false
+
+            self.imageView!.downloadedFrom(url: URL(string: imageURL)!, progressUpdater: {progress in
+            
+                let completion = Float(progress)
+                self.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(self.ringProgressBar.endPoint), to: completion, removePreviousLayer: false)
+            }, completion: {
+            
+                self.ringProgressBar.isHidden = true
+            })
         } else if self.imageURL != nil {
             
             let url = URL(string: self.imageURL!)
             
-            self.imageView.downloadedFrom(url: url!, completion: {
+            self.ringProgressBar.isHidden = false
+
+            self.imageView.downloadedFrom(url: url!, progressUpdater: {progress in
+                
+                let completion = Float(progress)
+                self.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(self.ringProgressBar.endPoint), to: completion, removePreviousLayer: false)
+            }, completion: {
             
                 self.deleteButton.isHidden = true
                 self.deleteButton = nil
+                self.ringProgressBar.isHidden = true
             })
         }
         
         self.view.backgroundColor = .black
-        
-        self.loadingRing = LoadingScreenWithProgressRingViewController.customInit(completion: 0, from: self.storyboard!)
-        self.loadingRing!.view.backgroundColor = .clear
-        self.loadingRing?.percentageLabel.isHidden = true
-        self.loadingRing?.cancelButton.isHidden = true
-        self.addViewController(self.loadingRing!)
     }
     
     @objc private func hideUI() {

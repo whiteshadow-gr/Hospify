@@ -177,7 +177,7 @@ public struct HATProfileDataProfilePersonalObject: Comparable {
                     }
                 }
                 
-                if tempName == "preferred_name" {
+                if tempName == "last_name" {
                     
                     if let tempValues = dict["values"]?.arrayValue {
                         
@@ -185,6 +185,18 @@ public struct HATProfileDataProfilePersonalObject: Comparable {
                             
                             lastName = stringResult
                             lastNameTuple = (lastName, id)
+                        }
+                    }
+                }
+                
+                if tempName == "preferred_name" {
+                    
+                    if let tempValues = dict["values"]?.arrayValue {
+                        
+                        if let stringResult = tempValues[0].dictionaryValue["value"]?.stringValue {
+                            
+                            prefferedName = stringResult
+                            prefferedNameTuple = (prefferedName, id)
                         }
                     }
                 }
@@ -239,10 +251,16 @@ public struct HATProfileDataProfilePersonalObject: Comparable {
                     firstNameTuple = (firstName, id)
                 }
                 
-                if tempName == "preferred_name" {
+                if tempName == "last_name" {
                     
                     lastName = ""
                     lastNameTuple = (lastName, id)
+                }
+                
+                if tempName == "preferred_name" {
+                    
+                    prefferedName = ""
+                    prefferedNameTuple = (prefferedName, id)
                 }
                 
                 if tempName == "middle_name" {

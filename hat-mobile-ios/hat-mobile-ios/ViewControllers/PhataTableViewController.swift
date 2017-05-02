@@ -56,7 +56,7 @@ class PhataTableViewController: UITableViewController {
             let tableJSON = HATJSONHelper.createProfileTableJSON()
             HATAccountService.createHatTable(userDomain: userDomain, token: userToken, notablesTableStructure: tableJSON, failed: {(error) in
             
-                print(error)
+                _ = CrashLoggerHelper.hatTableErrorLog(error: error)
             })(
             
                 HATAccountService.checkHatTableExistsForUploading(userDomain: userDomain, tableName: "profile", sourceName: "rumpel", authToken: userToken, successCallback: tableCreated, errorCallback: logError)

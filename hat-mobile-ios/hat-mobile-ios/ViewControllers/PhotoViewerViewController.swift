@@ -221,7 +221,9 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         
         let imageURL: String = "https://" + self.userDomain + "/api/v2/files/content/" + self.files[indexPath.row].fileID
         
-        if cell?.image.image == UIImage(named: "Image Placeholder") {
+        self.images.append((UIImage(), (self.files[indexPath.row].lastUpdated)!))
+        
+        if cell?.image.image == UIImage(named: "Image Placeholder") && URL(string: imageURL) != nil {
             
             cell?.ringProgressView.isHidden = false
             cell?.ringProgressView?.ringRadius = 15
@@ -238,10 +240,10 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
                     },
                     completion: {[weak self] in
             
-                        if self != nil {
+                        if self != nil && cell?.image != nil && self?.files[indexPath.row].lastUpdated != nil  {
                         
                             cell?.image.cropImage(width: (cell?.image.frame.size.width)!, height: (cell?.image.frame.size.height)!)
-                            self!.images.append(((cell?.image.image)!, (self?.files[indexPath.row].lastUpdated)!))
+                            self!.images[indexPath.row] = ((cell?.image.image)!, (self?.files[indexPath.row].lastUpdated)!)
                         }
                         
                         cell?.ringProgressView.isHidden = true

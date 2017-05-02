@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSCameraUsageDescription</key>
-	<string>Allows you to take a new image and upload it</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allows you to upload your photos</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -34,7 +30,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.1.5</string>
+	<string>2.1.6</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -60,8 +56,12 @@
 	</dict>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Optional for better GPS tracking</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allows you to take a new image and upload it</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Push location data into your HAT</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allows you to upload your photos</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>OpenSans-CondLightItalic.ttf</string>

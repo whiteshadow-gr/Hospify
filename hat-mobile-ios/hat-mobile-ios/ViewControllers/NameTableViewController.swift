@@ -163,28 +163,24 @@ class NameTableViewController: UITableViewController {
             
             cell.textField.text = self.profile?.data.personal.firstName
             cell.privateSwitch.isHidden = true
-            cell.tag = 0
         } else if indexPath.section == 1 {
             
             cell.textField.text = self.profile?.data.personal.lastName
             cell.privateSwitch.isHidden = true
-            cell.tag = 1
         } else if indexPath.section == 2 {
             
             cell.textField.text = self.profile?.data.personal.middleName
             cell.privateSwitch.isHidden = true
-            cell.tag = 2
         } else if indexPath.section == 3 {
             
             cell.dataSourceForPickerView = ["", "Mr.", "Mrs.", "Miss", "Dr."]
             cell.textField.text = self.profile?.data.personal.title
             cell.privateSwitch.isHidden = true
-            cell.tag = 10
+            cell.tag = 15
         } else if indexPath.section == 4 {
             
             cell.textField.text = self.sections[indexPath.section][indexPath.row]
             cell.privateSwitch.isOn = !(self.profile?.data.personal.isPrivate)!
-            cell.tag = 4
         }
         
         return cell

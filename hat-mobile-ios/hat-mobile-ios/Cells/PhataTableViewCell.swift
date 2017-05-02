@@ -92,13 +92,13 @@ class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDele
 
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         
-        if textField.tag == 10 || textField.tag == 0 || textField.tag == 1 {
+        if textField.tag == 15 || textField.tag == 10 || textField.tag == 11 {
             
             let pickerView = UIPickerView()
             pickerView.delegate = self
             pickerView.dataSource = self
             textField.inputView = pickerView
-        } else if textField.tag == 2 {
+        } else if textField.tag == 12 {
             
             let datePickerView = UIDatePicker()
             datePickerView.addTarget(self, action: #selector(datePickerDidUpdateDate(datePicker:)) , for: .valueChanged)

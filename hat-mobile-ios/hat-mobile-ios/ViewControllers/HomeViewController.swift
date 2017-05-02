@@ -145,7 +145,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         NotificationCenter.default.addObserver(self, selector: #selector(hidePopUp), name: NSNotification.Name("hideDataServicesInfo"), object: nil)
         
         // pin header view of collection view to the top while scrolling
-        (self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout).sectionHeadersPinToVisibleBounds = true
+        (self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout).sectionHeadersPinToVisibleBounds = true        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -214,7 +214,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                 failed(statusCode: 401)
             } else {
                 
-                self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+                self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed, please log out and log in again", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
             }
         }
         

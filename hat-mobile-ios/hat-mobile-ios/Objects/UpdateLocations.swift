@@ -23,7 +23,7 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
     weak var locationDelegate: UpdateLocationsDelegate?
     
     /// A singleton to always have access to
-    static var shared: UpdateLocations = UpdateLocations()
+    static let shared: UpdateLocations = UpdateLocations()
     
     /// An optional function to execute after the delegate has executed
     var completion: ((CLLocation) -> Void)?
@@ -32,12 +32,11 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
     private var region: CLCircularRegion? = nil
     
     /// The LocationManager responsible for the settings used for gps tracking
-    lazy var locationManager: CLLocationManager! = {
+    var locationManager: CLLocationManager! = {
         
         let locationManager = CLLocationManager()
         locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
         locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
-        locationManager.delegate = self
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.requestAlwaysAuthorization()
         locationManager.disallowDeferredLocationUpdates()
@@ -51,6 +50,8 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
         
         super.init()
         
+        locationManager.delegate = self
+
         self.resumeLocationServices()
     }
     
@@ -70,7 +71,7 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
         
         // stop monitoring for regions
         self.stopMonitoringAllRegions()
-        self.locationManager.stopUpdatingLocation()
+        
         // create a new region
         self.region = CLCircularRegion(center: locations[locations.count - 1].coordinate, radius: 150, identifier: "UpdateCircle")
         self.region!.notifyOnExit = true

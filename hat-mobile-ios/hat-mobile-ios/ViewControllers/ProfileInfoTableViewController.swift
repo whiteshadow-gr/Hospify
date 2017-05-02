@@ -20,9 +20,9 @@ class ProfileInfoTableViewController: UITableViewController {
     // MARK: - Variables
 
     /// The sections of the table view
-    private let sections: [[String]] = [["Age"], ["Gender"], ["Birth"]]
+    private let sections: [[String]] = [["Age"], ["Gender"], ["Birth"], ["Nickname"]]
     /// The headers of the table view
-    private let headers: [String] = ["Age", "Gender", "Birth"]
+    private let headers: [String] = ["Age", "Gender", "Birth", "Nickname"]
     /// The loading view pop up
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
@@ -78,6 +78,11 @@ class ProfileInfoTableViewController: UITableViewController {
                 
                 profile?.data.birth.date = cell!.textField.text!
                 profile?.data.birth.isPrivate = !((cell?.privateSwitch.isOn)!)
+            // nickname
+            } else if index == 3 {
+                
+                profile?.data.nick.name = cell!.textField.text!
+                profile?.data.nick.isPrivate = !((cell?.privateSwitch.isOn)!)
             }
         }
         
@@ -168,14 +173,14 @@ class ProfileInfoTableViewController: UITableViewController {
             cell.dataSourceForPickerView = array
             cell.textField.text = self.profile?.data.age.group
             cell.privateSwitch.isOn = !(self.profile?.data.age.isPrivate)!
-            cell.tag = 0
+            cell.tag = 10
         } else if indexPath.section == 1 {
             
             let array: [String] = ["", "Male", "Female", "Other"]
             cell.dataSourceForPickerView = array
             cell.textField.text = self.profile?.data.gender.type
             cell.privateSwitch.isOn = !(self.profile?.data.gender.isPrivate)!
-            cell.tag = 1
+            cell.tag = 11
         } else if indexPath.section == 2 {
             
             if self.profile?.data.birth.date != nil {
@@ -183,7 +188,11 @@ class ProfileInfoTableViewController: UITableViewController {
                 cell.textField.text = self.profile?.data.birth.date
             }
             cell.privateSwitch.isOn = !(self.profile?.data.birth.isPrivate)!
-            cell.tag = 2
+            cell.tag = 12
+        } else if indexPath.section == 3 {
+            
+            cell.textField.text = self.profile?.data.nick.name
+            cell.privateSwitch.isOn = !(self.profile?.data.nick.isPrivate)!
         }
         
         return cell

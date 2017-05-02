@@ -12,7 +12,7 @@
 
 import UIKit
 
-// MARK: class
+// MARK: Class
 
 /// The class responsible for notifying the user about the purchase and giving some info
 class CompletePurchaseViewController: UIViewController {
@@ -34,16 +34,6 @@ class CompletePurchaseViewController: UIViewController {
     @IBOutlet weak var arrowbar: UIImageView!
     
     // MARK: - IBActions
-    
-    /**
-     Redirects user to learn more section
-     
-     - parameter sender: The object that called this function
-     */
-    @IBAction func hatAvailabilityButtonAction(_ sender: Any) {
-        
-        self.createClassicOKAlertWith(alertMessage: "Your HAT is being created and will be available within 2-10mins", alertTitle: "Availability", okTitle: "OK", proceedCompletion: {})
-    }
     
     /**
      Redirects user back to home screen

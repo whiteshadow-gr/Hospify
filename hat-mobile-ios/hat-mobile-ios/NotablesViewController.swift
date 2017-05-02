@@ -29,9 +29,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     /// the index of the selected note
     private var selectedIndex: Int? = nil
     
-    /// the cells of the table
-    private var cells: [NotablesTableViewCell] = []
-    
     /// the kind of the note to create
     private var kind: String = ""
     /// the notables fetch items limit
@@ -331,9 +328,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             cell = controller.setUpCell(cell, note: self.cachedNotesArray[indexPath.row], indexPath: indexPath)
         }
         
-        // add cell to array
-        cells.append(cell)
-        
         // return cell
         return cell
     }
@@ -360,7 +354,12 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 let userDomain = HATAccountService.TheUserHATDomain()
                 func success(token: String?) {
                     
-                    HATNotablesService.deleteNote(id: self.cachedNotesArray[indexPath.row].id, tkn: token!, userDomain: userDomain)
+                    var unwrappedToken = ""
+                    if token == nil {
+                        
+                        unwrappedToken = HATAccountService.getUsersTokenFromKeychain()
+                    }
+                    HATNotablesService.deleteNote(id: self.cachedNotesArray[indexPath.row].id, tkn: unwrappedToken, userDomain: userDomain)
                     self.cachedNotesArray.remove(at: indexPath.row)
                     tableView.deleteRows(at: [indexPath], with: .fade)
                     self.updateUI()

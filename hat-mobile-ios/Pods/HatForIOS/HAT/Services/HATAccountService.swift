@@ -251,7 +251,6 @@ public class HATAccountService: NSObject {
                 if isSuccess {
                     
                     success(token)
-                    
                     HATAccountService.triggerHatUpdate(userDomain: userDomain, completion: {() -> Void in return})
                 } else {
                     
@@ -335,6 +334,7 @@ public class HATAccountService: NSObject {
                                 
                                 break
                             }
+                            
                             successCallback(dictionary, token)
                         //table not found
                         } else if statusCode == 404 {
@@ -494,9 +494,9 @@ public class HATAccountService: NSObject {
      */
     public class func getProfileFromHAT(userDomain: String, userToken: String, successCallback: @escaping (HATProfileObject) -> Void, failCallback: @escaping (HATTableError) -> Void) -> Void {
         
-        func tableFound (tableID: NSNumber, userToken: String?) {
+        func tableFound (tableID: NSNumber, newToken: String?) {
             
-            func profileEntries(json: [JSON], userToken: String?) {
+            func profileEntries(json: [JSON], renewedToken: String?) {
                 
                 // if we have values return them
                 if json.count > 0 {
@@ -506,7 +506,7 @@ public class HATAccountService: NSObject {
                 // in case no values have found then that means that the users hasn't entered anything yet so we have to get the structure from the ccheckHatTableExistsForUploading method in order to have the id's
                 } else {
                     
-                    HATAccountService.checkHatTableExistsForUploading(userDomain: userDomain, tableName: "profile", sourceName: "rumpel", authToken: userToken!, successCallback: {(dict) in
+                    HATAccountService.checkHatTableExistsForUploading(userDomain: userDomain, tableName: "profile", sourceName: "rumpel", authToken: userToken, successCallback: {(dict) in
                     
                         let array = HATProfileObject(alternativeDictionary: dict.0 as! Dictionary<String, JSON>)
                         successCallback(array)
@@ -517,7 +517,7 @@ public class HATAccountService: NSObject {
                 }
             }
             
-            HATAccountService.getHatTableValuesWithOutPretty(token: userToken!, userDomain: userDomain, tableID: tableID, parameters: [:], successCallback: profileEntries, errorCallback: failCallback)
+            HATAccountService.getHatTableValuesWithOutPretty(token: userToken, userDomain: userDomain, tableID: tableID, parameters: ["starttime" : "0"], successCallback: profileEntries, errorCallback: failCallback)
         }
         
         HATAccountService.checkHatTableExists(userDomain: userDomain, tableName: "profile", sourceName: "rumpel", authToken: userToken, successCallback: tableFound, errorCallback: failCallback)
@@ -612,7 +612,7 @@ public class HATAccountService: NSObject {
                     
                     //table found
                     if let message = result.dictionaryValue["message"]?.stringValue {
-                            
+                        
                         successCallback(message, token)
                     }
                 }

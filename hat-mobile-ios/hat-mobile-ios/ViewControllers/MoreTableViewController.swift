@@ -25,7 +25,7 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
     /// The headers of the table view
     private let headers: [String] = ["PHATA", "HAT", "Location", "About", ""]
     /// The footers of the table view
-    private let footers: [String] = []
+    private let footers: [String] = ["PHATA stands for Personal HAT Address. Your PHATA is your public profile, and you can customise exactly which parts of it you want to display, or keep private.", "", "", "", ""]
     
     /// The file url, used to show the pdf file for terms of service
     private var fileURL: String?

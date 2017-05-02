@@ -104,7 +104,7 @@ public struct HATNotesNotablesData: Comparable {
         
         if let tempAuthorData = dict["authorv1"]?.dictionary {
             
-             authorData = HATNotesAuthorData.init(dict: tempAuthorData)
+            authorData = HATNotesAuthorData.init(dict: tempAuthorData)
         }
         
         if let tempPhotoData = dict["photov1"]?.dictionaryObject {
@@ -129,19 +129,17 @@ public struct HATNotesNotablesData: Comparable {
         
         if let tempCreatedTime = dict["created_time"]?.string {
             
-            let returnedDate = HATFormatterHelper.formatStringToDate(string: tempCreatedTime)
-            if returnedDate != nil {
+            if let returnedDate = HATFormatterHelper.formatStringToDate(string: tempCreatedTime) {
                 
-                createdTime = returnedDate!
+                createdTime = returnedDate
             }
         }
         
         if let tempUpdatedTime = dict["updated_time"]?.string {
             
-            let returnedDate = HATFormatterHelper.formatStringToDate(string: tempUpdatedTime)
-            if returnedDate != nil {
+            if let returnedDate = HATFormatterHelper.formatStringToDate(string: tempUpdatedTime) {
                 
-                updatedTime = returnedDate!
+                updatedTime = returnedDate
             }
         }
         

@@ -11,13 +11,12 @@
  */
 
 import SafariServices
-import MessageUI
 import HatForIOS
 
 // MARK: Class
 
 /// The Login View Controller
-class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeViewControllerDelegate {
+class LoginViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: - IBOutlets
 
@@ -43,9 +42,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     /// An IBOutlet for handling the labelSubTitle
     @IBOutlet weak var labelSubTitle: UITextView!
     
-    @IBOutlet weak var testImage: UIImageView!
-    /// An IBOutlet for handling the ivLogo
-    @IBOutlet weak var ivLogo: UIImageView!
+    /// An IBOutlet for handling the background image
+    @IBOutlet weak var backgroundImage: UIImageView!
     
     /// An IBOutlet for handling the scrollView
     @IBOutlet weak var scrollView: UIScrollView!
@@ -60,6 +58,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     
     /// SafariViewController variable
     private var popUpView: UIView?
+    
+    private let mailHelper = MailHelper()
         
     // MARK: - IBActions
     
@@ -103,19 +103,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
      */
     @IBAction func contactUsActionButton(_ sender: Any) {
         
-        if MFMailComposeViewController.canSendMail() {
-            
-            // create mail view controler
-            let mailVC = MFMailComposeViewController()
-            mailVC.mailComposeDelegate = self
-            mailVC.setToRecipients(["contact@hatdex.org"])
-            
-            // present view controller
-            self.present(mailVC, animated: true, completion: nil)
-        } else {
-            
-            self.createClassicOKAlertWith(alertMessage: "This device has not been configured to send emails", alertTitle: "Email services disabled", okTitle: "ok", proceedCompletion: {})
-        }
+        self.mailHelper.sendEmail(at: "contact@hatdex.org", onBehalf: self)
     }
     
     /**
@@ -152,7 +140,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
             HATLoginService.formatAndVerifyDomain(userHATDomain: filteredDomain + (self.domainButton.titleLabel?.text)!, successfulVerification: self.authoriseUser, failedVerification: failed)
         } else {
             
-            self.createClassicOKAlertWith(alertMessage: "Please input your HAT domain", alertTitle: "HAT domain is empty!", okTitle: "Ok", proceedCompletion: {})
+            self.createClassicOKAlertWith(alertMessage: "Please input your HAT domain", alertTitle: "HAT domain is empty!", okTitle: "OK", proceedCompletion: {})
         }
     }
     
@@ -193,7 +181,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         self.title = NSLocalizedString("logon_label", comment:  "logon title")
         
         let partOne = "Rumpel ".createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 36)!)
-        let partTwo = "Lite".createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 36)!)
+        let partTwo = "Lite".createTextAttributes(foregroundColor: .teal, strokeColor: .teal, font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 36)!)
         
         self.labelTitle.attributedText = partOne.combineWith(attributedText: partTwo)
         self.labelTitle.textAlignment = .center
@@ -251,15 +239,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         }
     }
     
-    // MARK: - Mail View controller
-    
-    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
-        // Check the result or perform other tasks.
-        
-        // Dismiss the mail compose view controller.
-        controller.dismiss(animated: true, completion: nil)
-    }
-    
     // MARK: - Accesory Input View Method
     
     /**
@@ -305,7 +284,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
         self.safariVC?.dismissSafari(animated: true, completion: nil)
         
         self.popUpView = UIView()
-        popUpView!.createFloatingView(frame: CGRect(x: self.view.frame.midX - 60, y: self.view.frame.midY - 15, width: 120, height: 30), color: .tealColor(), cornerRadius: 15)
+        popUpView!.createFloatingView(frame: CGRect(x: self.view.frame.midX - 60, y: self.view.frame.midY - 15, width: 120, height: 30), color: .teal, cornerRadius: 15)
         
         let label = UILabel().createLabel(frame: CGRect(x: 0, y: 0, width: 120, height: 30), text: "Authenticating...", textColor: .white, textAlignment: .center, font: UIFont(name: "OpenSans", size: 12))
         
@@ -350,13 +329,13 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
      - parameter userDomain: The user's domain
      - parameter HATDomainFromToken: The HAT domain extracted from the token
      */
-    func enableLocationDataPlug(_ userDomain: String,_ HATDomainFromToken: String) {
+    private func enableLocationDataPlug(_ userDomain: String, _ HATDomainFromToken: String) {
         
         func success(result: Bool) {
             
             // setting image to nil and everything to clear color because animation was laggy
-            self.testImage.image = nil
-            self.testImage.backgroundColor = .clear
+            self.backgroundImage.image = nil
+            self.backgroundImage.backgroundColor = .clear
             self.scrollView.backgroundColor = .clear
             self.view.backgroundColor = .clear
             self.hidePopUpLabel()
@@ -390,7 +369,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, MFMailComposeV
     /**
      Hides the pop up, Authenticating..., label
      */
-    func hidePopUpLabel() {
+    private func hidePopUpLabel() {
         
         self.popUpView?.removeFromSuperview()
     }

@@ -56,7 +56,7 @@ class LoadingScreenWithProgressRingViewController: UIViewController {
         self.progressRing.ringRadius = 40
         self.progressRing.ringLineWidth = 5
         self.progressRing.ringColor = .white
-        self.progressRing.backgroundRingColor = .rumpelDarkGray()
+        self.progressRing.backgroundRingColor = .rumpelDarkGray
         let fullCircle = 2.0 * CGFloat(Double.pi)
         self.progressRing.startPoint = -0.25 * fullCircle
     }

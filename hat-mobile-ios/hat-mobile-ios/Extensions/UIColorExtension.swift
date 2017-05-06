@@ -16,63 +16,17 @@ import UIKit
 
 extension UIColor {
     
-    // MARK: - Methods
+    // MARK: - Staticly defined colors
+    
+    static let teal = UIColor(red: 0/255, green: 150/255, blue: 136/255, alpha: 1)
+    static let tealDark = UIColor(red: 2/255, green: 107/255, blue: 97/255, alpha: 1)
+    static let tealLight = UIColor(red: 21/255, green: 130/255, blue: 120/255, alpha: 1)
+    static let rumpelLightGray = UIColor(red: 51/255, green: 74/255, blue: 79/255, alpha: 1)
+    static let rumpelDarkGray = UIColor(red: 29/255, green: 49/255, blue: 53/255, alpha: 1)
+    static let rumpelLighterDarkGray = UIColor(red: 39/255, green: 72/255, blue: 80/255, alpha: 1)
+    static let rumpelVeryLightGray = UIColor(red: 244/255, green: 244/255, blue: 244/255, alpha: 1)
 
-    /**
-     Returns the teal color
-     */
-    public class func tealColor() -> UIColor {
-        
-        return self.init(colorLiteralRed: 0/255, green: 150/255, blue: 136/255, alpha: 1)
-    }
-    
-    /**
-     Returns a lighter teal color
-     */
-    public class func tealDarkerColor() -> UIColor {
-        
-        return self.init(colorLiteralRed: 2/255, green: 107/255, blue: 97/255, alpha: 1)
-    }
-    
-    /**
-     Returns a darker teal color
-     */
-    public class func tealLighterColor() -> UIColor {
-        
-        return self.init(colorLiteralRed: 21/255, green: 130/255, blue: 120/255, alpha: 1)
-    }
-    
-    /**
-     Returns the light gray color used in rumpel
-     */
-    public class func rumpelLightGray() -> UIColor {
-        
-        return self.init(colorLiteralRed: 51/255, green: 74/255, blue: 79/255, alpha: 1)
-    }
-    
-    /**
-     Returns the dark gray color used in rumpel
-     */
-    public class func rumpelDarkGray() -> UIColor {
-        
-        return self.init(colorLiteralRed: 29/255, green: 49/255, blue: 53/255, alpha: 1)
-    }
-    
-    /**
-     Returns a lighter dark gray color used in rumpel
-     */
-    public class func rumpelLighterDarkGray() -> UIColor {
-        
-        return self.init(colorLiteralRed: 39/255, green: 72/255, blue: 80/255, alpha: 1)
-    }
-    
-    /**
-     Returns the very light gray color used in rumpel
-     */
-    public class func rumpelVeryLightGray() -> UIColor {
-        
-        return self.init(colorLiteralRed: 244/255, green: 244/255, blue: 244/255, alpha: 1)
-    }
+    // MARK: - Methods
     
     /**
      Returns an UIColor object from a RGB value

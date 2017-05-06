@@ -54,4 +54,5 @@ extension SFSafariViewController {
         self.dismiss(animated: animated, completion: completion)
         self.removeFromParentViewController()
     }
+    
 }

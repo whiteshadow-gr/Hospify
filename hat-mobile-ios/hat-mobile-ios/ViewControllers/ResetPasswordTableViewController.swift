@@ -50,7 +50,7 @@ class ResetPasswordTableViewController: UITableViewController, UITextFieldDelega
         
         self.view.addSubview(self.darkView)
         
-        self.loadingView = UIView.createLoadingView(with: CGRect(x: (self.view?.frame.midX)! - 70, y: (self.view?.frame.midY)! - 15, width: 140, height: 30), color: .tealColor(), cornerRadius: 15, in: self.view, with: "Changing password...", textColor: .white, font: UIFont(name: "OpenSans", size: 12)!)
+        self.loadingView = UIView.createLoadingView(with: CGRect(x: (self.view?.frame.midX)! - 70, y: (self.view?.frame.midY)! - 15, width: 140, height: 30), color: .teal, cornerRadius: 15, in: self.view, with: "Changing password...", textColor: .white, font: UIFont(name: "OpenSans", size: 12)!)
 
         for (index, _) in self.headers.enumerated() {
             
@@ -181,7 +181,7 @@ class ResetPasswordTableViewController: UITableViewController, UITextFieldDelega
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
         let zxcvbn = DBPasswordStrengthMeterView(frame: CGRect(x: 0, y: 0, width: 15, height: 30))
-        zxcvbn.setLightColor(.rumpelDarkGray(), darkColor: .tealColor())
+        zxcvbn.setLightColor(.rumpelDarkGray, darkColor: .teal)
         zxcvbn.scorePassword(textField.text)
         
         textField.rightViewMode = .always

@@ -21,9 +21,9 @@ class PhataTableViewController: UITableViewController {
     // MARK: - Variables
     
     /// The sections of the table view
-    private let sections: [[String]] = [["PHATA"], ["Email Address", "Mobile Number"], ["Full Name", "Info", "Picture"], ["Emergency Contact"], ["Address"], ["About"], ["Social Links"]]
+    private let sections: [[String]] = [["PHATA"], ["Email Address", "Mobile Number"], ["Full Name", "Picture"], ["Emergency Contact"], ["About"], ["Social Links"]]
     /// The headers of the table view
-    private let headers: [String] = ["PHATA", "Contact Info", "Profile", "Emergency Contact", "Address", "About", "Social Links"]
+    private let headers: [String] = ["PHATA", "Contact Info", "Profile", "Emergency Contact", "About", "Social Links"]
     /// User's domain
     private let userDomain = HATAccountService.TheUserHATDomain()
     /// User's token
@@ -129,21 +129,15 @@ class PhataTableViewController: UITableViewController {
                 self.performSegue(withIdentifier: "phataToNameSegue", sender: self)
             } else if indexPath.row == 1 {
                 
-                self.performSegue(withIdentifier: "phataToProfileInfoSegue", sender: self)
-            } else if indexPath.row == 2 {
-                
                 self.performSegue(withIdentifier: "phataToProfilePictureSegue", sender: self)
-            }
+            } 
         } else if indexPath.section == 3 {
             
             self.performSegue(withIdentifier: "phataToEmergencyContactSegue", sender: self)
         } else if indexPath.section == 4 {
             
-            self.performSegue(withIdentifier: "phataToAddressSegue", sender: self)
-        } else if indexPath.section == 5 {
-            
             self.performSegue(withIdentifier: "phataToAboutSegue", sender: self)
-        } else if indexPath.section == 6 {
+        } else if indexPath.section == 5 {
             
             self.performSegue(withIdentifier: "phataToSocialLinksSegue", sender: self)
         }
@@ -212,14 +206,6 @@ class PhataTableViewController: UITableViewController {
             weak var destinationVC = segue.destination as? PhoneTableViewController
             
             if segue.identifier == "phataToPhoneSegue" {
-                
-                destinationVC?.profile = self.profile
-            }
-        } else if segue.destination is AddressTableViewController {
-            
-            weak var destinationVC = segue.destination as? AddressTableViewController
-            
-            if segue.identifier == "phataToAddressSegue" {
                 
                 destinationVC?.profile = self.profile
             }

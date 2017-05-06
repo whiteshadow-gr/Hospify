@@ -10,6 +10,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
+import UIKit
+
 // MARK: Struct
 
 /// A struct representing the location table received from JSON
@@ -53,6 +55,9 @@ public struct HATNotesPhotoData: Comparable {
     public var source: String = ""
     /// the caption of the photo
     public var caption: String = ""
+    
+    /// the image downloaded from the link
+    public var image: UIImage? = nil
     
     /// if photo is shared
     public var shared: Bool = false

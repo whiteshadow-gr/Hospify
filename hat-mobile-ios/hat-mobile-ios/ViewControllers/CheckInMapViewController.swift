@@ -68,7 +68,7 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
      */
     @IBAction func focusOnUsersLocation(_ sender: Any) {
         
-        self.mapView.setCenter((self.locationHelper.locationManager.location?.coordinate)!, animated: true)
+        self.mapView.setCenter((self.locationHelper.locationManager?.location?.coordinate)!, animated: true)
     }
     
     // MARK: - ViewController methods
@@ -100,7 +100,7 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
         super.viewDidAppear(animated)
         
         // if we have coordinates zoom at user. It is possible to not have coordinates in the case the user has the location tracking enabled
-        if let coordinates = self.locationHelper.locationManager.location?.coordinate {
+        if let coordinates = self.locationHelper.locationManager?.location?.coordinate {
             
             self.zoomToCoordinates(coordinates)
         }

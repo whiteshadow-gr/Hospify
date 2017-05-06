@@ -78,7 +78,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         }
     }
 
-    // MARK: - View Controller methods
+    // MARK: - IBActions
     
     /**
      Shows a pop up with the available settings
@@ -87,26 +87,10 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      */
     @IBAction func settingsButtonAction(_ sender: Any) {
         
-        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
-        
-        let filterByAction = UIAlertAction(title: "Filter by", style: .default, handler: {[unowned self] (alert: UIAlertAction) -> Void in
-            
-            self.filterSocialNetworksButtonAction()
-        })
-        
-        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[unowned self] (alert: UIAlertAction) -> Void in
-            
-            TabBarViewController.logoutUser(from: self)
-        })
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alertController.addActions(actions: [filterByAction, logOutAction, cancelAction])
-        alertController.addiPadSupport(barButtonItem: self.navigationItem.rightBarButtonItem!, sourceView: self.view)
-        
-        // present alert controller
-        self.navigationController!.present(alertController, animated: true, completion: nil)
+        self.filterSocialNetworksButtonAction()
     }
+    
+    // MARK: - View Controller methods
     
     override func viewDidLoad() {
         
@@ -257,7 +241,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             failed(statusCode: 401)
         } else {
             
-            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
         }
     }
     
@@ -469,7 +453,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             failed(statusCode: 401)
         } else {
             
-            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
         }
     }
     

@@ -165,24 +165,24 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         toolBar.sizeToFit()
         
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(self.donePickerButton(sender:)))
-        doneButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
+        doneButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
         
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        spaceButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
+        spaceButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
         
         self.segmentControl = UISegmentedControl(items: ["From", "To"])
-        self.segmentControl!.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
+        self.segmentControl!.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
         self.segmentControl!.selectedSegmentIndex = 0
         self.segmentControl!.addTarget(self, action: #selector(segmentedControlDidChange(sender:)), for: UIControlEvents.valueChanged)
-        self.segmentControl!.tintColor = .tealColor()
+        self.segmentControl!.tintColor = .teal
         
         let barButtonSegmentedControll = UIBarButtonItem(customView: segmentControl!)
         
         let spaceButton2 = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        spaceButton2.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
+        spaceButton2.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
         
         let cancelButton = UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(self.cancelPickerButton(sender:)))
-        cancelButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.tealColor()], for: .normal)
+        cancelButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
 
         toolBar.setItems([cancelButton, spaceButton, barButtonSegmentedControll, spaceButton2, doneButton], animated: false)
         toolBar.isUserInteractionEnabled = true
@@ -245,7 +245,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         let userDomain = HATAccountService.TheUserHATDomain()
         
         let view = UIView()
-        view.createFloatingView(frame: CGRect(x: self.view.frame.midX - 60, y: self.view.frame.midY - 15, width: 120, height: 30), color: .tealColor(), cornerRadius: 15)
+        view.createFloatingView(frame: CGRect(x: self.view.frame.midX - 60, y: self.view.frame.midY - 15, width: 120, height: 30), color: .teal, cornerRadius: 15)
         
         let label = UILabel().createLabel(frame: CGRect(x: 0, y: 0, width: 120, height: 30), text: "Getting locations...", textColor: .white, textAlignment: .center, font: UIFont(name: "OpenSans", size: 12))
         

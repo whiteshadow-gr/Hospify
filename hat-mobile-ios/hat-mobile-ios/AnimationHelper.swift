@@ -72,16 +72,13 @@ struct AnimationHelper {
                 
                 UIView.animate(
                     withDuration: duration,
-                    animations: {() -> Void in
+                    animations: {_ in
                         
                         animations()
                     },
                     completion: {(bool: Bool) -> Void in
                         
-                        if completion != nil {
-                            
-                            completion!(true)
-                        }
+                        completion?(true)
                 })
             }
         }

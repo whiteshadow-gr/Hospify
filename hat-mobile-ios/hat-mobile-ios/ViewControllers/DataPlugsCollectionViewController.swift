@@ -29,31 +29,6 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
     /// A reference to safari view controller in order to be able to show or hide it
     private var safariVC: SFSafariViewController? = nil
     
-    // MARK: - IBActions
-    
-    /**
-     Shows a pop up with the available settings
-     
-     - parameter sender: The object that calls this function
-     */
-    @IBAction func settingsButtonAction(_ sender: Any) {
-        
-        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
-        
-        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[unowned self](alert: UIAlertAction) -> Void in
-            
-            TabBarViewController.logoutUser(from: self)
-        })
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alertController.addActions(actions: [logOutAction, cancelAction])
-        alertController.addiPadSupport(barButtonItem: self.navigationItem.rightBarButtonItem!, sourceView: self.view)
-        
-        // present alert controller
-        self.navigationController!.present(alertController, animated: true, completion: nil)
-    }
-    
     // MARK: - View controller methods
 
     override func viewDidLoad() {
@@ -92,7 +67,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         }
         
         // create loading pop up screen
-        self.loadingView = UIView.createLoadingView(with: CGRect(x: (self.collectionView?.frame.midX)! - 70, y: (self.collectionView?.frame.midY)! - 15, width: 140, height: 30), color: .tealColor(), cornerRadius: 15, in: self.view, with: "Getting data plugs...", textColor: .white, font: UIFont(name: "OpenSans", size: 12)!)
+        self.loadingView = UIView.createLoadingView(with: CGRect(x: (self.collectionView?.frame.midX)! - 70, y: (self.collectionView?.frame.midY)! - 15, width: 140, height: 30), color: .teal, cornerRadius: 15, in: self.view, with: "Getting data plugs...", textColor: .white, font: UIFont(name: "OpenSans", size: 12)!)
         
         // get available data plugs from server
         HATDataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {(error) -> Void in

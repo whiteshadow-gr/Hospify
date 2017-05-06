@@ -26,6 +26,7 @@ class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDele
     
     /// An IBOutlet for handling the switch
     @IBOutlet weak var privateSwitch: CustomSwitch!
+    
     /// An IBOutlet for handling the textField
     @IBOutlet weak var textField: UITextField!
     

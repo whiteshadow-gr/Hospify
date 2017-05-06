@@ -50,8 +50,10 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
         cell.infoLabel.text = self.createInfoStringFromData(hatProvider: hatProvider)
         
         // get image from url and set it to the image view
-        let url: URL = URL(string: "https://hatters.hubofallthings.com/assets" + hatProvider.illustration)!
-        cell.hatProviderImage.downloadedFrom(url: url, progressUpdater: nil, completion: nil)
+        if let url: URL = URL(string: "https://hatters.hubofallthings.com/assets" + hatProvider.illustration) {
+            
+            cell.hatProviderImage.downloadedFrom(url: url, progressUpdater: nil, completion: nil)
+        }
         
         // return cell
         return cell
@@ -105,19 +107,17 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
             // set the color of the cell accordingly based on the indexPath.row
             if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
                 
-                return .rumpelVeryLightGray()
+                return .rumpelVeryLightGray
             }
-            
-            return .white
         } else {
             
             // set the color of the cell accordingly based on the indexPath.row
             if (indexPath.row % 2 == 0) {
                 
-                return .rumpelVeryLightGray()
+                return .rumpelVeryLightGray
             }
-            
-            return .white
         }
+        
+        return .white
     }
 }

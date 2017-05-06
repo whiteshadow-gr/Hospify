@@ -153,7 +153,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         
         self.loadingScr = LoadingScreenWithProgressRingViewController.customInit(completion: 0, from: self.storyboard!)
         
-        self.loadingScr!.view.createFloatingView(frame:CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 80, width: 150, height: 160), color: .tealColor(), cornerRadius: 15)
+        self.loadingScr!.view.createFloatingView(frame:CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 80, width: 150, height: 160), color: .teal, cornerRadius: 15)
         
         self.addViewController(self.loadingScr!)
     }
@@ -240,7 +240,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
                     },
                     completion: {[weak self] in
             
-                        if self != nil && cell?.image != nil && self?.files[indexPath.row].lastUpdated != nil  {
+                        if self != nil && cell?.image.image != nil && self?.files[indexPath.row].lastUpdated != nil && (self?.images.count)! > indexPath.row - 1 {
                         
                             cell?.image.cropImage(width: (cell?.image.frame.size.width)!, height: (cell?.image.frame.size.height)!)
                             self!.images[indexPath.row] = ((cell?.image.image)!, (self?.files[indexPath.row].lastUpdated)!)

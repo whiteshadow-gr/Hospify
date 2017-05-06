@@ -29,12 +29,12 @@ extension UIImageView {
         
         let userToken = HATAccountService.getUsersTokenFromKeychain()
         let headers = ["X-Auth-Token" : userToken]
-        contentMode = mode
+        self.contentMode = mode
         
-        Alamofire.request(url, method: .get, parameters: nil, encoding: Alamofire.JSONEncoding.default, headers: headers).downloadProgress(closure: {progress in
+        Alamofire.request(url, method: .get, parameters: nil, encoding: Alamofire.JSONEncoding.default, headers: headers).downloadProgress(closure: { progress in
             
                 progressUpdater?(progress.fractionCompleted)
-        }).responseData(completionHandler: {[weak self] response in
+        }).responseData(completionHandler: { [weak self] response in
             
             guard let data = response.result.value else { return }
             let image = UIImage(data: data)
@@ -44,10 +44,7 @@ extension UIImageView {
                 weakSelf.image = image
             }
             
-            if completion != nil {
-                
-                completion!()
-            }
+            completion?()
         })
 
     }

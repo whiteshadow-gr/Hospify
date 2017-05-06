@@ -159,8 +159,10 @@ public class HATDataPlugsService: NSObject {
                     if statusCode == 200 {
                         
                         succesfulCallBack(result["dataDebitId"].stringValue)
-                    } else {
+                    } else if statusCode == 400 {
                         
+                        failCallBack(.offerClaimed)
+                    } else {
                         let message = NSLocalizedString("Server responded with different code than 200", comment: "")
                         failCallBack(.generalError(message, statusCode, nil))
                     }
@@ -206,6 +208,10 @@ public class HATDataPlugsService: NSObject {
                 
                 if isSuccess {
                     
+                    if statusCode == 400 {
+                        
+                        failCallBack(.offerClaimed)
+                    }
                     succesfulCallBack("enabled")
                 } else {
                     

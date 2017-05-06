@@ -151,19 +151,19 @@ class LearnMoreObject {
         
         if pageIndex == 0 {
             
-            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
+            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .teal, strokeColor: .teal, font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
             let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 20)!)
             
             return partOne.combineWith(attributedText: partTwo)
         } else if pageIndex == 1 {
             
-            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
+            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .teal, strokeColor: .teal, font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
             let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
             
             return partOne.combineWith(attributedText: partTwo)
         } else if pageIndex == 2 {
             
-            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
+            let partOne = learnMoreObject.title.createTextAttributes(foregroundColor: .teal, strokeColor: .teal, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
             let partTwo = learnMoreObject.info.createTextAttributes(foregroundColor: .darkGray, strokeColor: .darkGray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 16)!)
             
             learnMoreButton.isHidden = false

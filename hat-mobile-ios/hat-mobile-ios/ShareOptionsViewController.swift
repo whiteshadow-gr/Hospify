@@ -100,6 +100,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     @IBOutlet weak var addImageButton: UIButton!
     @IBOutlet weak var addLocationButton: UIButton!
     
+    @IBOutlet weak var stackView: UIStackView!
     /// An IBOutlet for handling the action view
     @IBOutlet weak var actionsView: UIView!
     /// An IBOutlet for handling the shareForView
@@ -147,6 +148,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.receivedNote?.data.locationData.latitude = 0
             self.receivedNote?.data.locationData.longitude = 0
             self.receivedNote?.data.locationData.accuracy = 0
+            
+            self.addLocationButton.setImage(UIImage(named: "Add Location"), for: .normal)
         } else {
             
             self.performSegue(withIdentifier: "checkInSegue", sender: self)
@@ -440,7 +443,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.checkIfReauthorisationIsNeeded(completion: post)
         } else {
             
-            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
         }
     }
     
@@ -502,7 +505,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.checkIfReauthorisationIsNeeded(completion: delete)
         } else {
             
-            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
         }
     }
     
@@ -541,6 +544,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 self.marketsquareButton.isUserInteractionEnabled = false
                 self.receivedNote?.data.shared = false
                 self.durationSharedForLabel.text = "Forever"
+            }
+            
+            for view in self.settingsContentView.subviews {
+                
+                self.settingsContentView.bringSubview(toFront: view)
             }
         }
         
@@ -963,13 +971,18 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.textView.textColor = .lightGray
             self.textView.text = "What's on your mind?"
         }
+        
+        if self.receivedNote?.data.locationData.accuracy != 0 && self.receivedNote?.data.locationData.latitude != 0 && self.receivedNote?.data.locationData.latitude != 0 {
+            
+            self.addLocationButton.setImage(UIImage(named: "gps filled"), for: .normal)
+        }
     }
     
     func showProgressRing() {
         
         self.loadingScr = LoadingScreenWithProgressRingViewController.customInit(completion: 0, from: self.storyboard!)
         
-        self.loadingScr!.view.createFloatingView(frame:CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160), color: .tealColor(), cornerRadius: 15)
+        self.loadingScr!.view.createFloatingView(frame:CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160), color: .teal, cornerRadius: 15)
         
         self.addViewController(self.loadingScr!)
     }
@@ -982,11 +995,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         
         self.loadingScr?.view.frame = CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160)
-    }
-    
-    override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {
-        
-        self.loadingScr?.view.frame = CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 160, width: 150, height: 160)
+
+        self.viewWillLayoutSubviews()
     }
     
     override func didReceiveMemoryWarning() {
@@ -1040,7 +1050,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         self.durationSharedForLabel.isHidden = false
         
         // set teal color
-        let color = UIColor.tealColor()
+        let color: UIColor = .teal
         
         // set the text of the public label
         self.publicLabel.text = "Shared"
@@ -1225,41 +1235,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         }
     }
     
-    override func viewWillLayoutSubviews() {
-        
-        super.viewWillLayoutSubviews()
-        
-        if self.differenceHeightSize == nil {
-            
-            self.differenceHeightSize = self.textView.frame.height
-        }
-        
-        self.collectionView.frame = CGRect(x: textView.frame.origin.x, y: textView.frame.origin.y + self.textView.frame.height, width: self.textView.frame.width, height: 110)
-        
-        let orientation = UIInterfaceOrientation(rawValue: UIDevice.current.orientation.rawValue)!
-        
-        if orientation == .landscapeLeft || orientation == .landscapeRight {
-            
-            self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.view.frame.height + self.differenceHeightSize!)
-            self.settingsContentView.frame = CGRect(x: self.settingsContentView.frame.origin.x, y: (self.settingsContentView.frame.origin.y + self.differenceHeightSize!), width: self.settingsContentView.frame.width, height: self.settingsContentView.frame.height)
-        }
-    }
-    
-    func textViewDidChange(_ textView: UITextView) {
-        
-        let fixedWidth = textView.frame.size.width
-        textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        let newSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        
-        self.differenceHeightSize = newSize.height - textView.frame.size.height
-        
-        var newFrame = textView.frame
-        newFrame.size = CGSize(width: max(newSize.width, fixedWidth), height: newSize.height)
-        textView.frame = newFrame
-        
-        self.viewWillLayoutSubviews()
-    }
-    
     func textViewDidEndEditing(_ textView: UITextView) {
         
         if textView.text == "" {
@@ -1286,9 +1261,20 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      */
     private func claimOffer() {
         
-        func failCallback() {
+        func failCallback(error: DataPlugError) {
             
-            self.createClassicOKAlertWith(alertMessage: "There was a problem enabling offer. Please try again later", alertTitle: "Error enabling offer", okTitle: "OK", proceedCompletion: {})
+            switch error {
+            case .offerClaimed:
+                
+                break
+            default:
+                
+                self.createClassicOKAlertWith(alertMessage: "There was a problem enabling offer. Please try again later", alertTitle: "Error enabling offer", okTitle: "OK", proceedCompletion: {
+                
+                    self.marketsquareButton.alpha = 0.4
+                    self.removeFromArray(string: "marketsquare")
+                })
+            }
         }
         
         func success(appToken: String, renewedUserToken: String?) {
@@ -1298,7 +1284,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: self.userDomain, token: self.token, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: success, failCallBack: {(error) in
             
-            failCallback()
+            self.createClassicOKAlertWith(alertMessage: "There was a problem enabling offer. Please try again later", alertTitle: "Error enabling offer", okTitle: "OK", proceedCompletion: {})
             _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
         })
     }

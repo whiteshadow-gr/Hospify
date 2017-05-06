@@ -64,6 +64,7 @@ class HomeScreenObject: NSObject {
         let locations = HomeScreenObject(name: "Locations", description: "Track your movements over the day or week", image: UIImage(named: "gps outlined")!)
         let socialData = HomeScreenObject(name: "Social Data", description: "Social media posts stored in your HAT", image: UIImage(named: "SocialFeed")!)
         let chat = HomeScreenObject(name: "Photo Viewer", description: "Show the images you have uploaded in your HAT", image: UIImage(named: "Photo Viewer")!)
+        
         return [notables, locations, socialData, chat]
     }
 }

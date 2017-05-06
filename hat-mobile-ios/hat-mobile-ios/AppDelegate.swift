@@ -54,8 +54,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window?.tintColor = Constants.Colours.AppBase
         
         UINavigationBar.appearance().isOpaque = true
-        UINavigationBar.appearance().barTintColor = UIColor.tealColor()
-        UINavigationBar.appearance().tintColor = UIColor.white
+        UINavigationBar.appearance().barTintColor = .teal
+        UINavigationBar.appearance().tintColor = .white
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white, NSFontAttributeName : UIFont(name: "OpenSans", size: 20)!]
         UIBarButtonItem.appearance()
             .setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.white, NSFontAttributeName : UIFont(name: "OpenSans", size: 17)!], for: UIControlState.normal)

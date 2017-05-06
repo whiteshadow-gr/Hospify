@@ -83,9 +83,9 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         
         // config the arrowBar
         self.arrowBarImage.image = self.arrowBarImage.image!.withRenderingMode(.alwaysTemplate)
-        self.arrowBarImage.tintColor = .rumpelDarkGray()
+        self.arrowBarImage.tintColor = .rumpelDarkGray
         
-        self.learnMoreButton.addBorderToButton(width: 1, color: .tealColor())
+        self.learnMoreButton.addBorderToButton(width: 1, color: .teal)
         
         // add notification observers
         NotificationCenter.default.addObserver(self, selector: #selector(hidePopUpView), name: NSNotification.Name(Constants.NotificationNames.hideGetAHATPopUp.rawValue), object: nil)

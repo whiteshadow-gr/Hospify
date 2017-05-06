@@ -53,10 +53,10 @@ class CompletePurchaseViewController: UIViewController {
         
         // config the arrowBar
         self.arrowbar.image = self.arrowbar.image!.withRenderingMode(.alwaysTemplate)
-        self.arrowbar.tintColor = UIColor.rumpelVeryLightGray()
+        self.arrowbar.tintColor = UIColor.rumpelVeryLightGray
         
         // add border to home button
-        self.homeButton.addBorderToButton(width: 1, color: .rumpelDarkGray())
+        self.homeButton.addBorderToButton(width: 1, color: .rumpelDarkGray)
         
         // check if the image is nil, if not assign it to the imageview
         if self.image != nil {

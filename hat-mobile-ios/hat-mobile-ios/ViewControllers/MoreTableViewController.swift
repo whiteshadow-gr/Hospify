@@ -11,24 +11,25 @@
  */
 
 import HatForIOS
-import MessageUI
 
 // MARK: Class
 
 /// A class responsible for the more tab in the tab bar controller
-class MoreTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, MFMailComposeViewControllerDelegate {
+class MoreTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     // MARK: - Variables
     
     /// The sections of the table view
-    private let sections: [[String]] = [["PHATA"], ["Storage Info", "Change Password"], ["Show Data", "Location Settings"], ["Release Notes", "Rumpel Terms of Service", "HAT Terms of Service"], ["Report Problem", "Log Out", "Version"]]
+    private let sections: [[String]] = [["PHATA Page"], ["Storage Info", "Change Password"], ["Show Data", "Location Settings"], ["Release Notes", "Rumpel Terms of Service", "HAT Terms of Service"], ["Report Problem", "Log Out", "Version"]]
     /// The headers of the table view
-    private let headers: [String] = ["PHATA", "HAT", "Location", "About", ""]
+    private let headers: [String] = ["PHATA Page", "HAT", "Location", "About", ""]
     /// The footers of the table view
-    private let footers: [String] = ["PHATA stands for Personal HAT Address. Your PHATA is your public profile, and you can customise exactly which parts of it you want to display, or keep private.", "", "", "", ""]
+    private let footers: [String] = ["PHATA stands for Personal HAT Address. Your PHATA page is your public profile, and you can customise exactly which parts of it you want to display, or keep private.", "", "", "", ""]
     
     /// The file url, used to show the pdf file for terms of service
     private var fileURL: String?
+    
+    private let mailVC = MailHelper()
     
     // MARK: - IBOutlets
 
@@ -102,19 +103,7 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
             
             if self.sections[indexPath.section][indexPath.row] == "Report Problem" {
                 
-                if MFMailComposeViewController.canSendMail() {
-                    
-                    // create mail view controler
-                    let mailVC = MFMailComposeViewController()
-                    mailVC.mailComposeDelegate = self
-                    mailVC.setToRecipients(["contact@hatdex.org"])
-                    
-                    // present view controller
-                    self.present(mailVC, animated: true, completion: nil)
-                } else {
-                    
-                    self.createClassicOKAlertWith(alertMessage: "This device has not been configured to send emails", alertTitle: "Email services disabled", okTitle: "ok", proceedCompletion: {})
-                }
+                self.mailVC.sendEmail(at: "contact@hatdex.org", onBehalf: self)
             } else if self.sections[indexPath.section][indexPath.row] == "Log Out" {
                 
                 TabBarViewController.logoutUser(from: self)
@@ -202,7 +191,7 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
             
             if self.sections[indexPath.section][indexPath.row] == "Report Problem" {
                 
-                cell.textLabel?.textColor = .tealColor()
+                cell.textLabel?.textColor = .teal
             } else if self.sections[indexPath.section][indexPath.row] == "Log Out" {
                 
                 cell.textLabel?.textColor = .red
@@ -250,15 +239,6 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
                 _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
             }
         }
-    }
-    
-    // MARK: - Mail View controller methods
-    
-    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
-        // Check the result or perform other tasks.
-        
-        // Dismiss the mail compose view controller.
-        controller.dismiss(animated: true, completion: nil)
     }
 
     // MARK: - Navigation

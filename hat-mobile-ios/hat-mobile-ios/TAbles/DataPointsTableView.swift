@@ -59,9 +59,7 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
         let dataPoint:DataPoint = dataResults[indexPath.row]
         
         cell!.labelLatitude.text = String(dataPoint.lat) + ", " + String(dataPoint.lng) + ", " + String(dataPoint.accuracy)
-        
         cell!.labelDateAdded.text = "Added " + FormatterHelper.getDateString(dataPoint.dateAdded)
-        
         
         // last sync date
         if let lastSynced:Date = dataPoint.lastSynced as Date? {

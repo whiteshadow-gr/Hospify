@@ -81,7 +81,7 @@ struct CrashLoggerHelper {
      - parameter error: The error returned from the server
      - returns: A ready to present UIAlertController with alert type and one OK button
      */
-    static func dataPlugErrorLog(error: DataPlugError) -> UIAlertController {
+    static func dataPlugErrorLog(error: DataPlugError) -> UIAlertController? {
         
         switch error {
         case .noValueFound:
@@ -106,6 +106,9 @@ struct CrashLoggerHelper {
             // no token in url callback redirect
             let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
             return UIAlertController.createOKAlert(alertMessage: msg, alertTitle: NSLocalizedString("error_label", comment: "error"), okTitle: "OK", proceedCompletion: {})
+        case .offerClaimed:
+            
+            return nil
         }
     }
     

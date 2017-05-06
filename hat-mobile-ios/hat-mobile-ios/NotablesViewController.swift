@@ -67,29 +67,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     // MARK: - IBActions
     
     /**
-     Shows a pop up with the available settings
-     
-     - parameter sender: The object that calls this function
-     */
-    @IBAction func settingsButtonAction(_ sender: Any) {
-        
-        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
-        
-        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[unowned self] (alert: UIAlertAction) -> Void in
-            
-            TabBarViewController.logoutUser(from: self)
-        })
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alertController.addActions(actions: [logOutAction, cancelAction])
-        alertController.addiPadSupport(barButtonItem: self.navigationItem.rightBarButtonItem!, sourceView: self.view)
-        
-        // present alert controller
-        self.navigationController!.present(alertController, animated: true, completion: nil)
-    }
-    
-    /**
      Try to reconnect to get notes
      
      - parameter sender: The object that calls this function
@@ -112,7 +89,18 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         }
         
         // check if data plug is ready
-        HATDataPlugsService.ensureOffersReady(succesfulCallBack: {_ in}, failCallBack: failCallBack)
+        HATDataPlugsService.ensureOffersReady(succesfulCallBack: {_ in}, tokenErrorCallback: failCallBack, failCallBack: {error in
+        
+            switch error {
+                
+            case .offerClaimed:
+                
+                break
+            default:
+                
+                failCallBack()
+            }
+        })
     }
     
     /**
@@ -186,7 +174,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             failed(statusCode: 401)
         } else {
             
-            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
         }
     }
     
@@ -316,17 +304,19 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         // get cell from the reusable id
         let controller = NotablesTableViewCell()
+        controller.notesDelegate = self
+        
         var cell: NotablesTableViewCell
         
         if self.cachedNotesArray[indexPath.row].data.photoData.link != "" {
             
             cell = tableView.dequeueReusableCell(withIdentifier: "cellDataWithImage", for: indexPath) as! NotablesTableViewCell
-            cell = controller.setUpCell(cell, note: self.cachedNotesArray[indexPath.row], indexPath: indexPath)
         } else {
             
             cell = tableView.dequeueReusableCell(withIdentifier: "cellData", for: indexPath) as! NotablesTableViewCell
-            cell = controller.setUpCell(cell, note: self.cachedNotesArray[indexPath.row], indexPath: indexPath)
         }
+        
+        cell = controller.setUpCell(cell, note: self.cachedNotesArray[indexPath.row], indexPath: indexPath)
         
         // return cell
         return cell
@@ -352,12 +342,16 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 
                 let token = HATAccountService.getUsersTokenFromKeychain()
                 let userDomain = HATAccountService.TheUserHATDomain()
+                
                 func success(token: String?) {
                     
                     var unwrappedToken = ""
                     if token == nil {
                         
                         unwrappedToken = HATAccountService.getUsersTokenFromKeychain()
+                    } else {
+                        
+                        unwrappedToken = token!
                     }
                     HATNotablesService.deleteNote(id: self.cachedNotesArray[indexPath.row].id, tkn: unwrappedToken, userDomain: userDomain)
                     self.cachedNotesArray.remove(at: indexPath.row)
@@ -384,9 +378,9 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 }
                 
                 // delete data from hat and remove from table
-                let result = HATAccountService.checkIfTokenExpired(token: token)
+                let tokenResult = HATAccountService.checkIfTokenExpired(token: self.token)
                 
-                if result == self.token {
+                if tokenResult == self.token {
                     
                     success(token: self.token)
                 } else if result == "401" {
@@ -394,7 +388,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     failed(statusCode: 401)
                 } else {
                     
-                    self.createClassicOKAlertWith(alertMessage: "Checking token expiry date faild", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+                    self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
                 }
             }
             // if it is shared show message else delete the row
@@ -478,6 +472,14 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 }
             })
         }
+    }
+    
+    // MARK: - Update notes data
+    
+    func updateNote(_ note: HATNotesData, at index: Int) {
+        
+        self.cachedNotesArray[index] = note
+        print("")
     }
     
     // MARK: - Navigation

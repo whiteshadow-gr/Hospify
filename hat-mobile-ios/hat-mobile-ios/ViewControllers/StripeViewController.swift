@@ -222,7 +222,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         
         // config the arrowBar
         arrowBarImage.image = arrowBarImage.image!.withRenderingMode(.alwaysTemplate)
-        arrowBarImage.tintColor = UIColor.rumpelVeryLightGray()
+        arrowBarImage.tintColor = UIColor.rumpelVeryLightGray
         
         // add border to terms and conditions button
         self.termsAndConditionsButton.addBorderToButton(width: 1, color: .lightGray)
@@ -497,7 +497,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         if textField.tag == 10 {
             
             let zxcvbn = DBPasswordStrengthMeterView(frame: CGRect(x: 0, y: 0, width: 15, height: 30))
-            zxcvbn.setLightColor(.rumpelDarkGray(), darkColor: .tealColor())
+            zxcvbn.setLightColor(.rumpelDarkGray, darkColor: .teal)
             zxcvbn.scorePassword(textField.text)
             
             textField.rightViewMode = .always

@@ -60,9 +60,9 @@ class ProfileCollectionViewCell: UICollectionViewCell {
         // set the color of the cell based on indexPath.row
         if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
             
-            return .tealColor()
+            return .teal
         }
         
-        return .rumpelDarkGray()
+        return .rumpelDarkGray
     }
 }

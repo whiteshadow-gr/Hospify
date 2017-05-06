@@ -201,7 +201,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             self.helloLabel.text = "Hello " + usersHAT + "!"
             
             // request for location tracking
-            UpdateLocations.shared.locationManager.requestAlwaysAuthorization()
+            UpdateLocations.shared.locationManager?.requestAlwaysAuthorization()
             
             // check if the token has expired
             let result = HATAccountService.checkIfTokenExpired(token: token)
@@ -244,7 +244,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         
         // set up the created page view controller
         let pageViewController = self.storyboard!.instantiateViewController(withIdentifier: "firstTimeOnboarding") as! FirstOnboardingPageViewController
-        pageViewController.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.x + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30), color: .tealColor(), cornerRadius: 15)
+        pageViewController.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.view.frame.origin.x + 15, width: self.view.frame.width - 30, height: self.view.frame.height - 30), color: .teal, cornerRadius: 15)
         
         // add the page view controller to self
         self.addViewController(pageViewController)
@@ -262,7 +262,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         let textPopUpViewController = TextPopUpViewController.customInit(stringToShow: text, from: self.storyboard!)
         self.tabBarController?.tabBar.isUserInteractionEnabled = false
         
-        textPopUpViewController?.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.collectionView.frame.maxY, width: self.view.frame.width - 30, height: self.view.frame.height), color: .tealColor(), cornerRadius: 15)
+        textPopUpViewController?.view.createFloatingView(frame: CGRect(x: self.view.frame.origin.x + 15, y: self.collectionView.frame.maxY, width: self.view.frame.width - 30, height: self.view.frame.height), color: .teal, cornerRadius: 15)
         
         DispatchQueue.main.async { [weak self] () -> Void in
             

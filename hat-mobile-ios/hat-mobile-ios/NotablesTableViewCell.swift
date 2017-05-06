@@ -22,6 +22,8 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     /// an array to hold the social networks that this note is shared on
     private var sharedOn: [String] = []
     
+    var notesDelegate: NotablesViewController? = nil
+    
     // MARK: - IBOutlets
 
     /// An IBOutlet for handling the info of the post
@@ -55,10 +57,17 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     func setUpCell(_ cell: NotablesTableViewCell, note: HATNotesData, indexPath: IndexPath) -> NotablesTableViewCell {
         
         let newCell = self.initCellToNil(cell: cell)
+        let weakSelf = self
         
-        if note.data.photoData.link != "" {
+        if let url = URL(string: note.data.photoData.link) {
             
-            if let url = URL(string: note.data.photoData.link) {
+            if note.data.photoData.image != nil {
+                
+                newCell.attachedImage.image = note.data.photoData.image!
+                newCell.attachedImage.cropImage(width: newCell.attachedImage.frame.width, height: newCell.attachedImage.frame.height)
+            } else {
+                
+                newCell.attachedImage.image = UIImage(named: "Image Placeholder")
                 
                 newCell.ringProgressBar.isHidden = false
                 newCell.ringProgressBar.ringRadius = 10
@@ -66,13 +75,17 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
                 newCell.ringProgressBar.ringColor = .white
                 
                 newCell.attachedImage.downloadedFrom(url: url, progressUpdater: { progress in
-                
+                    
                     let completion = Float(progress)
                     newCell.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(newCell.ringProgressBar.endPoint), to: completion, removePreviousLayer: false)
                 }, completion: {
                     
                     newCell.ringProgressBar.isHidden = true
-                    newCell.attachedImage.cropImage(width: 143, height: 143)
+                    newCell.attachedImage.cropImage(width: newCell.attachedImage.frame.width, height: newCell.attachedImage.frame.height)
+                    
+                    var tempNote = note
+                    tempNote.data.photoData.image = newCell.attachedImage.image
+                    weakSelf.notesDelegate?.updateNote(tempNote, at: indexPath.row)
                 })
             }
         }
@@ -101,7 +114,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         // create this zebra like color based on the index of the cell
         if (indexPath.row % 2 == 1) {
             
-            newCell.contentView.backgroundColor = .rumpelLightGray()
+            newCell.contentView.backgroundColor = .rumpelLightGray
         }
         
         // show the data in the cell's labels
@@ -170,7 +183,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         
         cell.collectionView.reloadData()
         
-        cell.contentView.backgroundColor = .rumpelDarkGray()
+        cell.contentView.backgroundColor = .rumpelDarkGray
 
         return cell
     }
@@ -204,7 +217,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         } 
         
         let partOne = NSAttributedString(string: string)
-        let partTwo = shareString.createTextAttributes(foregroundColor: .tealColor(), strokeColor: .tealColor(), font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 11)!)
+        let partTwo = shareString.createTextAttributes(foregroundColor: .teal, strokeColor: .teal, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 11)!)
         
         return partOne.combineWith(attributedText: partTwo)
     }

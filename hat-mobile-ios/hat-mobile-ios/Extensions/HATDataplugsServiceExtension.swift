@@ -14,7 +14,7 @@ import HatForIOS
 
 // MARK: Extension
 
-extension HATDataPlugsService {
+extension HATDataPlugsService: UserTokenProtocol {
     
     // MARK: - Wrappers
     
@@ -24,29 +24,26 @@ extension HATDataPlugsService {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func ensureOffersReady(succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) -> Void {
-        
-        let userDomain = HATAccountService.TheUserHATDomain()
-        let userToken = HATAccountService.getUsersTokenFromKeychain()
+    class func ensureOffersReady(succesfulCallBack: @escaping (String) -> Void, tokenErrorCallback: @escaping () -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> Void {
         // notables offer
         let offerID = "32dde42f-5df9-4841-8257-5639db222e41"
         
         // set up the succesfulCallBack
-        let plugReadyContinue = ensureOfferEnabled(offerID: offerID, succesfulCallBack: succesfulCallBack, failCallBack: failCallBack)
+        let plugReadyContinue = ensureOfferEnabled(offerID: offerID, succesfulCallBack: succesfulCallBack, tokenErrorCallback: tokenErrorCallback, failCallBack: failCallBack)
         
         func checkPlugForToken(appToken: String, renewedUserToken: String?) {
             
-            self.checkSocialPlugAvailability(succesfulCallBack: plugReadyContinue, failCallBack: {(error) in
+            self.checkSocialPlugAvailability(succesfulCallBack: plugReadyContinue, failCallBack: { (error) in
                 
-                failCallBack()
+                failCallBack(error)
                 _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
             })(appToken)
         }
         
         // get token async
-        HATService.getApplicationTokenFor(serviceName: "Facebook", userDomain: userDomain, token: userToken, resource: "https://social-plug.hubofallthings.com", succesfulCallBack: checkPlugForToken, failCallBack: {(error) in
+        HATService.getApplicationTokenFor(serviceName: "Facebook", userDomain: userDomain, token: userToken, resource: "https://social-plug.hubofallthings.com", succesfulCallBack: checkPlugForToken, failCallBack: { (error) in
             
-            failCallBack()
+            tokenErrorCallback()
             _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
         })
     }
@@ -58,12 +55,9 @@ extension HATDataPlugsService {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func ensureOfferEnabled(offerID: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) -> (String) -> Void {
+    class func ensureOfferEnabled(offerID: String, succesfulCallBack: @escaping (String) -> Void, tokenErrorCallback: @escaping () -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> (String) -> Void {
         
         return {_ in
-            
-            let userDomain = HATAccountService.TheUserHATDomain()
-            let userToken = HATAccountService.getUsersTokenFromKeychain()
             
             // setup succesfulCallBack
             func offerClaimForToken(appToken: String, renewedUserToken: String?) {
@@ -72,9 +66,9 @@ extension HATDataPlugsService {
             }
             
             // get applicationToken async
-            HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: {(error) in
+            HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: { (error) in
                 
-                failCallBack()
+                tokenErrorCallback()
                 _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
             })
         }
@@ -87,7 +81,7 @@ extension HATDataPlugsService {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func ensureOfferDataDebitEnabled(offerID: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) ->  (_ appToken: String) -> Void {
+    class func ensureOfferDataDebitEnabled(offerID: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) ->  (_ appToken: String) -> Void {
         
         return { (appToken: String) in
             
@@ -106,7 +100,7 @@ extension HATDataPlugsService {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func ensureOfferClaimed(offerID: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) ->  (_ appToken: String) -> Void {
+    class func ensureOfferClaimed(offerID: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) ->  (_ appToken: String) -> Void {
         
         return { (appToken: String) in
             
@@ -115,7 +109,7 @@ extension HATDataPlugsService {
                                                                   succesfulCallBack: succesfulCallBack,
                                                                   failCallBack: failCallBack)
             // ensure offer is claimed
-            self.checkIfOfferIsClaimed(offerID: offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: {(error) in
+            self.checkIfOfferIsClaimed(offerID: offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: { (error) in
                 
                 claimOfferIfFailed()
             })
@@ -130,14 +124,14 @@ extension HATDataPlugsService {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func claimOfferWithOfferIDPartial(offerID: String, appToken: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) -> (Void) -> Void {
+    class func claimOfferWithOfferIDPartial(offerID: String, appToken: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> (Void) -> Void {
         
         return {
             
             // claim offer
-            self.claimOfferWithOfferID(offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: {(error) in
+            self.claimOfferWithOfferID(offerID, appToken: appToken, succesfulCallBack: succesfulCallBack, failCallBack: { (error) in
                 
-                failCallBack()
+                failCallBack(error)
                 _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
             })
         }
@@ -150,18 +144,14 @@ extension HATDataPlugsService {
      - parameter succesfulCallBack: A function to call if everything is ok
      - parameter failCallBack: A function to call if fail
      */
-    class func approveDataDebitPartial(appToken: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (Void) -> Void) -> (_ dataDebitID: String) -> Void {
+    class func approveDataDebitPartial(appToken: String, succesfulCallBack: @escaping (String) -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> (_ dataDebitID: String) -> Void {
         
         return { (dataDebitID: String) in
             
-            // get user token, we dont need apptoken for this
-            let userToken = HATAccountService.getUsersTokenFromKeychain()
-            let userDomain = HATAccountService.TheUserHATDomain()
-            
             // approve data debit
-            self.approveDataDebit(dataDebitID, userToken: userToken, userDomain: userDomain, succesfulCallBack: succesfulCallBack, failCallBack: {(error) in
+            self.approveDataDebit(dataDebitID, userToken: userToken, userDomain: userDomain, succesfulCallBack: succesfulCallBack, failCallBack: { (error) in
                 
-                failCallBack()
+                failCallBack(error)
             _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
             })
         }
@@ -177,9 +167,6 @@ extension HATDataPlugsService {
      - returns: A ready URL as a String if everything ok else nil
      */
     public class func createURLBasedOn(socialServiceName: String, socialServiceURL: String) -> String? {
-        
-        // set up the url to open safari to
-        let userDomain: String = HATAccountService.TheUserHATDomain()
         
         if socialServiceName == "twitter" {
             
@@ -201,54 +188,32 @@ extension HATDataPlugsService {
      */
     public class func checkDataPlugsIfActive(completion: @escaping (String, Bool) -> Void) {
         
+        func isCheckmarkVisible(_ result: Bool, onSocialNetwork: String) {
+            
+            completion(onSocialNetwork, true)
+        }
+        
         /// Check if facebook is active
         func checkIfFacebookIsActive(appToken: String, renewedUserToken: String?) {
             
-            /// if facebook active, enable the checkmark
-            func enableCheckMarkOnFacebook(result: Bool) {
-                
-                completion("facebook", result)
-            }
-            
-            /// if facebook inactive, disable the checkmark
-            func disableCheckMarkOnFacebook() {
-                
-                completion("facebook", false)
-            }
-            
             // check if facebook active
-            HATFacebookService.isFacebookDataPlugActive(token: appToken, successful: enableCheckMarkOnFacebook, failed: {_ in disableCheckMarkOnFacebook()})
+            HATFacebookService.isFacebookDataPlugActive(token: appToken, successful: {_ in isCheckmarkVisible(true, onSocialNetwork: "facebook")}, failed: {_ in isCheckmarkVisible(false, onSocialNetwork: "facebook")})
         }
         
         /// Check if twitter is active
         func checkIfTwitterIsActive(appToken: String, renewedUserToken: String?) {
             
-            /// if twitter active, enable the checkmark
-            func enableCheckMarkOnTwitter() {
-                
-                completion("twitter", true)
-            }
-            
-            /// if twitter inactive, disable the checkmark
-            func disableCheckMarkOnTwitter() {
-                
-                completion("twitter", false)
-            }
-            
             // check if twitter active
-            HATTwitterService.isTwitterDataPlugActive(token: appToken, successful: { _ in enableCheckMarkOnTwitter()}, failed: {_ in disableCheckMarkOnTwitter()})
+            HATTwitterService.isTwitterDataPlugActive(token: appToken, successful: {_ in isCheckmarkVisible(true, onSocialNetwork: "twitter")}, failed: {_ in isCheckmarkVisible(false, onSocialNetwork: "twitter")})
         }
         
-        let userDomain = HATAccountService.TheUserHATDomain()
-        let userToken = HATAccountService.getUsersTokenFromKeychain()
-        
         // get token for facebook and twitter and check if they are active
-        HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: checkIfFacebookIsActive, failed: {(error) in
+        HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: checkIfFacebookIsActive, failed: { (error) in
         
             _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
         })
         
-        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: checkIfTwitterIsActive, failed: {(error) in
+        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: checkIfTwitterIsActive, failed: { (error) in
         
             _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
         })

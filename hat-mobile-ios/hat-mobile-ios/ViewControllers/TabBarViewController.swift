@@ -29,7 +29,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         self.navigationItem.hidesBackButton = true
         
         // change tint color, the color of the selected icon in tab bar
-        self.tabBar.tintColor = UIColor.tealColor()
+        self.tabBar.tintColor = .teal
         // set delete to self in order to receive the calls from tab bar controller
         self.delegate = self
         

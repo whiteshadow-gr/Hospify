@@ -82,5 +82,6 @@ public enum HATError: Error {
 public enum DataPlugError: Error {
     
     case generalError(String, Int?, Error?)
+    case offerClaimed
     case noValueFound
 }

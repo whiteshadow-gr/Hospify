@@ -60,16 +60,16 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
     
     private func initLocationManager() {
         
-        if locationManager == nil {
+        if self.locationManager == nil {
             
-            let locationManager = CLLocationManager()
-            locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
-            locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
-            locationManager.allowsBackgroundLocationUpdates = true
-            locationManager.requestAlwaysAuthorization()
-            locationManager.disallowDeferredLocationUpdates()
-            locationManager.pausesLocationUpdatesAutomatically = false
-            locationManager.activityType = CLActivityType.otherNavigation
+            self.locationManager = CLLocationManager()
+            self.locationManager?.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
+            self.locationManager?.distanceFilter = MapsHelper.GetUserPreferencesDistance()
+            self.locationManager?.allowsBackgroundLocationUpdates = true
+            self.locationManager?.requestAlwaysAuthorization()
+            self.locationManager?.disallowDeferredLocationUpdates()
+            self.locationManager?.pausesLocationUpdatesAutomatically = false
+            self.locationManager?.activityType = .otherNavigation
         }
     }
     
@@ -104,11 +104,8 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
         self.locationManager?.startMonitoring(for: region!)
         
         // if a completion was specified execute it
-        if self.completion != nil {
-            
-            self.completion!(locations.last!)
-            self.completion = nil
-        }
+        self.completion?(locations.last!)
+        self.completion = nil
     }
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {

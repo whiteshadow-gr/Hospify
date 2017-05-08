@@ -348,9 +348,20 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                 
                                 _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
                             }
-                        }, errorCallBack: {(error) -> Void in
+                        }, errorCallBack: {[weak self] (error) -> Void in
                         
-                            _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                            if self != nil {
+                                
+                                if self?.loadingScr != nil {
+                                    
+                                    self?.loadingScr?.removeFromParentViewController()
+                                    self?.loadingScr?.view.removeFromSuperview()
+                                }
+                                
+                                self!.createClassicOKAlertWith(alertMessage: "There was an error with the uploading of the file, please try again later", alertTitle: "Upload failed", okTitle: "OK", proceedCompletion: {})
+                                
+                                _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                            }
                         })
                     } else {
                         
@@ -406,9 +417,20 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                 
                                 _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
                             }
-                        }, errorCallBack: {(error) -> Void in
+                        }, errorCallBack: {[weak self](error) -> Void in
                             
-                            _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                            if self != nil {
+                                
+                                if self?.loadingScr != nil {
+                                    
+                                    self?.loadingScr?.removeFromParentViewController()
+                                    self?.loadingScr?.view.removeFromSuperview()
+                                }
+                                
+                                self!.createClassicOKAlertWith(alertMessage: "There was an error with the uploading of the file, please try again later", alertTitle: "Upload failed", okTitle: "OK", proceedCompletion: {})
+                                
+                                _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                            }
                         })
                     } else {
                         
@@ -905,9 +927,6 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         let tapGestureTextView = UITapGestureRecognizer(target: self, action: #selector (self.enableEditingTextView))
         tapGestureTextView.cancelsTouchesInView = false
         self.textView.addGestureRecognizer(tapGestureTextView)
-        
-        // add borders to buttons
-        self.deleteButtonOutlet.addBorderToButton(width: 1, color: .white)
         
         // change title in publish button
         self.publishButton.titleLabel?.minimumScaleFactor = 0.5

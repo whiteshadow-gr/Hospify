@@ -24,7 +24,7 @@ PODS:
   - Realm/Headers (2.7.0)
   - RealmSwift (2.7.0):
     - Realm (= 2.7.0)
-  - Stripe (10.0.1)
+  - Stripe (10.1.0)
   - SwiftyJSON (3.1.4)
   - SwiftyRSA (1.1.1)
   - Toaster (2.0.3)
@@ -75,7 +75,7 @@ SPEC CHECKSUMS:
   Mockingjay: 7122a3fc0597aa63438e4cd9b71b7bc8aac05b87
   Realm: 07e5d3a9e0e41d65fd5f9f05150ed6295d0f093b
   RealmSwift: 6d06425d3900c86473c4f323bf6949b43fca22bc
-  Stripe: dd6df0e2c6a8463e2f1ca9b15dc246e5ae1eee64
+  Stripe: 1c7aa951a075cced500a919d92b687b35d410705
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
   SwiftyRSA: 40b6eca6677ca432356a97d4e7659e15203708fb
   Toaster: 77c0b03d78e680bbbab0071c9c7ee392b0034010

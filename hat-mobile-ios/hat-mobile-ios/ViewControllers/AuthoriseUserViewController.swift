@@ -67,12 +67,15 @@ class AuthoriseUserViewController: UIViewController {
             let userDomain = HATAccountService.TheUserHATDomain()
             
             // authorize with hat
-            HATLoginService.loginToHATAuthorization(userDomain: userDomain, url: url, success: self.completionFunc, failed: {(error: AuthenicationError) -> Void in return})
+            HATLoginService.loginToHATAuthorization(userDomain: userDomain, url: url, success: {token in
             
-            // remove authorise view controller, that means remove self and notify the view controllers listening
-            self.removeViewController()
-            
-            NotificationCenter.default.removeObserver(self, name: NSNotification.Name(Constants.NotificationNames.reauthorised.rawValue), object: nil)
+                self.completionFunc?(token)
+                
+                // remove authorise view controller, that means remove self and notify the view controllers listening
+                self.removeViewController()
+                
+                NotificationCenter.default.removeObserver(self, name: NSNotification.Name(Constants.NotificationNames.reauthorised.rawValue), object: nil)
+            }, failed: {(error: AuthenicationError) -> Void in return})
         }
     }
     

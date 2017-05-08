@@ -22,6 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Variables
     
     var window: UIWindow?
+    let locationManager = UpdateLocations.shared
     
     // MARK: - App Delegate methods
     
@@ -35,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // if app was closed by iOS (low mem, etc), then receives a location update, and respawns your app, letting it know it respawned due to a location service
         if launchOptions?[UIApplicationLaunchOptionsKey.location] != nil {
             
-            UpdateLocations.shared.resumeLocationServices()
+            locationManager.resumeLocationServices()
         }
         
         // change tab bar item font

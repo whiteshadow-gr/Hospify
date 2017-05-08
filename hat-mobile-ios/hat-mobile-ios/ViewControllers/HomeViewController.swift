@@ -25,6 +25,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     /// A dark view covering the collection view cell
     private var darkView: UIVisualEffectView? = nil
     
+    private var authoriseVC: AuthoriseUserViewController? = nil
+    
     // MARK: - IBOutlets
 
     /// An IBOutlet for handling the circle progress bar view
@@ -156,10 +158,16 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         
         func success(token: String?) {
             
-            if token != "" {
+            if token != "" && token != nil {
                 
                 _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: token!)
                 _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "true")
+                
+                if self.authoriseVC != nil {
+                    
+                    self.authoriseVC?.removeViewController()
+                    self.authoriseVC = nil
+                }
             }
         }
         
@@ -170,10 +178,10 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                 NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "Unauthorized. Please sign out and try again.")
                 _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "expired")
                 
-                let authorise = AuthoriseUserViewController.setupAuthoriseViewController(view: self.view)
-                authorise.completionFunc = success
-                // add the page view controller to self
-                self.addViewController(authorise)
+                self.authoriseVC = AuthoriseUserViewController.setupAuthoriseViewController(view: self.view)
+                self.authoriseVC?.completionFunc = success
+                // addauthoriseVCthe page view controller to self
+                self.addViewController(self.authoriseVC!)
             }
         }
         
@@ -205,7 +213,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             
             // check if the token has expired
             let result = HATAccountService.checkIfTokenExpired(token: token)
-            
+                        
             if result == token {
                 
                 success(token: token)
@@ -216,6 +224,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                 
                 self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed, please log out and log in again", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
             }
+            
+            self.collectionView?.reloadData()
         }
         
         HATService.getSystemStatus(userDomain: userDomain, authToken: token, completion: updateRingProgressBar, failCallBack: {(jsonError) -> Void in

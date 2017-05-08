@@ -61,11 +61,28 @@ extension UIImageView {
         
         if self.image != nil {
             
-            let rect = CGRect(x: 0,y: 0, width: Int(width), height: Int(height))
-            let scale = width / (self.image?.size.width)!
-            let newHeight = (self.image?.size.height)! * scale
-            UIGraphicsBeginImageContext(CGSize(width: width, height: newHeight))
-            self.image?.draw(in: CGRect(x: 0,y: 0, width: width, height: newHeight))
+            var rect = CGRect(x: 0, y: 0, width: 0, height: 0)
+            
+            if Float((self.image?.size.width)!) > Float((self.image?.size.height)!) {
+                
+                print("image is landscape")
+                
+                rect = CGRect(x: 0,y: 0, width: Int(width), height: Int(height))
+                let scale = height / (self.image?.size.height)!
+                let newWidth = (self.image?.size.width)! * scale
+                UIGraphicsBeginImageContext(CGSize(width: newWidth, height: height))
+                self.image?.draw(in: CGRect(x: 0,y: 0, width: newWidth, height: height))
+            } else {
+                
+                print("image is portrait")
+                
+                rect = CGRect(x: 0,y: 0, width: Int(width), height: Int(height))
+                let scale = width / (self.image?.size.width)!
+                let newHeight = (self.image?.size.height)! * scale
+                UIGraphicsBeginImageContext(CGSize(width: width, height: newHeight))
+                self.image?.draw(in: CGRect(x: 0,y: 0, width: width, height: newHeight))
+            }
+            
             let context = UIGraphicsGetCurrentContext()
             context?.setStrokeColor(UIColor.white.cgColor)
             context?.setLineWidth(1)

@@ -14,7 +14,8 @@ import HatForIOS
 
 // MARK: Protocol
 
-protocol UserTokenProtocol {
+/// provides the token and username of the user easily
+protocol UserCredentialsProtocol {
     
     // MARK: - Protocol's variables
     
@@ -33,7 +34,7 @@ protocol UserTokenProtocol {
 
 // MARK: - Extension
 
-extension UserTokenProtocol {
+extension UserCredentialsProtocol {
     
     // MARK: - Implement protocol's variables
     

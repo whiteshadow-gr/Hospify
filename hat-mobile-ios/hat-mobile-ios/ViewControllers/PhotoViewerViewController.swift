@@ -11,6 +11,7 @@
  */
 
 import HatForIOS
+import Alamofire
 
 // MARK: Class
 
@@ -111,7 +112,51 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
                 // save the files received
                 if self.files != filesReceived {
                     
-                    self.files = filesReceived
+                    self.files.removeAll()
+                    let cachedImages = self.images
+                    var tempImages: [(UIImage, Date)] = []
+                    
+                    for (index, file) in filesReceived.enumerated() {
+                        
+                        let image = UIImage(named: "Image Placeholder")
+                        self.files.append(file)
+                        
+                        if cachedImages.count > 0 {
+                            
+                            if file.lastUpdated == cachedImages[index].1 {
+                                
+                                tempImages.append((cachedImages[index].0, cachedImages[index].1))
+                            } else {
+                                
+                                var isFound: Bool = false
+                                for tempFile in filesReceived {
+                                    
+                                    if file.lastUpdated == tempFile.lastUpdated {
+                                        
+                                        for (tempImageIndex, image) in cachedImages.enumerated(){
+                                            
+                                            if file.lastUpdated == cachedImages[tempImageIndex].1 {
+                                                
+                                                tempImages.append((image.0, cachedImages[tempImageIndex].1))
+                                                isFound = true
+                                                continue
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                if !isFound {
+                                    
+                                    tempImages.append((image!, file.lastUpdated!))
+                                }
+                            }
+                        } else {
+                            
+                            tempImages.append((image!, file.lastUpdated!))
+                        }
+                    }
+                    
+                    self.images = tempImages
                 }
             } else {
                 
@@ -140,6 +185,17 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         
         super.didReceiveMemoryWarning()
     }
+    
+//    override func viewDidDisappear(_ animated: Bool) {
+//        
+//        Alamofire.SessionManager.default.session.getTasksWithCompletionHandler { (sessionDataTask, uploadData, downloadData) in
+//            sessionDataTask.forEach { $0.cancel() }
+//            uploadData.forEach { $0.cancel() }
+//            downloadData.forEach { $0.cancel() }
+//        }
+//        
+//        super.viewDidDisappear(animated)
+//    }
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         
@@ -231,9 +287,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? PhotosCollectionViewCell
         
         let imageURL: String = "https://" + self.userDomain + "/api/v2/files/content/" + self.files[indexPath.row].fileID
-        
-        self.images.append((UIImage(), (self.files[indexPath.row].lastUpdated)!))
-        
+                
         if cell?.image.image == UIImage(named: "Image Placeholder") && URL(string: imageURL) != nil {
             
             cell?.ringProgressView.isHidden = false
@@ -243,7 +297,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
             cell?.ringProgressView?.ringColor = .white
             cell?.ringProgressView.animationDuration = 0.2
 
-            cell!.image.downloadedFrom(url: URL(string: imageURL)!,
+            cell!.image.downloadedFrom(url: URL(string: imageURL)!, userToken: userToken,
                     progressUpdater: {progress in
             
                         let completion = CGFloat(progress)
@@ -271,6 +325,18 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         
         self.selectedFileToView = self.files[indexPath.row]
         self.performSegue(withIdentifier: "fullScreenPhotoViewerSegue", sender: self)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let approxWidth = CGFloat(100.0)
+        let frameWidth = self.view.frame.width
+        let width = CGFloat(frameWidth /  CGFloat(Int(frameWidth / approxWidth))) - 5
+        
+        return CGSize(width: width, height: width)
+        // Int(640 / 210) = 3
+        // 640 / 3 = 213.33
+        
     }
     
     // MARK: - Navigation

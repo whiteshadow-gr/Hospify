@@ -46,6 +46,8 @@ public class HATFileService: NSObject {
                         images.append(FileUploadObject(from: image.dictionaryValue))
                     }
                     
+                    images.sort(by: {$0.lastUpdated! < $1.lastUpdated!})
+                    
                     successCallback(images, token)
                 } else {
                     

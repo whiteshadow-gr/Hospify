@@ -62,7 +62,9 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
                 
                 if let url = URL(string: post.data.posts.fullPicture) {
                     
-                    cell.socialNetworkImage.downloadedFrom(url: url, progressUpdater: nil, completion: nil)
+                    let userToken = HATAccountService.getUsersTokenFromKeychain()
+                    
+                    cell.socialNetworkImage.downloadedFrom(url: url, userToken: userToken, progressUpdater: nil, completion: nil)
                 }
             }
             

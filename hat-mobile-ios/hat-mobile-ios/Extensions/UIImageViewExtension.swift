@@ -11,7 +11,6 @@
  */
 
 import Alamofire
-import HatForIOS
 
 // MARK: Extension
 
@@ -25,9 +24,8 @@ extension UIImageView {
      - parameter url: The url to download the image from
      - parameter mode: The content mode of the image, default value = scaleAspectFit
      */
-    public func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit, progressUpdater: ((Double) -> Void)?, completion: ((Void) -> Void)?) {
+    public func downloadedFrom(url: URL, userToken: String, contentMode mode: UIViewContentMode = .scaleAspectFit, progressUpdater: ((Double) -> Void)?, completion: ((Void) -> Void)?) {
         
-        let userToken = HATAccountService.getUsersTokenFromKeychain()
         let headers = ["X-Auth-Token" : userToken]
         self.contentMode = mode
         

@@ -83,6 +83,11 @@ class SettingsViewController: UIViewController, UIPickerViewDataSource, UIPicker
                 self.locationSwitchOutlet.isOn = false
                 self.locationTrackingLabel.text = "location upload to HAT disabled"
             }
+        } else {
+            
+            _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "true")
+            self.locationSwitchOutlet.isOn = true
+            self.locationTrackingLabel.text = "location upload to HAT enabled"
         }
     }
     

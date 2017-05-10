@@ -12,17 +12,14 @@
 
 import HatForIOS
 
-// MARK: Class
+class PHATASettingsTableViewController: UITableViewController {
 
-/// A class responsible for the name UITableViewController of the PHATA section
-class NameTableViewController: UITableViewController {
-    
     // MARK: - Variables
-
+    
     /// The sections of the table view
-    private let sections: [[String]] = [[""], [""], [""], [""], ["Make those fields public?"]]
+    private let sections: [[String]] = [["", "Make profile public?"]]
     /// The headers of the table view
-    private let headers: [String] = ["First Name", "Last Name", "Middle Name", "Title", "Privacy"]
+    private let headers: [String] = ["Settings"]
     /// The loading view pop up
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
@@ -52,70 +49,49 @@ class NameTableViewController: UITableViewController {
         
         self.loadingView = UIView.createLoadingView(with: CGRect(x: (self.view?.frame.midX)! - 70, y: (self.view?.frame.midY)! - 15, width: 140, height: 30), color: .teal, cornerRadius: 15, in: self.view, with: "Updating profile...", textColor: .white, font: UIFont(name: "OpenSans", size: 12)!)
         
-        for (index, _) in self.headers.enumerated() {
+        var cell = self.tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? PhataTableViewCell
+        
+        if cell == nil {
             
-            var cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: index)) as? PhataTableViewCell
-            
-            if cell == nil {
-                
-                let indexPath = IndexPath(row: 0, section: index)
-                cell = tableView.dequeueReusableCell(withIdentifier: "nameCell", for: indexPath) as? PhataTableViewCell
-                cell = self.setUpCell(cell: cell!, indexPath: indexPath) as? PhataTableViewCell
-            }
-            
-            // first name
-            if index == 0 {
-                
-                profile?.data.personal.firstName = cell!.textField.text!
-            // last name
-            } else if index == 1 {
-                
-                profile?.data.personal.lastName = cell!.textField.text!
-            // Middle name
-            } else if index == 2 {
-                    
-                profile?.data.personal.middleName = cell!.textField.text!
-            // Title
-            } else if index == 3 {
-                    
-                profile?.data.personal.title = cell!.textField.text!
-            // Privacy
-            } else if index == 4 {
-                
-                profile?.data.personal.isPrivate = !(cell!.privateSwitch.isOn)
-            }
+            let indexPath = IndexPath(row: 1, section: 0)
+            cell = tableView.dequeueReusableCell(withIdentifier: "phataSettingsCell", for: indexPath) as? PhataTableViewCell
+            cell = self.setUpCell(cell: cell!, indexPath: indexPath) as? PhataTableViewCell
         }
+        
+        profile?.data.isPrivate = !(cell!.privateSwitch.isOn)
         
         func tableExists(dict: Dictionary<String, Any>, renewedUserToken: String?) {
             
             HATAccountService.postProfile(userDomain: userDomain, userToken: userToken, hatProfile: self.profile!, successCallBack: {
-            
+                
                 self.loadingView.removeFromSuperview()
                 self.darkView.removeFromSuperview()
                 
                 _ = self.navigationController?.popViewController(animated: true)
             }, errorCallback: {error in
-            
+                
                 self.loadingView.removeFromSuperview()
                 self.darkView.removeFromSuperview()
                 
+                self.createClassicOKAlertWith(alertMessage: "There was an error posting profile", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
                 _ = CrashLoggerHelper.hatTableErrorLog(error: error)
             })
         }
         
-        HATAccountService.checkHatTableExistsForUploading(userDomain: userDomain, tableName: "profile", sourceName: "rumpel", authToken: userToken, successCallback: tableExists, errorCallback: {_ in
-        
+        HATAccountService.checkHatTableExistsForUploading(userDomain: userDomain, tableName: "profile", sourceName: "rumpel", authToken: userToken, successCallback: tableExists, errorCallback: {error in
+            
             self.loadingView.removeFromSuperview()
             self.darkView.removeFromSuperview()
+            
+            self.createClassicOKAlertWith(alertMessage: "There was an error checking if it's possible to post the data", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+            
+            _ = CrashLoggerHelper.hatTableErrorLog(error: error)
         })
     }
-    
-    // MARK: - View controller methods
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        self.tableView.allowsSelection = false
     }
 
     override func didReceiveMemoryWarning() {
@@ -124,20 +100,20 @@ class NameTableViewController: UITableViewController {
     }
 
     // MARK: - Table view methods
-
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
-
+        
         return self.sections.count
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
+        
         return self.sections[section].count
     }
-
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "nameCell", for: indexPath) as! PhataTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "phataSettingsCell", for: indexPath) as! PhataTableViewCell
         
         return self.setUpCell(cell: cell, indexPath: indexPath)
     }
@@ -159,28 +135,19 @@ class NameTableViewController: UITableViewController {
      */
     private func setUpCell(cell: PhataTableViewCell, indexPath: IndexPath) -> UITableViewCell {
         
-        if indexPath.section == 0 {
+        if indexPath.row == 0 {
             
-            cell.textField.text = self.profile?.data.personal.firstName
+            cell.textField.text = self.userDomain
+            cell.isUserInteractionEnabled = false
+            cell.textField.textColor = .gray
             cell.privateSwitch.isHidden = true
-        } else if indexPath.section == 1 {
-            
-            cell.textField.text = self.profile?.data.personal.lastName
-            cell.privateSwitch.isHidden = true
-        } else if indexPath.section == 2 {
-            
-            cell.textField.text = self.profile?.data.personal.middleName
-            cell.privateSwitch.isHidden = true
-        } else if indexPath.section == 3 {
-            
-            cell.dataSourceForPickerView = ["", "Mr.", "Mrs.", "Miss", "Dr."]
-            cell.textField.text = self.profile?.data.personal.title
-            cell.privateSwitch.isHidden = true
-            cell.tag = 15
-        } else if indexPath.section == 4 {
+        } else if indexPath.row == 1 {
             
             cell.textField.text = self.sections[indexPath.section][indexPath.row]
-            cell.privateSwitch.isOn = !(self.profile?.data.personal.isPrivate)!
+            cell.privateSwitch.isOn = !(self.profile?.data.isPrivate)!
+            cell.isUserInteractionEnabled = true
+            cell.textField.textColor = .black
+            cell.privateSwitch.isHidden = false
         }
         
         return cell

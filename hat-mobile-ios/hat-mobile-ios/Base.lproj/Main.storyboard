@@ -397,7 +397,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="58j-bY-Mme">
-                                <rect key="frame" x="114" y="88" width="190" height="20.5"/>
+                                <rect key="frame" x="114" y="88" width="190" height="17.5"/>
                                 <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="15"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
@@ -1568,7 +1568,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="45 of 100 remaining" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GnN-qq-yd7">
-                                                    <rect key="frame" x="32" y="131" width="97.5" height="21"/>
+                                                    <rect key="frame" x="31.5" y="131" width="97.5" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="bOz-Tp-KHz"/>
                                                     </constraints>
@@ -3367,6 +3367,7 @@
                         <segue destination="x8B-hh-Hhw" kind="show" identifier="phataToProfileInfoSegue" id="JOh-A7-MrW"/>
                         <segue destination="f3X-xm-vwZ" kind="show" identifier="phataToEmergencyContactSegue" id="XLB-eb-1hf"/>
                         <segue destination="Nho-G7-h7U" kind="show" identifier="phataToProfilePictureSegue" id="eIY-tb-sKM"/>
+                        <segue destination="6Vg-W8-QTe" kind="show" identifier="phataSettingsSegue" id="OiK-8i-1eP"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mUN-8n-Ryj" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -4717,6 +4718,88 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iV7-qP-n9H" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3636" y="448"/>
+        </scene>
+        <!--PHATA Settings-->
+        <scene sceneID="EZr-Sa-aEp">
+            <objects>
+                <tableViewController id="6Vg-W8-QTe" customClass="PHATASettingsTableViewController" customModule="hat_mobile_ios" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="gd3-rJ-Nhx">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="phataSettingsCell" id="NqK-tg-Rsy" customClass="PhataTableViewCell" customModule="hat_mobile_ios" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="55.5" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="NqK-tg-Rsy" id="XwY-ll-NKf">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="16r-Cd-Ijs">
+                                            <rect key="frame" x="8" y="7" width="222" height="30"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="222" id="xDD-wd-gOB"/>
+                                            </constraints>
+                                            <nil key="textColor"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <textInputTraits key="textInputTraits" keyboardAppearance="alert"/>
+                                        </textField>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pQo-VS-9Tv" customClass="CustomSwitch" customModule="hat_mobile_ios" customModuleProvider="target">
+                                            <rect key="frame" x="262" y="7" width="50" height="30"/>
+                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="50" id="oOP-0y-svf"/>
+                                            </constraints>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="color" keyPath="onTintColor">
+                                                    <color key="value" red="0.14545908569999999" green="0.6371675134" blue="0.59365117550000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                </userDefinedRuntimeAttribute>
+                                                <userDefinedRuntimeAttribute type="color" keyPath="offTintColor">
+                                                    <color key="value" red="0.43529412150000002" green="0.4431372583" blue="0.47450980539999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                            <connections>
+                                                <action selector="valueDidChange:" destination="NqK-tg-Rsy" eventType="valueChanged" id="aBj-cE-1QP"/>
+                                            </connections>
+                                        </view>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="pQo-VS-9Tv" firstAttribute="trailing" secondItem="XwY-ll-NKf" secondAttribute="trailingMargin" id="1J8-ww-Vvx"/>
+                                        <constraint firstItem="16r-Cd-Ijs" firstAttribute="centerY" secondItem="XwY-ll-NKf" secondAttribute="centerY" id="Rf6-ql-a7h"/>
+                                        <constraint firstItem="16r-Cd-Ijs" firstAttribute="top" secondItem="XwY-ll-NKf" secondAttribute="topMargin" constant="-1" id="cVz-pS-ZeR"/>
+                                        <constraint firstItem="16r-Cd-Ijs" firstAttribute="leading" secondItem="XwY-ll-NKf" secondAttribute="leading" constant="8" id="fI2-jy-zjq"/>
+                                        <constraint firstItem="16r-Cd-Ijs" firstAttribute="bottom" secondItem="pQo-VS-9Tv" secondAttribute="bottom" id="fQZ-1b-Elu"/>
+                                        <constraint firstItem="16r-Cd-Ijs" firstAttribute="top" secondItem="pQo-VS-9Tv" secondAttribute="top" id="iUN-Dg-hig"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="privateSwitch" destination="pQo-VS-9Tv" id="WCZ-VU-4Tx"/>
+                                    <outlet property="textField" destination="16r-Cd-Ijs" id="Gq7-BK-6ea"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="6Vg-W8-QTe" id="oy4-vs-MXc"/>
+                            <outlet property="delegate" destination="6Vg-W8-QTe" id="fWV-Ps-KBH"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="PHATA Settings" id="M0l-18-fed">
+                        <barButtonItem key="rightBarButtonItem" style="done" id="XgG-io-aTb">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="eAh-Rq-aZ0">
+                                <rect key="frame" x="259" y="7" width="45" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="15"/>
+                                <state key="normal" title="Save"/>
+                                <connections>
+                                    <action selector="saveButtonAction:" destination="6Vg-W8-QTe" eventType="touchUpInside" id="0W6-q4-rot"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JT3-d7-IqG" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4431" y="448"/>
         </scene>
     </scenes>
     <resources>

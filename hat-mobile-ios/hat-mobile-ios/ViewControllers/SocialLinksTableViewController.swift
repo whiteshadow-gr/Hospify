@@ -135,6 +135,11 @@ class SocialLinksTableViewController: UITableViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
+        if self.profile == nil {
+            
+            self.profile = HATProfileObject()
+        }
     }
 
     override func didReceiveMemoryWarning() {

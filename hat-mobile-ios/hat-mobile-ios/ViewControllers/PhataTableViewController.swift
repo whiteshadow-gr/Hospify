@@ -113,7 +113,13 @@ class PhataTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if indexPath.section == 1 {
+        if indexPath.section == 0 {
+            
+            if indexPath.row == 0 {
+                
+                self.performSegue(withIdentifier: "phataSettingsSegue", sender: self)
+            }
+        } else if indexPath.section == 1 {
             
             if indexPath.row == 0 {
                 
@@ -158,14 +164,10 @@ class PhataTableViewController: UITableViewController {
         if indexPath.section == 0 {
             
             cell.textLabel?.text = self.userDomain
-            cell.isUserInteractionEnabled = false
-            cell.textLabel?.textColor = .gray
-            cell.accessoryType = .none
+            cell.accessoryType = .disclosureIndicator
         } else {
             
             cell.textLabel?.text = self.sections[indexPath.section][indexPath.row]
-            cell.isUserInteractionEnabled = true
-            cell.textLabel?.textColor = .black
             cell.accessoryType = .disclosureIndicator
         }
         
@@ -238,6 +240,14 @@ class PhataTableViewController: UITableViewController {
             weak var destinationVC = segue.destination as? PhataPictureViewController
 
             if segue.identifier == "phataToProfilePictureSegue" {
+                
+                destinationVC?.profile = self.profile
+            }
+        } else if segue.destination is PHATASettingsTableViewController {
+            
+            weak var destinationVC = segue.destination as? PHATASettingsTableViewController
+            
+            if segue.identifier == "phataSettingsSegue" {
                 
                 destinationVC?.profile = self.profile
             }

@@ -95,7 +95,7 @@ class PhotoFullScreenViewerViewController: UIViewController {
             
             self.ringProgressBar.isHidden = false
 
-            self.imageView!.downloadedFrom(url: URL(string: imageURL)!, progressUpdater: {progress in
+            self.imageView!.downloadedFrom(url: URL(string: imageURL)!, userToken: userToken, progressUpdater: {progress in
             
                 let completion = Float(progress)
                 self.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(self.ringProgressBar.endPoint), to: completion, removePreviousLayer: false)
@@ -109,7 +109,7 @@ class PhotoFullScreenViewerViewController: UIViewController {
             
             self.ringProgressBar.isHidden = false
 
-            self.imageView.downloadedFrom(url: url!, progressUpdater: {progress in
+            self.imageView.downloadedFrom(url: url!, userToken: userToken, progressUpdater: {progress in
                 
                 let completion = Float(progress)
                 self.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(self.ringProgressBar.endPoint), to: completion, removePreviousLayer: false)

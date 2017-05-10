@@ -191,6 +191,18 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         textField.inputAccessoryView = toolBar
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        
+        super.viewDidAppear(animated)
+        
+        let result = KeychainHelper.GetKeychainValue(key: "trackDevice")
+        
+        if result != "true" {
+            
+            self.createClassicOKAlertWith(alertMessage: "You have disabled location tracking. To enable location tracking go to settings", alertTitle: "Location tracking disabled", okTitle: "OK", proceedCompletion: {})
+        }
+    }
+    
     deinit {
         
         self.mapView.removeFromSuperview()

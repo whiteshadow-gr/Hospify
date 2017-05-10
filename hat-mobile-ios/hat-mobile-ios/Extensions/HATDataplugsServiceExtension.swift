@@ -14,7 +14,7 @@ import HatForIOS
 
 // MARK: Extension
 
-extension HATDataPlugsService: UserTokenProtocol {
+extension HATDataPlugsService: UserCredentialsProtocol {
     
     // MARK: - Wrappers
     

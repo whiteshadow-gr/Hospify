@@ -40,6 +40,8 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
      */
     class func setUp(cell: OnboardingTileCollectionViewCell, indexPath: IndexPath, hatProvider: HATProviderObject, orientation: UIInterfaceOrientation) -> UICollectionViewCell {
         
+        let userToken = HATAccountService.getUsersTokenFromKeychain()
+        
         // set cell's color
         cell.backgroundColor = self.backgroundColorOfCellForIndexPath(indexPath, in: orientation)
 
@@ -52,7 +54,7 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
         // get image from url and set it to the image view
         if let url: URL = URL(string: "https://hatters.hubofallthings.com/assets" + hatProvider.illustration) {
             
-            cell.hatProviderImage.downloadedFrom(url: url, progressUpdater: nil, completion: nil)
+            cell.hatProviderImage.downloadedFrom(url: url, userToken: userToken, progressUpdater: nil, completion: nil)
         }
         
         // return cell

@@ -67,26 +67,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
                 newCell.attachedImage.cropImage(width: newCell.attachedImage.frame.width, height: newCell.attachedImage.frame.height)
             } else {
                 
-                newCell.attachedImage.image = UIImage(named: "Image Placeholder")
-                
-                newCell.ringProgressBar.isHidden = false
-                newCell.ringProgressBar.ringRadius = 10
-                newCell.ringProgressBar.ringLineWidth = 4
-                newCell.ringProgressBar.ringColor = .white
-                
-                newCell.attachedImage.downloadedFrom(url: url, progressUpdater: { progress in
-                    
-                    let completion = Float(progress)
-                    newCell.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(newCell.ringProgressBar.endPoint), to: completion, removePreviousLayer: false)
-                }, completion: {
-                    
-                    newCell.ringProgressBar.isHidden = true
-                    newCell.attachedImage.cropImage(width: newCell.attachedImage.frame.width, height: newCell.attachedImage.frame.height)
-                    
-                    var tempNote = note
-                    tempNote.data.photoData.image = newCell.attachedImage.image
-                    weakSelf.notesDelegate?.updateNote(tempNote, at: indexPath.row)
-                })
+                self.downloadAttachedImage(cell: newCell, url: url, row: indexPath.row, note: note, weakSelf: weakSelf)
             }
         }
         
@@ -108,7 +89,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         let notablesData = note.data
         // get the author data
         let authorData = notablesData.authorData
-        // get the last updated date
+        // get the created date
         let date = FormatterHelper.formatDateStringToUsersDefinedDate(date: note.data.createdTime, dateStyle: .short, timeStyle: .short)
                 
         // create this zebra like color based on the index of the cell
@@ -127,6 +108,43 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         
         // return the cell
         return newCell
+    }
+    
+    // MARK: - Download attached image 
+    
+    /**
+     Download the attached image of the note
+     
+     - parameter cell: The cell to download the image to
+     - parameter url: The url to download the image from
+     - parameter row: The row of the cell to update when the download fishishes
+     - parameter note: The note file to put the data on to update the cell
+     - parameter weakSelf: The weakSelf
+     */
+    func downloadAttachedImage(cell: NotablesTableViewCell, url: URL, row: Int, note: HATNotesData, weakSelf: NotablesTableViewCell) {
+        
+        cell.attachedImage.image = UIImage(named: "Image Placeholder")
+        
+        cell.ringProgressBar.isHidden = false
+        cell.ringProgressBar.ringRadius = 10
+        cell.ringProgressBar.ringLineWidth = 4
+        cell.ringProgressBar.ringColor = .white
+        
+        let userToken = HATAccountService.getUsersTokenFromKeychain()
+        
+        cell.attachedImage.downloadedFrom(url: url, userToken: userToken, progressUpdater: { progress in
+            
+            let completion = Float(progress)
+            cell.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(cell.ringProgressBar.endPoint), to: completion, removePreviousLayer: false)
+        }, completion: {
+            
+            cell.ringProgressBar.isHidden = true
+            cell.attachedImage.cropImage(width: cell.attachedImage.frame.width, height: cell.attachedImage.frame.height)
+            
+            var tempNote = note
+            tempNote.data.photoData.image = cell.attachedImage.image
+            weakSelf.notesDelegate?.updateNote(tempNote, at: row)
+        })
     }
     
     // MARK: - CollectionView datasource methods

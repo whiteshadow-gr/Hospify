@@ -124,7 +124,7 @@ class PhataPictureViewController: UIViewController {
                             
                             if let url = URL(string: tempURL) {
                                 
-                                self.imageView.downloadedFrom(url: url, progressUpdater: nil, completion: {
+                                self.imageView.downloadedFrom(url: url, userToken: userToken, progressUpdater: nil, completion: {
                                     
                                     DispatchQueue.main.async {
                                         

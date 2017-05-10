@@ -42,10 +42,12 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
      */
     class func setUp(cell: DataPlugCollectionViewCell, indexPath: IndexPath, dataPlug: HATDataPlugObject, orientation: UIInterfaceOrientation) -> UICollectionViewCell {
         
+        let userToken = HATAccountService.getUsersTokenFromKeychain()
+        
         // Configure the cell
         cell.dataPlugTitleLabel.text = dataPlug.name
         cell.dataPlugDetailsLabel.text = dataPlug.description
-        cell.dataPlugImage.downloadedFrom(url: URL(string: dataPlug.illustrationUrl)!, progressUpdater: nil, completion: nil)
+        cell.dataPlugImage.downloadedFrom(url: URL(string: dataPlug.illustrationUrl)!, userToken: userToken, progressUpdater: nil, completion: nil)
         cell.checkMarkImage.isHidden = !dataPlug.showCheckMark
         cell.backgroundColor = self.backgroundColorOfCellForIndexPath(indexPath, in: orientation)
         
@@ -71,8 +73,6 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
                 
                 return .rumpelVeryLightGray
             }
-            
-            return .white
         } else {
             
             // create this zebra like color based on the index of the cell
@@ -80,8 +80,8 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
                 
                 return .rumpelVeryLightGray
             }
-            
-            return .white
         }
+        
+        return .white
     }
 }

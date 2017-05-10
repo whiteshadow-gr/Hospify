@@ -10,6 +10,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
+import CoreLocation
 import HatForIOS
 
 // MARK: Class
@@ -26,6 +27,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     private var darkView: UIVisualEffectView? = nil
     
     private var authoriseVC: AuthoriseUserViewController? = nil
+    
+    private let location = UpdateLocations()
     
     // MARK: - IBOutlets
 
@@ -48,29 +51,6 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     @IBAction func showInfoButtonAction(_ sender: Any) {
         
         self.showInfoViewController(text: "Rumpel Lite's Data Services are all the neat things you can do with your HAT data. Pull your data in with Data Plugs, and make it useful to you with Data Services.")
-    }
-    
-    /**
-     Shows a pop up with the available settings
-     
-     - parameter sender: The object that called this method
-     */
-    @IBAction func SettingsButtonAction(_ sender: Any) {
-        
-        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
-        
-        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[unowned self] (alert: UIAlertAction) -> Void in
-            
-            TabBarViewController.logoutUser(from: self)
-        })
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alertController.addActions(actions: [logOutAction, cancelAction])
-        alertController.addiPadSupport(barButtonItem: self.navigationItem.rightBarButtonItem!, sourceView: self.view)
-        
-        // present alert controller
-        self.navigationController!.present(alertController, animated: true, completion: nil)
     }
     
     // MARK: - Collection View methods
@@ -125,7 +105,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         } else if self.tiles[indexPath.row].serviceName == "Social Data" {
             
             self.performSegue(withIdentifier: "socialDataSegue", sender: self)
-        }else if self.tiles[indexPath.row].serviceName == "Photo Viewer" {
+        } else if self.tiles[indexPath.row].serviceName == "Photo Viewer" {
             
             self.performSegue(withIdentifier: "photoViewerSegue", sender: self)
         }
@@ -147,7 +127,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         NotificationCenter.default.addObserver(self, selector: #selector(hidePopUp), name: NSNotification.Name("hideDataServicesInfo"), object: nil)
         
         // pin header view of collection view to the top while scrolling
-        (self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout).sectionHeadersPinToVisibleBounds = true        
+        (self.collectionView.collectionViewLayout as! UICollectionViewFlowLayout).sectionHeadersPinToVisibleBounds = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -193,23 +173,16 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         if result == "false" || userDomain == "" || token == "" {
             
             let loginViewController = self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
-            _ = self.navigationController?.popToRootViewController(animated: false)
             self.navigationController?.pushViewController(loginViewController, animated: false)
-            
-            UpdateLocations.shared.stopMonitoringSignificantLocationChanges()
-            UpdateLocations.shared.stopMonitoringAllRegions()
-            UpdateLocations.shared.stopUpdatingLocation()
         // user logged in, set up view
         } else {
             
-            UpdateLocations.shared.resumeLocationServices()
+            self.location.setUpLocationObject(self.location, delegate: UpdateLocations.shared)
+            self.location.locationManager.requestAlwaysAuthorization()
             
             // set up elements
             let usersHAT = userDomain.components(separatedBy: ".")[0]
             self.helloLabel.text = "Hello " + usersHAT + "!"
-            
-            // request for location tracking
-            UpdateLocations.shared.locationManager?.requestAlwaysAuthorization()
             
             // check if the token has expired
             let result = HATAccountService.checkIfTokenExpired(token: token)

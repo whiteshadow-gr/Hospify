@@ -168,6 +168,7 @@ class LearnMoreObject {
             
             learnMoreButton.isHidden = false
             learnMoreButton.setTitle("GET STARTED", for: .normal)
+            
             return partOne.combineWith(attributedText: partTwo)
         } else if pageIndex == 3 {
             
@@ -175,6 +176,7 @@ class LearnMoreObject {
             learnMoreButton.isHidden = false
             learnMoreButton.setTitle("SET UP MY PHATA", for: .normal)
             learnMoreButton.addBorderToButton(width: 1, color: .white)
+            
             return learnMoreObject.title.createTextAttributes(foregroundColor: .white, strokeColor: .white, font: UIFont(name: Constants.fontNames.openSansCondensedLight.rawValue, size: 30)!)
         }
         

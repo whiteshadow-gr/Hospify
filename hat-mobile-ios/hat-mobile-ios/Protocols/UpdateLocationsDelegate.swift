@@ -10,10 +10,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import MapKit
+import CoreLocation
 
 // MARK: Protocol
 
+/// Update the locations gathered
 protocol UpdateLocationsDelegate: class {
 
     // MARK: - Update locations

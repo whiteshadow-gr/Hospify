@@ -10,7 +10,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import MapKit
+import CoreLocation
 
 // MARK: Class
 
@@ -32,19 +32,8 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
     private var region: CLCircularRegion? = nil
     
     /// The LocationManager responsible for the settings used for gps tracking
-    var locationManager: CLLocationManager? = {
-        
-        let locationManager = CLLocationManager()
-        locationManager.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
-        locationManager.distanceFilter = MapsHelper.GetUserPreferencesDistance()
-        locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.requestAlwaysAuthorization()
-        locationManager.disallowDeferredLocationUpdates()
-        locationManager.pausesLocationUpdatesAutomatically = false
-        locationManager.activityType = CLActivityType.otherNavigation
-        return locationManager
-    }()
-    
+    var locationManager: CLLocationManager! = CLLocationManager()
+
     // MARK: - Initialiser
     
     override init() {
@@ -53,24 +42,25 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
         
         self.initLocationManager()
         
-        locationManager?.delegate = self
-        
         self.resumeLocationServices()
     }
     
-    private func initLocationManager() {
+    func initLocationManager() {
         
-        if self.locationManager == nil {
-            
-            self.locationManager = CLLocationManager()
-            self.locationManager?.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
-            self.locationManager?.distanceFilter = MapsHelper.GetUserPreferencesDistance()
-            self.locationManager?.allowsBackgroundLocationUpdates = true
-            self.locationManager?.requestAlwaysAuthorization()
-            self.locationManager?.disallowDeferredLocationUpdates()
-            self.locationManager?.pausesLocationUpdatesAutomatically = false
-            self.locationManager?.activityType = .otherNavigation
-        }
+        self.locationManager = CLLocationManager()
+        self.locationManager?.desiredAccuracy = MapsHelper.GetUserPreferencesAccuracy()
+        self.locationManager?.distanceFilter = MapsHelper.GetUserPreferencesDistance()
+        self.locationManager?.allowsBackgroundLocationUpdates = true
+        self.locationManager?.disallowDeferredLocationUpdates()
+        self.locationManager?.pausesLocationUpdatesAutomatically = false
+        self.locationManager?.activityType = .otherNavigation
+        self.locationManager?.delegate = self
+    }
+    
+    func setUpLocationObject(_ locationObject: UpdateLocations, delegate: UpdateLocations) {
+        
+        locationObject.initLocationManager()
+        locationObject.locationManager.delegate = delegate
     }
     
     // MARK: - Location Manager Delegate Functions
@@ -84,8 +74,6 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
      */
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        self.initLocationManager()
-
         // add locations gather to database
         MapsHelper.addLocationsToDatabase(locationManager: manager, locations: locations)
         
@@ -110,8 +98,6 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         
-        self.initLocationManager()
-
         // create a new region everytime the user exits the region
         if region is CLCircularRegion {
             
@@ -140,6 +126,11 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
         }
     }
     
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        
+        self.resumeLocationServices()
+    }
+    
     // MARK: - Wrappers to enable disable tracking
     
     /**
@@ -147,8 +138,6 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
      */
     public func startUpdatingLocation() {
         
-        self.initLocationManager()
-
         /*
          If not authorised, we can ignore.
          Once user i    s logged in and has accepted the authorization, this will always be true
@@ -163,7 +152,7 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
                 }
             } else {
                 
-                _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "false")
+                _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "true")
                 self.stopMonitoringAllRegions()
                 self.locationManager?.stopUpdatingLocation()
                 self.locationManager = nil
@@ -177,8 +166,6 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
      */
     public func stopUpdatingLocation() {
         
-        self.initLocationManager()
-
         self.locationManager?.stopUpdatingLocation()
     }
     
@@ -187,8 +174,6 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
      */
     public func stopMonitoringAllRegions() {
         
-        self.initLocationManager()
-
         if let regions = self.locationManager?.monitoredRegions {
             
             for region in regions {
@@ -205,8 +190,6 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
      */
     public func startMonitoringSignificantLocationChanges() {
         
-        self.initLocationManager()
-
         self.locationManager?.startMonitoringSignificantLocationChanges()
     }
     
@@ -215,8 +198,6 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
      */
     public func stopMonitoringSignificantLocationChanges() {
         
-        self.initLocationManager()
-
         self.locationManager?.stopMonitoringSignificantLocationChanges()
     }
     
@@ -225,33 +206,75 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
      */
     public func requestLocation() {
         
-        self.initLocationManager()
-
         self.locationManager?.requestLocation()
     }
     
     /**
      Resume location services as they were previously, if user had locations disabled then disabled it.
      */
-    func resumeLocationServices() {
+    public func resumeLocationServices() {
         
-        self.initLocationManager()
-
         let result = KeychainHelper.GetKeychainValue(key: "trackDevice")
         
         if result == "true" {
             
-            self.locationManager?.requestAlwaysAuthorization()
+            if !CLLocationManager.locationServicesEnabled() {
+                
+                self.locationManager?.requestAlwaysAuthorization()
+            }
             self.locationManager?.startUpdatingLocation()
             self.locationManager?.startMonitoringSignificantLocationChanges()
             self.locationManager?.requestLocation()
-        } else {
+        } else if result == "false" {
             
             self.stopMonitoringAllRegions()
             self.locationManager?.stopUpdatingLocation()
             self.locationManager?.stopMonitoringSignificantLocationChanges()
             self.locationManager = nil
+        } else {
+            
+            _ = KeychainHelper.SetKeychainValue(key: "trackDevice", value: "true")
+            self.locationManager?.startUpdatingLocation()
+            self.locationManager?.startMonitoringSignificantLocationChanges()
+            self.locationManager?.requestLocation()
         }
     }
     
+    /**
+     Requests authorisation from user
+     */
+    public func requestAuthorisation() {
+        
+        if CLLocationManager.locationServicesEnabled() {
+            
+            self.locationManager?.requestAlwaysAuthorization()
+        }
+    }
+    
+    /**
+     Checks if app is authorised to collect location data
+     */
+    public class func checkAuthorisation() -> (Bool, CLAuthorizationStatus) {
+        
+        if CLLocationManager.locationServicesEnabled() {
+            
+            switch(CLLocationManager.authorizationStatus()) {
+                
+            case .notDetermined:
+                
+               return (true, .notDetermined)
+            case .restricted:
+                
+                return (true, .restricted)
+            case .denied:
+                
+                return (true, .denied)
+            case .authorizedAlways, .authorizedWhenInUse:
+                
+                return (true, .authorizedAlways)
+            }
+        }
+        
+        return (false, .denied)
+    }
 }

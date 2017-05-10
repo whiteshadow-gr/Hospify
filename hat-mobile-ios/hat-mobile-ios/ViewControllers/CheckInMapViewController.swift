@@ -20,7 +20,7 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
     // MARK: - Variables
     
     /// The location helper
-    private let locationHelper = UpdateLocations.shared
+    private let locationHelper = UpdateLocations()
 
     /// The results searchController, for searching for places nearby
     private var resultSearchController: UISearchController? = nil
@@ -82,6 +82,7 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
         
         // set up location helper
         self.locationHelper.locationDelegate = self
+        self.locationHelper.setUpLocationObject(self.locationHelper, delegate: UpdateLocations.shared)
         self.locationHelper.requestLocation()
         
         // set up search
@@ -103,6 +104,22 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
         if let coordinates = self.locationHelper.locationManager?.location?.coordinate {
             
             self.zoomToCoordinates(coordinates)
+        }
+        
+        let result = UpdateLocations.checkAuthorisation()
+        
+        if result.0 {
+            
+            if result.1 == .denied {
+                
+                self.createClassicOKAlertWith(alertMessage: "You seem to have denied access to your location so you cannot use this feature. You can go to settings and change the persimission for Rumpel Lite", alertTitle: "Permissions denied", okTitle: "OK", proceedCompletion: {})
+            } else if result.1 == .notDetermined {
+                
+                self.locationHelper.requestAuthorisation()
+            }
+        } else {
+            
+            self.createClassicOKAlertWith(alertMessage: "Location service is disabled. You have to enable location service in order to use this feature", alertTitle: "Location service is disabled", okTitle: "OK", proceedCompletion: {})
         }
     }
     

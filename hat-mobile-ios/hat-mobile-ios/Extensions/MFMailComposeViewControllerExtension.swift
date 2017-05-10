@@ -12,12 +12,17 @@
 
 import MessageUI
 
+// MARK: - Extension
+
 extension MFMailComposeViewController {
+    
+    // MARK: - View controller methods
 
     override open func viewDidAppear(_ animated: Bool) {
         
         super.viewDidAppear(animated)
         
+        // set status bar style for the MFMailComposeViewController
         UIApplication.shared.statusBarStyle = .lightContent
     }
     
@@ -25,6 +30,7 @@ extension MFMailComposeViewController {
         
         super.viewDidLoad()
         
+        // set up MFMailComposeViewController accorcding to our needs
         navigationBar.isTranslucent = false
         navigationBar.isOpaque = false
         navigationBar.barTintColor = .white

@@ -12,6 +12,7 @@
 
 // MARK: Protocol
 
+/// send location data back to listening view controllers
 protocol SendLocationDataDelegate {
     
     // MARK: - Protocol's functions

@@ -16,7 +16,7 @@ import HatForIOS
 // MARK: Class
 
 /// The social feed view controller class
-class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UserCredentialsProtocol {
     
     // MARK: - IBOutlets
     
@@ -107,9 +107,6 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         // show empty label
         showEptyLabelWith(text: "Checking data plugs....")
         
-        let userDomain = HATAccountService.TheUserHATDomain()
-        let userToken = HATAccountService.getUsersTokenFromKeychain()
-        
         // get Token for plugs
         HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: self.fetchFacebookData, failed: {(error) in
         
@@ -196,10 +193,6 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      */
     private func fetchTweets(parameters: Dictionary<String, String>) -> Void {
         
-        // try to access twitter plug
-        let userToken = HATAccountService.getUsersTokenFromKeychain()
-        let userDomain = HATAccountService.TheUserHATDomain()
-        
         func twitterDataPlug(token: String?) {
 
             HATTwitterService.checkTwitterDataPlugTable(authToken: userToken, userDomain: userDomain, parameters: parameters, success: self.showTweets)
@@ -209,40 +202,29 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         // change flag
         self.isTwitterAvailable = true
         
-        func success(token: String) {
+        func success(token: String?) {
             
             // try to access twitter plug
             HATTwitterService.checkTwitterDataPlugTable(authToken: userToken, userDomain: userDomain, parameters: parameters, success: self.showTweets)
         }
         
-        func failed(statusCode: Int) {
+        func failed() {
             
-            if statusCode == 401 {
-                
-                let authoriseVC = AuthoriseUserViewController()
-                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
-                authoriseVC.view.layer.cornerRadius = 15
-                authoriseVC.completionFunc = twitterDataPlug
-                
-                // add the page view controller to self
-                self.addChildViewController(authoriseVC)
-                self.view.addSubview(authoriseVC.view)
-                authoriseVC.didMove(toParentViewController: self)
-            }
+            let authoriseVC = AuthoriseUserViewController()
+            authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+            authoriseVC.view.layer.cornerRadius = 15
+            authoriseVC.completionFunc = twitterDataPlug
+            
+            // add the page view controller to self
+            self.addChildViewController(authoriseVC)
+            self.view.addSubview(authoriseVC.view)
+            authoriseVC.didMove(toParentViewController: self)
         }
         
-        let result = HATAccountService.checkIfTokenExpired(token: userToken)
-        
-        if result == userToken {
-            
-            success(token: userToken)
-        } else if result == "401" {
-            
-            failed(statusCode: 401)
-        } else {
-            
-            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
-        }
+        HATAccountService.checkIfTokenExpired(token: userToken,
+                                              expiredCallBack: failed,
+                                              tokenValidCallBack: success,
+                                              errorCallBack: self.createClassicOKAlertWith)
     }
     
     /**
@@ -367,10 +349,6 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      */
     private func fetchPosts(parameters: Dictionary<String, String>) -> Void {
         
-        // get user's token
-        let userToken = HATAccountService.getUsersTokenFromKeychain()
-        let userDomain = HATAccountService.TheUserHATDomain()
-        
         // show message that the social feed is downloading
         self.showEptyLabelWith(text: "Fetching social feed...")
         // change flag
@@ -400,7 +378,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                                 if let url = URL(string: array[0]["data"]["profile_picture"]["url"].stringValue) {
                                     
                                     // download image
-                                    weakSelf2.facebookProfileImage?.downloadedFrom(url: url, userToken: userToken, progressUpdater: nil, completion: nil)
+                                    weakSelf2.facebookProfileImage?.downloadedFrom(url: url, userToken: weakSelf2.userToken, progressUpdater: nil, completion: nil)
                                 } else {
                                     
                                     // set image to nil
@@ -415,46 +393,35 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                             }
                         }
                         // fetch facebook image
-                        HATFacebookService.fetchProfileFacebookPhoto(authToken: userToken, userDomain: userDomain, parameters: [:], success: success)
+                        HATFacebookService.fetchProfileFacebookPhoto(authToken: weakSelf2.userToken, userDomain: weakSelf2.userDomain, parameters: [:], success: success)
                     }
                 }
             }
         }
         
-        func success(token: String) {
+        func success(token: String?) {
             
             fetchPostsCurryingFunc(token: "")
         }
         
-        func failed(statusCode: Int) {
+        func failed() {
             
-            if statusCode == 401 {
-                
-                let authoriseVC = AuthoriseUserViewController()
-                authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
-                authoriseVC.view.layer.cornerRadius = 15
-                authoriseVC.completionFunc = fetchPostsCurryingFunc
-                
-                // add the page view controller to self
-                self.addChildViewController(authoriseVC)
-                self.view.addSubview(authoriseVC.view)
-                authoriseVC.didMove(toParentViewController: self)
-            }
+            let authoriseVC = AuthoriseUserViewController()
+            authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+            authoriseVC.view.layer.cornerRadius = 15
+            authoriseVC.completionFunc = fetchPostsCurryingFunc
+            
+            // add the page view controller to self
+            self.addChildViewController(authoriseVC)
+            self.view.addSubview(authoriseVC.view)
+            authoriseVC.didMove(toParentViewController: self)
         }
         
         // check if the token has expired
-        let result = HATAccountService.checkIfTokenExpired(token: userToken)
-        
-        if result == userToken {
-            
-            success(token: userToken)
-        } else if result == "401" {
-            
-            failed(statusCode: 401)
-        } else {
-            
-            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
-        }
+        HATAccountService.checkIfTokenExpired(token: userToken,
+                                              expiredCallBack: failed,
+                                              tokenValidCallBack: success,
+                                              errorCallBack: self.createClassicOKAlertWith)
     }
     
     /**

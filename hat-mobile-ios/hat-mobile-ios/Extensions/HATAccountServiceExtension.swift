@@ -78,21 +78,22 @@ extension HATAccountService {
      - parameter token: The token to check if expired
      - returns: The token if everything ok, 401 if token has expired or error if something went wrong
      */
-    class func checkIfTokenExpired(token: String) -> String {
+    class func checkIfTokenExpired(token: String, expiredCallBack: (Void) -> Void, tokenValidCallBack: (String?) -> Void, errorCallBack: (String, String, String, @escaping (Void) -> Void) -> Void) {
         
         do {
             
             let jwt = try decode(jwt: token)
+            print(token)
             if jwt.expired {
                 
-                return "401"
+                expiredCallBack()
             } else {
                 
-                return token
+                tokenValidCallBack(token)
             }
         } catch {
             
-            return "error"
+            errorCallBack("Checking token expiry date failed, please log out and log in again", "Error", "OK", {})
         }
     }
     

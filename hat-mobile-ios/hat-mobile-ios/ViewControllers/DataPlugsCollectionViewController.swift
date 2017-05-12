@@ -42,6 +42,9 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
+        
+        self.dataPlugs.removeAll()
+        self.collectionView?.reloadData()
                 
         /// method to execute on a successful callback
         func successfullCallBack(data: [HATDataPlugObject], renewedUserToken: String?) {

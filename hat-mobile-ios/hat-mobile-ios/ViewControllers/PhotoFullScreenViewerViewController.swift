@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the full screen viewer UIViewController
-class PhotoFullScreenViewerViewController: UIViewController {
+class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -27,11 +27,6 @@ class PhotoFullScreenViewerViewController: UIViewController {
     
     /// A Bool value to determine of the ui is visible or not
     private var isUIHidden: Bool = false
-    
-    /// User's domain
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    /// User's token
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     
     // MARK: - IBOutlets
     
@@ -69,7 +64,19 @@ class PhotoFullScreenViewerViewController: UIViewController {
                 _ = CrashLoggerHelper.hatErrorLog(error: error)
             }
             
-            HATFileService.deleteFile(fileID: file!.fileID, token: self.userToken, userDomain: self.userDomain, successCallback: success, errorCallBack: fail)
+            func delete() {
+                
+                HATFileService.deleteFile(fileID: file!.fileID, token: self.userToken, userDomain: self.userDomain, successCallback: success, errorCallBack: fail)
+            }
+            
+            if (file?.tags.contains("note"))! {
+                
+                self.createClassicOKAlertWith(alertMessage: "This photo is attached to a notable, removing it will remove the image in the note as well", alertTitle: "Warning", okTitle: "OK", proceedCompletion: delete)
+            } else {
+                
+                delete()
+            }
+            
         }
     }
     

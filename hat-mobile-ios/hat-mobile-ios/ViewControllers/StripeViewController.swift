@@ -13,7 +13,6 @@
 import Alamofire
 import BEMCheckBox
 import SwiftyJSON
-import zxcvbn_ios
 
 // MARK: Class
 
@@ -165,32 +164,32 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
                                 
                                 if let country = details["hat.country"] {
                                     
-                                    self?.createClassicOKAlertWith(alertMessage: country.stringValue, alertTitle: "Please review form", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                    self?.createClassicOKAlertWith(alertMessage: country.stringValue, alertTitle: "Please review form", okTitle: "OK", proceedCompletion: {})
                                 }
                                 if let email = details["user.email"] {
                                     
-                                    self?.createClassicOKAlertWith(alertMessage: email.stringValue, alertTitle: "Please review form", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                    self?.createClassicOKAlertWith(alertMessage: email.stringValue, alertTitle: "Please review form", okTitle: "OK", proceedCompletion: {})
                                 }
                                 if let password = details["user.password"] {
                                     
-                                    self?.createClassicOKAlertWith(alertMessage: password.stringValue, alertTitle: "Please review form", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                    self?.createClassicOKAlertWith(alertMessage: password.stringValue, alertTitle: "Please review form", okTitle: "OK", proceedCompletion: {})
                                 }
                                 if let nickname = details["user.nick"] {
                                     
-                                    self?.createClassicOKAlertWith(alertMessage: nickname.stringValue, alertTitle: "Please review form", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                    self?.createClassicOKAlertWith(alertMessage: nickname.stringValue, alertTitle: "Please review form", okTitle: "OK", proceedCompletion: {})
                                 }
                                 if let phata = details["hat.hat.address"] {
                                     
-                                    self?.createClassicOKAlertWith(alertMessage: phata.stringValue, alertTitle: "Please review form", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                    self?.createClassicOKAlertWith(alertMessage: phata.stringValue, alertTitle: "Please review form", okTitle: "OK", proceedCompletion: {})
                                 }
                             } else if errorCause == "Your card was declined. Please try again." {
                                 
                                 // card error
-                                self?.createClassicOKAlertWith(alertMessage: errorCause, alertTitle: "Please review card info", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                self?.createClassicOKAlertWith(alertMessage: errorCause, alertTitle: "Please review card info", okTitle: "OK", proceedCompletion: {})
                             } else {
                                 
                                 // generic error
-                                self?.createClassicOKAlertWith(alertMessage: "There was an error", alertTitle: "Please review your info", okTitle: "OK", proceedCompletion: {() -> Void in return})
+                                self?.createClassicOKAlertWith(alertMessage: "There was an error", alertTitle: "Please review your info", okTitle: "OK", proceedCompletion: {})
                             }
                         }
                     case 200:
@@ -283,7 +282,6 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     // MARK: - Get Countries
@@ -295,14 +293,6 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
      */
     class func getCountries() -> [String] {
         
-//        let locale: NSLocale = NSLocale.current as NSLocale
-//        let countryArray = Locale.isoRegionCodes
-//        let unsortedCountryArray: [String] = countryArray.map { (countryCode) -> String in
-//            
-//            return locale.displayName(forKey: NSLocale.Key.countryCode, value: countryCode)!
-//        }
-//        
-//        return unsortedCountryArray.sorted()
         return ["United Kingdom"]
     }
     
@@ -355,9 +345,6 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
         
         if segue.identifier == "termsSegue" {
             
@@ -496,15 +483,7 @@ class StripeViewController: UIViewController, UIPickerViewDelegate, UIPickerView
         
         if textField.tag == 10 {
             
-            let zxcvbn = DBPasswordStrengthMeterView(frame: CGRect(x: 0, y: 0, width: 15, height: 30))
-            zxcvbn.setLightColor(.rumpelDarkGray, darkColor: .teal)
-            zxcvbn.scorePassword(textField.text)
-            
-            textField.rightViewMode = .always
-            textField.rightView = zxcvbn
-            
-            let tempZxcvbnResult = DBZxcvbn()
-            self.score = Int(tempZxcvbnResult.passwordStrength(textField.text).score)
+            self.score = ZXCVBNHelper.showPasswordMeterOn(textField: textField)
         }
         
         return true

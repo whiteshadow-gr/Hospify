@@ -10,13 +10,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import CoreLocation
 import HatForIOS
 
 // MARK: Class
 
 /// The class responsible for the landing screen
-class HomeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class HomeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -28,7 +27,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     
     private var authoriseVC: AuthoriseUserViewController? = nil
     
-    private let location = UpdateLocations()
+    private let location = UpdateLocations.shared
     
     // MARK: - IBOutlets
 
@@ -143,34 +142,26 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                 _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: token!)
                 _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "true")
                 
-                if self.authoriseVC != nil {
-                    
-                    self.authoriseVC?.removeViewController()
-                    self.authoriseVC = nil
-                }
+                self.authoriseVC?.removeViewController()
+                self.authoriseVC = nil
             }
         }
         
-        func failed(statusCode: Int) {
+        func failed() {
             
-            if statusCode == 401 {
-                
-                NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "Unauthorized. Please sign out and try again.")
-                _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "expired")
-                
-                self.authoriseVC = AuthoriseUserViewController.setupAuthoriseViewController(view: self.view)
-                self.authoriseVC?.completionFunc = success
-                // addauthoriseVCthe page view controller to self
-                self.addViewController(self.authoriseVC!)
-            }
+            NotificationCenter.default.post(name: NSNotification.Name("NetworkMessage"), object: "Unauthorized. Please sign out and try again.")
+            _ = KeychainHelper.SetKeychainValue(key: "logedIn", value: "expired")
+            
+            self.authoriseVC = AuthoriseUserViewController.setupAuthoriseViewController(view: self.view)
+            self.authoriseVC?.completionFunc = success
+            // addauthoriseVCthe page view controller to self
+            self.addViewController(self.authoriseVC!)
         }
         
         // reset the stack to avoid allowing back
         let result = KeychainHelper.GetKeychainValue(key: "logedIn")
-        let userDomain = HATAccountService.TheUserHATDomain()
-        let token = HATAccountService.getUsersTokenFromKeychain()
         
-        if result == "false" || userDomain == "" || token == "" {
+        if result == "false" || userDomain == "" || userToken == "" {
             
             let loginViewController = self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
             self.navigationController?.pushViewController(loginViewController, animated: false)
@@ -178,30 +169,22 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         } else {
             
             self.location.setUpLocationObject(self.location, delegate: UpdateLocations.shared)
-            self.location.locationManager.requestAlwaysAuthorization()
+            self.location.locationManager?.requestAlwaysAuthorization()
             
             // set up elements
             let usersHAT = userDomain.components(separatedBy: ".")[0]
             self.helloLabel.text = "Hello " + usersHAT + "!"
             
             // check if the token has expired
-            let result = HATAccountService.checkIfTokenExpired(token: token)
-                        
-            if result == token {
-                
-                success(token: token)
-            } else if result == "401" {
-                
-                failed(statusCode: 401)
-            } else {
-                
-                self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed, please log out and log in again", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
-            }
+            HATAccountService.checkIfTokenExpired(token: userToken,
+                                                  expiredCallBack: failed,
+                                                  tokenValidCallBack: success,
+                                                  errorCallBack: self.createClassicOKAlertWith)
             
             self.collectionView?.reloadData()
         }
         
-        HATService.getSystemStatus(userDomain: userDomain, authToken: token, completion: updateRingProgressBar, failCallBack: {(jsonError) -> Void in
+        HATService.getSystemStatus(userDomain: userDomain, authToken: userToken, completion: updateRingProgressBar, failCallBack: {(jsonError) -> Void in
         
             _ = CrashLoggerHelper.JSONParsingErrorLog(error: jsonError)
         })
@@ -293,6 +276,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     private func updateRingProgressBar(from data: [HATSystemStatusObject], renewedUserToken: String?) {
         
         if data.count > 0 {
+            
+            self.helloLabel.text = "Hello " + userDomain.components(separatedBy: ".")[0] + "!"
             
             self.ringProgressBar.isHidden = false
 

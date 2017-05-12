@@ -71,48 +71,6 @@ struct MapsHelper {
         return newDistance
     }
     
-    /**
-     Check the user preferences for deferred distance
-     
-     - returns: The defined desired deffered distance set by the user
-     */
-    static func GetUserPreferencesDeferredDistance() -> CLLocationDistance {
-        
-        let minValue: CLLocationDistance = 150
-        
-        let preferences = UserDefaults.standard
-        var newDistance: CLLocationDistance = preferences.object(forKey: Constants.Preferences.MapLocationDeferredDistance) as? CLLocationDistance ?? minValue
-        
-        // We will clip the lowest value up to a default, this can happen via a previous version of the app
-        if newDistance < minValue {
-            
-            newDistance = minValue
-        }
-        
-        return newDistance
-    }
-    
-    /**
-     Check the user preferences for accuracy setting
-     
-     - returns: The desired time interval
-     */
-    static func GetUserPreferencesDeferredTimeout() -> TimeInterval {
-        
-        let minValue: TimeInterval = 180
-        
-        let preferences = UserDefaults.standard
-        var newTime: TimeInterval = preferences.object(forKey: Constants.Preferences.MapLocationDeferredTimeout) as? TimeInterval ?? minValue
-        
-        // We will clip the lowest value up to a default, this can happen via a previous version of the app
-        if newTime < minValue {
-            
-            newTime = minValue
-        }
-        
-        return newTime
-    }
-    
     // MARK: - Add locations to database
     
     /**

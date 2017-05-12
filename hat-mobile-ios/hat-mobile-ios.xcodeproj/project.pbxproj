@@ -56,6 +56,8 @@
 		603D55C11E69962E00CCEBEB /* UIPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D55C01E69962E00CCEBEB /* UIPageViewController.swift */; };
 		603D55C41E69ADBB00CCEBEB /* NSAttributedStringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D55C31E69ADBB00CCEBEB /* NSAttributedStringExtension.swift */; };
 		603FDD511E43E7840086559B /* InfoHatProvidersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603FDD501E43E7840086559B /* InfoHatProvidersViewController.swift */; };
+		60415B8F1EC4663A00CC5EE0 /* ZXCVBNHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60415B8E1EC4663A00CC5EE0 /* ZXCVBNHelper.swift */; };
+		60415B941EC4CA0A00CC5EE0 /* FBAnotationsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60415B931EC4CA0A00CC5EE0 /* FBAnotationsExtension.swift */; };
 		6041B2041E49CECA00534955 /* Launch Screen2.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6041B2031E49CECA00534955 /* Launch Screen2.storyboard */; };
 		6041B20D1DD4AC040018CC31 /* NotablesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6041B20B1DD4AC040018CC31 /* NotablesViewController.swift */; };
 		6041B20E1DD4AC040018CC31 /* ShareOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6041B20C1DD4AC040018CC31 /* ShareOptionsViewController.swift */; };
@@ -143,7 +145,6 @@
 		B59136881D19DC2700E9EDD0 /* DataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = B59136871D19DC2700E9EDD0 /* DataPoint.swift */; };
 		B591368A1D19DE6C00E9EDD0 /* RealmHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B59136891D19DE6C00E9EDD0 /* RealmHelper.swift */; };
 		B591368C1D19F13500E9EDD0 /* DataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B591368B1D19F13500E9EDD0 /* DataViewController.swift */; };
-		B5E97D9B1D1C03A000CFD1C8 /* UpdateCountDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E97D9A1D1C03A000CFD1C8 /* UpdateCountDelegate.swift */; };
 		C9A7EBA6C445F9F68C86728A /* Pods_hat_mobile_iosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2632FB8B2553DD802A1D8E0E /* Pods_hat_mobile_iosUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -214,6 +215,8 @@
 		603D55C01E69962E00CCEBEB /* UIPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UIPageViewController.swift; path = Objects/UIPageViewController.swift; sourceTree = "<group>"; };
 		603D55C31E69ADBB00CCEBEB /* NSAttributedStringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NSAttributedStringExtension.swift; path = Extensions/NSAttributedStringExtension.swift; sourceTree = "<group>"; };
 		603FDD501E43E7840086559B /* InfoHatProvidersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = InfoHatProvidersViewController.swift; path = ViewControllers/InfoHatProvidersViewController.swift; sourceTree = "<group>"; };
+		60415B8E1EC4663A00CC5EE0 /* ZXCVBNHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ZXCVBNHelper.swift; path = Utils/ZXCVBNHelper.swift; sourceTree = "<group>"; };
+		60415B931EC4CA0A00CC5EE0 /* FBAnotationsExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FBAnotationsExtension.swift; path = Extensions/FBAnotationsExtension.swift; sourceTree = "<group>"; };
 		6041B2031E49CECA00534955 /* Launch Screen2.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen2.storyboard"; sourceTree = "<group>"; };
 		6041B20B1DD4AC040018CC31 /* NotablesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotablesViewController.swift; sourceTree = "<group>"; };
 		6041B20C1DD4AC040018CC31 /* ShareOptionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareOptionsViewController.swift; sourceTree = "<group>"; };
@@ -311,7 +314,6 @@
 		B59136871D19DC2700E9EDD0 /* DataPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataPoint.swift; path = Objects/DataPoint.swift; sourceTree = "<group>"; };
 		B59136891D19DE6C00E9EDD0 /* RealmHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RealmHelper.swift; path = Utils/RealmHelper.swift; sourceTree = "<group>"; };
 		B591368B1D19F13500E9EDD0 /* DataViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataViewController.swift; path = ViewControllers/DataViewController.swift; sourceTree = "<group>"; };
-		B5E97D9A1D1C03A000CFD1C8 /* UpdateCountDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UpdateCountDelegate.swift; path = Protocols/UpdateCountDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -505,6 +507,7 @@
 			isa = PBXGroup;
 			children = (
 				606435DA1E1B196F001A5D14 /* DateExtension.swift */,
+				60415B931EC4CA0A00CC5EE0 /* FBAnotationsExtension.swift */,
 				60113D321E856EB2000EAF89 /* HATAccountServiceExtension.swift */,
 				60113D2E1E856BBA000EAF89 /* HATDataplugsServiceExtension.swift */,
 				60AAA5B71E83D70A0080D0D5 /* HATProviderObjectExtension.swift */,
@@ -693,12 +696,13 @@
 				60A727BC1DDF47EC008AF409 /* FormatterHelper.swift */,
 				606528D21DDA037400026EA6 /* JSONHelper.swift */,
 				60DDE16E1E30FCD200AB9E18 /* KeychainHelper.swift */,
-				60DDE1701E31006600AB9E18 /* MapsHelper.swift */,
 				60494AD71EB9C2A2005D5C85 /* MailHelper.swift */,
+				60DDE1701E31006600AB9E18 /* MapsHelper.swift */,
 				B5138ACD1D1ECA2C00CD1530 /* NetworkHelper.swift */,
 				605EE03B1E92A5BF00B265F6 /* PhotosHelper.swift */,
 				B59136891D19DE6C00E9EDD0 /* RealmHelper.swift */,
 				B56E2FA91D23D9FF00546C7E /* SyncDataHelper.swift */,
+				60415B8E1EC4663A00CC5EE0 /* ZXCVBNHelper.swift */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -725,7 +729,6 @@
 				B51CC9251D1D620C000C9E48 /* MapSettingsDelegate.swift */,
 				60938DBB1E9BA4190058F6CC /* PhotoPickerDelegate.swift */,
 				60AFA1E71E9F6CE100AFA28B /* SendLocationDataDelegate.swift */,
-				B5E97D9A1D1C03A000CFD1C8 /* UpdateCountDelegate.swift */,
 				605EE0331E8DBF8600B265F6 /* UpdateLocationsDelegate.swift */,
 			);
 			name = Protocols;
@@ -1161,6 +1164,7 @@
 				60B486251E1D341000914AD2 /* PurchaseModel.swift in Sources */,
 				6045FBBE1E2EDAE300086926 /* LearnMorePHATAViewController.swift in Sources */,
 				605EE0361E8DC02F00B265F6 /* UpdateLocations.swift in Sources */,
+				60415B941EC4CA0A00CC5EE0 /* FBAnotationsExtension.swift in Sources */,
 				604504D51EAE10A7003B76C3 /* EmergencyContactTableViewController.swift in Sources */,
 				60DDE1711E31006600AB9E18 /* MapsHelper.swift in Sources */,
 				60AAA5B81E83D70A0080D0D5 /* HATProviderObjectExtension.swift in Sources */,
@@ -1174,10 +1178,10 @@
 				B51CC9281D1D7895000C9E48 /* LoginViewController.swift in Sources */,
 				6041B2101DD4AC190018CC31 /* NotablesTableViewCell.swift in Sources */,
 				60D317691E35FE52008E0A5F /* SocialFeedCollectionViewCell.swift in Sources */,
+				60415B8F1EC4663A00CC5EE0 /* ZXCVBNHelper.swift in Sources */,
 				60CDCC0B1EAB731100035882 /* EmailTableViewController.swift in Sources */,
 				B51CC9261D1D620C000C9E48 /* MapSettingsDelegate.swift in Sources */,
 				607DC4551E9E7288002E348D /* LoadingScreenWithProgressRingViewController.swift in Sources */,
-				B5E97D9B1D1C03A000CFD1C8 /* UpdateCountDelegate.swift in Sources */,
 				603926D21E603D3600DC1816 /* HomeScreenObject.swift in Sources */,
 				6088ED191E3A66FE00BCE607 /* FirstOnboardingPageViewController.swift in Sources */,
 				60DDE16F1E30FCD200AB9E18 /* KeychainHelper.swift in Sources */,

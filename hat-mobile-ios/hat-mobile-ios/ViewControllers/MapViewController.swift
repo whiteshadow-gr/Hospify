@@ -12,25 +12,15 @@
 
 import MapKit
 import FBAnnotationClusteringSwift
-import RealmSwift
 import SwiftyJSON
 import HatForIOS
 
 // MARK: Class
 
 /// The MapView to render the DataPoints
-class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegate, DataSyncDelegate {
+class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegate {
 
     // MARK: - IBOutlets
-
-    /// An IBOutlet for handling the labelErrors UILabel
-    @IBOutlet weak var labelErrors: UILabel!
-    /// An IBOutlet for handling the labelUserHATDomain UILabel
-    @IBOutlet weak var labelUserHATDomain: UILabel!
-    /// An IBOutlet for handling the labelLastSyncInformation UILabel
-    @IBOutlet weak var labelLastSyncInformation: UILabel!
-    /// An IBOutlet for handling the labelMostRecentInformation UILabel
-    @IBOutlet weak var labelMostRecentInformation: UILabel!
     
     /// An IBOutlet for handling the mapView MKMapView
     @IBOutlet weak var mapView: MKMapView!
@@ -48,56 +38,13 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     /// An IBOutlet for handling the hidden textField UITextField
     @IBOutlet weak var textField: UITextField!
     
-    // MARK: - IBActions
-    
-    /**
-     Shows a pop up with the available settings
-     
-     - parameter sender: The object that called this method
-     */
-    @IBAction func settingsButtonAction(_ sender: Any) {
-        
-        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
-        
-        let dataAction = UIAlertAction(title: "Show Data", style: .default, handler: {[weak self](alert: UIAlertAction) -> Void in
-            
-            self!.performSegue(withIdentifier: "dataSegue", sender: self!)
-        })
-        
-        let settingsAction = UIAlertAction(title: "Location Settings", style: .default, handler: {[weak self](alert: UIAlertAction) -> Void in
-            
-            self!.performSegue(withIdentifier: "settingsSegue", sender: self!)
-        })
-        
-        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[weak self](alert: UIAlertAction) -> Void in
-            
-            TabBarViewController.logoutUser(from: self!)
-        })
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alertController.addActions(actions: [dataAction, settingsAction, logOutAction, cancelAction])
-        alertController.addiPadSupport(barButtonItem: self.navigationItem.rightBarButtonItem!, sourceView: self.view)
-        
-        // present alert controller
-        self.navigationController!.present(alertController, animated: true, completion: nil)
-    }
-    
     // MARK: - Variables
     
     /// The FBClusteringManager object constant
     private let clusteringManager = FBClusteringManager()
-    /// The SyncDataHelper object constant
-    private let syncDataHelper = SyncDataHelper()
     
-    /// The timer DispatchSource object
-    private var timer: DispatchSource!
-    /// The timerSYnc DispatchSource object
-    private var timerSync: DispatchSource!
     /// The selected enum category of Helper.TimePeriodSelected object
     private var timePeriodSelectedEnum: TimePeriodSelected = TimePeriodSelected.none
-    /// The error message, if any
-    private var lastErrorMessage: String = ""
     
     /// The uidatepicker used in toolbar
     private var datePicker: UIDatePicker? = nil
@@ -119,76 +66,18 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         // view controller title
         self.title = "Location"
         
-        // user HAT domain
-        self.labelUserHATDomain.text = HATAccountService.TheUserHATDomain()
-        
-        // sync feedback delegate
-        self.syncDataHelper.dataSyncDelegate = self
-        
-        // cancel all notifications
-        UIApplication.shared.cancelAllLocalNotifications()
-        
         // add notification observer for refreshUI
-        NotificationCenter.default.addObserver( self, selector: #selector(goToSettings),
-                                                name: NSNotification.Name("goToSettings"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(goToSettings), name: NSNotification.Name("goToSettings"), object: nil)
         
         // add gesture recognizers to today button
-        let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.LongPressOnToday))
-        buttonToday.addGestureRecognizer(longGesture)
         buttonTodayTouchUp(UIBarButtonItem())
-        
-        // add gesture recognizers to last sync label
-        let labelLastSyncInformationTap = UITapGestureRecognizer(target: self, action: #selector(MapViewController.LastSyncLabelTap))
-        labelLastSyncInformation.addGestureRecognizer(labelLastSyncInformationTap)
-        labelLastSyncInformation.isUserInteractionEnabled = true
         
         let recogniser = UITapGestureRecognizer()
         recogniser.addTarget(self, action: #selector(self.selectDatesToViewLocations(gesture:)))
         self.calendarImageView.isUserInteractionEnabled = true
         self.calendarImageView.addGestureRecognizer(recogniser)
         
-        datePicker = UIDatePicker(frame: CGRect(x: 0, y: 200, width: view.frame.width, height: 220))
-        datePicker!.backgroundColor = .white
-        
-        // Set some of UIDatePicker properties
-        datePicker!.timeZone = NSTimeZone.local
-        datePicker!.backgroundColor = UIColor.white
-        datePicker!.datePickerMode = .date
-        
-        // Add an event to call onDidChangeDate function when value is changed.
-        datePicker!.addTarget(self, action: #selector(self.datePickerValueChanged(sender:)), for: .valueChanged)
-        
-        let toolBar = UIToolbar()
-        toolBar.barStyle = UIBarStyle.default
-        toolBar.isTranslucent = true
-        toolBar.tintColor = UIColor(red: 76/255, green: 217/255, blue: 100/255, alpha: 1)
-        toolBar.sizeToFit()
-        
-        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(self.donePickerButton(sender:)))
-        doneButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
-        
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        spaceButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
-        
-        self.segmentControl = UISegmentedControl(items: ["From", "To"])
-        self.segmentControl!.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
-        self.segmentControl!.selectedSegmentIndex = 0
-        self.segmentControl!.addTarget(self, action: #selector(segmentedControlDidChange(sender:)), for: UIControlEvents.valueChanged)
-        self.segmentControl!.tintColor = .teal
-        
-        let barButtonSegmentedControll = UIBarButtonItem(customView: segmentControl!)
-        
-        let spaceButton2 = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
-        spaceButton2.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
-        
-        let cancelButton = UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(self.cancelPickerButton(sender:)))
-        cancelButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
-
-        toolBar.setItems([cancelButton, spaceButton, barButtonSegmentedControll, spaceButton2, doneButton], animated: false)
-        toolBar.isUserInteractionEnabled = true
-        
-        textField.inputView = datePicker
-        textField.inputAccessoryView = toolBar
+        self.createDatePickerAccessoryView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -211,14 +100,61 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         self.mapView.delegate = nil
         self.mapView = nil
         self.removeFromParentViewController()
-        
-        print("hello")
     }
     
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - Create Date Picker
+    
+    /**
+     Creates the date picker for choosing dates to show location for
+     */
+    private func createDatePickerAccessoryView() {
+        
+        datePicker = UIDatePicker(frame: CGRect(x: 0, y: 200, width: view.frame.width, height: 220))
+        
+        // Set some of UIDatePicker properties
+        datePicker!.timeZone = NSTimeZone.local
+        datePicker!.backgroundColor = .white
+        datePicker!.datePickerMode = .date
+        
+        // Add an event to call onDidChangeDate function when value is changed.
+        datePicker!.addTarget(self, action: #selector(self.datePickerValueChanged(sender:)), for: .valueChanged)
+        
+        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(self.donePickerButton(sender:)))
+        doneButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
+        
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        spaceButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
+        
+        self.segmentControl = UISegmentedControl(items: ["From", "To"])
+        self.segmentControl!.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
+        self.segmentControl!.selectedSegmentIndex = 0
+        self.segmentControl!.addTarget(self, action: #selector(segmentedControlDidChange(sender:)), for: UIControlEvents.valueChanged)
+        self.segmentControl!.tintColor = .teal
+        
+        let barButtonSegmentedControll = UIBarButtonItem(customView: segmentControl!)
+        
+        let spaceButton2 = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil)
+        spaceButton2.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
+        
+        let cancelButton = UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(self.cancelPickerButton(sender:)))
+        cancelButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor.teal], for: .normal)
+        
+        let toolBar = UIToolbar()
+        toolBar.barStyle = UIBarStyle.default
+        toolBar.isTranslucent = true
+        toolBar.tintColor = UIColor(red: 76/255, green: 217/255, blue: 100/255, alpha: 1)
+        toolBar.sizeToFit()
+        
+        toolBar.setItems([cancelButton, spaceButton, barButtonSegmentedControll, spaceButton2, doneButton], animated: false)
+        toolBar.isUserInteractionEnabled = true
+        
+        self.textField.inputView = datePicker
+        self.textField.inputAccessoryView = toolBar
     }
     
     // MARK: - Toolbar methods
@@ -285,8 +221,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
                     self.createClassicOKAlertWith(alertMessage: "There are no points for the selected dates", alertTitle: "No points found", okTitle: "OK", proceedCompletion: {})
                 }
                 
-                let pins = self.createAnnotationsFrom(objects: array)
-                self.addPointsToMap(annottationArray: pins)
+                let pins = clusteringManager.createAnnotationsFrom(objects: array)
+                clusteringManager.addPointsToMap(annottationArray: pins, mapView: self.mapView)
                 
                 // refresh user token
                 if renewedUserToken != nil {
@@ -380,19 +316,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         }
     }
     
-    // MARK: - Navigation
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any!) {
-        
-        if (segue.identifier == "settingsSegue") {
-            
-            // pass data to next view
-            let settingsVC = segue.destination as! SettingsViewController
-            
-            settingsVC.mapSettingsDelegate = self
-        }
-    }
-    
     // MARK: - Notification methods
     
     /**
@@ -401,65 +324,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     @objc private func goToSettings() {
         
         self.performSegue(withIdentifier: "SettingsSequeID", sender: self)
-    }
-    
-    // MARK: - Show last data point time
-    
-    /**
-     Display the last entry from the map DataPoint
-     */
-    private func displayLastDataPointTime() -> Void {
-        
-        // get last data point
-        if let dataPoint: DataPoint = RealmHelper.getLastDataPoint() {
-            
-            // update on ui thread
-            let addedOn: Date = dataPoint.dateAdded
-            DispatchQueue.main.async(execute: {[unowned self] () -> Void in
-                
-                self.labelMostRecentInformation.text = NSLocalizedString("information_label", comment:  "info") + " " + addedOn.TimeAgoSinceDate()
-            })
-        }
-        
-        // sync date
-        // last sync date
-        DispatchQueue.main.async(execute: {[unowned self] () -> Void in
-            
-            if let dateSynced: Date = SyncDataHelper.getLastSuccessfulSyncDate() {
-                
-                self.labelLastSyncInformation.text = NSLocalizedString("information_synced_label", comment:  "info") + " " +
-                     dateSynced.TimeAgoSinceDate() + " (" + String(SyncDataHelper.getSuccessfulSyncCount()) + " points)"
-            }
-        })
-    }
-    
-    // MARK: - Tap gesture recognizers
-    
-    /**
-     Fired if user holds on lastSync label
-     
-     - parameter sender: The UITapGestureRecognizer that called this method
-     */
-    @objc private func LastSyncLabelTap(_ sender: UITapGestureRecognizer) -> Void {
-        
-        if !lastErrorMessage.isEmpty {
-            
-            // create alert
-            self.createClassicOKAlertWith(alertMessage: lastErrorMessage, alertTitle: "Last Message", okTitle: "Ok", proceedCompletion: {})
-        }
-    }
-    
-    /**
-     Fired if user holds on Today button
-     
-     - parameter sender: The UITapGestureRecognizer that called this method
-     */
-    @objc private func LongPressOnToday(_ sender: UILongPressGestureRecognizer) -> Void {
-        
-        if (sender.state == UIGestureRecognizerState.ended) {
-            
-           _ = self.syncDataHelper.CheckNextBlockToSync()
-        }
     }
     
     // MARK: - IBActions
@@ -477,7 +341,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         let lastWeek = Date().addingTimeInterval(FutureTimeInterval.init(days: Double(7), timeType: TimeType.past).interval)
         let predicate = NSPredicate(format: "dateAdded >= %@", lastWeek as CVarArg)
-        self.fetchAndClusterPoints(predicate)
+        clusteringManager.fetchAndClusterPoints(predicate, mapView: self.mapView)
     }
     
     /**
@@ -493,7 +357,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         
         let startOfToday = Calendar.current.startOfDay(for: Date())
         let predicate = NSPredicate(format: "dateAdded >= %@", startOfToday as CVarArg)
-        self.fetchAndClusterPoints(predicate)
+        clusteringManager.fetchAndClusterPoints(predicate, mapView: self.mapView)
     }
     
     /**
@@ -510,7 +374,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
         let startOfToday = Calendar.current.startOfDay(for: Date())
         let yesteday = startOfToday.addingTimeInterval(FutureTimeInterval.init(days: Double(1), timeType: TimeType.past).interval) // remove 24hrs
         let predicate = NSPredicate(format: "dateAdded >= %@ and dateAdded <= %@", yesteday as CVarArg, startOfToday as CVarArg)
-        self.fetchAndClusterPoints(predicate)
+        clusteringManager.fetchAndClusterPoints(predicate, mapView: self.mapView)
     }
     
     // MARK: - MapView delegate methods
@@ -581,8 +445,6 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     
     func onUpdateCount(_ count: Int) {
         
-        displayLastDataPointTime()
-        
         // only update if today
         if self.timePeriodSelectedEnum == TimePeriodSelected.today {
             
@@ -604,126 +466,5 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
     func onChanged() {
         
         UpdateLocations.shared.resumeLocationServices()
-    }
-
-    func onDataSyncFeedback(_ isSuccess: Bool, message: String) {
-        
-        // if not a success show message and update UI
-        if !isSuccess {
-            
-            lastErrorMessage = message
-            labelLastSyncInformation.textColor = .red
-        } else {
-            
-            lastErrorMessage = ""
-            labelLastSyncInformation.textColor = .white
-        }
-    }
-    
-    // MARK: - Add annotations on map
-    
-    /**
-     Fetches and adds the annotations to the map view/
-     Takes a predicate, e.g. day, yesterday, week 
-     Fetch the DataPoints in a background thread and update the UI once complete
-     
-     - parameter predicate: The predicate to filter the data points with
-     */
-    private func fetchAndClusterPoints(_ predicate: NSPredicate) -> Void {
-        
-        DispatchQueue.global().async { [weak self] () -> Void in
-            
-            if let weakSelf = self {
-                
-                var annottationArray: [FBAnnotation] = []
-                
-                //Get the results. Results list is optional
-                if let results: Results <DataPoint> = RealmHelper.getResults(predicate) {
-                    
-                    for dataPoint: DataPoint in results {
-                        
-                        // add pin into results array
-                        let pin = FBAnnotation()
-                        pin.coordinate = CLLocationCoordinate2D(latitude: dataPoint.lat, longitude: dataPoint.lng)
-                        annottationArray.append(pin)
-                    }
-                    
-                    weakSelf.addPointsToMap(annottationArray: annottationArray)
-                }
-            }
-        }
-    }
-    
-    /**
-     Adds the pins to the map
-     
-     - parameter annottationArray: The anottations, pins, to add to the map
-     */
-    private func addPointsToMap(annottationArray: [FBAnnotation]) {
-        
-        // we must set annotations to replace old ones
-        self.clusteringManager.removeAll()
-        self.clusteringManager.add(annotations: annottationArray)
-        // force map changed to refresh the map and any pins
-        self.mapView(self.mapView, regionDidChangeAnimated: true)
-        
-        DispatchQueue.main.async(execute: { [weak self] () -> Void in
-            
-            if(annottationArray.count > 0) {
-                
-                self!.fitMapViewToAnnotaionList(annottationArray)
-            }
-        })
-    }
-    
-    /**
-     Converts the LocationsObjects to pins to add in the map later
-     
-     - parameter objects: The LocationsObjects to convert to FBAnnotation, pins
-     - returns: An array of FBAnnotation, pins
-     */
-    private func createAnnotationsFrom(objects: [HATLocationsObject]) -> [FBAnnotation] {
-        
-        var arrayToReturn: [FBAnnotation] = []
-        
-        for item in objects {
-            
-            let pin = FBAnnotation()
-            pin.coordinate = CLLocationCoordinate2D(latitude: Double(item.data.locations.latitude)!, longitude: Double(item.data.locations.longitude)!)
-            arrayToReturn.append(pin)
-        }
-        
-        return arrayToReturn
-    }
-    
-    /**
-     Updates map view with the annotations provided
-     
-     - parameter annotations: The annotations to add on the map in an array of FBAnnotation
-     */
-    private func fitMapViewToAnnotaionList(_ annotations: [FBAnnotation]) -> Void {
-        
-        // calculate map padding and zoom
-        let mapEdgePadding = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
-        var zoomRect: MKMapRect = MKMapRectNull
-        
-        // create a point for each annotation
-        for index in 0..<annotations.count {
-            
-            let annotation = annotations[index]
-            let aPoint: MKMapPoint = MKMapPointForCoordinate(annotation.coordinate)
-            let rect: MKMapRect = MKMapRectMake(aPoint.x, aPoint.y, 0.1, 0.1)
-            
-            if MKMapRectIsNull(zoomRect) {
-                
-                zoomRect = rect
-            } else {
-                
-                zoomRect = MKMapRectUnion(zoomRect, rect)
-            }
-        }
-        
-        // focus map on the added points
-        mapView.setVisibleMapRect(zoomRect, edgePadding: mapEdgePadding, animated: true)
     }
 }

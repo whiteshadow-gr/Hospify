@@ -35,6 +35,7 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
     /// A Double variable containing the accuracy of the point to return
     private var accuracy: Double?
     
+    /// A delegate to pass the location data back when the user has tapped the done button
     weak var noteOptionsDelegate: ShareOptionsViewController?
     
     // MARK: - IBOutlets
@@ -134,8 +135,9 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
+    
+    // MARK: - Search
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
@@ -186,6 +188,11 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
     
     // MARK: - Protocol's function
     
+    /**
+     Decodes the locations received and saves them
+     
+     - parameter locations: The array of the locations received
+     */
     func updateLocations(locations: [CLLocation]) {
         
         // if we have received locations
@@ -219,7 +226,6 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
                         return
                     }
                     
-                    
                     if (placemarks?.count)! > 0 {
                         
                         if !weakSelf.isFocusedToUsersPosition {
@@ -236,6 +242,8 @@ class CheckInMapViewController: UIViewController, UpdateLocationsDelegate, UISea
             })
         }
     }
+    
+    // MARK: - Zoom map
     
     /**
      Zooms to user's location on map

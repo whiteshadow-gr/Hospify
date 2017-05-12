@@ -16,7 +16,7 @@ import HatForIOS
 // MARK: Class
 
 /// The share options view controller
-class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafariViewControllerDelegate, PhotoPickerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, SendLocationDataDelegate {
+class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafariViewControllerDelegate, PhotoPickerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, SendLocationDataDelegate, UserCredentialsProtocol {
     
     func locationDataReceived(latitude: Double, longitude: Double, accuracy: Double) {
         
@@ -42,14 +42,10 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     /// A variable holding the selected image from the image picker
     private var imageSelected: UIImageView = UIImageView()
     var selectedImage: UIImage?
-    private var differenceHeightSize: CGFloat? = nil
+    var selectedFileImage: FileUploadObject?
     
     /// A string passed from Notables view controller about the kind of the note
     var kind: String = "note"
-    /// The user's token
-    private let token: String = HATAccountService.getUsersTokenFromKeychain()
-    /// The user's hat domain
-    private let userDomain: String = HATAccountService.TheUserHATDomain()
     /// The previous title for publish button
     private var previousPublishButtonTitle: String? = nil
     
@@ -284,7 +280,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 // save text
                 self.receivedNote?.data.message = self.textView.text!
                 
-                HATNotablesService.postNote(userDomain: self.userDomain, userToken: self.token, note: self.receivedNote!, successCallBack: {[weak self] () -> Void in
+                HATNotablesService.postNote(userDomain: userDomain, userToken: userToken, note: self.receivedNote!, successCallBack: {[weak self] () -> Void in
                     
                     if self?.loadingScr != nil {
                         
@@ -317,7 +313,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                         
                         self.showProgressRing()
                         
-                        HATAccountService.uploadFileToHATWrapper(token: self.token, userDomain: self.userDomain, fileToUpload: self.imageSelected.image!, progressUpdater: {[weak self](completion) -> Void in
+                        HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, progressUpdater: {[weak self](completion) -> Void in
                             
                             if self != nil {
                                 
@@ -330,7 +326,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                 if (weakSelf.receivedNote?.data.shared)! {
                                     
                                     // do another call to make image public
-                                    HATFileService.makeFilePublic(fileID: fileUploaded.fileID, token: weakSelf.token, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
+                                    HATFileService.makeFilePublic(fileID: fileUploaded.fileID, token: weakSelf.userToken, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
                                         
                                         _ = CrashLoggerHelper.hatErrorLog(error: error)
                                     })
@@ -374,13 +370,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 func proceedCompletion() {
                     
                     // delete note
-                    HATNotablesService.deleteNote(id: (receivedNote?.id)!, tkn: self.token, userDomain: self.userDomain)
+                    HATNotablesService.deleteNote(id: (receivedNote?.id)!, tkn: userToken, userDomain: userDomain)
                     
                     if self.imagesToUpload.count > 0 {
                         
                         self.showProgressRing()
                         
-                        HATAccountService.uploadFileToHATWrapper(token: self.token, userDomain: self.userDomain, fileToUpload: self.imageSelected.image!, progressUpdater: {[weak self](completion) -> Void in
+                        HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, progressUpdater: {[weak self](completion) -> Void in
                         
                             if self != nil {
                                 
@@ -393,13 +389,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                 if (weakSelf.receivedNote?.data.shared)! {
                                     
                                     // do another call to make image public
-                                    HATFileService.makeFilePublic(fileID: fileUploaded.fileID, token: weakSelf.token, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
+                                    HATFileService.makeFilePublic(fileID: fileUploaded.fileID, token: weakSelf.userToken, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
                                         
                                         _ = CrashLoggerHelper.hatErrorLog(error: error)
                                     })
                                 } else {
                                     
-                                    HATFileService.makeFilePrivate(fileID: fileUploaded.fileID, token: weakSelf.token, userDomain: weakSelf.token, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
+                                    HATFileService.makeFilePrivate(fileID: fileUploaded.fileID, token: weakSelf.userToken, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
                                         
                                         _ = CrashLoggerHelper.hatErrorLog(error: error)
                                     })
@@ -455,33 +451,28 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         }
         
         // check if the token has expired
-        let result = HATAccountService.checkIfTokenExpired(token: self.token)
-        
-        if result == self.token {
-            
-            post(token: self.token)
-        } else if result == "401" {
-            
-            self.checkIfReauthorisationIsNeeded(completion: post)
-        } else {
-            
-            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
-        }
+        HATAccountService.checkIfTokenExpired(token: userToken,
+                                              expiredCallBack: self.checkIfReauthorisationIsNeeded(completion: post),
+                                              tokenValidCallBack: post,
+                                              errorCallBack: self.createClassicOKAlertWith)
     }
     
-    func checkIfReauthorisationIsNeeded(completion: @escaping (String?) -> Void) {
+    func checkIfReauthorisationIsNeeded(completion: @escaping (String?) -> Void) -> (Void) -> Void {
         
-        let authoriseVC = AuthoriseUserViewController()
-        authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
-        authoriseVC.view.layer.cornerRadius = 15
-        authoriseVC.completionFunc = completion
-        
-        // add the page view controller to self
-        self.addChildViewController(authoriseVC)
-        self.view.addSubview(authoriseVC.view)
-        authoriseVC.didMove(toParentViewController: self)
-        
-        self.publishButton.setTitle("Please try again", for: .normal)
+        return {
+            
+            let authoriseVC = AuthoriseUserViewController()
+            authoriseVC.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+            authoriseVC.view.layer.cornerRadius = 15
+            authoriseVC.completionFunc = completion
+            
+            // add the page view controller to self
+            self.addChildViewController(authoriseVC)
+            self.view.addSubview(authoriseVC.view)
+            authoriseVC.didMove(toParentViewController: self)
+            
+            self.publishButton.setTitle("Please try again", for: .normal)
+        }
     }
     
     /**
@@ -499,7 +490,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 func proceedCompletion() {
                     
                     // delete note
-                    HATNotablesService.deleteNote(id: (receivedNote?.id)!, tkn: self.token, userDomain: self.userDomain)
+                    HATNotablesService.deleteNote(id: (receivedNote?.id)!, tkn: userToken, userDomain: userDomain)
                     
                     //go back
                     _ = self.navigationController?.popViewController(animated: true)
@@ -517,18 +508,10 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         }
         
         // check if the token has expired
-        let result = HATAccountService.checkIfTokenExpired(token: self.token)
-        
-        if result == self.token {
-            
-            delete(token: self.token)
-        } else if result == "401" {
-            
-            self.checkIfReauthorisationIsNeeded(completion: delete)
-        } else {
-            
-            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
-        }
+        HATAccountService.checkIfTokenExpired(token: userToken,
+                                              expiredCallBack: self.checkIfReauthorisationIsNeeded(completion: delete),
+                                              tokenValidCallBack: delete,
+                                              errorCallBack: self.createClassicOKAlertWith)
     }
     
     /**
@@ -678,7 +661,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 
                 self.publishButton.setTitle("Please Wait..", for: .normal)
                 
-                HATFacebookService.getAppTokenForFacebook(token: self.token, userDomain: self.userDomain, successful: facebookTokenReceived, failed: {[weak self] (error) in
+                HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: facebookTokenReceived, failed: {[weak self] (error) in
                     
                     if self != nil {
                         
@@ -828,7 +811,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         self.changePublishButtonTo(title: "Please Wait..", userEnabled: false)
         
         // get app token for twitter
-        HATTwitterService.getAppTokenForTwitter(userDomain: self.userDomain, token: self.token, successful: checkDataPlug, failed: { [weak self] (error) in
+        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: checkDataPlug, failed: { [weak self] (error) in
             
             if self != nil {
                 
@@ -1301,7 +1284,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             HATDataPlugsService.ensureOfferDataDebitEnabled(offerID: "32dde42f-5df9-4841-8257-5639db222e41", succesfulCallBack: {_ in}, failCallBack: failCallback)(appToken)
         }
         
-        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: self.userDomain, token: self.token, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: success, failCallBack: {(error) in
+        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: success, failCallBack: {(error) in
             
             self.createClassicOKAlertWith(alertMessage: "There was a problem enabling offer. Please try again later", alertTitle: "Error enabling offer", okTitle: "OK", proceedCompletion: {})
             _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
@@ -1371,6 +1354,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             let fullScreenPhotoVC = segue.destination as? PhotoFullScreenViewerViewController
             
             fullScreenPhotoVC?.imageURL = self.receivedNote?.data.photoData.link
+            //fullScreenPhotoVC?.file = self
         }
     }
 }

@@ -15,7 +15,7 @@ import Alamofire
 
 // MARK: Class
 
-class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PhotoPickerDelegate {
+class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PhotoPickerDelegate, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -32,10 +32,6 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
     
     /// A loading ring progress bar used while uploading a new image
     private var loadingScr: LoadingScreenWithProgressRingViewController?
-    /// User's domain
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    /// User's token
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     /// The reuse identifier of the cell
     private let reuseIdentifier = "photosCell"
     
@@ -334,9 +330,6 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         let width = CGFloat(frameWidth /  CGFloat(Int(frameWidth / approxWidth))) - 5
         
         return CGSize(width: width, height: width)
-        // Int(640 / 210) = 3
-        // 640 / 3 = 213.33
-        
     }
     
     // MARK: - Navigation

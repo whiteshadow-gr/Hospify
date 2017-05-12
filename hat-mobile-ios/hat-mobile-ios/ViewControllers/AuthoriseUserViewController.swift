@@ -16,7 +16,7 @@ import HatForIOS
 // MARK: Class
 
 /// Authorise view controller, really a blank view controller needed to present the safari view controller
-class AuthoriseUserViewController: UIViewController {
+class AuthoriseUserViewController: UIViewController, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -64,8 +64,6 @@ class AuthoriseUserViewController: UIViewController {
             // first of all, we close the safari vc
             self.safari?.dismissSafari(animated: true, completion: nil)
             
-            let userDomain = HATAccountService.TheUserHATDomain()
-            
             // authorize with hat
             HATLoginService.loginToHATAuthorization(userDomain: userDomain, url: url, success: {token in
             
@@ -106,10 +104,10 @@ class AuthoriseUserViewController: UIViewController {
     private func launchSafari() {
         
         // build up the hat domain auth url
-        let userDomain = HATAccountService.TheUserHATDomain()
         let hatDomainURL = "https://" + userDomain + "/hatlogin?name=" + Constants.Auth.ServiceName + "&redirect=" +
             Constants.Auth.URLScheme + "://" + Constants.Auth.LocalAuthHost
         
         self.safari = SFSafariViewController.openInSafari(url: hatDomainURL, on: self, animated: true, completion: nil)
     }
+    
 }

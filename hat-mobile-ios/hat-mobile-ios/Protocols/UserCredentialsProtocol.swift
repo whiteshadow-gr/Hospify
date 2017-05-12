@@ -47,4 +47,14 @@ extension UserCredentialsProtocol {
         
         return HATAccountService.TheUserHATDomain()
     }
+    
+    var userToken: String {
+        
+        return HATAccountService.getUsersTokenFromKeychain()
+    }
+    
+    var userDomain: String {
+        
+        return HATAccountService.TheUserHATDomain()
+    }
 }

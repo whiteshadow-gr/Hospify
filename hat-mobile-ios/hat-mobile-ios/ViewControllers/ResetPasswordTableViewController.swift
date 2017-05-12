@@ -11,7 +11,6 @@
  */
 
 import HatForIOS
-import zxcvbn_ios
 
 // MARK: Class
 
@@ -180,15 +179,7 @@ class ResetPasswordTableViewController: UITableViewController, UITextFieldDelega
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
-        let zxcvbn = DBPasswordStrengthMeterView(frame: CGRect(x: 0, y: 0, width: 15, height: 30))
-        zxcvbn.setLightColor(.rumpelDarkGray, darkColor: .teal)
-        zxcvbn.scorePassword(textField.text)
-        
-        textField.rightViewMode = .always
-        textField.rightView = zxcvbn
-        
-        let tempZxcvbnResult = DBZxcvbn()
-        self.score = Int(tempZxcvbnResult.passwordStrength(textField.text).score)
+        self.score = ZXCVBNHelper.showPasswordMeterOn(textField: textField)
         
         return true
     }

@@ -25,6 +25,7 @@ extension HATDataPlugsService: UserCredentialsProtocol {
      - parameter failCallBack: A function to call if fail
      */
     class func ensureOffersReady(succesfulCallBack: @escaping (String) -> Void, tokenErrorCallback: @escaping () -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> Void {
+        
         // notables offer
         let offerID = "32dde42f-5df9-4841-8257-5639db222e41"
         
@@ -33,15 +34,11 @@ extension HATDataPlugsService: UserCredentialsProtocol {
         
         func checkPlugForToken(appToken: String, renewedUserToken: String?) {
             
-            self.checkSocialPlugAvailability(succesfulCallBack: plugReadyContinue, failCallBack: { (error) in
-                
-                failCallBack(error)
-                _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
-            })(appToken)
+            
         }
         
         // get token async
-        HATService.getApplicationTokenFor(serviceName: "Facebook", userDomain: userDomain, token: userToken, resource: "https://social-plug.hubofallthings.com", succesfulCallBack: checkPlugForToken, failCallBack: { (error) in
+        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: checkPlugForToken, failCallBack: { (error) in
             
             tokenErrorCallback()
             _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)

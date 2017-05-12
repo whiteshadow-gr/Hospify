@@ -15,7 +15,7 @@ import UIKit
 // MARK: Class
 
 /// The UITabBarViewController
-class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
+class TabBarViewController: UITabBarController {
     
     // MARK: - View controller functions
     
@@ -30,103 +30,16 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         
         // change tint color, the color of the selected icon in tab bar
         self.tabBar.tintColor = .teal
-        // set delete to self in order to receive the calls from tab bar controller
-        self.delegate = self
         
         // change navigation bar title
         self.navigationController?.navigationBar.titleTextAttributes =
             [NSForegroundColorAttributeName: UIColor.white,
              NSFontAttributeName: UIFont(name: "OpenSans-Bold", size: 21)!]
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(TabBarViewController.logoutUser), name: NSNotification.Name("signOut"), object: nil)        
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        
-        super.viewDidAppear(animated)
-        
-        // create bar button in navigation bar
-        self.createBarButtonsFor(viewController: self.selectedViewController)
     }
 
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-    }
-    
-    // MARK: - Tab bar controller funtions
-    
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        
-        self.createBarButtonsFor(viewController: self.selectedViewController)
-    }
-    
-    // MARK: - Buttons functions
-    
-    /**
-     Create default buttons in navigation bar
-     */
-    func createBarButtonsFor(viewController: UIViewController?) {
-        
-        if viewController != nil {
-            
-            // remove buttons on the left and right of the navigation bar
-            viewController!.navigationItem.leftBarButtonItems = nil
-            viewController!.navigationItem.rightBarButtonItems = nil
-            
-            let button = UIBarButtonItem(image: UIImage(named: "Settings"), style: .done, target: self, action: #selector(setUpActionViewController))
-            
-            // add buttons to navigation bar
-            viewController!.navigationItem.rightBarButtonItem = button
-        }
-    }
-    
-    /**
-     Set's up the bar buttons for tab bar
-     */
-    func setUpActionViewController() {
-        
-        let alertController = UIAlertController(title: "Settings", message: nil, preferredStyle: .actionSheet)
-        
-        let logOutAction = UIAlertAction(title: "Log out", style: .default, handler: {[weak self] _ in
-            
-            if self != nil {
-                
-                TabBarViewController.logoutUser(from: self!)
-            }
-        })
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alertController.addActions(actions: [logOutAction, cancelAction])
-        alertController.addiPadSupport(barButtonItem: self.navigationItem.rightBarButtonItem!, sourceView: self.view)
-        
-        // present alert controller
-        self.navigationController!.present(alertController, animated: true, completion: nil)
-    }
-    
-    /**
-     Goes to data ViewController
-     */
-    func showDataViewController() {
-        
-        self.performSegue(withIdentifier: "dataSegue", sender: self)
-    }
-    
-    /**
-     Goes to settings ViewController
-     */
-    func showSettingsViewController() {
-        
-        NotificationCenter.default.post(name: NSNotification.Name("goToSettings"), object: nil)
-    }
-    
-    /**
-     Sends a notification to social feed to show the alert controller to select the filter
-     */
-    func filterSocialFeed() {
-        
-        NotificationCenter.default.post(name: NSNotification.Name("filterSocialFeed"), object: nil)
     }
     
     /**

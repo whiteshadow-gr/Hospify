@@ -56,7 +56,7 @@ class DataPointsTableView: UITableView, UITableViewDelegate, UITableViewDataSour
             cell = DataPointTableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: basicCellIdentifier)
         }
         
-        let dataPoint:DataPoint = dataResults[indexPath.row]
+        let dataPoint: DataPoint = dataResults[indexPath.row]
         
         cell!.labelLatitude.text = String(dataPoint.lat) + ", " + String(dataPoint.lng) + ", " + String(dataPoint.accuracy)
         cell!.labelDateAdded.text = "Added " + FormatterHelper.getDateString(dataPoint.dateAdded)

@@ -31,9 +31,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     /// An IBOutlet for handling the domainButton
     @IBOutlet weak var domainButton: UIButton!
     
-    /// An IBOutlet for handling the inputUserHATDomain
-    @IBOutlet weak var inputUserHATDomain: UITextField!
-    
     /// An IBOutlet for handling the labelAppVersion
     @IBOutlet weak var labelAppVersion: UILabel!
     
@@ -41,6 +38,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var labelTitle: UITextView!
     /// An IBOutlet for handling the labelSubTitle
     @IBOutlet weak var labelSubTitle: UITextView!
+    /// An IBOutlet for handling the inputUserHATDomain
+    @IBOutlet weak var inputUserHATDomain: UITextField!
     
     /// An IBOutlet for handling the background image
     @IBOutlet weak var backgroundImage: UIImageView!
@@ -59,6 +58,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     /// SafariViewController variable
     private var popUpView: UIView?
     
+    /// The mail view controller to be able to send email
     private let mailHelper = MailHelper()
         
     // MARK: - IBActions
@@ -268,6 +268,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             Constants.Auth.URLScheme + "://" + Constants.Auth.LocalAuthHost
               
         self.safariVC = SFSafariViewController.openInSafari(url: hatDomainURL, on: self, animated: true, completion: nil)
+        //SFSafariViewController.openInSafari2(url: hatDomainURL, on: self, animated: true, completion: nil)
     }
     
     /**

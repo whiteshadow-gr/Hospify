@@ -14,10 +14,10 @@ import SwiftyJSON
 import SafariServices
 import HatForIOS
 
-// MARK: - Notables ViewController
+// MARK: Notables ViewController
 
 /// The notables view controller
-class NotablesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
+class NotablesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -35,15 +35,10 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     private var notablesFetchLimit: String = "50"
     /// the notables fetch end date
     private var notablesFetchEndDate: String? = nil
-    /// the app token for notables
-    private var token: String = ""
     
     /// the paramaters to make the request for fetching the notes
     private var parameters: Dictionary<String, String> = ["starttime" : "0",
                                                           "limit" : "50"]
-    
-    /// a dark view pop up to hide the background
-    private var darkView: UIView? = nil
     
     /// a dark view pop up to hide the background
     private var authorise: AuthoriseUserViewController? = nil
@@ -82,10 +77,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         // if something wrong show error
         let failCallBack = { [weak self] () -> Void in
             
-            if self != nil {
-                
-                self!.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {})
-            }
+            self?.createClassicOKAlertWith(alertMessage: "There was an error enabling data plugs, please go to web rumpel to enable the data plugs", alertTitle: "Data Plug Error", okTitle: "OK", proceedCompletion: {})
         }
         
         // check if data plug is ready
@@ -137,7 +129,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         
         super.viewWillAppear(animated)
         
-        func success(token: String) {
+        func success(token: String?) {
             
             self.authorise = nil
             
@@ -145,44 +137,19 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             self.connectToServerToGetNotes(result: nil)
         }
         
-        func failed(statusCode: Int) {
-            
-            if self.authorise == nil {
-                
-                self.authorise = AuthoriseUserViewController()
-                self.authorise!.view.backgroundColor = .clear
-                self.authorise!.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
-                self.authorise!.view.layer.cornerRadius = 15
-                self.authorise!.completionFunc = connectToServerToGetNotes
-                
-                // add the page view controller to self
-                self.addChildViewController(self.authorise!)
-                self.view.addSubview(self.authorise!.view)
-                self.authorise!.didMove(toParentViewController: self)
-            }
-        }
+        HATDataPlugsService.ensureOffersReady(succesfulCallBack: success, tokenErrorCallback: {
+        
+            print("error")
+        }, failCallBack: {error in
+        
+            print(error)
+        })
 
         // get notes
-        self.token = HATAccountService.getUsersTokenFromKeychain()
-        let result = HATAccountService.checkIfTokenExpired(token: token)
-        
-        if result == self.token {
-            
-            success(token: self.token)
-        } else if result == "401" {
-            
-            failed(statusCode: 401)
-        } else {
-            
-            self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
-        }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        
-        super.viewDidAppear(animated)
-        
-        self.token = HATAccountService.getUsersTokenFromKeychain()
+        HATAccountService.checkIfTokenExpired(token: userToken,
+                                    expiredCallBack: self.unauthorisedResponse(proceedCompletion: connectToServerToGetNotes),
+                                 tokenValidCallBack: success,
+                                      errorCallBack: self.createClassicOKAlertWith)
     }
 
     override func didReceiveMemoryWarning() {
@@ -256,18 +223,11 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                         // increase limit
                         weakSelf.notablesFetchLimit = "500"
                         
-                        // init object
+                        // init object from array
                         let object = HATNotesData(dict: (array.last?.dictionaryValue)!)
                         
-                        // get unixt date
-                        let elapse = object.lastUpdated.timeIntervalSince1970
-                        
-                        let temp = String(elapse)
-                        
-                        let array2 = temp.components(separatedBy: ".")
-                        
                         // set unix date
-                        weakSelf.notablesFetchEndDate = array2[0]
+                        weakSelf.notablesFetchEndDate = FormatterHelper.formatDateToEpoch(date: object.lastUpdated)
                         
                         // change parameters
                         weakSelf.parameters = ["starttime" : "0",
@@ -275,8 +235,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                                            "limit" : weakSelf.notablesFetchLimit]
                         
                         // fetch notes
-                        let userDomain = HATAccountService.TheUserHATDomain()
-                        HATNotablesService.fetchNotables(userDomain: userDomain, authToken: weakSelf.token, structure: HATJSONHelper.createNotablesTableJSON(), parameters: weakSelf.parameters, success: weakSelf.showNotables, failure: {_ in})
+                        HATNotablesService.fetchNotables(userDomain: weakSelf.userDomain, authToken: weakSelf.userToken, structure: HATJSONHelper.createNotablesTableJSON(), parameters: weakSelf.parameters, success: weakSelf.showNotables, failure: {_ in})
                         
                     } else {
                         
@@ -340,15 +299,12 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             
             func proceedCompletion(result: String?) {
                 
-                let token = HATAccountService.getUsersTokenFromKeychain()
-                let userDomain = HATAccountService.TheUserHATDomain()
-                
                 func success(token: String?) {
                     
                     var unwrappedToken = ""
                     if token == nil {
                         
-                        unwrappedToken = HATAccountService.getUsersTokenFromKeychain()
+                        unwrappedToken = userToken
                     } else {
                         
                         unwrappedToken = token!
@@ -361,36 +317,13 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     self.authorise = nil
                 }
                 
-                func failed(statusCode: Int) {
-                    
-                    if self.authorise != nil && statusCode == 401 {
-                        
-                        self.authorise! = AuthoriseUserViewController()
-                        self.authorise!.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
-                        self.authorise!.view.layer.cornerRadius = 15
-                        self.authorise!.completionFunc = proceedCompletion
-                        
-                        // add the page view controller to self
-                        self.addChildViewController(self.authorise!)
-                        self.view.addSubview(self.authorise!.view)
-                        self.authorise!.didMove(toParentViewController: self)
-                    }
-                }
-                
                 // delete data from hat and remove from table
-                let tokenResult = HATAccountService.checkIfTokenExpired(token: self.token)
-                
-                if tokenResult == self.token {
-                    
-                    success(token: self.token)
-                } else if result == "401" {
-                    
-                    failed(statusCode: 401)
-                } else {
-                    
-                    self.createClassicOKAlertWith(alertMessage: "Checking token expiry date failed", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
-                }
+                HATAccountService.checkIfTokenExpired(token: userToken,
+                                            expiredCallBack: self.unauthorisedResponse(proceedCompletion: proceedCompletion),
+                                         tokenValidCallBack: success,
+                                              errorCallBack: self.createClassicOKAlertWith)
             }
+            
             // if it is shared show message else delete the row
             if self.cachedNotesArray[indexPath.row].data.shared {
                 
@@ -422,6 +355,27 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
         self.selectedIndex = indexPath.row
     }
     
+    // MARK: - Unauthorised response
+    
+    func unauthorisedResponse(proceedCompletion: @escaping (String?) -> Void) -> (Void) -> Void {
+        
+        return {
+            
+            if self.authorise == nil {
+                
+                self.authorise = AuthoriseUserViewController()
+                self.authorise!.view.frame = CGRect(x: self.view.center.x - 50, y: self.view.center.y - 20, width: 100, height: 40)
+                self.authorise!.view.layer.cornerRadius = 15
+                self.authorise!.completionFunc = proceedCompletion
+                
+                // add the page view controller to self
+                self.addChildViewController(self.authorise!)
+                self.view.addSubview(self.authorise!.view)
+                self.authorise!.didMove(toParentViewController: self)
+            }
+        }
+    }
+    
     // MARK: - Network functions
     
     /**
@@ -429,10 +383,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
      */
     private func connectToServerToGetNotes(result: String?) {
         
-        // get token and refresh view
-        self.token = HATAccountService.getUsersTokenFromKeychain()
-        
-        if token == "" {
+        if userToken == "" {
             
             let loginPageView =  self.storyboard?.instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
             self.navigationController?.pushViewController(loginPageView, animated: false)
@@ -440,8 +391,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
             
             self.showEmptyTableLabelWith(message: "Accessing your HAT...")
             
-            let userDomain = HATAccountService.TheUserHATDomain()
-            HATNotablesService.fetchNotables(userDomain: userDomain, authToken: self.token, structure: HATJSONHelper.createNotablesTableJSON(), parameters: self.parameters, success: self.showNotables, failure: {[weak self] error in
+            HATNotablesService.fetchNotables(userDomain: userDomain, authToken: userToken, structure: HATJSONHelper.createNotablesTableJSON(), parameters: self.parameters, success: self.showNotables, failure: {[weak self] error in
                 
                 switch error {
                     
@@ -460,7 +410,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     
                     if self != nil {
                         
-                        HATAccountService.createHatTable(userDomain: userDomain, token: self!.token, notablesTableStructure: HATJSONHelper.createNotablesTableJSON(), failed: {(createTableError: HATTableError) -> Void in
+                        HATAccountService.createHatTable(userDomain: self!.userDomain, token: self!.userToken, notablesTableStructure: HATJSONHelper.createNotablesTableJSON(), failed: {(createTableError: HATTableError) -> Void in
                             
                             _ = CrashLoggerHelper.hatTableErrorLog(error: createTableError)
                         })()
@@ -479,7 +429,6 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
     func updateNote(_ note: HATNotesData, at index: Int) {
         
         self.cachedNotesArray[index] = note
-        print("")
     }
     
     // MARK: - Navigation

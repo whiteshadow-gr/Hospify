@@ -104,6 +104,13 @@ public struct FileUploadObject: Comparable {
             
             source = tempSource
         }
+        if let tempTags = dict["tags"]?.arrayValue {
+            
+            for tag in tempTags {
+                
+                tags.append(tag.stringValue)
+            }
+        }
         if let tempTitle = dict["title"]?.stringValue {
             
             title = tempTitle

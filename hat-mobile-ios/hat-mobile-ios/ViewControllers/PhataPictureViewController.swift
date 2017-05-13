@@ -16,7 +16,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// A class responsible for the profile picture UIViewController of the PHATA section
-class PhataPictureViewController: UIViewController {
+class PhataPictureViewController: UIViewController, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -24,10 +24,6 @@ class PhataPictureViewController: UIViewController {
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
-    /// User's domain
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    /// User's token
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     
     /// User's profile passed on from previous view controller
     var profile: HATProfileObject? = nil
@@ -49,6 +45,10 @@ class PhataPictureViewController: UIViewController {
     @IBAction func customSwitchAction(_ sender: Any) {
         
         self.profile?.data.facebookProfilePhoto.isPrivate = !(self.customSwitch.isOn)
+        if (profile?.data.isPrivate)! && self.customSwitch.isOn {
+            
+            profile?.data.isPrivate = false
+        }
     }
     
     /**
@@ -95,6 +95,11 @@ class PhataPictureViewController: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
+        if self.profile == nil {
+            
+            self.profile = HATProfileObject()
+        }
         
         self.customSwitch.isOn = !((profile?.data.facebookProfilePhoto.isPrivate)!)
         

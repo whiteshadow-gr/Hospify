@@ -57,7 +57,7 @@
                                             <action selector="buttonLogonTouchUp:" destination="Vvb-vK-6GZ" eventType="touchUpInside" id="XSO-Pq-6OA"/>
                                         </connections>
                                     </button>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Your HAT Dashboard" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n7D-5t-hVO">
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="A demonstrator app for your HAT" textAlignment="center" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n7D-5t-hVO">
                                         <rect key="frame" x="39" y="189" width="239" height="29"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <constraints>
@@ -1481,7 +1481,7 @@
                         <viewControllerLayoutGuide type="top" id="diy-HZ-ac0"/>
                         <viewControllerLayoutGuide type="bottom" id="F3b-97-oAE"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="VNQ-Iy-ppa">
+                    <view key="view" contentMode="scaleToFill" misplaced="YES" id="VNQ-Iy-ppa">
                         <rect key="frame" x="0.0" y="64" width="320" height="455"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1503,7 +1503,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="45 of 100 remaining" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GnN-qq-yd7">
-                                                    <rect key="frame" x="32" y="131" width="97.5" height="21"/>
+                                                    <rect key="frame" x="31.5" y="131" width="97.5" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="bOz-Tp-KHz"/>
                                                     </constraints>
@@ -2636,7 +2636,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="414"/>
                                 <subviews>
                                     <stackView opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" axis="vertical" alignment="center" baselineRelativeArrangement="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Cj5-8P-6w4">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="307"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="418"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" horizontalHuggingPriority="1" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BQp-xy-P0p">
                                                 <rect key="frame" x="0.0" y="0.0" width="320" height="143"/>
@@ -2662,7 +2662,7 @@
                                                 <edgeInsets key="layoutMargins" top="0.0" left="0.0" bottom="0.0" right="0.0"/>
                                             </view>
                                             <collectionView hidden="YES" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="7Ln-ch-lvK">
-                                                <rect key="frame" x="0.0" y="143" width="320" height="0.0"/>
+                                                <rect key="frame" x="0.0" y="143" width="320" height="111"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="111" id="Xhb-lX-m8H"/>
@@ -2675,15 +2675,15 @@
                                                 </collectionViewFlowLayout>
                                                 <cells>
                                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="addedImageCell" id="USP-W7-mM4" customClass="ShareOptionsSelectedImageCollectionViewCell" customModule="hat_mobile_ios" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="0.5" width="110" height="110"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                                            <rect key="frame" x="0.0" y="0.0" width="110" height="110"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <subviews>
-                                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Onw-zu-4D8">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="110" height="110"/>
-                                                                </imageView>
+                                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Onw-zu-4D8"/>
                                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a7D-k9-Y0V">
-                                                                    <rect key="frame" x="80" y="5" width="23" height="23"/>
+                                                                    <rect key="frame" x="-30" y="5" width="23" height="23"/>
                                                                     <constraints>
                                                                         <constraint firstAttribute="width" constant="23" id="Pfr-wS-6a3"/>
                                                                         <constraint firstAttribute="height" constant="23" id="XVe-QP-3wr"/>
@@ -2716,7 +2716,7 @@
                                                 </connections>
                                             </collectionView>
                                             <view contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" layoutMarginsFollowReadableWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JmQ-cQ-mR3">
-                                                <rect key="frame" x="0.0" y="143" width="320" height="164"/>
+                                                <rect key="frame" x="0.0" y="254" width="320" height="164"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z4z-aX-X5S">
                                                         <rect key="frame" x="8" y="12" width="25" height="25"/>
@@ -2944,19 +2944,8 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PJm-iR-fwX">
                                 <rect key="frame" x="0.0" y="413" width="320" height="42"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="nyF-Dq-En6">
-                                        <rect key="frame" x="8" y="6" width="35" height="30"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="35" id="VFh-hm-xSA"/>
-                                            <constraint firstAttribute="height" constant="30" id="bYR-F9-LeS"/>
-                                        </constraints>
-                                        <state key="normal" image="Add Photo"/>
-                                        <connections>
-                                            <action selector="addImageButtonAction:" destination="omu-es-gVw" eventType="touchUpInside" id="bzw-zT-gke"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0gN-K9-4fA">
-                                        <rect key="frame" x="51" y="6" width="30" height="30"/>
+                                        <rect key="frame" x="8" y="6" width="30" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="PFQ-4S-2kA"/>
                                             <constraint firstAttribute="width" constant="30" id="mBO-TL-GCY"/>
@@ -2978,14 +2967,25 @@
                                             <action selector="deleteButton:" destination="omu-es-gVw" eventType="touchUpInside" id="Zd7-Sr-Q9n"/>
                                         </connections>
                                     </button>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="nyF-Dq-En6">
+                                        <rect key="frame" x="46" y="6" width="35" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="35" id="VFh-hm-xSA"/>
+                                            <constraint firstAttribute="height" constant="30" id="bYR-F9-LeS"/>
+                                        </constraints>
+                                        <state key="normal" image="Add Photo"/>
+                                        <connections>
+                                            <action selector="addImageButtonAction:" destination="omu-es-gVw" eventType="touchUpInside" id="bzw-zT-gke"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" red="0.0" green="0.58628696199999997" blue="0.53447610140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstItem="i0v-mf-vfR" firstAttribute="top" secondItem="PJm-iR-fwX" secondAttribute="top" constant="6" id="24I-xO-8Aj"/>
                                     <constraint firstItem="nyF-Dq-En6" firstAttribute="top" secondItem="PJm-iR-fwX" secondAttribute="top" constant="6" id="44s-Oi-XJe"/>
-                                    <constraint firstItem="0gN-K9-4fA" firstAttribute="leading" secondItem="nyF-Dq-En6" secondAttribute="trailing" constant="8" id="Dhj-8R-1IF"/>
+                                    <constraint firstItem="0gN-K9-4fA" firstAttribute="leading" secondItem="nyF-Dq-En6" secondAttribute="trailing" constant="-73" id="Dhj-8R-1IF"/>
                                     <constraint firstItem="0gN-K9-4fA" firstAttribute="top" secondItem="PJm-iR-fwX" secondAttribute="top" constant="6" id="RgR-23-YfG"/>
-                                    <constraint firstItem="nyF-Dq-En6" firstAttribute="leading" secondItem="PJm-iR-fwX" secondAttribute="leading" constant="8" id="rnX-13-Pid"/>
+                                    <constraint firstItem="nyF-Dq-En6" firstAttribute="leading" secondItem="PJm-iR-fwX" secondAttribute="leading" constant="46" id="rnX-13-Pid"/>
                                     <constraint firstAttribute="trailing" secondItem="i0v-mf-vfR" secondAttribute="trailing" constant="8" id="wwK-WU-C0A"/>
                                     <constraint firstAttribute="height" constant="42" id="wyB-DU-mt4"/>
                                 </constraints>
@@ -3893,7 +3893,7 @@
         <scene sceneID="tL6-wp-nlK">
             <objects>
                 <collectionViewController id="Zm4-mn-pPm" customClass="DataPlugsCollectionViewController" customModule="hat_mobile_ios" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="VpC-ZV-WXZ">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="VpC-ZV-WXZ">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

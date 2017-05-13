@@ -94,7 +94,7 @@ extension String {
             NSStrokeWidthAttributeName: -1.0
             ] as [String : Any]
         
-        return NSAttributedString(string: self + "\n", attributes: textAttributes)
+        return NSAttributedString(string: self, attributes: textAttributes)
     }
     
 }

@@ -12,7 +12,7 @@
 
 import HatForIOS
 
-class PHATASettingsTableViewController: UITableViewController {
+class PHATASettingsTableViewController: UITableViewController, UserCredentialsProtocol {
 
     // MARK: - Variables
     
@@ -24,10 +24,6 @@ class PHATASettingsTableViewController: UITableViewController {
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
-    /// User's domain
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    /// User's token
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     
     /// User's profile passed on from previous view controller
     var profile: HATProfileObject? = nil
@@ -59,6 +55,34 @@ class PHATASettingsTableViewController: UITableViewController {
         }
         
         profile?.data.isPrivate = !(cell!.privateSwitch.isOn)
+        if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+            
+            profile?.data.isPrivate = false
+        }
+        if !(cell!.privateSwitch.isOn) {
+            
+            profile?.data.about.isPrivate = true
+            profile?.data.addressDetails.isPrivate = true
+            profile?.data.addressGlobal.isPrivate = true
+            profile?.data.age.isPrivate = true
+            profile?.data.alternativeEmail.isPrivate = true
+            profile?.data.birth.isPrivate = true
+            profile?.data.blog.isPrivate = true
+            profile?.data.emergencyContact.isPrivate = true
+            profile?.data.facebook.isPrivate = true
+            profile?.data.facebookProfilePhoto.isPrivate = true
+            profile?.data.gender.isPrivate = true
+            profile?.data.google.isPrivate = true
+            profile?.data.homePhone.isPrivate = true
+            profile?.data.linkedIn.isPrivate = true
+            profile?.data.mobile.isPrivate = true
+            profile?.data.nick.isPrivate = true
+            profile?.data.personal.isPrivate = true
+            profile?.data.primaryEmail.isPrivate = true
+            profile?.data.twitter.isPrivate = true
+            profile?.data.website.isPrivate = true
+            profile?.data.youtube.isPrivate = true
+        }
         
         func tableExists(dict: Dictionary<String, Any>, renewedUserToken: String?) {
             
@@ -92,6 +116,11 @@ class PHATASettingsTableViewController: UITableViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
+        if self.profile == nil {
+            
+            self.profile = HATProfileObject()
+        }
     }
 
     override func didReceiveMemoryWarning() {

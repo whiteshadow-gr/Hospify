@@ -313,7 +313,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                         
                         self.showProgressRing()
                         
-                        HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, progressUpdater: {[weak self](completion) -> Void in
+                        HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, tags: ["iphone", "notes"], progressUpdater: {[weak self](completion) -> Void in
                             
                             if self != nil {
                                 
@@ -376,7 +376,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                         
                         self.showProgressRing()
                         
-                        HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, progressUpdater: {[weak self](completion) -> Void in
+                        HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, tags: ["iphone", "notes"], progressUpdater: {[weak self](completion) -> Void in
                         
                             if self != nil {
                                 

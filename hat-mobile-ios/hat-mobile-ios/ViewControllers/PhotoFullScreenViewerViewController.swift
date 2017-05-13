@@ -69,9 +69,9 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
                 HATFileService.deleteFile(fileID: file!.fileID, token: self.userToken, userDomain: self.userDomain, successCallback: success, errorCallBack: fail)
             }
             
-            if (file?.tags.contains("note"))! {
+            if (file?.tags.contains("notes"))! {
                 
-                self.createClassicOKAlertWith(alertMessage: "This photo is attached to a notable, removing it will remove the image in the note as well", alertTitle: "Warning", okTitle: "OK", proceedCompletion: delete)
+                self.createClassicAlertWith(alertMessage: "This photo is attached to a notable, removing it will remove the image in the note as well", alertTitle: "Warning", cancelTitle: "Cancel", proceedTitle: "Delete", proceedCompletion: delete, cancelCompletion: {})
             } else {
                 
                 delete()

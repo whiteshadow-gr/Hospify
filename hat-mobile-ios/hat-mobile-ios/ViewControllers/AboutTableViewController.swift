@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the about UITableViewController of the PHATA section
-class AboutTableViewController: UITableViewController {
+class AboutTableViewController: UITableViewController, UserCredentialsProtocol {
     
     // MARK: - Variables
 
@@ -27,10 +27,6 @@ class AboutTableViewController: UITableViewController {
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
-    /// User's domain
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    /// User's token
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     
     /// User's profile passed on from previous view controller
     var profile: HATProfileObject? = nil
@@ -75,6 +71,10 @@ class AboutTableViewController: UITableViewController {
             } else if index == 2 {
                 
                 profile?.data.about.isPrivate = !(cell!.privateSwitch.isOn)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             }
         }
         
@@ -112,6 +112,11 @@ class AboutTableViewController: UITableViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
+        if self.profile == nil {
+            
+            self.profile = HATProfileObject()
+        }
     }
 
     override func didReceiveMemoryWarning() {

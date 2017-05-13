@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the profile info UITableViewController of the PHATA section
-class ProfileInfoTableViewController: UITableViewController {
+class ProfileInfoTableViewController: UITableViewController, UserCredentialsProtocol {
     
     // MARK: - Variables
 
@@ -27,10 +27,6 @@ class ProfileInfoTableViewController: UITableViewController {
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
-    /// User's domain
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    /// User's token
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     
     /// User's profile passed on from previous view controller
     var profile: HATProfileObject? = nil
@@ -68,21 +64,37 @@ class ProfileInfoTableViewController: UITableViewController {
                 
                 profile?.data.age.group = cell!.textField.text!
                 profile?.data.age.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             // gender
             } else if index == 1 {
                 
                 profile?.data.gender.type = cell!.textField.text!
                 profile?.data.gender.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             // birth
             } else if index == 2 {
                 
                 profile?.data.birth.date = cell!.textField.text!
                 profile?.data.birth.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             // nickname
             } else if index == 3 {
                 
                 profile?.data.nick.name = cell!.textField.text!
                 profile?.data.nick.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             }
         }
         
@@ -120,6 +132,11 @@ class ProfileInfoTableViewController: UITableViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
+        if self.profile == nil {
+            
+            self.profile = HATProfileObject()
+        }
     }
 
     override func didReceiveMemoryWarning() {

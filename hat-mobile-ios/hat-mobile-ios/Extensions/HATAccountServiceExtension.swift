@@ -185,12 +185,12 @@ extension HATAccountService {
      - parameter completion: A function to execute on success
      - parameter errorCallBack: A Function to execute on failure
      */
-    class func uploadFileToHATWrapper(token: String, userDomain: String, fileToUpload: UIImage, progressUpdater: ((Double) -> Void)?, completion: ((FileUploadObject, String?) -> Void)?, errorCallBack: ((HATTableError) -> Void)?) {
+    class func uploadFileToHATWrapper(token: String, userDomain: String, fileToUpload: UIImage, tags: [String], progressUpdater: ((Double) -> Void)?, completion: ((FileUploadObject, String?) -> Void)?, errorCallBack: ((HATTableError) -> Void)?) {
         
         HATAccountService.uploadFileToHAT(
             fileName: "rumpelPhoto",
             token: token,
-            userDomain: userDomain,
+            userDomain: userDomain, tags: tags,
             completion: {(fileObject, renewedUserToken) -> Void in
                 
                 let data = UIImageJPEGRepresentation(fileToUpload, 1.0)

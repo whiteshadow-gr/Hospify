@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the name UITableViewController of the PHATA section
-class NameTableViewController: UITableViewController {
+class NameTableViewController: UITableViewController, UserCredentialsProtocol {
     
     // MARK: - Variables
 
@@ -27,10 +27,6 @@ class NameTableViewController: UITableViewController {
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
-    /// User's domain
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    /// User's token
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     
     /// User's profile passed on from previous view controller
     var profile: HATProfileObject? = nil
@@ -116,6 +112,11 @@ class NameTableViewController: UITableViewController {
         
         super.viewDidLoad()
         self.tableView.allowsSelection = false
+        
+        if self.profile == nil {
+            
+            self.profile = HATProfileObject()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -181,6 +182,10 @@ class NameTableViewController: UITableViewController {
             
             cell.textField.text = self.sections[indexPath.section][indexPath.row]
             cell.privateSwitch.isOn = !(self.profile?.data.personal.isPrivate)!
+            if (profile?.data.isPrivate)! && cell.privateSwitch.isOn {
+                
+                profile?.data.isPrivate = false
+            }
         }
         
         return cell

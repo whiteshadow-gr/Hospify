@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the phone UITableViewController of the PHATA section
-class PhoneTableViewController: UITableViewController {
+class PhoneTableViewController: UITableViewController, UserCredentialsProtocol {
     
     // MARK: - Variables
 
@@ -27,10 +27,6 @@ class PhoneTableViewController: UITableViewController {
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
-    /// User's domain
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    /// User's token
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     
     /// User's profile passed on from previous view controller
     var profile: HATProfileObject? = nil
@@ -68,11 +64,19 @@ class PhoneTableViewController: UITableViewController {
                 
                 profile?.data.mobile.number = cell!.textField.text!
                 profile?.data.mobile.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             // phone
             } else if index == 1 {
                 
                 profile?.data.homePhone.number = cell!.textField.text!
                 profile?.data.homePhone.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             }
         }
         
@@ -110,6 +114,11 @@ class PhoneTableViewController: UITableViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
+        if self.profile == nil {
+            
+            self.profile = HATProfileObject()
+        }
     }
 
     override func didReceiveMemoryWarning() {

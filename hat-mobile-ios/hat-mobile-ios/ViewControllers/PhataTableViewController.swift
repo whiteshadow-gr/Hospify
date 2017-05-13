@@ -16,7 +16,7 @@ import SwiftyJSON
 // MARK: Class
 
 /// A class responsible for the phata UITableViewController of the more tab bar
-class PhataTableViewController: UITableViewController {
+class PhataTableViewController: UITableViewController, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -24,19 +24,19 @@ class PhataTableViewController: UITableViewController {
     private let sections: [[String]] = [["PHATA"], ["Email Address", "Mobile Number"], ["Full Name", "Picture"], ["Emergency Contact"], ["About"], ["Social Links"]]
     /// The headers of the table view
     private let headers: [String] = ["PHATA", "Contact Info", "Profile", "Emergency Contact", "About", "Social Links"]
-    /// User's domain
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    /// User's token
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     
     /// User's profile passed on from previous view controller
     var profile: HATProfileObject? = nil
+    
+    var isProfileDownloaded: Bool = false
     
     // MARK: - Update profile responses
     
     private func getProfile(receivedProfile: HATProfileObject) {
         
         self.profile = receivedProfile
+        
+        self.isProfileDownloaded = true
         
         self.tableView.reloadData()
     }
@@ -86,6 +86,16 @@ class PhataTableViewController: UITableViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        
+        if self.isProfileDownloaded {
+            
+            return true
+        }
+        
+        return false
+    }
 
     // MARK: - Table view methods
 
@@ -113,39 +123,45 @@ class PhataTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if indexPath.section == 0 {
+        if self.profile != nil && self.isProfileDownloaded {
             
-            if indexPath.row == 0 {
+            if indexPath.section == 0 {
                 
-                self.performSegue(withIdentifier: "phataSettingsSegue", sender: self)
+                if indexPath.row == 0 {
+                    
+                    self.performSegue(withIdentifier: "phataSettingsSegue", sender: self)
+                }
+            } else if indexPath.section == 1 {
+                
+                if indexPath.row == 0 {
+                    
+                    self.performSegue(withIdentifier: "phataToEmailSegue", sender: self)
+                } else if indexPath.row == 1 {
+                    
+                    self.performSegue(withIdentifier: "phataToPhoneSegue", sender: self)
+                }
+            } else if indexPath.section == 2 {
+                
+                if indexPath.row == 0 {
+                    
+                    self.performSegue(withIdentifier: "phataToNameSegue", sender: self)
+                } else if indexPath.row == 1 {
+                    
+                    self.performSegue(withIdentifier: "phataToProfilePictureSegue", sender: self)
+                }
+            } else if indexPath.section == 3 {
+                
+                self.performSegue(withIdentifier: "phataToEmergencyContactSegue", sender: self)
+            } else if indexPath.section == 4 {
+                
+                self.performSegue(withIdentifier: "phataToAboutSegue", sender: self)
+            } else if indexPath.section == 5 {
+                
+                self.performSegue(withIdentifier: "phataToSocialLinksSegue", sender: self)
             }
-        } else if indexPath.section == 1 {
+        } else {
             
-            if indexPath.row == 0 {
-                
-                self.performSegue(withIdentifier: "phataToEmailSegue", sender: self)
-            } else if indexPath.row == 1 {
-                
-                self.performSegue(withIdentifier: "phataToPhoneSegue", sender: self)
-            }
-        } else if indexPath.section == 2 {
-            
-            if indexPath.row == 0 {
-                
-                self.performSegue(withIdentifier: "phataToNameSegue", sender: self)
-            } else if indexPath.row == 1 {
-                
-                self.performSegue(withIdentifier: "phataToProfilePictureSegue", sender: self)
-            } 
-        } else if indexPath.section == 3 {
-            
-            self.performSegue(withIdentifier: "phataToEmergencyContactSegue", sender: self)
-        } else if indexPath.section == 4 {
-            
-            self.performSegue(withIdentifier: "phataToAboutSegue", sender: self)
-        } else if indexPath.section == 5 {
-            
-            self.performSegue(withIdentifier: "phataToSocialLinksSegue", sender: self)
+            tableView.deselectRow(at: indexPath, animated: true)
         }
     }
     
@@ -179,77 +195,80 @@ class PhataTableViewController: UITableViewController {
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        if segue.destination is NameTableViewController {
+        if self.profile != nil && self.isProfileDownloaded {
             
-            weak var destinationVC = segue.destination as? NameTableViewController
-            
-            if segue.identifier == "phataToNameSegue" {
+            if segue.destination is NameTableViewController {
                 
-                destinationVC?.profile = self.profile
-            }
-        } else if segue.destination is ProfileInfoTableViewController {
-            
-            weak var destinationVC = segue.destination as? ProfileInfoTableViewController
-            
-            if segue.identifier == "phataToProfileInfoSegue" {
+                weak var destinationVC = segue.destination as? NameTableViewController
                 
-                destinationVC?.profile = self.profile
-            }
-        } else if segue.destination is EmailTableViewController {
-            
-            weak var destinationVC = segue.destination as? EmailTableViewController
-            
-            if segue.identifier == "phataToEmailSegue" {
+                if segue.identifier == "phataToNameSegue" {
+                    
+                    destinationVC?.profile = self.profile
+                }
+            } else if segue.destination is ProfileInfoTableViewController {
                 
-                destinationVC?.profile = self.profile
-            }
-        } else if segue.destination is PhoneTableViewController {
-            
-            weak var destinationVC = segue.destination as? PhoneTableViewController
-            
-            if segue.identifier == "phataToPhoneSegue" {
+                weak var destinationVC = segue.destination as? ProfileInfoTableViewController
                 
-                destinationVC?.profile = self.profile
-            }
-        } else if segue.destination is AboutTableViewController {
-            
-            weak var destinationVC = segue.destination as? AboutTableViewController
-            
-            if segue.identifier == "phataToAboutSegue" {
+                if segue.identifier == "phataToProfileInfoSegue" {
+                    
+                    destinationVC?.profile = self.profile
+                }
+            } else if segue.destination is EmailTableViewController {
                 
-                destinationVC?.profile = self.profile
-            }
-        } else if segue.destination is SocialLinksTableViewController {
-            
-            weak var destinationVC = segue.destination as? SocialLinksTableViewController
-            
-            if segue.identifier == "phataToSocialLinksSegue" {
+                weak var destinationVC = segue.destination as? EmailTableViewController
                 
-                destinationVC?.profile = self.profile
-            }
-        } else if segue.destination is EmergencyContactTableViewController {
-            
-            weak var destinationVC = segue.destination as? EmergencyContactTableViewController
-            
-            if segue.identifier == "phataToEmergencyContactSegue" {
+                if segue.identifier == "phataToEmailSegue" {
+                    
+                    destinationVC?.profile = self.profile
+                }
+            } else if segue.destination is PhoneTableViewController {
                 
-                destinationVC?.profile = self.profile
-            }
-        } else if segue.destination is PhataPictureViewController {
-            
-            weak var destinationVC = segue.destination as? PhataPictureViewController
-
-            if segue.identifier == "phataToProfilePictureSegue" {
+                weak var destinationVC = segue.destination as? PhoneTableViewController
                 
-                destinationVC?.profile = self.profile
-            }
-        } else if segue.destination is PHATASettingsTableViewController {
-            
-            weak var destinationVC = segue.destination as? PHATASettingsTableViewController
-            
-            if segue.identifier == "phataSettingsSegue" {
+                if segue.identifier == "phataToPhoneSegue" {
+                    
+                    destinationVC?.profile = self.profile
+                }
+            } else if segue.destination is AboutTableViewController {
                 
-                destinationVC?.profile = self.profile
+                weak var destinationVC = segue.destination as? AboutTableViewController
+                
+                if segue.identifier == "phataToAboutSegue" {
+                    
+                    destinationVC?.profile = self.profile
+                }
+            } else if segue.destination is SocialLinksTableViewController {
+                
+                weak var destinationVC = segue.destination as? SocialLinksTableViewController
+                
+                if segue.identifier == "phataToSocialLinksSegue" {
+                    
+                    destinationVC?.profile = self.profile
+                }
+            } else if segue.destination is EmergencyContactTableViewController {
+                
+                weak var destinationVC = segue.destination as? EmergencyContactTableViewController
+                
+                if segue.identifier == "phataToEmergencyContactSegue" {
+                    
+                    destinationVC?.profile = self.profile
+                }
+            } else if segue.destination is PhataPictureViewController {
+                
+                weak var destinationVC = segue.destination as? PhataPictureViewController
+                
+                if segue.identifier == "phataToProfilePictureSegue" {
+                    
+                    destinationVC?.profile = self.profile
+                }
+            } else if segue.destination is PHATASettingsTableViewController {
+                
+                weak var destinationVC = segue.destination as? PHATASettingsTableViewController
+                
+                if segue.identifier == "phataSettingsSegue" {
+                    
+                    destinationVC?.profile = self.profile
+                }
             }
         }
     }

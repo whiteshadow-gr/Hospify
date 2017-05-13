@@ -953,13 +953,14 @@ public struct HATJSONHelper {
      - parameter purchaseModel: The purchase model with all the necessary values
      - returns: A Dictionary <String, Any>
      */
-    static func createFileUploadingJSONFrom(fileName: String) -> Dictionary <String, Any> {
+    static func createFileUploadingJSONFrom(fileName: String, tags: [String]) -> Dictionary <String, Any> {
         
         // the final JSON file to be returned
         return [
             
             "name" : fileName,
-            "source" : "iPhone"
+            "source" : "iPhone",
+            "tags" : tags
             ] as [String : Any]
     }
     

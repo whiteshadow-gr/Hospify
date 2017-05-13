@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the email UITableViewController of the PHATA section
-class EmailTableViewController: UITableViewController {
+class EmailTableViewController: UITableViewController, UserCredentialsProtocol {
     
     // MARK: - Variables
 
@@ -28,10 +28,6 @@ class EmailTableViewController: UITableViewController {
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
-    /// User's domain
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    /// User's token
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     
     /// User's profile passed on from previous view controller
     var profile: HATProfileObject? = nil
@@ -69,11 +65,19 @@ class EmailTableViewController: UITableViewController {
                 
                 profile?.data.primaryEmail.value = cell!.textField.text!
                 profile?.data.primaryEmail.isPrivate = !(cell!.privateSwitch.isOn)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             // alternative email
             } else if index == 1 {
                 
                 profile?.data.alternativeEmail.value = cell!.textField.text!
                 profile?.data.alternativeEmail.isPrivate = !(cell!.privateSwitch.isOn)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             }
         }
         
@@ -111,6 +115,11 @@ class EmailTableViewController: UITableViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
+        if self.profile == nil {
+            
+            self.profile = HATProfileObject()
+        }
     }
 
     override func didReceiveMemoryWarning() {

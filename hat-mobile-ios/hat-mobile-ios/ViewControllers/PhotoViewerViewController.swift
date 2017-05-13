@@ -223,7 +223,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         
         self.showProgressRing()
         
-        HATAccountService.uploadFileToHATWrapper(token: self.userToken, userDomain: self.userDomain, fileToUpload: image,
+        HATAccountService.uploadFileToHATWrapper(token: self.userToken, userDomain: self.userDomain, fileToUpload: image, tags: ["iphone", "viewer"],
             progressUpdater: {progress in
                 
                 self.loadingScr?.updateView(completion: progress, animateFrom: Float((self.loadingScr?.progressRing.endPoint)!), removePreviousRingLayer: false)
@@ -304,7 +304,14 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
                         if self != nil && cell?.image.image != nil && self?.files[indexPath.row].lastUpdated != nil && (self?.images.count)! > indexPath.row - 1 {
                         
                             cell?.image.cropImage(width: (cell?.image.frame.size.width)!, height: (cell?.image.frame.size.height)!)
-                            self!.images[indexPath.row] = ((cell?.image.image)!, (self?.files[indexPath.row].lastUpdated)!)
+                            
+                            if (self?.images.count)! > indexPath.row {
+                                
+                                self!.images[indexPath.row] = ((cell?.image.image)!, (self?.files[indexPath.row].lastUpdated)!)
+                            } else {
+                                
+                                self?.images.append(((cell?.image.image)!, (self?.files[indexPath.row].lastUpdated)!))
+                            }
                         }
                         
                         cell?.ringProgressView.isHidden = true

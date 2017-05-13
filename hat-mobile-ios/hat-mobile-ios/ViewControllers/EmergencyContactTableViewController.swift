@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the emergency contact UITableViewController of the PHATA section
-class EmergencyContactTableViewController: UITableViewController {
+class EmergencyContactTableViewController: UITableViewController, UserCredentialsProtocol {
     
     // MARK: - Variables
 
@@ -27,10 +27,6 @@ class EmergencyContactTableViewController: UITableViewController {
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
-    /// User's domain
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    /// User's token
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     
     /// User's profile passed on from previous view controller
     var profile: HATProfileObject? = nil
@@ -83,6 +79,10 @@ class EmergencyContactTableViewController: UITableViewController {
             } else if index == 4 {
                 
                 profile?.data.emergencyContact.isPrivate = !(cell!.privateSwitch.isOn)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             }
         }
         
@@ -120,6 +120,11 @@ class EmergencyContactTableViewController: UITableViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
+        if self.profile == nil {
+            
+            self.profile = HATProfileObject()
+        }
     }
 
     override func didReceiveMemoryWarning() {

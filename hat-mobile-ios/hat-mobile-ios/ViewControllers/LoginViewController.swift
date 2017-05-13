@@ -113,7 +113,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
      */
     @IBAction func joinOurCommunityButtonAction(_ sender: Any) {
         
-        let urlStr = "http://hubofallthings.com/main/the-mad-hatters/"
+        let urlStr = "http://hatdex.us12.list-manage2.com/subscribe?u=bf49285ca77275f68a5263b83&id=3ca9558266"
         if let url = URL(string: urlStr) {
             
             UIApplication.shared.openURL(url)

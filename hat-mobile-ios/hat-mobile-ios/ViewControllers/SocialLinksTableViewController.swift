@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the social links UITableViewController of the PHATA section
-class SocialLinksTableViewController: UITableViewController {
+class SocialLinksTableViewController: UITableViewController, UserCredentialsProtocol {
     
     // MARK: - Variables
 
@@ -27,10 +27,6 @@ class SocialLinksTableViewController: UITableViewController {
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
     private var darkView: UIView = UIView()
-    /// User's domain
-    private let userDomain = HATAccountService.TheUserHATDomain()
-    /// User's token
-    private let userToken = HATAccountService.getUsersTokenFromKeychain()
     
     /// User's profile passed on from previous view controller
     var profile: HATProfileObject? = nil
@@ -68,36 +64,64 @@ class SocialLinksTableViewController: UITableViewController {
                 
                 profile?.data.website.link = cell!.textField.text!
                 profile?.data.website.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             // blog
             } else if index == 1 {
                 
                 profile?.data.blog.link = cell!.textField.text!
                 profile?.data.blog.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             // facebook
             } else if index == 2 {
                 
                 profile?.data.facebook.link = cell!.textField.text!
                 profile?.data.facebook.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             // twitter
             } else if index == 3 {
                 
                 profile?.data.twitter.link = cell!.textField.text!
                 profile?.data.twitter.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             // google
             } else if index == 4 {
                 
                 profile?.data.google.link = cell!.textField.text!
                 profile?.data.google.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             // linked in
             } else if index == 5 {
                 
                 profile?.data.linkedIn.link = cell!.textField.text!
                 profile?.data.linkedIn.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             // youtube
             } else if index == 6 {
                 
                 profile?.data.youtube.link = cell!.textField.text!
                 profile?.data.youtube.isPrivate = !((cell?.privateSwitch.isOn)!)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             } 
         }
         

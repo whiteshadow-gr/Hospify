@@ -365,13 +365,13 @@ public class HATAccountService: NSObject {
      - parameter completion: A function to execute on success, returning the object returned from the server
      - parameter errorCallback: A function to execute on failure, returning an error
      */
-    public class func uploadFileToHAT(fileName: String, token: String, userDomain: String, completion: @escaping (FileUploadObject, String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
+    public class func uploadFileToHAT(fileName: String, token: String, userDomain: String, tags: [String], completion: @escaping (FileUploadObject, String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
         
         // create the url
         let uploadURL = "https://" + userDomain + "/api/v2/files/upload"
         
         // create parameters and headers
-        let parameters: Dictionary<String, String> = HATJSONHelper.createFileUploadingJSONFrom(fileName: fileName) as! Dictionary<String, String>
+        let parameters: Dictionary<String, Any> = HATJSONHelper.createFileUploadingJSONFrom(fileName: fileName, tags: tags) as! Dictionary<String, Any>
         let header = ["X-Auth-Token" : token]
         
         // make async request

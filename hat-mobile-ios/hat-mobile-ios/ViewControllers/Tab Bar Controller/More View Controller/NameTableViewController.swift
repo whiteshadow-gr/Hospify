@@ -79,6 +79,10 @@ class NameTableViewController: UITableViewController, UserCredentialsProtocol {
             } else if index == 4 {
                 
                 profile?.data.personal.isPrivate = !(cell!.privateSwitch.isOn)
+                if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
+                    
+                    profile?.data.isPrivate = false
+                }
             }
         }
         

@@ -109,9 +109,6 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol {
             self.imageView.layer.cornerRadius = self.imageView.frame.size.width / 2
         }
         
-        let userDomain = HATAccountService.TheUserHATDomain()
-        let userToken = HATAccountService.getUsersTokenFromKeychain()
-        
         func tableNotFound(error: HATTableError) {
             
             self.createClassicOKAlertWith(alertMessage: "Please enable Facebook data plug to get your Facebook image", alertTitle: "Facebook data plug disabled", okTitle: "Ok", proceedCompletion: {})
@@ -125,18 +122,21 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol {
                     
                     func tableValues(values: [JSON], refreshedToken: String?) {
                         
-                        if let tempURL = values[0].dictionaryValue["data"]?.dictionaryValue["profile_picture"]?.dictionaryValue["url"]?.stringValue {
+                        if values.count > 0 {
                             
-                            if let url = URL(string: tempURL) {
+                            if let tempURL = values[0].dictionaryValue["data"]?.dictionaryValue["profile_picture"]?.dictionaryValue["url"]?.stringValue {
                                 
-                                self.imageView.downloadedFrom(url: url, userToken: userToken, progressUpdater: nil, completion: {
+                                if let url = URL(string: tempURL) {
                                     
-                                    DispatchQueue.main.async {
+                                    self.imageView.downloadedFrom(url: url, userToken: userToken, progressUpdater: nil, completion: {
                                         
-                                        self.imageView.layer.masksToBounds = true
-                                        self.imageView.layer.cornerRadius = self.imageView.frame.size.width / 2
-                                    }
-                                })
+                                        DispatchQueue.main.async {
+                                            
+                                            self.imageView.layer.masksToBounds = true
+                                            self.imageView.layer.cornerRadius = self.imageView.frame.size.width / 2
+                                        }
+                                    })
+                                }
                             }
                         }
                     }

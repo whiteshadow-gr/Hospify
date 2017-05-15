@@ -16,7 +16,7 @@ import HatForIOS
 // MARK: Class
 
 /// The data plugs View in the tab bar view controller
-class DataPlugsCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+class DataPlugsCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -114,7 +114,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         func setupCheckMark(on: String, value: Bool) {
             
             // search in data plugs array for facebook and enable the checkmark
-            for i in 0 ... self.dataPlugs.count - 1 {
+            for i in 0 ... self.dataPlugs.count - 1 where self.dataPlugs.count > 1 {
                 
                 if self.dataPlugs[i].name == on {
                     

@@ -15,7 +15,7 @@ import UIKit
 // MARK: Class
 
 /// A class responsible for handling the phata table view cell
-class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
+class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UITextViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     
     // MARK: - Variables
     
@@ -29,6 +29,9 @@ class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDele
     
     /// An IBOutlet for handling the textField
     @IBOutlet weak var textField: UITextField!
+    
+    /// An IBOutlet for handling the textView
+    @IBOutlet weak var textView: UITextView!
     
     // MARK: - IBActions
     
@@ -69,7 +72,8 @@ class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UIPickerViewDele
         
         super.awakeFromNib()
         
-        self.textField.delegate = self
+        self.textView?.delegate = self
+        self.textField?.delegate = self
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

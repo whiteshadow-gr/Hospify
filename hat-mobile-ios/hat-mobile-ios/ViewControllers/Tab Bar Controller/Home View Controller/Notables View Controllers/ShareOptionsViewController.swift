@@ -597,9 +597,15 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                         _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
                     }
                     
-                    func successfulCallback() {
+                    func successfulCallback(isActive: Bool) {
                         
-                        self.changePublishButtonTo(title: "Save", userEnabled: true)
+                        if isActive {
+                            
+                            self.changePublishButtonTo(title: "Save", userEnabled: true)
+                        } else {
+                            
+                            failedCallback()
+                        }
                     }
                     
                     func failedCallback() {
@@ -656,7 +662,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                         self.createClassicAlertWith(alertMessage: "You have to enable Facebook data plug before sharing on Facebook, do you want to enable now?", alertTitle: "Data plug not enabled", cancelTitle: "No", proceedTitle: "Yes", proceedCompletion: yesAction, cancelCompletion: noAction)
                     }
                     
-                    HATFacebookService.isFacebookDataPlugActive(token: token, successful: {_ in successfulCallback()}, failed: {_ in failedCallback()})
+                    HATFacebookService.isFacebookDataPlugActive(token: token, successful: successfulCallback, failed: {_ in failedCallback()})
                 }
                 
                 self.publishButton.setTitle("Please Wait..", for: .normal)
@@ -668,7 +674,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                         self!.createClassicOKAlertWith(alertMessage: "There was an error checking for data plug. Please try again later.", alertTitle: "Failed checking Data plug", okTitle: "OK", proceedCompletion: {})
                     }
                     
-                    _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+                    CrashLoggerHelper.JSONParsingErrorLogWithoutAlert(error: error)
                 })
                 
                 self.facebookButton.alpha = 1
@@ -752,14 +758,20 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             }
             
             // data plug enabled, set up publish button accordingly
-            func dataPlugIsEnabled() {
+            func dataPlugIsEnabled(isActive: Bool) {
                 
-                self.changePublishButtonTo(title: "Save", userEnabled: true)
-                self.publishButton.isUserInteractionEnabled = true
+                if isActive {
+                    
+                    self.changePublishButtonTo(title: "Save", userEnabled: true)
+                    self.publishButton.isUserInteractionEnabled = true
+                } else {
+                    
+                    dataPlugIsNotEnabled()
+                }
             }
             
             // data plug not enabled
-            func dataPugIsNotEnabled() {
+            func dataPlugIsNotEnabled() {
                 
                 // reset twitter button
                 func noAction() {
@@ -805,7 +817,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             }
             
             // check if twitter data plug is active
-            HATTwitterService.isTwitterDataPlugActive(token: appToken, successful: { _ in dataPlugIsEnabled()}, failed: {_ in dataPugIsNotEnabled()})
+            HATTwitterService.isTwitterDataPlugActive(token: appToken, successful: dataPlugIsEnabled, failed: {_ in dataPlugIsNotEnabled()})
         }
         
         self.changePublishButtonTo(title: "Please Wait..", userEnabled: false)
@@ -822,7 +834,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 self!.turnUIElementsOn()
             }
             
-            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+            CrashLoggerHelper.JSONParsingErrorLogWithoutAlert(error: error)
         })
     }
     
@@ -929,10 +941,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             }
             if let unwrappedDate = self.receivedNote?.data.publicUntil {
                 
-                if unwrappedDate < Date() && self.receivedNote!.data.shared {
+                if unwrappedDate > Date() && self.receivedNote!.data.shared {
                     
                     self.durationSharedForLabel.text = FormatterHelper.formatDateStringToUsersDefinedDate(date: unwrappedDate, dateStyle: .short, timeStyle: .none)
                     self.shareForLabel.text = "Shared until"
+                } else if self.receivedNote!.data.shared {
+                    
+                    self.durationSharedForLabel.text = FormatterHelper.formatDateStringToUsersDefinedDate(date: unwrappedDate, dateStyle: .short, timeStyle: .none)
+                    self.shareForLabel.text = "Expired on"
                 }
             }
             
@@ -1287,7 +1303,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: success, failCallBack: {(error) in
             
             self.createClassicOKAlertWith(alertMessage: "There was a problem enabling offer. Please try again later", alertTitle: "Error enabling offer", okTitle: "OK", proceedCompletion: {})
-            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+            CrashLoggerHelper.JSONParsingErrorLogWithoutAlert(error: error)
         })
     }
     

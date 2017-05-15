@@ -34,14 +34,18 @@ extension HATDataPlugsService: UserCredentialsProtocol {
         
         func checkPlugForToken(appToken: String, renewedUserToken: String?) {
             
-            
+            self.checkSocialPlugAvailability(succesfulCallBack: plugReadyContinue, failCallBack: { (error) in
+                
+                failCallBack(error)
+                _ = CrashLoggerHelper.dataPlugErrorLog(error: error)
+            })(appToken)
         }
         
         // get token async
         HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: checkPlugForToken, failCallBack: { (error) in
             
             tokenErrorCallback()
-            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+            CrashLoggerHelper.JSONParsingErrorLogWithoutAlert(error: error)
         })
     }
     
@@ -66,7 +70,7 @@ extension HATDataPlugsService: UserCredentialsProtocol {
             HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: { (error) in
                 
                 tokenErrorCallback()
-                _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+                CrashLoggerHelper.JSONParsingErrorLogWithoutAlert(error: error)
             })
         }
     }
@@ -187,33 +191,27 @@ extension HATDataPlugsService: UserCredentialsProtocol {
         
         func isCheckmarkVisible(_ result: Bool, onSocialNetwork: String) {
             
-            completion(onSocialNetwork, true)
+            completion(onSocialNetwork, result)
         }
         
         /// Check if facebook is active
         func checkIfFacebookIsActive(appToken: String, renewedUserToken: String?) {
             
             // check if facebook active
-            HATFacebookService.isFacebookDataPlugActive(token: appToken, successful: {_ in isCheckmarkVisible(true, onSocialNetwork: "facebook")}, failed: {_ in isCheckmarkVisible(false, onSocialNetwork: "facebook")})
+            HATFacebookService.isFacebookDataPlugActive(token: appToken, successful: {result in isCheckmarkVisible(result, onSocialNetwork: "facebook")}, failed: {_ in isCheckmarkVisible(false, onSocialNetwork: "facebook")})
         }
         
         /// Check if twitter is active
         func checkIfTwitterIsActive(appToken: String, renewedUserToken: String?) {
             
             // check if twitter active
-            HATTwitterService.isTwitterDataPlugActive(token: appToken, successful: {_ in isCheckmarkVisible(true, onSocialNetwork: "twitter")}, failed: {_ in isCheckmarkVisible(false, onSocialNetwork: "twitter")})
+            HATTwitterService.isTwitterDataPlugActive(token: appToken, successful: {result in isCheckmarkVisible(result, onSocialNetwork: "twitter")}, failed: {_ in isCheckmarkVisible(false, onSocialNetwork: "twitter")})
         }
         
         // get token for facebook and twitter and check if they are active
-        HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: checkIfFacebookIsActive, failed: { (error) in
+        HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: checkIfFacebookIsActive, failed: CrashLoggerHelper.JSONParsingErrorLogWithoutAlert)
         
-            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
-        })
-        
-        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: checkIfTwitterIsActive, failed: { (error) in
-        
-            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
-        })
+        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: checkIfTwitterIsActive, failed: CrashLoggerHelper.JSONParsingErrorLogWithoutAlert)
     }
     
     // MARK: - Filter available data plugs

@@ -251,7 +251,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
             HATService.getApplicationTokenFor(serviceName: "locations", userDomain: userDomain, token: userToken, resource: "iphone", succesfulCallBack: requestLocations, failCallBack: {(error) in
                 
                 view.removeFromSuperview()
-                _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+                CrashLoggerHelper.JSONParsingErrorLogWithoutAlert(error: error)
             })
         }
         

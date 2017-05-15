@@ -153,6 +153,34 @@ struct CrashLoggerHelper {
      - parameter error: The error returned from the server
      - returns: A ready to present UIAlertController with alert type and one OK button
      */
+    static func JSONParsingErrorLogWithoutAlert(error: JSONParsingError) -> Void {
+        
+        let crashlytics = Crashlytics.sharedInstance()
+        switch error {
+        case .expectedFieldNotFound:
+            
+            crashlytics.recordError(error, withAdditionalUserInfo: ["No value found in the response " : ""])
+        case .generalError(let description, let statusCode, let errorReturned):
+            
+            if statusCode != nil  && errorReturned != nil {
+                
+                crashlytics.recordError(errorReturned!, withAdditionalUserInfo: ["General error. Error: " : "\(errorReturned!)", "status code: " : "\(statusCode!)", "description: " : "\(description)"])
+            } else if statusCode != nil {
+                
+                crashlytics.recordError(error, withAdditionalUserInfo: ["General error. Error: " : "\(error)", "status code: " : "\(statusCode!)", "description: " : "\(description)"])
+            } else if errorReturned != nil {
+                
+                crashlytics.recordError(errorReturned!, withAdditionalUserInfo: ["General error. Error: " : "\(errorReturned!)", "description: " : "\(description)"])
+            }
+        }
+    }
+    
+    /**
+     Logs the error to crashlytics
+     
+     - parameter error: The error returned from the server
+     - returns: A ready to present UIAlertController with alert type and one OK button
+     */
     static func hatTableErrorLog(error: HATTableError) -> UIAlertController {
         
         switch error {

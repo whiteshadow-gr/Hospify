@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the more tab in the tab bar controller
-class MoreTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class MoreTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -41,12 +41,13 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
+        self.tableView.addBackgroundTapRecogniser()
     }
 
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     // MARK: - Table view methods
@@ -157,14 +158,12 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
                 
                 cell.textLabel?.textColor = .lightGray
                 cell.isUserInteractionEnabled = false
-                
-                let userDomain = HATAccountService.TheUserHATDomain()
-                let userToken = HATAccountService.getUsersTokenFromKeychain()
                 cell.textLabel?.text = "Getting storage info..."
+                
                 HATService.getSystemStatus(userDomain: userDomain, authToken: userToken, completion: self.updateSystemStatusLabel(cell: cell), failCallBack: {error in
                     
                     cell.textLabel?.text = "Unable to get storage info"
-                    _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+                    CrashLoggerHelper.JSONParsingErrorLogWithoutAlert(error: error)
                 })
             } else if self.sections[indexPath.section][indexPath.row] == "Change Password" {
                 

@@ -164,6 +164,8 @@ class SocialLinksTableViewController: UITableViewController, UserCredentialsProt
             
             self.profile = HATProfileObject()
         }
+        
+        self.tableView.addBackgroundTapRecogniser()
     }
 
     override func didReceiveMemoryWarning() {

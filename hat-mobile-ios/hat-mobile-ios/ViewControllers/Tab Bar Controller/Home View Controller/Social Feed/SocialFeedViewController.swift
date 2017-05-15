@@ -45,6 +45,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
     
     /// A Bool to determine if twitter is available
     private var isTwitterAvailable: Bool = false
+    
     /// A String to define the end time of the last tweet in order to request tweets before this time
     private var twitterEndTime: String? = nil
     /// A string to hold twitter app token for later use
@@ -62,7 +63,10 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
     
     /// A Bool to determine if facebook is available
     private var isFacebookAvailable: Bool = false
+    
+    /// An UIImageView to show the downloaded facebook profile image
     private var facebookProfileImage: UIImageView? = nil
+    
     /// A String to define the end time of the last post in order to request posts before this time
     private var facebookEndTime: String? = nil
     /// A string to hold facebook app token for later use
@@ -108,15 +112,9 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         showEptyLabelWith(text: "Checking data plugs....")
         
         // get Token for plugs
-        HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: self.fetchFacebookData, failed: {(error) in
+        HATFacebookService.getAppTokenForFacebook(token: userToken, userDomain: userDomain, successful: self.fetchFacebookData, failed: CrashLoggerHelper.JSONParsingErrorLogWithoutAlert)
         
-            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
-        })
-        
-        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: self.fetchTwitterData, failed: {(error) in
-        
-            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
-        })
+        HATTwitterService.getAppTokenForTwitter(userDomain: userDomain, token: userToken, successful: self.fetchTwitterData, failed: CrashLoggerHelper.JSONParsingErrorLogWithoutAlert)
         
         // set datasource and delegate to self
         self.collectionView.dataSource = self

@@ -55,7 +55,7 @@ struct MarketSquareService {
         HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: successful, failCallBack: {(error) in
             
             failed()
-            _ = CrashLoggerHelper.JSONParsingErrorLog(error: error)
+            CrashLoggerHelper.JSONParsingErrorLogWithoutAlert(error: error)
         })
     }
     

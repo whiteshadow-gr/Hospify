@@ -15,14 +15,14 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the address UITableViewController of the PHATA section
-class AddressTableViewController: UITableViewController, UserCredentialsProtocol {
+class AddressTableViewController: UITableViewController, UserCredentialsProtocol, UITextFieldDelegate {
     
     // MARK: - Variables
     
     /// The sections of the table view
-    private let sections: [[String]] = [[""], [""], [""], [""], [""], [""], ["Make those fields public?"]]
+    private let sections: [[String]] = [[""], [""], [""], ["Make those fields public?"]]
     /// The headers of the table view
-    private let headers: [String] = ["House/Flat number", "Street name", "Postcode / zip code", "City", "State / County", "Country", "Privacy"]
+    private let headers: [String] = ["City", "State / County", "Country", "Privacy"]
     /// The loading view pop up
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
@@ -39,6 +39,8 @@ class AddressTableViewController: UITableViewController, UserCredentialsProtocol
      - parameter sender: The object that calls this function
      */
     @IBAction func saveButtonAction(_ sender: Any) {
+        
+        self.tableView.endEditing(true)
         
         self.darkView = UIView(frame: self.tableView.frame)
         self.darkView.backgroundColor = .black
@@ -59,35 +61,22 @@ class AddressTableViewController: UITableViewController, UserCredentialsProtocol
                 cell = self.setUpCell(cell: cell!, indexPath: indexPath) as? PhataTableViewCell
             }
             
-            // house number
-            if index == 0 {
-                
-                profile?.data.addressDetails.number = cell!.textField.text!
-            // street name
-            } else if index == 1 {
-                
-                profile?.data.addressDetails.street = cell!.textField.text!
-            // postcode
-            } else if index == 2 {
-                
-                profile?.data.addressDetails.postCode = cell!.textField.text!
             // city
-            } else if index == 3 {
+            if index == 0 {
                 
                 profile?.data.addressGlobal.city = cell!.textField.text!
             // state
-            } else if index == 4 {
+            } else if index == 1 {
                 
                 profile?.data.addressGlobal.county = cell!.textField.text!
             // country
-            }else if index == 5 {
+            }else if index == 2 {
                 
-                profile?.data.addressGlobal.county = cell!.textField.text!
+                profile?.data.addressGlobal.country = cell!.textField.text!
             // is private
-            } else if index == 6 {
+            } else if index == 3 {
                 
                 profile?.data.addressGlobal.isPrivate = !(cell!.privateSwitch.isOn)
-                profile?.data.addressDetails.isPrivate = !(cell!.privateSwitch.isOn)
                 if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
                     
                     profile?.data.isPrivate = false
@@ -134,6 +123,8 @@ class AddressTableViewController: UITableViewController, UserCredentialsProtocol
             
             self.profile = HATProfileObject()
         }
+        
+        self.tableView.addBackgroundTapRecogniser()
     }
 
     override func didReceiveMemoryWarning() {
@@ -179,37 +170,101 @@ class AddressTableViewController: UITableViewController, UserCredentialsProtocol
         
         if indexPath.section == 0 {
             
-            cell.textField.text = self.profile?.data.addressDetails.number
+            cell.textField.text = self.profile?.data.addressGlobal.city
             cell.privateSwitch.isHidden = true
         } else if indexPath.section == 1 {
             
-            cell.textField.text = self.profile?.data.addressDetails.street
+            cell.textField.text = self.profile?.data.addressGlobal.county
             cell.privateSwitch.isHidden = true
         } else if indexPath.section == 2 {
             
-            cell.textField.text = self.profile?.data.addressDetails.postCode
-            cell.privateSwitch.isHidden = true
-        } else if indexPath.section == 3 {
-            
-            cell.textField.text = self.profile?.data.addressGlobal.city
-            cell.privateSwitch.isHidden = true
-        } else if indexPath.section == 4 {
-            
-            cell.textField.text = self.profile?.data.addressGlobal.county
-            cell.privateSwitch.isHidden = true
-        } else if indexPath.section == 5 {
-            
             cell.textField.text = self.profile?.data.addressGlobal.country
             cell.privateSwitch.isHidden = true
-        } else if indexPath.section == 6 {
+            cell.textField.delegate = self
+            cell.textField.addTarget(self, action: #selector(textFieldValueChanged(textField:)), for: UIControlEvents.allEditingEvents)
+        } else if indexPath.section == 3 {
             
             cell.textField.text = self.sections[indexPath.section][indexPath.row]
             cell.privateSwitch.isHidden = false
             cell.privateSwitch.isOn = !(self.profile?.data.addressGlobal.isPrivate)!
-            self.profile?.data.addressDetails.isPrivate = !(self.profile?.data.addressGlobal.isPrivate)!
         }
         
         return cell
+    }
+    
+    func textFieldValueChanged(textField: UITextField) {
+        
+        var text = textField.text!
+        var cursorPosition: Int = 0
+        
+        if let selectedRange = textField.selectedTextRange {
+            
+            cursorPosition = textField.offset(from: textField.beginningOfDocument, to: selectedRange.start)
+            
+            let index = text.index(text.startIndex, offsetBy: cursorPosition)
+            text = text.substring(to: index)
+        }
+        
+        let countries = self.getCountries()
+        var found = false
+        
+        for country in countries where text.characters.count > 0 {
+            
+            if country.lowercased().hasPrefix(text.lowercased()) {
+                
+                let partOne = text.createTextAttributes(foregroundColor: .black, strokeColor: .black, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 14)!)
+                
+                let replacedText = country.lowercased().replacingOccurrences(of: text.lowercased(), with: "")
+                let partTwo = replacedText.createTextAttributes(foregroundColor: .gray, strokeColor: .gray, font: UIFont(name: Constants.fontNames.openSans.rawValue, size: 14)!)
+                textField.attributedText = partOne.combineWith(attributedText: partTwo)
+                
+                if let newPosition = textField.position(from: textField.beginningOfDocument, offset: cursorPosition) {
+                    
+                    textField.selectedTextRange = textField.textRange(from: newPosition, to: newPosition)
+                }
+                
+                found = true
+                break
+            }
+        }
+        
+        if !found {
+            
+          textField.text = text
+        }
+        
+        if text.characters.count < 1 {
+            
+            textField.text = ""
+        }
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        
+        let stringToFind = textField.attributedText?.string
+        
+        let countries = self.getCountries()
+        
+        for i in 0...countries.count - 1 {
+            
+            if countries[i].lowercased() == stringToFind?.lowercased() {
+                
+                textField.text = countries[i]
+                break
+            }
+        }
+    }
+    
+    private func getCountries() -> [String] {
+        
+        let locale: NSLocale = NSLocale.current as NSLocale
+        let countryArray = Locale.isoRegionCodes
+        let unsortedCountryArray: [String] = countryArray.map { (countryCode) -> String in
+
+            return locale.displayName(forKey: NSLocale.Key.countryCode, value: countryCode)!
+        }
+
+        return unsortedCountryArray.sorted()
     }
 
 }

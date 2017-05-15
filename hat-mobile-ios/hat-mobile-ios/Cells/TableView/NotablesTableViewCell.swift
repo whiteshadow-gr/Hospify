@@ -228,7 +228,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         
         if let unwrappedDate = publicUntil {
             
-            if shared && (Date().compare(unwrappedDate) == .orderedDescending) {
+            if shared && (Date() > unwrappedDate) {
                 
                 shareString = " Expired"
             }

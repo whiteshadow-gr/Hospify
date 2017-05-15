@@ -121,6 +121,8 @@ class PHATASettingsTableViewController: UITableViewController, UserCredentialsPr
             
             self.profile = HATProfileObject()
         }
+        
+        self.tableView.addBackgroundTapRecogniser()
     }
 
     override func didReceiveMemoryWarning() {

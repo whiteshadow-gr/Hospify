@@ -15,14 +15,14 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the about UITableViewController of the PHATA section
-class AboutTableViewController: UITableViewController, UserCredentialsProtocol {
+class AboutTableViewController: UITableViewController, UserCredentialsProtocol, UITextViewDelegate {
     
     // MARK: - Variables
 
     /// The sections of the table view
-    private let sections: [[String]] = [[""], [""], ["Make those fields public?"]]
+    private let sections: [[String]] = [[""], ["Make Biodata public?"]]
     /// The headers of the table view
-    private let headers: [String] = ["Title", "Body", "Privacy"]
+    private let headers: [String] = ["Biodata", "Privacy"]
     /// The loading view pop up
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
@@ -60,15 +60,11 @@ class AboutTableViewController: UITableViewController, UserCredentialsProtocol {
             }
             
             // title
-            if index == 0 {
+             if index == 0 {
                 
-                profile?.data.about.title = cell!.textField.text!
-            // body
-            } else if index == 1 {
-                
-                profile?.data.about.body = cell!.textField.text!
+                profile?.data.about.body = cell!.textView.text!
             // private
-            } else if index == 2 {
+            } else if index == 1 {
                 
                 profile?.data.about.isPrivate = !(cell!.privateSwitch.isOn)
                 if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
@@ -117,6 +113,11 @@ class AboutTableViewController: UITableViewController, UserCredentialsProtocol {
             
             self.profile = HATProfileObject()
         }
+        
+        self.tableView.rowHeight = UITableViewAutomaticDimension
+        self.tableView.estimatedRowHeight = 40
+        
+        self.tableView.addBackgroundTapRecogniser()
     }
 
     override func didReceiveMemoryWarning() {
@@ -140,6 +141,8 @@ class AboutTableViewController: UITableViewController, UserCredentialsProtocol {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "aboutCell", for: indexPath) as! PhataTableViewCell
         
+        cell.textView.delegate = self
+        
         return self.setUpCell(cell: cell, indexPath: indexPath)
     }
     
@@ -162,20 +165,26 @@ class AboutTableViewController: UITableViewController, UserCredentialsProtocol {
         
         if indexPath.section == 0 {
             
-            cell.textField.text = self.profile?.data.about.title
+            cell.textView.text = self.profile?.data.about.body
             cell.privateSwitch.isHidden = true
         } else if indexPath.section == 1 {
             
-            cell.textField.text = self.profile?.data.about.body
-            cell.privateSwitch.isHidden = true
-        } else if indexPath.section == 2 {
-            
-            cell.textField.text = self.sections[indexPath.section][indexPath.row]
+            cell.textView.text = self.sections[indexPath.section][indexPath.row]
             cell.privateSwitch.isHidden = false
             cell.privateSwitch.isOn = !(self.profile?.data.about.isPrivate)!
         }
         
         return cell
+    }
+    
+    // MARK: - UITextViewDelegate
+    
+    func textViewDidChange(_ textView: UITextView) {
+        
+        textView.sizeToFit()
+        
+        self.tableView.beginUpdates()
+        self.tableView.endUpdates()
     }
 
 }

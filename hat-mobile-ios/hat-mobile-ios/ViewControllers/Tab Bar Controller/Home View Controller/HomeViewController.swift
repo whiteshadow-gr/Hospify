@@ -184,10 +184,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             self.collectionView?.reloadData()
         }
         
-        HATService.getSystemStatus(userDomain: userDomain, authToken: userToken, completion: updateRingProgressBar, failCallBack: {(jsonError) -> Void in
-        
-            _ = CrashLoggerHelper.JSONParsingErrorLog(error: jsonError)
-        })
+        HATService.getSystemStatus(userDomain: userDomain, authToken: userToken, completion: updateRingProgressBar, failCallBack: CrashLoggerHelper.JSONParsingErrorLogWithoutAlert)
     }
     
     override func willRotate(to toInterfaceOrientation: UIInterfaceOrientation, duration: TimeInterval) {

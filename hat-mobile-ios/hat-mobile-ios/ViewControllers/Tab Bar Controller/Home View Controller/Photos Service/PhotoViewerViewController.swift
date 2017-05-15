@@ -240,6 +240,8 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
                 if let weakSelf = self {
                     
                     weakSelf.files.append(file)
+                    
+                    weakSelf.collectionView.isHidden = false
                 }
                 
                 // refresh user token

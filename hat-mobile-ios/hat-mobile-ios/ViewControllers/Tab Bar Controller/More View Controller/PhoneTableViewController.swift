@@ -119,6 +119,8 @@ class PhoneTableViewController: UITableViewController, UserCredentialsProtocol {
             
             self.profile = HATProfileObject()
         }
+        
+        self.tableView.addBackgroundTapRecogniser()
     }
 
     override func didReceiveMemoryWarning() {

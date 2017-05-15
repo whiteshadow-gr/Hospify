@@ -125,6 +125,8 @@ class EmergencyContactTableViewController: UITableViewController, UserCredential
             
             self.profile = HATProfileObject()
         }
+        
+        self.tableView.addBackgroundTapRecogniser()
     }
 
     override func didReceiveMemoryWarning() {

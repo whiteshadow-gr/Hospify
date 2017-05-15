@@ -21,7 +21,7 @@ class PhataTableViewController: UITableViewController, UserCredentialsProtocol {
     // MARK: - Variables
     
     /// The sections of the table view
-    private let sections: [[String]] = [["PHATA"], ["Email Address", "Mobile Number"], ["Full Name", "Picture"], ["Emergency Contact"], ["About"], ["Social Links"]]
+    private let sections: [[String]] = [["PHATA"], ["Email Address", "Mobile Number", "Address"], ["Full Name", "Picture"], ["Emergency Contact"], ["About"], ["Social Links"]]
     /// The headers of the table view
     private let headers: [String] = ["PHATA", "Contact Info", "Profile", "Emergency Contact", "About", "Social Links"]
     
@@ -84,7 +84,6 @@ class PhataTableViewController: UITableViewController, UserCredentialsProtocol {
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
@@ -139,6 +138,9 @@ class PhataTableViewController: UITableViewController, UserCredentialsProtocol {
                 } else if indexPath.row == 1 {
                     
                     self.performSegue(withIdentifier: "phataToPhoneSegue", sender: self)
+                } else if indexPath.row == 2 {
+                    
+                    self.performSegue(withIdentifier: "phataToAddressSegue", sender: self)
                 }
             } else if indexPath.section == 2 {
                 
@@ -266,6 +268,14 @@ class PhataTableViewController: UITableViewController, UserCredentialsProtocol {
                 weak var destinationVC = segue.destination as? PHATASettingsTableViewController
                 
                 if segue.identifier == "phataSettingsSegue" {
+                    
+                    destinationVC?.profile = self.profile
+                }
+            } else if segue.destination is AddressTableViewController {
+                
+                weak var destinationVC = segue.destination as? AddressTableViewController
+                
+                if segue.identifier == "phataToAddressSegue" {
                     
                     destinationVC?.profile = self.profile
                 }

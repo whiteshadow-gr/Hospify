@@ -8,7 +8,7 @@ Rumpel Lite is the dashboard for your HAT on iOS. What you can do with Rumpel Li
 • Store and publish text-based notes and updates
 
 #### Requirements
-Xcode build 8+. Requires iOS SDK 9.0+ and Swift 3.0+
+Xcode build 8.3+. Requires iOS SDK 9.0+ and Swift 3.1+
 
 ### Installing and Running the Demo app
 #### Install

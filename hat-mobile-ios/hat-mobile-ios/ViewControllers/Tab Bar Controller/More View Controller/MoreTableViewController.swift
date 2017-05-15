@@ -41,8 +41,6 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        
-        self.tableView.addBackgroundTapRecogniser()
     }
 
     override func didReceiveMemoryWarning() {

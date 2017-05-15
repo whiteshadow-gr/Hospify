@@ -38,7 +38,17 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
     private var allData: [HATSocialFeedObject] = []
     
     /// An SocialFeedObject array to cache all the date from both twitter and facebook
-    private var cachedDataArray: [HATSocialFeedObject] = []
+    private var cachedDataArray: [HATSocialFeedObject] = [] {
+        
+        didSet{
+            
+            if cachedDataArray.count > 0 {
+                
+                self.collectionView.isHidden = false
+                self.emptyCollectionViewLabel.text = ""
+            }
+        }
+    }
     
     /// A String to filter the social feed by, Twitter, Facebook and All
     private var filterBy: String = "All"
@@ -834,13 +844,13 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
         
         if !isTwitterAvailable && !isFacebookAvailable {
             
-            self.collectionView.isHidden = true
+            //self.collectionView.isHidden = true
             self.emptyCollectionViewLabel.text = text
         }
-        if text == "" {
+        if text == "" && (isTwitterAvailable || isFacebookAvailable) {
             
-            self.collectionView.isHidden = false
-            self.emptyCollectionViewLabel.text = text
+            //self.collectionView.isHidden = false
+            self.emptyCollectionViewLabel.text = "It can take up to one hour to fetch the social feeds initially"
         }
     }
 

@@ -44,8 +44,14 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             
             if cachedDataArray.count > 0 {
                 
-                self.collectionView.isHidden = false
-                self.emptyCollectionViewLabel.text = ""
+                DispatchQueue.main.async { [weak self] in
+                    
+                    if let weakSelf = self {
+                        
+                        weakSelf.collectionView.isHidden = false
+                        weakSelf.emptyCollectionViewLabel.text = ""
+                    }
+                }
             }
         }
     }
@@ -842,15 +848,19 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      */
     private func showEptyLabelWith(text: String) {
         
-        if !isTwitterAvailable && !isFacebookAvailable {
+        DispatchQueue.main.async {[weak self] in
             
-            //self.collectionView.isHidden = true
-            self.emptyCollectionViewLabel.text = text
-        }
-        if text == "" && (isTwitterAvailable || isFacebookAvailable) {
-            
-            //self.collectionView.isHidden = false
-            self.emptyCollectionViewLabel.text = "It can take up to one hour to fetch the social feeds initially"
+            if let weakSelf = self {
+                
+                if !(weakSelf.isTwitterAvailable) && !(weakSelf.isFacebookAvailable) {
+                    
+                    weakSelf.emptyCollectionViewLabel.text = text
+                }
+                if text == "" && (weakSelf.isTwitterAvailable || weakSelf.isFacebookAvailable) {
+                    
+                    weakSelf.emptyCollectionViewLabel.text = "It can take up to one hour to fetch the social feeds initially"
+                }
+            }
         }
     }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Qkh-YZ-tmw">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Qkh-YZ-tmw">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -1503,7 +1503,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="45 of 100 remaining" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GnN-qq-yd7">
-                                                    <rect key="frame" x="32" y="131" width="97.5" height="21"/>
+                                                    <rect key="frame" x="31.5" y="131" width="97.5" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="bOz-Tp-KHz"/>
                                                     </constraints>
@@ -1826,7 +1826,7 @@
                                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress"/>
                                             </textField>
                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jjF-td-UZ7">
-                                                <rect key="frame" x="8" y="417" width="305" height="30"/>
+                                                <rect key="frame" x="8" y="421" width="305" height="30"/>
                                                 <color key="backgroundColor" red="0.93725490570000003" green="0.93725490570000003" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="5hN-3U-K6o"/>
@@ -1836,7 +1836,7 @@
                                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress"/>
                                             </textField>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your HAT Details" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7sg-Yy-gsF">
-                                                <rect key="frame" x="8" y="336" width="124" height="26"/>
+                                                <rect key="frame" x="8" y="336" width="124" height="30"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="124" id="nUU-tX-oc7"/>
                                                 </constraints>
@@ -1845,7 +1845,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="All fields mandatory" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dmj-R5-7Ge">
-                                                <rect key="frame" x="126" y="341" width="187" height="17"/>
+                                                <rect key="frame" x="126" y="341" width="187" height="21"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="187" id="kqd-QB-6Jz"/>
                                                 </constraints>
@@ -1854,10 +1854,10 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Line" translatesAutoresizingMaskIntoConstraints="NO" id="Xd0-z8-xA5">
-                                                <rect key="frame" x="8" y="370" width="305" height="1"/>
+                                                <rect key="frame" x="8" y="374" width="305" height="1"/>
                                             </imageView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HAT password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gb5-c1-eYO">
-                                                <rect key="frame" x="8" y="455" width="305" height="21"/>
+                                                <rect key="frame" x="8" y="459" width="305" height="21"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="21" id="Kfl-Yj-Hwg"/>
                                                 </constraints>
@@ -1866,7 +1866,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <textField opaque="NO" clipsSubviews="YES" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="whr-pj-0QQ">
-                                                <rect key="frame" x="8" y="485" width="305" height="30"/>
+                                                <rect key="frame" x="8" y="489" width="305" height="30"/>
                                                 <color key="backgroundColor" red="0.93725490570000003" green="0.93725490570000003" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="pXH-po-89v"/>
@@ -1879,7 +1879,7 @@
                                                 </connections>
                                             </textField>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Re-type HAT password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cqq-6r-zsT">
-                                                <rect key="frame" x="8" y="523" width="305" height="21"/>
+                                                <rect key="frame" x="8" y="527" width="305" height="21"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="21" id="oZJ-E6-8k9"/>
                                                 </constraints>
@@ -1888,7 +1888,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <textField opaque="NO" clipsSubviews="YES" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="BT5-ys-ocF">
-                                                <rect key="frame" x="8" y="553" width="305" height="30"/>
+                                                <rect key="frame" x="8" y="557" width="305" height="30"/>
                                                 <color key="backgroundColor" red="0.93725490570000003" green="0.93725490570000003" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="xJP-gi-AdV"/>
@@ -1898,7 +1898,7 @@
                                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" secureTextEntry="YES"/>
                                             </textField>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Where do you want your HAT to be based?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NiK-c3-N1x">
-                                                <rect key="frame" x="8" y="591" width="305" height="21"/>
+                                                <rect key="frame" x="8" y="595" width="305" height="21"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="21" id="9uM-ad-n6k"/>
                                                 </constraints>
@@ -1907,7 +1907,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JPF-bz-2p4">
-                                                <rect key="frame" x="8" y="668" width="305" height="30"/>
+                                                <rect key="frame" x="8" y="672" width="305" height="30"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="6L2-zi-o38"/>
                                                 </constraints>
@@ -1920,7 +1920,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b1p-Ja-3PS">
-                                                <rect key="frame" x="8" y="706" width="305" height="30"/>
+                                                <rect key="frame" x="8" y="710" width="305" height="30"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="rXR-Am-deE"/>
                                                 </constraints>
@@ -1933,7 +1933,7 @@
                                                 </connections>
                                             </button>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vQ5-N5-roR" customClass="BEMCheckBox">
-                                                <rect key="frame" x="282" y="778" width="30" height="30"/>
+                                                <rect key="frame" x="282" y="782" width="30" height="30"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="9sH-PQ-mpg"/>
@@ -1949,19 +1949,19 @@
                                                 </userDefinedRuntimeAttributes>
                                             </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I accept the terms &amp; conditions of HAT" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="54T-qB-uxo">
-                                                <rect key="frame" x="8" y="748" width="268" height="18"/>
+                                                <rect key="frame" x="8" y="752" width="268" height="18"/>
                                                 <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="13"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I accept the terms &amp; conditions of Rumpel lite" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kRz-Zb-nuZ">
-                                                <rect key="frame" x="8" y="773" width="268" height="39"/>
+                                                <rect key="frame" x="8" y="777" width="268" height="39"/>
                                                 <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="13"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose your personal HAT address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Isj-4e-cfc">
-                                                <rect key="frame" x="8" y="388" width="305" height="21"/>
+                                                <rect key="frame" x="8" y="392" width="305" height="21"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="21" id="6wD-hb-697"/>
                                                 </constraints>
@@ -1970,7 +1970,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JAs-Yj-7hx">
-                                                <rect key="frame" x="8" y="820" width="305" height="30"/>
+                                                <rect key="frame" x="8" y="824" width="305" height="30"/>
                                                 <color key="backgroundColor" red="0.0" green="0.58628696199999997" blue="0.53447610140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="Xwn-G6-LR6"/>
@@ -1984,7 +1984,7 @@
                                                 </connections>
                                             </button>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QiG-kT-xYa" customClass="BEMCheckBox">
-                                                <rect key="frame" x="282" y="744" width="30" height="30"/>
+                                                <rect key="frame" x="282" y="748" width="30" height="30"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="30" id="P6q-Dd-nXV"/>
@@ -2000,7 +2000,7 @@
                                                 </userDefinedRuntimeAttributes>
                                             </view>
                                             <textField opaque="NO" clipsSubviews="YES" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="bw8-gR-QXJ">
-                                                <rect key="frame" x="8" y="620" width="305" height="30"/>
+                                                <rect key="frame" x="8" y="624" width="305" height="30"/>
                                                 <color key="backgroundColor" red="0.93725490570000003" green="0.93725490570000003" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="kMZ-nB-4Uf"/>
@@ -2197,9 +2197,6 @@
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Accessing your HAT..." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fqK-nY-8Dr">
                                 <rect key="frame" x="8" y="248" width="305" height="23.5"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="23.5" id="iDu-1s-YFc"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="17"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
@@ -2684,9 +2681,11 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="110" height="110"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <subviews>
-                                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Onw-zu-4D8"/>
+                                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Onw-zu-4D8">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="110" height="110"/>
+                                                                </imageView>
                                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a7D-k9-Y0V">
-                                                                    <rect key="frame" x="-30" y="5" width="23" height="23"/>
+                                                                    <rect key="frame" x="80" y="5" width="23" height="23"/>
                                                                     <constraints>
                                                                         <constraint firstAttribute="height" constant="23" id="RwY-Of-R7w"/>
                                                                         <constraint firstAttribute="width" constant="23" id="hfR-3q-g4g"/>

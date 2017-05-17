@@ -856,10 +856,18 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                     
                     weakSelf.emptyCollectionViewLabel.text = text
                 }
-                if text == "" && (weakSelf.isTwitterAvailable || weakSelf.isFacebookAvailable) {
+                
+                if text == "" && (weakSelf.isTwitterAvailable || weakSelf.isFacebookAvailable) && weakSelf.cachedDataArray.count < 1 {
                     
                     weakSelf.emptyCollectionViewLabel.text = "It can take up to one hour to fetch the social feeds initially"
+                } else if weakSelf.cachedDataArray.count > 0 {
+                    
+                    weakSelf.emptyCollectionViewLabel.text = ""
+                } else {
+                    
+                    weakSelf.emptyCollectionViewLabel.text = text
                 }
+                
             }
         }
     }

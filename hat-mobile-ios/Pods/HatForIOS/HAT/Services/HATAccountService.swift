@@ -371,7 +371,7 @@ public class HATAccountService: NSObject {
         let uploadURL = "https://" + userDomain + "/api/v2/files/upload"
         
         // create parameters and headers
-        let parameters: Dictionary<String, String> = HATJSONHelper.createFileUploadingJSONFrom(fileName: fileName, tags: tags) as! Dictionary<String, String>
+        let parameters: Dictionary<String, String> = HATJSONHelper.createFileUploadingJSONFrom(fileName: fileName) as! Dictionary<String, String>
         let header = ["X-Auth-Token" : token]
         
         // make async request

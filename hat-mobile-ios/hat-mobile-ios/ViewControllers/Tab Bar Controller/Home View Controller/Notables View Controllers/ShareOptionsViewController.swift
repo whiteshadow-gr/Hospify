@@ -304,64 +304,75 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             // not editing note
             if !isEditingExistingNote {
                 
-                if (receivedNote?.data.shared)! {
+                if (receivedNote?.data.shared)! && self.imagesToUpload.count == 0 {
                     
                     self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: postNote, cancelCompletion: defaultCancelAction)
                 } else {
                     
-                    if self.imagesToUpload.count > 0 {
+                    func proceed() {
                         
-                        self.showProgressRing()
-                        
-                        HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, tags: ["iphone", "notes"], progressUpdater: {[weak self](completion) -> Void in
+                        if self.imagesToUpload.count > 0 {
                             
-                            if self != nil {
-                                
-                                self!.updateProgressRing(completion: completion)
-                            }
-                        }, completion: {[weak self](fileUploaded, renewedUserToken) -> Void in
+                            self.showProgressRing()
                             
-                            if let weakSelf = self {
+                            HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, tags: ["iphone", "notes"], progressUpdater: {[weak self](completion) -> Void in
                                 
-                                if (weakSelf.receivedNote?.data.shared)! {
+                                if self != nil {
                                     
-                                    // do another call to make image public
-                                    HATFileService.makeFilePublic(fileID: fileUploaded.fileID, token: weakSelf.userToken, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
+                                    self!.updateProgressRing(completion: completion)
+                                }
+                                }, completion: {[weak self](fileUploaded, renewedUserToken) -> Void in
+                                    
+                                    if let weakSelf = self {
                                         
-                                        _ = CrashLoggerHelper.hatErrorLog(error: error)
-                                    })
-                                }
-                                
-                                // add image to note
-                                weakSelf.receivedNote?.data.photoData.link = "https://" + weakSelf.userDomain + "/api/v2/files/content/" + fileUploaded.fileID
-                                
-                                // post note
-                                postNote()
-                            }
-                            
-                            // refresh user token
-                            if renewedUserToken != nil {
-                                
-                                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-                            }
-                        }, errorCallBack: {[weak self] (error) -> Void in
-                        
-                            if self != nil {
-                                
-                                if self?.loadingScr != nil {
+                                        if (weakSelf.receivedNote?.data.shared)! {
+                                            
+                                            // do another call to make image public
+                                            HATFileService.makeFilePublic(fileID: fileUploaded.fileID, token: weakSelf.userToken, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
+                                                
+                                                _ = CrashLoggerHelper.hatErrorLog(error: error)
+                                            })
+                                        }
+                                        
+                                        // add image to note
+                                        weakSelf.receivedNote?.data.photoData.link = "https://" + weakSelf.userDomain + "/api/v2/files/content/" + fileUploaded.fileID
+                                        
+                                        // post note
+                                        postNote()
+                                    }
                                     
-                                    self?.loadingScr?.removeFromParentViewController()
-                                    self?.loadingScr?.view.removeFromSuperview()
-                                }
-                                
-                                self!.createClassicOKAlertWith(alertMessage: "There was an error with the uploading of the file, please try again later", alertTitle: "Upload failed", okTitle: "OK", proceedCompletion: {})
-                                
-                                _ = CrashLoggerHelper.hatTableErrorLog(error: error)
-                            }
-                        })
+                                    // refresh user token
+                                    if renewedUserToken != nil {
+                                        
+                                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+                                    }
+                                }, errorCallBack: {[weak self] (error) -> Void in
+                                    
+                                    if self != nil {
+                                        
+                                        if self?.loadingScr != nil {
+                                            
+                                            self?.loadingScr?.removeFromParentViewController()
+                                            self?.loadingScr?.view.removeFromSuperview()
+                                        }
+                                        
+                                        self!.createClassicOKAlertWith(alertMessage: "There was an error with the uploading of the file, please try again later", alertTitle: "Upload failed", okTitle: "OK", proceedCompletion: {})
+                                        
+                                        _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                                    }
+                            })
+                        } else {
+                            
+                            postNote()
+                        }
+                    }
+                    
+                    if (receivedNote?.data.shared)! {
+                        
+                        self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceed, cancelCompletion: defaultCancelAction)
                     } else {
                         
-                        postNote()
+                       postNote() 
                     }
                 }
             // else delete the existing note and post a new one

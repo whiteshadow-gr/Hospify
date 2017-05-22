@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the full screen viewer UIViewController
-class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProtocol {
+class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProtocol, UIScrollViewDelegate {
     
     // MARK: - Variables
     
@@ -24,6 +24,9 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
     
     /// The file object, passed on from previous view controller
     var file: FileUploadObject?
+    
+    /// The image, passed on from previous view controller
+    var image: UIImage?
     
     /// A Bool value to determine of the ui is visible or not
     private var isUIHidden: Bool = false
@@ -36,6 +39,7 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
     @IBOutlet weak var deleteButton: UIButton!
     /// An IBOutlet for handling the ring progress bar
     @IBOutlet weak var ringProgressBar: RingProgressCircle!
+    @IBOutlet weak var scrollView: UIScrollView!
     
     // MARK: - IBActions
 
@@ -96,6 +100,10 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
         self.ringProgressBar.ringLineWidth = 4
         self.ringProgressBar.ringColor = .white
         
+        self.scrollView.maximumZoomScale = 5.0
+        self.scrollView.minimumZoomScale = 1.0
+        self.scrollView.delegate = self
+        
         if self.file != nil {
             
             let imageURL: String = "https://" + userDomain + "/api/v2/files/content/" + file!.fileID
@@ -126,6 +134,9 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
                 self.deleteButton = nil
                 self.ringProgressBar.isHidden = true
             })
+        } else if self.image != nil {
+            
+            self.imageView.image = self.image!
         }
         
         self.view.backgroundColor = .black
@@ -151,6 +162,11 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
             self.deleteButton.isHidden = !(self.isUIHidden)
         }
         self.isUIHidden = !(self.isUIHidden)
+    }
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        
+        return self.imageView
     }
 
 }

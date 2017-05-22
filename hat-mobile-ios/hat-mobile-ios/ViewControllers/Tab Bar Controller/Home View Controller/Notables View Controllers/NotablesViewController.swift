@@ -450,9 +450,9 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                 destinationVC?.isEditingExistingNote = true
                 
                 let cell = self.tableView.cellForRow(at: cellIndexPath!) as! NotablesTableViewCell
-                if cell.attachedImage?.image != nil {
+                if cell.fullSizeImage != nil {
                     
-                    destinationVC?.selectedImage = cell.attachedImage?.image
+                    destinationVC?.selectedImage = cell.fullSizeImage
                 }
             } else {
                 

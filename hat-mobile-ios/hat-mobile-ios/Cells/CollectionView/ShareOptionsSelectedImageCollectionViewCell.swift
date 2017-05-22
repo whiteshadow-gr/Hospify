@@ -21,8 +21,12 @@ class ShareOptionsSelectedImageCollectionViewCell: UICollectionViewCell {
     
     /// The selected image to upload
     @IBOutlet weak var selectedImage: UIImageView!
+    
     /// A button to remove the image from uploading
     @IBOutlet weak var cancelButton: UIButton!
+    
+    /// A ring progress circe bar to track progress of download
+    @IBOutlet weak var ringProgressCircle: RingProgressCircle!
     
     // MARK: - IBActions
     

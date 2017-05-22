@@ -295,6 +295,103 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 })
             }
             
+            func checkImage() {
+                
+                var isPNG = false
+                
+                var tempData = UIImageJPEGRepresentation(self.imageSelected.image!, 1.0)
+                if tempData == nil {
+                    
+                    tempData = UIImagePNGRepresentation(self.imageSelected.image!)
+                    isPNG = true
+                }
+                
+                if tempData != nil {
+                    
+                    let data = NSData(data: tempData!)
+                    let size = Float(Float(Float(data.length)/1024)/1024)
+                    
+                    if isPNG && size > 1 {
+                        
+                        self.imageSelected.image = self.imageSelected.image!.resized(fileSize: size, maximumSize: 1)!
+                    } else if !isPNG && size > 3 {
+                        
+                        self.imageSelected.image = self.imageSelected.image!.resized(fileSize: size, maximumSize: 3)!
+                    }
+                }
+            }
+            
+            func uploadImage() {
+                
+                self.showProgressRing()
+
+                HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, tags: ["iphone", "notes"], progressUpdater: {[weak self](completion) -> Void in
+                    
+                        if self != nil {
+                            
+                            self!.updateProgressRing(completion: completion)
+                        }
+                    }, completion: {[weak self](fileUploaded, renewedUserToken) -> Void in
+                        
+                        if let weakSelf = self {
+                            
+                            if (weakSelf.receivedNote?.data.shared)! {
+                                
+                                // do another call to make image public
+                                HATFileService.makeFilePublic(fileID: fileUploaded.fileID, token: weakSelf.userToken, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
+                                    
+                                    _ = CrashLoggerHelper.hatErrorLog(error: error)
+                                })
+                            } else {
+                                
+                                HATFileService.makeFilePrivate(fileID: fileUploaded.fileID, token: weakSelf.userToken, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
+                                    
+                                    _ = CrashLoggerHelper.hatErrorLog(error: error)
+                                })
+                            }
+                            
+                            // add image to note
+                            weakSelf.receivedNote?.data.photoData.link = "https://" + weakSelf.userDomain + "/api/v2/files/content/" + fileUploaded.fileID
+                            
+                            // post note
+                            postNote()
+                        }
+                        
+                        // refresh user token
+                        if renewedUserToken != nil {
+                            
+                            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+                        }
+                    }, errorCallBack: {[weak self](error) -> Void in
+                        
+                        if self != nil {
+                            
+                            if self?.loadingScr != nil {
+                                
+                                self?.loadingScr?.removeFromParentViewController()
+                                self?.loadingScr?.view.removeFromSuperview()
+                            }
+                            
+                            self!.createClassicOKAlertWith(alertMessage: "There was an error with the uploading of the file, please try again later", alertTitle: "Upload failed", okTitle: "OK", proceedCompletion: {})
+                            
+                            _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                        }
+                })
+            }
+            
+            func checkForImageAndUpload() {
+                
+                if self.imagesToUpload.count > 0 {
+                    
+                    checkImage()
+                    
+                    uploadImage()
+                } else {
+                    
+                    postNote()
+                }
+            }
+            
             // if note is shared and users have not selected any social networks to share show alert message
             if (self.receivedNote?.data.shared)! && ((self.receivedNote?.data.sharedOn)! == "") {
                 
@@ -307,73 +404,12 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 if (receivedNote?.data.shared)! && self.imagesToUpload.count == 0 {
                     
                     self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: postNote, cancelCompletion: defaultCancelAction)
+                } else if (receivedNote?.data.shared)! {
+                    
+                    self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: checkForImageAndUpload, cancelCompletion: defaultCancelAction)
                 } else {
                     
-                    func proceed() {
-                        
-                        if self.imagesToUpload.count > 0 {
-                            
-                            self.showProgressRing()
-                            
-                            HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, tags: ["iphone", "notes"], progressUpdater: {[weak self](completion) -> Void in
-                                
-                                if self != nil {
-                                    
-                                    self!.updateProgressRing(completion: completion)
-                                }
-                                }, completion: {[weak self](fileUploaded, renewedUserToken) -> Void in
-                                    
-                                    if let weakSelf = self {
-                                        
-                                        if (weakSelf.receivedNote?.data.shared)! {
-                                            
-                                            // do another call to make image public
-                                            HATFileService.makeFilePublic(fileID: fileUploaded.fileID, token: weakSelf.userToken, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
-                                                
-                                                _ = CrashLoggerHelper.hatErrorLog(error: error)
-                                            })
-                                        }
-                                        
-                                        // add image to note
-                                        weakSelf.receivedNote?.data.photoData.link = "https://" + weakSelf.userDomain + "/api/v2/files/content/" + fileUploaded.fileID
-                                        
-                                        // post note
-                                        postNote()
-                                    }
-                                    
-                                    // refresh user token
-                                    if renewedUserToken != nil {
-                                        
-                                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-                                    }
-                                }, errorCallBack: {[weak self] (error) -> Void in
-                                    
-                                    if self != nil {
-                                        
-                                        if self?.loadingScr != nil {
-                                            
-                                            self?.loadingScr?.removeFromParentViewController()
-                                            self?.loadingScr?.view.removeFromSuperview()
-                                        }
-                                        
-                                        self!.createClassicOKAlertWith(alertMessage: "There was an error with the uploading of the file, please try again later", alertTitle: "Upload failed", okTitle: "OK", proceedCompletion: {})
-                                        
-                                        _ = CrashLoggerHelper.hatTableErrorLog(error: error)
-                                    }
-                            })
-                        } else {
-                            
-                            postNote()
-                        }
-                    }
-                    
-                    if (receivedNote?.data.shared)! {
-                        
-                        self.createClassicAlertWith(alertMessage: "You are about to share your post. \n\nTip: to remove a note from the external site, edit the note and make it private.", alertTitle: "", cancelTitle: "Cancel", proceedTitle: "Share now", proceedCompletion: proceed, cancelCompletion: defaultCancelAction)
-                    } else {
-                        
-                       postNote() 
-                    }
+                    checkForImageAndUpload()
                 }
             // else delete the existing note and post a new one
             } else {
@@ -383,66 +419,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                     // delete note
                     HATNotablesService.deleteNote(id: (receivedNote?.id)!, tkn: userToken, userDomain: userDomain)
                     
-                    if self.imagesToUpload.count > 0 {
-                        
-                        self.showProgressRing()
-                        
-                        HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, tags: ["iphone", "notes"], progressUpdater: {[weak self](completion) -> Void in
-                        
-                            if self != nil {
-                                
-                                self!.updateProgressRing(completion: completion)
-                            }
-                        }, completion: {[weak self](fileUploaded, renewedUserToken) -> Void in
-                        
-                            if let weakSelf = self {
-                                
-                                if (weakSelf.receivedNote?.data.shared)! {
-                                    
-                                    // do another call to make image public
-                                    HATFileService.makeFilePublic(fileID: fileUploaded.fileID, token: weakSelf.userToken, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
-                                        
-                                        _ = CrashLoggerHelper.hatErrorLog(error: error)
-                                    })
-                                } else {
-                                    
-                                    HATFileService.makeFilePrivate(fileID: fileUploaded.fileID, token: weakSelf.userToken, userDomain: weakSelf.userDomain, successCallback: {(result) -> Void in return}, errorCallBack: {(error) -> Void in
-                                        
-                                        _ = CrashLoggerHelper.hatErrorLog(error: error)
-                                    })
-                                }
-                                
-                                // add image to note
-                                weakSelf.receivedNote?.data.photoData.link = "https://" + weakSelf.userDomain + "/api/v2/files/content/" + fileUploaded.fileID
-                                
-                                // post note
-                                postNote()
-                            }
-                            
-                            // refresh user token
-                            if renewedUserToken != nil {
-                                
-                                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-                            }
-                        }, errorCallBack: {[weak self](error) -> Void in
-                            
-                            if self != nil {
-                                
-                                if self?.loadingScr != nil {
-                                    
-                                    self?.loadingScr?.removeFromParentViewController()
-                                    self?.loadingScr?.view.removeFromSuperview()
-                                }
-                                
-                                self!.createClassicOKAlertWith(alertMessage: "There was an error with the uploading of the file, please try again later", alertTitle: "Upload failed", okTitle: "OK", proceedCompletion: {})
-                                
-                                _ = CrashLoggerHelper.hatTableErrorLog(error: error)
-                            }
-                        })
-                    } else {
-                        
-                        postNote()
-                    }
+                    checkForImageAndUpload()
                 }
                 
                 // if note is shared and user has changed the text show alert message
@@ -968,8 +945,13 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 self.imageSelected.image = self.selectedImage
                 self.imagesToUpload.append(self.imageSelected.image!)
                 self.collectionView.isHidden = false
+            } else if let url = URL(string: (self.receivedNote?.data.photoData.link)!) {
+                
+                self.collectionView.isHidden = false
+                self.imagesToUpload.append(UIImage(named: "Image Placeholder")!)
+                self.collectionView.reloadData()
             }
-            // else init a new value
+        // else init a new value
         } else {
             
             self.receivedNote = HATNotesData()
@@ -1335,7 +1317,34 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "addedImageCell", for: indexPath) as? ShareOptionsSelectedImageCollectionViewCell
         
         // Configure the cell
-        cell?.selectedImage.image = self.imagesToUpload[indexPath.row]
+        if self.imagesToUpload.count > 0 {
+            
+            if self.imagesToUpload[0] != UIImage(named: "Image Placeholder") {
+                
+                cell?.selectedImage.image = self.imagesToUpload[indexPath.row]
+                cell?.selectedImage.cropImage(width: (cell?.frame.width)!, height: (cell?.frame.height)!)
+            } else if let url = URL(string: (self.receivedNote?.data.photoData.link)!) {
+                
+                cell?.ringProgressCircle.isHidden = false
+                cell?.ringProgressCircle.ringRadius = 10
+                cell?.ringProgressCircle.ringLineWidth = 4
+                cell?.ringProgressCircle.ringColor = .white
+                
+                self.imageSelected.downloadedFrom(url: url, userToken: userToken,
+                                                  progressUpdater: {progress in
+                                                    
+                                                    let completion = Float(progress)
+                                                    cell?.ringProgressCircle.updateCircle(end: CGFloat(completion), animate: Float((cell?.ringProgressCircle.endPoint)!), to: completion, removePreviousLayer: false)
+                },
+                                                  completion: {() in
+                                                    
+                                                    cell?.ringProgressCircle.isHidden = true
+                                                    self.imagesToUpload[0] = (self.imageSelected.image!)
+                                                    cell?.selectedImage.image = self.imageSelected.image
+                                                    cell?.selectedImage.cropImage(width: (cell?.frame.width)!, height: (cell?.frame.height)!)
+                })
+            }
+        }
         
         let tapGestureToShareForAction = UITapGestureRecognizer(target: self, action: #selector (self.didTapOnCell(sender:)))
         tapGestureToShareForAction.cancelsTouchesInView = false
@@ -1380,7 +1389,8 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             
             let fullScreenPhotoVC = segue.destination as? PhotoFullScreenViewerViewController
             
-            fullScreenPhotoVC?.imageURL = self.receivedNote?.data.photoData.link
+            //fullScreenPhotoVC?.imageURL = self.receivedNote?.data.photoData.link
+            fullScreenPhotoVC?.image = self.selectedImage
             //fullScreenPhotoVC?.file = self
         }
     }

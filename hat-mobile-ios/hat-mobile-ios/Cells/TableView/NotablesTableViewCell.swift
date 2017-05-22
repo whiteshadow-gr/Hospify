@@ -22,6 +22,9 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     /// an array to hold the social networks that this note is shared on
     private var sharedOn: [String] = []
     
+    /// an UIImage to hold the full size image
+    var fullSizeImage: UIImage? = nil
+    
     var notesDelegate: NotablesViewController? = nil
     
     // MARK: - IBOutlets
@@ -139,6 +142,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         }, completion: {
             
             cell.ringProgressBar.isHidden = true
+            cell.fullSizeImage = cell.attachedImage.image!
             cell.attachedImage.cropImage(width: cell.attachedImage.frame.width, height: cell.attachedImage.frame.height)
             
             var tempNote = note

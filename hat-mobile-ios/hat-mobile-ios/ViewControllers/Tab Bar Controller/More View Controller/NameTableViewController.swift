@@ -20,9 +20,9 @@ class NameTableViewController: UITableViewController, UserCredentialsProtocol {
     // MARK: - Variables
 
     /// The sections of the table view
-    private let sections: [[String]] = [[""], [""], [""], [""], ["Make those fields public?"]]
+    private let sections: [[String]] = [[""], [""], [""], [""], [""], ["Make those fields public?"]]
     /// The headers of the table view
-    private let headers: [String] = ["First Name", "Last Name", "Middle Name", "Title", "Privacy"]
+    private let headers: [String] = ["First Name", "Last Name", "Middle Name", "Preffered Name", "Title", "Privacy"]
     /// The loading view pop up
     private var loadingView: UIView = UIView()
     /// A dark view covering the collection view cell
@@ -71,12 +71,17 @@ class NameTableViewController: UITableViewController, UserCredentialsProtocol {
             } else if index == 2 {
                     
                 profile?.data.personal.middleName = cell!.textField.text!
+            // Preffered name
+            }
+            else if index == 3 {
+                
+                profile?.data.personal.prefferedName = cell!.textField.text!
             // Title
-            } else if index == 3 {
+            } else if index == 4 {
                     
                 profile?.data.personal.title = cell!.textField.text!
             // Privacy
-            } else if index == 4 {
+            } else if index == 5 {
                 
                 profile?.data.personal.isPrivate = !(cell!.privateSwitch.isOn)
                 if (profile?.data.isPrivate)! && cell!.privateSwitch.isOn {
@@ -88,7 +93,7 @@ class NameTableViewController: UITableViewController, UserCredentialsProtocol {
         
         func tableExists(dict: Dictionary<String, Any>, renewedUserToken: String?) {
             
-            HATAccountService.postProfile(userDomain: userDomain, userToken: userToken, hatProfile: self.profile!, successCallBack: {
+            HATPhataService.postProfile(userDomain: userDomain, userToken: userToken, hatProfile: self.profile!, successCallBack: {
             
                 self.loadingView.removeFromSuperview()
                 self.darkView.removeFromSuperview()
@@ -180,11 +185,15 @@ class NameTableViewController: UITableViewController, UserCredentialsProtocol {
             cell.privateSwitch.isHidden = true
         } else if indexPath.section == 3 {
             
+            cell.textField.text = self.profile?.data.personal.prefferedName
+            cell.privateSwitch.isHidden = true
+        } else if indexPath.section == 4 {
+            
+            cell.textField.tag = 15
             cell.dataSourceForPickerView = ["", "Mr.", "Mrs.", "Miss", "Dr."]
             cell.textField.text = self.profile?.data.personal.title
             cell.privateSwitch.isHidden = true
-            cell.tag = 15
-        } else if indexPath.section == 4 {
+        } else if indexPath.section == 5 {
             
             cell.textField.text = self.sections[indexPath.section][indexPath.row]
             cell.privateSwitch.isOn = !(self.profile?.data.personal.isPrivate)!

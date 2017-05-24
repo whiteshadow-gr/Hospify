@@ -35,29 +35,6 @@ struct FormatterHelper {
     }
     
     /**
-     Formats a date to ISO 8601 format
-     
-     - parameter date: The date to format
-     - returns: String
-     */
-    static func formatDateToEpoch(date: Date) -> String {
-        
-        // get the unix time stamp
-        let elapse = date.timeIntervalSince1970
-        
-        let temp = String(elapse)
-        
-        let array = temp.components(separatedBy: ".")
-        
-        if array.count > 0 {
-            
-            return array[0]
-        }
-        
-        return ""
-    }
-    
-    /**
      Formats a date to the user's defined date as a string
      
      - parameter date: The date to localize
@@ -134,6 +111,12 @@ struct FormatterHelper {
         if date == nil {
             
             dateFormatter.dateFormat = "E MMM dd HH:mm:ss Z yyyy"
+            date = dateFormatter.date(from: string)
+        }
+        
+        if date == nil {
+            
+            dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: string, options: 0, locale: Locale.current)
             date = dateFormatter.date(from: string)
         }
         

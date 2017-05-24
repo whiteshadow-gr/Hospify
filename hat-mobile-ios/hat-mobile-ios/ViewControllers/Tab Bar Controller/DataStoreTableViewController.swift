@@ -12,7 +12,12 @@
 
 import HatForIOS
 
+// MARK: Class
+
+/// A class responsible for the data store, profile, view controller
 class DataStoreTableViewController: UITableViewController, UserCredentialsProtocol {
+    
+    // MARK: - Variables
 
     /// The sections of the table view
     private let sections: [[String]] = [["Name", "Info", "Contact Info"], ["Nationality"], ["Relationship and Household"], ["Education"]]
@@ -22,19 +27,26 @@ class DataStoreTableViewController: UITableViewController, UserCredentialsProtoc
     /// The profile, used in PHATA table
     private var profile: HATProfileObject? = nil
     
+    // MARK: - View Controller methods
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         
-        HATAccountService.getProfileFromHAT(userDomain: userDomain, userToken: userToken, successCallback: {[weak self]receivedProfile in
+        super.viewWillAppear(animated)
         
+        HATPhataService.getProfileFromHAT(userDomain: userDomain, userToken: userToken, successCallback: {[weak self]receivedProfile in
+            
             if self != nil {
                 
                 self!.profile = receivedProfile
             }
         }, failCallback: { error in
                 
-                _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+            _ = CrashLoggerHelper.hatTableErrorLog(error: error)
         })
     }
 
@@ -109,6 +121,13 @@ class DataStoreTableViewController: UITableViewController, UserCredentialsProtoc
     
     // MARK: - Update cell
     
+    /**
+     Sets up the cell accordingly
+     
+     - parameter cell: The cell to set up
+     - parameter indexPath: The index path of the cell
+     - returns: The set up cell
+     */
     func setUpCell(cell: UITableViewCell, indexPath: IndexPath) -> UITableViewCell {
         
         cell.textLabel?.text = self.sections[indexPath.section][indexPath.row]
@@ -117,7 +136,6 @@ class DataStoreTableViewController: UITableViewController, UserCredentialsProtoc
         
         return cell
     }
-
     
     // MARK: - Navigation
 

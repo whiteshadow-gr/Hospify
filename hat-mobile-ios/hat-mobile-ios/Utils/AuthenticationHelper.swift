@@ -91,7 +91,7 @@ class AuthenticationHelper: NSObject {
             let clear = try ClearMessage(string: headerAndPayload, using: .utf8)
             let isSuccessful = try clear.verify(with: privateKey, signature: signature, digestType: .sha256)
             
-            if isSuccessful.isSuccessful && tokenScope != nil {
+            if isSuccessful && tokenScope != nil {
                 
                 return AuthenticationResponse(errorType: nil, message: "success", scope: tokenScope!, domain: HATDomainFromToken, token: jwt.string)
             }

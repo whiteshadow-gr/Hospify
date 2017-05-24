@@ -111,21 +111,15 @@ public class HATLoginService: NSObject {
                             // decode the token and get the iss out
                             guard let jwt = try? decode(jwt: token) else {
                                 
-                                if failed != nil {
-                                    
-                                    failed!(.cannotDecodeToken(token))
-                                }
-                                break
+                                failed?(.cannotDecodeToken(token))
+                                return
                             }
                             
                             // guard for the issuer check, “iss” (Issuer)
                             guard let _ = jwt.issuer else {
                                 
-                                if failed != nil {
-                                    
-                                    failed!(.noIssuerDetectedError(jwt.string))
-                                }
-                                break
+                                failed?(.noIssuerDetectedError(jwt.string))
+                                return
                             }
                             
                             /*
@@ -138,11 +132,8 @@ public class HATLoginService: NSObject {
                             // guard for the attr length. Should be 3 [header, payload, signature]
                             guard tokenAttr.count == 3 else {
                                 
-                                if failed != nil {
-                                    
-                                    failed!(.cannotSplitToken(tokenAttr))
-                                }
-                                break
+                                failed?(.cannotSplitToken(tokenAttr))
+                                return
                             }
                             
                             // And then to access the individual parts of token
@@ -163,56 +154,35 @@ public class HATLoginService: NSObject {
                                 let clear = try ClearMessage(string: headerAndPayload, using: .utf8)
                                 let isSuccessful = try clear.verify(with: privateKey, signature: signature, digestType: .sha256)
                                 
-                                if (isSuccessful.isSuccessful) {
+                                if (isSuccessful) {
                                     
-                                    if success != nil {
-                                        
-                                        success!(token)
-                                    }
+                                    success?(token)
                                 } else {
                                     
-                                    if failed != nil {
-                                        
-                                        failed!(.tokenValidationFailed(isSuccessful.description))
-                                    }
+                                    failed?(.tokenValidationFailed(isSuccessful.description))
                                 }
                                 
                             } catch {
                                 
                                 let message = NSLocalizedString("Proccessing of token failed", comment: "")
-                                if failed != nil {
-                                    
-                                    failed!(.tokenValidationFailed(message))
-                                }
+                                failed?(.tokenValidationFailed(message))
                             }
                             
                         } else {
                             
-                            // alamofire http fail
-                            if failed != nil {
-                                
-                                failed!(.generalError(isSuccess.description, statusCode, nil))
-                            }
+                            failed?(.generalError(isSuccess.description, statusCode, nil))
                         }
                         
                     case .error(let error, let statusCode):
                         
                         let message = NSLocalizedString("Server responded with error", comment: "")
-                        if failed != nil {
-                            
-                            failed!(.generalError(message, statusCode, error))
-                        }
-                        break
+                        failed?(.generalError(message, statusCode, error))
                     }
                 }
             }
         } else {
-            
-            // no token in url callback redirect
-            if failed != nil {
                 
-                failed!(.noTokenDetectedError)
-            }
+            failed?(.noTokenDetectedError)
         }
     }
 

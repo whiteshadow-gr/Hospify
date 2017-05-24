@@ -100,7 +100,7 @@ class ProfileInfoTableViewController: UITableViewController, UserCredentialsProt
         
         func tableExists(dict: Dictionary<String, Any>, renewedUserToken: String?) {
             
-            HATAccountService.postProfile(userDomain: userDomain, userToken: userToken, hatProfile: self.profile!, successCallBack: {
+            HATPhataService.postProfile(userDomain: userDomain, userToken: userToken, hatProfile: self.profile!, successCallBack: {
                 
                 self.loadingView.removeFromSuperview()
                 self.darkView.removeFromSuperview()
@@ -192,6 +192,7 @@ class ProfileInfoTableViewController: UITableViewController, UserCredentialsProt
             cell.dataSourceForPickerView = array
             cell.textField.text = self.profile?.data.age.group
             cell.privateSwitch.isOn = !(self.profile?.data.age.isPrivate)!
+            cell.textField.keyboardType = .numberPad
             cell.tag = 10
         } else if indexPath.section == 1 {
             

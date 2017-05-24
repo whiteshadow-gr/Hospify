@@ -21,9 +21,10 @@ public class HATAccountService: NSObject {
     // MARK: - Get hat values from a table
     
     /**
-     Gets values from a particular table
+     Gets values from a particular table in use with v1 API
      
      - parameter token: The token in String format
+     - parameter userDomain: The user's domain in String format
      - parameter tableID: The table id as NSNumber
      - parameter parameters: The parameters to pass to the request, e.g. startime, endtime, limit
      - parameter successCallback: A callback called when successful of type @escaping ([JSON]) -> Void
@@ -58,6 +59,88 @@ public class HATAccountService: NSObject {
                         }
                         
                         successCallback(array, token)
+                    }
+                }
+        })
+    }
+    
+    /**
+     Gets values from a particular table in use with v2 API
+     
+     - parameter token: The token in String format
+     - parameter userDomain: The user's domain in String format
+     - parameter dataPath: The table id as NSNumber
+     - parameter parameters: The parameters to pass to the request, e.g. startime, endtime, limit
+     - parameter successCallback: A callback called when successful of type @escaping ([JSON]) -> Void
+     - parameter errorCallback: A callback called when failed of type @escaping (Void) -> Void)
+     */
+    public class func getHatTableValuesv2(token: String, userDomain: String, dataPath: String, parameters: Dictionary<String, String>, successCallback: @escaping ([JSON], String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
+        
+        // form the url
+        let url = "https://" + userDomain + "/api/v2/data/rumpellite/" + dataPath
+        
+        // create parameters and headers
+        let headers = [RequestHeaders.xAuthToken : token]
+        
+        // make the request
+        HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.JSONEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion:
+            { (r: HATNetworkHelper.ResultType) -> Void in
+                
+                switch r {
+                    
+                case .error(let error, let statusCode):
+                    
+                    let message = NSLocalizedString("Server responded with error", comment: "")
+                    errorCallback(.generalError(message, statusCode, error))
+                case .isSuccess(let isSuccess, _, let result, let token):
+                    
+                    if isSuccess {
+                        
+                        guard let array = result.array else {
+                            
+                            errorCallback(.noValuesFound)
+                            return
+                        }
+                        
+                        successCallback(array, token)
+                    }
+                }
+        })
+    }
+    
+    /**
+     Gets values from a particular table in use with v2 API
+     
+     - parameter token: The token in String format
+     - parameter userDomain: The user's domain in String format
+     - parameter dataPath: The table id as NSNumber
+     - parameter parameters: The parameters to pass to the request, e.g. startime, endtime, limit
+     - parameter successCallback: A callback called when successful of type @escaping ([JSON]) -> Void
+     - parameter errorCallback: A callback called when failed of type @escaping (Void) -> Void)
+     */
+    public class func createTableValuev2(token: String, userDomain: String, dataPath: String, parameters: Dictionary<String, Any>, successCallback: @escaping (JSON, String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
+        
+        // form the url
+        let url = "https://" + userDomain + "/api/v2/data/rumpellite/" + dataPath
+        
+        // create parameters and headers
+        let headers = [RequestHeaders.xAuthToken : token]
+        
+        // make the request
+        HATNetworkHelper.AsynchronousRequest(url, method: .post, encoding: Alamofire.JSONEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion:
+            { (r: HATNetworkHelper.ResultType) -> Void in
+                
+                switch r {
+                    
+                case .error(let error, let statusCode):
+                    
+                    let message = NSLocalizedString("Server responded with error", comment: "")
+                    errorCallback(.generalError(message, statusCode, error))
+                case .isSuccess(let isSuccess, _, let result, let token):
+                    
+                    if isSuccess {
+                        
+                        successCallback(result, token)
                     }
                 }
         })
@@ -354,115 +437,6 @@ public class HATAccountService: NSObject {
         })
     }
     
-    // MARK: - Upload File to hat
-    
-    /**
-     Uploads a file to hat
-     
-     - parameter fileName: The file name of the file to be uploaded
-     - parameter token: The owner's token
-     - parameter userDomain: The user hat domain
-     - parameter completion: A function to execute on success, returning the object returned from the server
-     - parameter errorCallback: A function to execute on failure, returning an error
-     */
-    public class func uploadFileToHAT(fileName: String, token: String, userDomain: String, tags: [String], completion: @escaping (FileUploadObject, String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
-        
-        // create the url
-        let uploadURL = "https://" + userDomain + "/api/v2/files/upload"
-        
-        // create parameters and headers
-        let parameters: Dictionary<String, String> = HATJSONHelper.createFileUploadingJSONFrom(fileName: fileName) as! Dictionary<String, String>
-        let header = ["X-Auth-Token" : token]
-        
-        // make async request
-        HATNetworkHelper.AsynchronousRequest(
-            uploadURL,
-            method: HTTPMethod.post,
-            encoding: Alamofire.JSONEncoding.default,
-            contentType: "application/json",
-            parameters: parameters,
-            headers: header,
-            completion: {(r: HATNetworkHelper.ResultType) -> Void in
-                
-                switch r {
-                    
-                case .error(let error, let statusCode):
-                    
-                    let message = NSLocalizedString("Server responded with error", comment: "")
-                    errorCallback(.generalError(message, statusCode, error))
-                case .isSuccess(let isSuccess, let statusCode, let result, let token):
-                    
-                    if isSuccess {
-                        
-                        let fileUploadJSON = FileUploadObject(from: result.dictionaryValue)
-                        
-                        //table found
-                        if statusCode == 200 {
-                            
-                            completion(fileUploadJSON, token)
-                        } else {
-                            
-                            let message = NSLocalizedString("Server responded with error", comment: "")
-                            errorCallback(.generalError(message, statusCode, nil))
-                        }
-                    }
-                }
-        })
-    }
-    
-    /**
-     Completes an upload of a file to hat
-     
-     - parameter fileID: The fileID of the file uploaded to hat
-     - parameter token: The owner's token
-     - parameter userDomain: The user hat domain
-     - parameter completion: A function to execute on success, returning the object returned from the server
-     - parameter errorCallback: A function to execute on failure, returning an error
-     */
-    public class func completeUploadFileToHAT(fileID: String, token: String, userDomain: String, completion: @escaping (FileUploadObject, String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
-        
-        // create the url
-        let uploadURL = "https://" + userDomain + "/api/v2/files/file/" + fileID + "/complete"
-        
-        // create parameters and headers
-        let header = ["X-Auth-Token" : token]
-        
-        // make async request
-        HATNetworkHelper.AsynchronousRequest(
-            uploadURL,
-            method: HTTPMethod.put,
-            encoding: Alamofire.JSONEncoding.default,
-            contentType: "application/json",
-            parameters: [:],
-            headers: header,
-            completion: {(r: HATNetworkHelper.ResultType) -> Void in
-                
-                switch r {
-                    
-                case .error(let error, let statusCode):
-                    
-                    let message = NSLocalizedString("Server responded with error", comment: "")
-                    errorCallback(.generalError(message, statusCode, error))
-                case .isSuccess(let isSuccess, let statusCode, let result, let token):
-                    
-                    if isSuccess {
-                        
-                        let fileUploadJSON = FileUploadObject(from: result.dictionaryValue)
-                        
-                        //table found
-                        if statusCode == 200 {
-                            
-                            completion(fileUploadJSON, token)
-                        } else {
-                            
-                            let message = NSLocalizedString("Server responded with error", comment: "")
-                            errorCallback(.generalError(message, statusCode, nil))
-                        }
-                    }
-                }
-        })
-    }
-    
     /**
      Constructs URL to get the public key
      
@@ -480,102 +454,6 @@ public class HATAccountService: NSObject {
         }
         
         return nil
-    }
-    
-    // MARK: - Profile
-    
-    /**
-     Searches for profile table and fetches the entries
-     
-     - parameter userDomain: The user's HAT domain
-     - parameter userToken: The user's token
-     - parameter successCallback: A function to call on success
-     - parameter failCallback: A fuction to call on fail
-     */
-    public class func getProfileFromHAT(userDomain: String, userToken: String, successCallback: @escaping (HATProfileObject) -> Void, failCallback: @escaping (HATTableError) -> Void) -> Void {
-        
-        func tableFound (tableID: NSNumber, newToken: String?) {
-            
-            func profileEntries(json: [JSON], renewedToken: String?) {
-                
-                // if we have values return them
-                if json.count > 0 {
-                    
-                    let array = HATProfileObject(from: json[0].dictionaryValue)
-                    successCallback(array)
-                // in case no values have found then that means that the users hasn't entered anything yet so we have to get the structure from the ccheckHatTableExistsForUploading method in order to have the id's
-                } else {
-                    
-                    HATAccountService.checkHatTableExistsForUploading(userDomain: userDomain, tableName: "profile", sourceName: "rumpel", authToken: userToken, successCallback: {(dict) in
-                    
-                        let array = HATProfileObject(alternativeDictionary: dict.0 as! Dictionary<String, JSON>)
-                        successCallback(array)
-                    }, errorCallback: {(error) in
-                    
-                        failCallback(HATTableError.noValuesFound)
-                    })
-                }
-            }
-            
-            HATAccountService.getHatTableValuesWithOutPretty(token: userToken, userDomain: userDomain, tableID: tableID, parameters: ["starttime" : "0"], successCallback: profileEntries, errorCallback: failCallback)
-        }
-        
-        HATAccountService.checkHatTableExists(userDomain: userDomain, tableName: "profile", sourceName: "rumpel", authToken: userToken, successCallback: tableFound, errorCallback: failCallback)
-    }
-    
-    // MARK: - Post note
-    
-    /**
-     Posts the profile record to the hat
-     
-     - parameter userDomain: The user's Domain
-     - parameter userToken: The user's token
-     - parameter profile: The profile to be used to update the JSON send to the hat
-     - parameter successCallBack: A Function to execute
-     */
-    public class func postProfile(userDomain: String, userToken: String, hatProfile: HATProfileObject, successCallBack: @escaping () -> Void, errorCallback: @escaping (HATTableError) -> Void) -> Void {
-        
-        func posting(resultJSON: Dictionary<String, Any>, token: String?) {
-            
-            // create the headers
-            let headers = ["Accept": ContentType.JSON,
-                           "Content-Type": ContentType.JSON,
-                           "X-Auth-Token": userToken]
-            
-            // create JSON file for posting with default values
-            let hatDataStructure = HATJSONHelper.createJSONForPosting(hatTableStructure: resultJSON)
-            // update JSON file with the values needed
-            let hatData = HATJSONHelper.updateProfileJSONFile(file: hatDataStructure, profileFile: hatProfile)
-            
-            // make async request
-            HATNetworkHelper.AsynchronousRequest("https://" + userDomain + "/data/record/values", method: HTTPMethod.post, encoding: Alamofire.JSONEncoding.default, contentType: ContentType.JSON, parameters: hatData, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
-                
-                // handle result
-                switch r {
-                    
-                case .isSuccess(let isSuccess, _, _, _):
-                    
-                    if isSuccess {
-                        
-                        // reload table
-                        successCallBack()
-                        
-                        HATAccountService.triggerHatUpdate(userDomain: userDomain, completion: {()})
-                    }
-                    
-                case .error(let error, let statusCode):
-                    
-                    let message = NSLocalizedString("Server responded with error", comment: "")
-                    errorCallback(.generalError(message, statusCode, error))
-                }
-            })
-        }
-        
-        func errorCall(error: HATTableError) {
-            
-        }
-        
-        HATAccountService.checkHatTableExistsForUploading(userDomain: userDomain, tableName: "profile", sourceName: "rumpel", authToken: userToken, successCallback: posting, errorCallback: errorCall)
     }
     
     // MARK: - Change Password

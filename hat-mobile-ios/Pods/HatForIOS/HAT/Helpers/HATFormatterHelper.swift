@@ -80,6 +80,31 @@ public class HATFormatterHelper: NSObject {
         return date
     }
     
+    // MARK: - UnixTimeStamp
+    
+    /**
+     Formats a date to ISO 8601 format
+     
+     - parameter date: The date to format
+     - returns: String?
+     */
+    public static func formatDateToEpoch(date: Date) -> String? {
+        
+        // get the unix time stamp
+        let elapse = date.timeIntervalSince1970
+        
+        let temp = String(elapse)
+        
+        let array = temp.components(separatedBy: ".")
+        
+        if array.count > 0 {
+            
+            return array[0]
+        }
+        
+        return nil
+    }
+    
     // MARK: - Convert from base64URL to base64
     
     /**

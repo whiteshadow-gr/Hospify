@@ -127,7 +127,7 @@ class SocialLinksTableViewController: UITableViewController, UserCredentialsProt
         
         func tableExists(dict: Dictionary<String, Any>, renewedUserToken: String?) {
             
-            HATAccountService.postProfile(userDomain: userDomain, userToken: userToken, hatProfile: self.profile!, successCallBack: {
+            HATPhataService.postProfile(userDomain: userDomain, userToken: userToken, hatProfile: self.profile!, successCallBack: {
                 
                 self.loadingView.removeFromSuperview()
                 self.darkView.removeFromSuperview()
@@ -213,30 +213,37 @@ class SocialLinksTableViewController: UITableViewController, UserCredentialsProt
             
             cell.textField.text = self.profile?.data.website.link
             cell.privateSwitch.isOn = !(self.profile?.data.website.isPrivate)!
+            cell.textField.keyboardType = .emailAddress
         } else if indexPath.section == 1 {
             
             cell.textField.text = self.profile?.data.blog.link
             cell.privateSwitch.isOn = !(self.profile?.data.blog.isPrivate)!
+            cell.textField.keyboardType = .emailAddress
         } else if indexPath.section == 2 {
             
             cell.textField.text = self.profile?.data.facebook.link
             cell.privateSwitch.isOn = !(self.profile?.data.facebook.isPrivate)!
+            cell.textField.keyboardType = .emailAddress
         } else if indexPath.section == 3 {
             
             cell.textField.text = self.profile?.data.twitter.link
             cell.privateSwitch.isOn = !(self.profile?.data.twitter.isPrivate)!
+            cell.textField.keyboardType = .emailAddress
         } else if indexPath.section == 4 {
             
             cell.textField.text = self.profile?.data.google.link
             cell.privateSwitch.isOn = !(self.profile?.data.google.isPrivate)!
+            cell.textField.keyboardType = .emailAddress
         } else if indexPath.section == 5 {
             
             cell.textField.text = self.profile?.data.linkedIn.link
             cell.privateSwitch.isOn = !(self.profile?.data.linkedIn.isPrivate)!
+            cell.textField.keyboardType = .emailAddress
         } else if indexPath.section == 6 {
             
             cell.textField.text = self.profile?.data.youtube.link
             cell.privateSwitch.isOn = !(self.profile?.data.youtube.isPrivate)!
+            cell.textField.keyboardType = .emailAddress
         }
         
         return cell

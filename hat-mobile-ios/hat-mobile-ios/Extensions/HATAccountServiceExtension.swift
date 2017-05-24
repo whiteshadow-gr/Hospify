@@ -187,7 +187,7 @@ extension HATAccountService {
      */
     class func uploadFileToHATWrapper(token: String, userDomain: String, fileToUpload: UIImage, tags: [String], progressUpdater: ((Double) -> Void)?, completion: ((FileUploadObject, String?) -> Void)?, errorCallBack: ((HATTableError) -> Void)?) {
         
-        HATAccountService.uploadFileToHAT(
+        HATFileService.uploadFileToHAT(
             fileName: "rumpelPhoto",
             token: token,
             userDomain: userDomain, tags: tags,
@@ -202,7 +202,7 @@ extension HATAccountService {
                         progressUpdater?(progress)
                 },completion: {(result) -> Void in
                     
-                    HATAccountService.completeUploadFileToHAT(fileID: fileObject.fileID, token: token, userDomain: userDomain, completion: {(uploadedFile, renewedUserToken) -> Void in
+                    HATFileService.completeUploadFileToHAT(fileID: fileObject.fileID, token: token, tags: tags, userDomain: userDomain, completion: {(uploadedFile, renewedUserToken) -> Void in
                     
                         // refresh user token
                         if renewedUserToken != nil {

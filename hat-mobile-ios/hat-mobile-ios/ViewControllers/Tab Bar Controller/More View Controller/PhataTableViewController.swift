@@ -78,7 +78,7 @@ class PhataTableViewController: UITableViewController, UserCredentialsProtocol {
         super.viewWillAppear(animated)
         
         self.tableView.reloadData()
-        HATAccountService.getProfileFromHAT(userDomain: userDomain, userToken: userToken, successCallback: getProfile, failCallback: logError)
+        HATPhataService.getProfileFromHAT(userDomain: userDomain, userToken: userToken, successCallback: getProfile, failCallback: logError)
     }
 
     override func didReceiveMemoryWarning() {

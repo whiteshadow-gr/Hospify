@@ -227,7 +227,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                         let object = HATNotesData(dict: (array.last?.dictionaryValue)!)
                         
                         // set unix date
-                        weakSelf.notablesFetchEndDate = FormatterHelper.formatDateToEpoch(date: object.lastUpdated)
+                        weakSelf.notablesFetchEndDate = HATFormatterHelper.formatDateToEpoch(date: object.lastUpdated)
                         
                         // change parameters
                         weakSelf.parameters = ["starttime" : "0",

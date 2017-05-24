@@ -68,7 +68,7 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol {
         
         func tableExists(dict: Dictionary<String, Any>, renewedUserToken: String?) {
             
-            HATAccountService.postProfile(userDomain: userDomain, userToken: userToken, hatProfile: self.profile!, successCallBack: {
+            HATPhataService.postProfile(userDomain: userDomain, userToken: userToken, hatProfile: self.profile!, successCallBack: {
                 
                 self.loadingView.removeFromSuperview()
                 self.darkView.removeFromSuperview()

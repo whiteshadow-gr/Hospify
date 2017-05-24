@@ -58,6 +58,14 @@ class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UITextViewDelega
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         
+        if row >= self.dataSourceForPickerView.count - 1 {
+            
+            let selectedRow = self.getRowForItemInDataSource(item: self.textField.text)
+            if pickerView.numberOfRows(inComponent: component) >= selectedRow {
+                
+                pickerView.selectRow(selectedRow, inComponent: component, animated: true)
+            }
+        }
         return dataSourceForPickerView[row]
     }
     
@@ -106,13 +114,43 @@ class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UITextViewDelega
         } else if textField.tag == 12 {
             
             let datePickerView = UIDatePicker()
-            datePickerView.addTarget(self, action: #selector(datePickerDidUpdateDate(datePicker:)) , for: .valueChanged)
+            datePickerView.addTarget(self, action: #selector(datePickerDidUpdateDate(datePicker:)), for: .valueChanged)
+
             datePickerView.locale = .current
             datePickerView.datePickerMode = .date
             textField.inputView = datePickerView
+            let date = FormatterHelper.formatStringToDate(string: textField.text!)
+            if date != nil {
+                
+                datePickerView.setDate(date!, animated: true)
+            }
             textField.text = FormatterHelper.formatDateStringToUsersDefinedDate(date: datePickerView.date, dateStyle: .short, timeStyle: .none)
         } 
         
         return true
+    }
+    
+    // MARK: - Find Row in picker view for this item
+    
+    private func getRowForItemInDataSource(item: String?) -> Int {
+        
+        var isFound = false
+
+        if item != nil {
+            
+            for (index, dataItem) in self.dataSourceForPickerView.enumerated() {
+                
+                if item!.lowercased() == dataItem.lowercased() {
+                    
+                    isFound = true
+                    return index
+                }
+            }
+        }
+        
+        if !isFound {
+            
+            return 0
+        }
     }
 }

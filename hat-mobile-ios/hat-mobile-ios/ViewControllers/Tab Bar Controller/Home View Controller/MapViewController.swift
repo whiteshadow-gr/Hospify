@@ -237,15 +237,19 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
                 
                 if self.filterDataPointsFrom != nil && self.filterDataPointsTo != nil {
                     
-                    let starttime = FormatterHelper.formatDateToEpoch(date: self.filterDataPointsFrom!)
-                    let endtime = FormatterHelper.formatDateToEpoch(date: self.filterDataPointsTo!)
-                    let parameters: Dictionary<String, String> = ["starttime" : starttime, "endtime" : endtime, "limit" : "2000"]
+                    let starttime = HATFormatterHelper.formatDateToEpoch(date: self.filterDataPointsFrom!)
+                    let endtime = HATFormatterHelper.formatDateToEpoch(date: self.filterDataPointsTo!)
                     
-                    HATAccountService.getHatTableValues(token: token, userDomain: userDomain, tableID: tableID, parameters: parameters, successCallback: receivedLocations, errorCallback: {(error) in
+                    if starttime != nil && endtime != nil {
                         
-                        view.removeFromSuperview()
-                        _ = CrashLoggerHelper.hatTableErrorLog(error: error)
-                    })
+                        let parameters: Dictionary<String, String> = ["starttime" : starttime!, "endtime" : endtime!, "limit" : "2000"]
+                        
+                        HATAccountService.getHatTableValues(token: token, userDomain: userDomain, tableID: tableID, parameters: parameters, successCallback: receivedLocations, errorCallback: {(error) in
+                            
+                            view.removeFromSuperview()
+                            _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                        })
+                    }
                 }
             }
             HATService.getApplicationTokenFor(serviceName: "locations", userDomain: userDomain, token: userToken, resource: "iphone", succesfulCallBack: requestLocations, failCallBack: {(error) in

@@ -83,7 +83,7 @@ class EmailTableViewController: UITableViewController, UserCredentialsProtocol {
         
         func tableExists(dict: Dictionary<String, Any>, renewedUserToken: String?) {
             
-            HATAccountService.postProfile(userDomain: userDomain, userToken: userToken, hatProfile: self.profile!, successCallBack: {
+            HATPhataService.postProfile(userDomain: userDomain, userToken: userToken, hatProfile: self.profile!, successCallBack: {
                 
                 self.loadingView.removeFromSuperview()
                 self.darkView.removeFromSuperview()
@@ -127,7 +127,6 @@ class EmailTableViewController: UITableViewController, UserCredentialsProtocol {
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     // MARK: - Table view methods
@@ -172,10 +171,12 @@ class EmailTableViewController: UITableViewController, UserCredentialsProtocol {
                 
                 cell.textField.text = self.profile?.data.primaryEmail.value
                 cell.privateSwitch.isOn = !((self.profile?.data.primaryEmail.isPrivate)!)
+                cell.textField.keyboardType = .emailAddress
             } else if indexPath.section == 1 {
                 
                 cell.textField.text = self.profile?.data.alternativeEmail.value
                 cell.privateSwitch.isOn = !((self.profile?.data.alternativeEmail.isPrivate)!)
+                cell.textField.keyboardType = .emailAddress
             }
         }
         

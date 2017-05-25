@@ -48,6 +48,14 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     
     // MARK: - IBActions
     
+    @IBAction func signUpButtonAction(_ sender: Any) {
+        
+        let indexPath = IndexPath(row: 0, section: 0)
+        // create page view controller
+        let cell = self.collectionView.cellForItem(at: indexPath) as! OnboardingTileCollectionViewCell
+        
+        self.registerForHatInfo(cell: cell, indexPath: indexPath)
+    }
     /**
      Presents a pop up view showing the user more information about HAT
      
@@ -114,13 +122,16 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
      */
     private func refreshCollectionView(dataReceived: [HATProviderObject], renewedUserToken: String?) {
         
-        self.hatProviders = dataReceived
-        self.collectionView.reloadData()
-        
-        // refresh user token
-        if renewedUserToken != nil {
+        if dataReceived.count > 0 {
             
-            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+            self.hatProviders = [dataReceived[0]]
+            self.collectionView.reloadData()
+            
+            // refresh user token
+            if renewedUserToken != nil {
+                
+                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
+            }
         }
     }
     
@@ -186,6 +197,11 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         // create page view controller
         let cell = collectionView.cellForItem(at: indexPath) as! OnboardingTileCollectionViewCell
         
+        self.registerForHatInfo(cell: cell, indexPath: indexPath)
+    }
+    
+    private func registerForHatInfo(cell: OnboardingTileCollectionViewCell, indexPath: IndexPath) {
+        
         // save the data we need for later use
         self.hatProviders[indexPath.row].hatProviderImage = cell.hatProviderImage.image
         self.selectedHATProvider = self.hatProviders[indexPath.row]
@@ -205,7 +221,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
                                                 
                                                 pageItemController.view.frame = CGRect(x: weakSelf.view.frame.origin.x + 15, y: weakSelf.view.bounds.origin.y + 150, width: weakSelf.view.frame.width - 30, height: weakSelf.view.bounds.height - 130)
                                             }
-                                        },
+                },
                                         completion: {_ in return})
             
             // add the page view controller to self
@@ -215,15 +231,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        let orientation = UIInterfaceOrientation(rawValue: UIDevice.current.orientation.rawValue)!
-        
-        // if device in landscape show 3 tiles instead of 2
-        if orientation == .landscapeLeft || orientation == .landscapeRight {
-            
-            return CGSize(width: UIScreen.main.bounds.width / 3, height: UIScreen.main.bounds.width / 3)
-        }
-        
-        return CGSize(width: UIScreen.main.bounds.width / 2, height: UIScreen.main.bounds.width / 2)
+        return CGSize(width: self.collectionView.frame.width, height: self.view.frame.height - self.collectionView.frame.origin.y)
     }
     
     // MARK: - Stripe methods

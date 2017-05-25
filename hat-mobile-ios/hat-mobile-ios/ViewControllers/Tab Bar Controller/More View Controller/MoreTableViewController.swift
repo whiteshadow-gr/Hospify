@@ -20,11 +20,11 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
     // MARK: - Variables
     
     /// The sections of the table view
-    private let sections: [[String]] = [["PHATA Page"], ["Storage Info", "Change Password"], ["Show Data", "Location Settings"], ["Release Notes", "Rumpel Terms of Service", "HAT Terms of Service"], ["Report Problem", "Log Out", "Version"]]
+    private let sections: [[String]] = [["PHATA Page"], ["Storage Info", "Change Password"], ["Show Data", "Location Settings"], ["Release Notes", "Rumpel Terms of Service", "HAT Terms of Service"], ["Report Problem"], ["Log Out", "Version"]]
     /// The headers of the table view
-    private let headers: [String] = ["PHATA Page", "HAT", "Location", "About", ""]
+    private let headers: [String] = ["PHATA Page", "HAT", "Location", "About", "", ""]
     /// The footers of the table view
-    private let footers: [String] = ["PHATA stands for Personal HAT Address. Your PHATA page is your public profile, and you can customise exactly which parts of it you want to display, or keep private.", "", "", "", ""]
+    private let footers: [String] = ["PHATA stands for Personal HAT Address. Your PHATA page is your public profile, and you can customise exactly which parts of it you want to display, or keep private.", "", "", "", "HATs are distributed systems and being private also means no one will know if you have a problem. If you have an issue with your HAT or this dashboard, please report it here", ""]
     
     /// The file url, used to show the pdf file for terms of service
     private var fileURL: String?
@@ -104,6 +104,12 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
                 
                 self.mailVC.sendEmail(at: "contact@hatdex.org", onBehalf: self)
             } else if self.sections[indexPath.section][indexPath.row] == "Log Out" {
+                
+                TabBarViewController.logoutUser(from: self)
+            }
+        } else if indexPath.section == 5 {
+            
+            if self.sections[indexPath.section][indexPath.row] == "Log Out" {
                 
                 TabBarViewController.logoutUser(from: self)
             }
@@ -189,7 +195,12 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
             if self.sections[indexPath.section][indexPath.row] == "Report Problem" {
                 
                 cell.textLabel?.textColor = .teal
-            } else if self.sections[indexPath.section][indexPath.row] == "Log Out" {
+            }
+        } else if indexPath.section == 5 {
+            
+            cell.accessoryType = .none
+            
+            if self.sections[indexPath.section][indexPath.row] == "Log Out" {
                 
                 cell.textLabel?.textColor = .red
             } else if self.sections[indexPath.section][indexPath.row] == "Version" {

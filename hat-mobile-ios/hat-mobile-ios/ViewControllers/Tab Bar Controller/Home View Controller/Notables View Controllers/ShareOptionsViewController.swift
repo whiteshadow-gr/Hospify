@@ -38,12 +38,11 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     private var dataPlugs: [HATDataPlugObject] = []
     
     private var imagesToUpload: [UIImage] = []
-    
+    private var lastYPositionOfActionView: CGFloat = 0
     /// A variable holding the selected image from the image picker
     private var imageSelected: UIImageView = UIImageView()
     var selectedImage: UIImage?
     var selectedFileImage: FileUploadObject?
-    
     /// A string passed from Notables view controller about the kind of the note
     var kind: String = "note"
     /// The previous title for publish button
@@ -299,24 +298,27 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 
                 var isPNG = false
                 
-                var tempData = UIImageJPEGRepresentation(self.imageSelected.image!, 1.0)
-                if tempData == nil {
+                if self.imageSelected.image != nil {
                     
-                    tempData = UIImagePNGRepresentation(self.imageSelected.image!)
-                    isPNG = true
-                }
-                
-                if tempData != nil {
-                    
-                    let data = NSData(data: tempData!)
-                    let size = Float(Float(Float(data.length)/1024)/1024)
-                    
-                    if isPNG && size > 1 {
+                    var tempData = UIImageJPEGRepresentation(self.imageSelected.image!, 1.0)
+                    if tempData == nil {
                         
-                        self.imageSelected.image = self.imageSelected.image!.resized(fileSize: size, maximumSize: 1)!
-                    } else if !isPNG && size > 3 {
+                        tempData = UIImagePNGRepresentation(self.imageSelected.image!)
+                        isPNG = true
+                    }
+                    
+                    if tempData != nil {
                         
-                        self.imageSelected.image = self.imageSelected.image!.resized(fileSize: size, maximumSize: 3)!
+                        let data = NSData(data: tempData!)
+                        let size = Float(Float(Float(data.length) / 1024) / 1024)
+                        
+                        if isPNG && size > 1 {
+                            
+                            self.imageSelected.image = self.imageSelected.image!.resized(fileSize: size, maximumSize: 1)!
+                        } else if !isPNG && size > 3 {
+                            
+                            self.imageSelected.image = self.imageSelected.image!.resized(fileSize: size, maximumSize: 3)!
+                        }
                     }
                 }
             }
@@ -1013,7 +1015,16 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewDidLayoutSubviews() {
+        
+        super.viewDidLayoutSubviews()
+        
+        if self.lastYPositionOfActionView != 0 && self.isKeyboardVisible {
+            
+            self.actionsView.frame.origin.y = self.lastYPositionOfActionView
+        }
     }
     
     // MARK: - Safari View controller notification
@@ -1220,6 +1231,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         UIView.animate(withDuration: 0.3, animations: {() -> Void in
             
             self.actionsView.frame.origin.y = keyboardFrame.origin.y - self.actionsView.frame.height
+            self.lastYPositionOfActionView = self.actionsView.frame.origin.y
         })
     }
     
@@ -1232,6 +1244,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         let contentInset:UIEdgeInsets = UIEdgeInsets.zero
         self.scrollView.contentInset = contentInset
         self.actionsView.frame.origin.y = self.view.frame.height - self.actionsView.frame.height
+        self.lastYPositionOfActionView = self.actionsView.frame.origin.y
         self.isKeyboardVisible = false
     }
     
@@ -1389,9 +1402,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             
             let fullScreenPhotoVC = segue.destination as? PhotoFullScreenViewerViewController
             
-            //fullScreenPhotoVC?.imageURL = self.receivedNote?.data.photoData.link
             fullScreenPhotoVC?.image = self.selectedImage
-            //fullScreenPhotoVC?.file = self
         }
     }
 }

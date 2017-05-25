@@ -357,7 +357,7 @@ public class HATAccountService: NSObject {
     public class func triggerHatUpdate(userDomain: String, completion: @escaping (Void) -> Void) -> Void {
         
         // define the url to connect to
-        let url = "https://notables.hubofallthings.com/api/bulletin/tickle?"
+        let url = "https://notables.hubofallthings.com/api/bulletin/tickle"
         
         // make the request
         Alamofire.request(url, method: .get, parameters: ["phata": userDomain], encoding: Alamofire.URLEncoding.default, headers: nil).responseString { response in

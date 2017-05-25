@@ -20,9 +20,9 @@ class DataStoreTableViewController: UITableViewController, UserCredentialsProtoc
     // MARK: - Variables
 
     /// The sections of the table view
-    private let sections: [[String]] = [["Name", "Info", "Contact Info"], ["Nationality"], ["Relationship and Household"], ["Education"]]
+    private let sections: [[String]] = [["Name", "Info", "Contact Info"]]// ["Nationality"], ["Relationship and Household"], ["Education"]]
     /// The headers of the table view
-    private let headers: [String] = ["My Profile", "", "", ""]
+    private let headers: [String] = ["My Profile"]
     
     /// The profile, used in PHATA table
     private var profile: HATProfileObject? = nil

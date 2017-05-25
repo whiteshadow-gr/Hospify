@@ -119,7 +119,7 @@ public class HATFileService: NSObject {
         let url: String = "https://" + userDomain + "/api/v2/files/allowAccessPublic/" + fileID
         let headers = ["X-Auth-Token" : token]
         
-        HATNetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: headers, completion: { (r) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: headers, completion: { (r) -> Void in
             // handle result
             switch r {
                 
@@ -163,7 +163,7 @@ public class HATFileService: NSObject {
         let url: String = "https://" + userDomain + "/api/v2/files/restrictAccessPublic/" + fileID
         let headers = ["X-Auth-Token" : token]
         
-        HATNetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: headers, completion: { (r) -> Void in
+        HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: headers, completion: { (r) -> Void in
             // handle result
             switch r {
                 
@@ -267,7 +267,7 @@ public class HATFileService: NSObject {
         let uploadURL = "https://" + userDomain + "/api/v2/files/upload"
         
         // create parameters and headers
-        let parameters: Dictionary<String, String> = HATJSONHelper.createFileUploadingJSONFrom(fileName: fileName, tags: tags) as! Dictionary<String, String>
+        let parameters: Dictionary<String, Any> = HATJSONHelper.createFileUploadingJSONFrom(fileName: fileName, tags: tags)
         let header = ["X-Auth-Token" : token]
         
         // make async request

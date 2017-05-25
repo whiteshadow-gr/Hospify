@@ -62,7 +62,7 @@ CHECKOUT OPTIONS:
     :commit: cc3b6524156f8e0d8653688423fba2fdf0944bc8
     :git: https://github.com/ribl/FBAnnotationClusteringSwift/
   HatForIOS:
-    :commit: 9a17c4af85a277fbe42852a289c02beebe884eaa
+    :commit: 489fdbb13052ca9768691e5be4b08dd953c36f00
     :git: https://github.com/whiteshadow-gr/HatForIOS.git
 
 SPEC CHECKSUMS:

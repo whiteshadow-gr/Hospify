@@ -27,6 +27,9 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
     /// An IBOutlet for handling the info label of the cell
     @IBOutlet weak var infoLabel: UILabel!
     
+    /// An IBOutlet for handling the sign up button
+    @IBOutlet weak var signUpButton: UIButton!
+    
     // MARK: - Set up cell
     
     /**
@@ -51,10 +54,25 @@ class OnboardingTileCollectionViewCell: UICollectionViewCell {
         // set cell's description
         cell.infoLabel.text = self.createInfoStringFromData(hatProvider: hatProvider)
         
+        cell.signUpButton.addBorderToButton(width: 1, color: .teal)
+        
         // get image from url and set it to the image view
         if let url: URL = URL(string: "https://hatters.hubofallthings.com/assets" + hatProvider.illustration) {
             
             cell.hatProviderImage.downloadedFrom(url: url, userToken: userToken, progressUpdater: nil, completion: nil)
+        }
+        
+        if hatProvider.price != 0 || hatProvider.kind.kind == "External" {
+            
+            cell.isUserInteractionEnabled = false
+            
+            DispatchQueue.main.async {
+                
+                let view = UIView(frame: cell.contentView.frame)
+                view.alpha = 0.5
+                view.backgroundColor = .gray
+                cell.contentView.addSubview(view)
+            }
         }
         
         // return cell

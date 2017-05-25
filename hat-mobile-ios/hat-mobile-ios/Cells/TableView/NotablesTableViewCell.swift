@@ -142,7 +142,10 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         }, completion: {
             
             cell.ringProgressBar.isHidden = true
-            cell.fullSizeImage = cell.attachedImage.image!
+            if cell.attachedImage.image != nil {
+                
+                cell.fullSizeImage = cell.attachedImage.image!
+            }
             cell.attachedImage.cropImage(width: cell.attachedImage.frame.width, height: cell.attachedImage.frame.height)
             
             var tempNote = note

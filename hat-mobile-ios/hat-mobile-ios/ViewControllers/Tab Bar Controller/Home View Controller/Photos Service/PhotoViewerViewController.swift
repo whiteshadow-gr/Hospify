@@ -303,16 +303,22 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
                     },
                     completion: {[weak self] in
             
-                        if self != nil && cell?.image.image != nil && self?.files[indexPath.row].lastUpdated != nil && (self?.images.count)! > indexPath.row - 1 {
-                        
-                            cell?.image.cropImage(width: (cell?.image.frame.size.width)!, height: (cell?.image.frame.size.height)!)
+                        if self != nil && cell?.image.image != nil {
                             
-                            if (self?.images.count)! > indexPath.row {
+                            if self!.files.count - 1 > indexPath.row {
                                 
-                                self!.images[indexPath.row] = ((cell?.image.image)!, (self?.files[indexPath.row].lastUpdated)!)
-                            } else {
-                                
-                                self?.images.append(((cell?.image.image)!, (self?.files[indexPath.row].lastUpdated)!))
+                                if self!.files[indexPath.row].lastUpdated != nil && self!.images.count > 0 {
+                                    
+                                    cell?.image.cropImage(width: (cell?.image.frame.size.width)!, height: (cell?.image.frame.size.height)!)
+                                    
+                                    if self!.images.count > indexPath.row {
+                                        
+                                        self!.images[indexPath.row] = ((cell?.image.image)!, (self!.files[indexPath.row].lastUpdated)!)
+                                    } else {
+                                        
+                                        self!.images.append(((cell?.image.image)!, (self!.files[indexPath.row].lastUpdated)!))
+                                    }
+                                }
                             }
                         }
                         

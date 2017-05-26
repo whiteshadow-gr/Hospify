@@ -203,6 +203,7 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
             if self.sections[indexPath.section][indexPath.row] == "Log Out" {
                 
                 cell.textLabel?.textColor = .red
+                cell.isUserInteractionEnabled = true
             } else if self.sections[indexPath.section][indexPath.row] == "Version" {
                 
                 cell.textLabel?.textColor = .lightGray

@@ -398,6 +398,9 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                                     // set image to nil
                                     weakSelf2.facebookProfileImage = nil
                                 }
+                            } else {
+                                
+                                weakSelf2.facebookProfileImage?.image = UIImage(named: "Facebook")
                             }
                             
                             // refresh user token
@@ -407,7 +410,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                             }
                         }
                         // fetch facebook image
-                        HATFacebookService.fetchProfileFacebookPhoto(authToken: weakSelf2.userToken, userDomain: weakSelf2.userDomain, parameters: [:], success: success)
+                        HATFacebookService.fetchProfileFacebookPhoto(authToken: weakSelf2.userToken, userDomain: weakSelf2.userDomain, parameters: ["starttime" : "0"], success: success)
                     }
                 }
             }

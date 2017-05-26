@@ -39,7 +39,13 @@ extension UIImageView {
             
             if let weakSelf = self {
                 
-                weakSelf.image = image
+                if image != nil {
+                    
+                    weakSelf.image = image
+                } else {
+                    
+                    weakSelf.image = UIImage(named: "Image Deleted")
+                }
             }
             
             completion?()

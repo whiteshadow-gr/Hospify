@@ -376,6 +376,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                             
                             self!.createClassicOKAlertWith(alertMessage: "There was an error with the uploading of the file, please try again later", alertTitle: "Upload failed", okTitle: "OK", proceedCompletion: {})
                             
+                            self?.restorePublishButtonToPreviousState(isUserInteractionEnabled: true)
                             _ = CrashLoggerHelper.hatTableErrorLog(error: error)
                         }
                 })
@@ -1344,18 +1345,25 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 cell?.ringProgressCircle.ringColor = .white
                 
                 self.imageSelected.downloadedFrom(url: url, userToken: userToken,
-                                                  progressUpdater: {progress in
+                    progressUpdater: {progress in
                                                     
-                                                    let completion = Float(progress)
-                                                    cell?.ringProgressCircle.updateCircle(end: CGFloat(completion), animate: Float((cell?.ringProgressCircle.endPoint)!), to: completion, removePreviousLayer: false)
-                },
-                                                  completion: {() in
+                        let completion = Float(progress)
+                        cell?.ringProgressCircle.updateCircle(end: CGFloat(completion), animate: Float((cell?.ringProgressCircle.endPoint)!), to: completion, removePreviousLayer: false)
+                    },
+                    completion: {[weak self]() in
                                                     
-                                                    cell?.ringProgressCircle.isHidden = true
-                                                    self.imagesToUpload[0] = (self.imageSelected.image!)
-                                                    cell?.selectedImage.image = self.imageSelected.image
-                                                    cell?.selectedImage.cropImage(width: (cell?.frame.width)!, height: (cell?.frame.height)!)
-                })
+                        cell?.ringProgressCircle.isHidden = true
+                        
+                        if let weakSelf = self {
+                            
+                            if weakSelf.imagesToUpload.count > 0 && weakSelf.imageSelected.image != nil {
+                                
+                                weakSelf.imagesToUpload[0] = (weakSelf.imageSelected.image!)
+                                cell?.selectedImage.image = weakSelf.imageSelected.image
+                                cell?.selectedImage.cropImage(width: (cell?.frame.width)!, height: (cell?.frame.height)!)
+                            }
+                        }
+                    })
             }
         }
         

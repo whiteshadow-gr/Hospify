@@ -327,7 +327,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 
                 self.showProgressRing()
 
-                HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, tags: ["iphone", "notes"], progressUpdater: {[weak self](completion) -> Void in
+                HATAccountService.uploadFileToHATWrapper(token: userToken, userDomain: userDomain, fileToUpload: self.imageSelected.image!, tags: ["iphone", "notes", "photo"], progressUpdater: {[weak self](completion) -> Void in
                     
                         if self != nil {
                             
@@ -725,11 +725,17 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.imagesToUpload.removeAll()
         }
         
-        self.imageSelected.image = (info[UIImagePickerControllerOriginalImage] as! UIImage)
-        
-        self.imagesToUpload.append(self.imageSelected.image!)
-        self.collectionView.isHidden = false
-        self.collectionView.reloadData()
+        if let image = (info[UIImagePickerControllerOriginalImage] as? UIImage) {
+            
+            self.imageSelected.image = image
+            
+            self.imagesToUpload.append(image)
+            self.collectionView.isHidden = false
+            self.collectionView.reloadData()
+        } else {
+            
+            self.createClassicOKAlertWith(alertMessage: "Please select only images", alertTitle: "Wrong file type", okTitle: "OK", proceedCompletion: {})
+        }
     }
     
     // MARK: - Check if twitter is available

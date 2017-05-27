@@ -11,7 +11,6 @@
  */
 
 import HatForIOS
-import Alamofire
 
 // MARK: Class
 
@@ -115,7 +114,25 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
                     for (index, file) in filesReceived.enumerated() {
                         
                         let image = UIImage(named: "Image Placeholder")
-                        self.files.append(file)
+                        
+                        if !file.tags.contains("photo") {
+                            
+                            var tempFile = file
+                            tempFile.tags.append("photo")
+                            HATFileService.updateParametersOfFile(fileID: tempFile.fileID, fileName: tempFile.name, token: userToken!, userDomain: userDomain, tags: tempFile.tags, completion: {[weak self] file2 in
+                                
+                                if self != nil {
+                                    
+                                    self!.files.append(file2.0)
+                                }
+                            }, errorCallback: {error in
+                            
+                                _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                            })
+                        } else {
+                            
+                            self.files.append(file)
+                        }
                         
                         if cachedImages.count > 0 {
                             
@@ -223,7 +240,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         
         self.showProgressRing()
         
-        HATAccountService.uploadFileToHATWrapper(token: self.userToken, userDomain: self.userDomain, fileToUpload: image, tags: ["iphone", "viewer"],
+        HATAccountService.uploadFileToHATWrapper(token: self.userToken, userDomain: self.userDomain, fileToUpload: image, tags: ["iphone", "viewer", "photo"],
             progressUpdater: {progress in
                 
                 self.loadingScr?.updateView(completion: progress, animateFrom: Float((self.loadingScr?.progressRing.endPoint)!), removePreviousRingLayer: false)

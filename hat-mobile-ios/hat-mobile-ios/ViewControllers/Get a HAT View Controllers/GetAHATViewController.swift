@@ -10,13 +10,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import Stripe
 import HatForIOS
 
 // MARK: Class
 
 /// Get A hat view controller, used in onboarding of new users
-class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, STPAddCardViewControllerDelegate {
+class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     // MARK: - Variables
     
@@ -152,21 +151,6 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
                 self.token = ""
                 self.dismiss(animated: true, completion: nil)
                 self.performSegue(withIdentifier: "stripeSegue", sender: self)
-            } else {
-                
-                // config the STPPaymentConfiguration accordingly
-                let config = STPPaymentConfiguration.shared()
-                config.requiredBillingAddressFields = .full
-                config.smsAutofillDisabled = true
-                
-                // config the STPAddCardViewController in order to present it to the user
-                let addCardViewController = STPAddCardViewController(configuration: config, theme: .default())
-                addCardViewController.delegate = self
-                
-                // STPAddCardViewController must be shown inside a UINavigationController.
-                // show the STPAddCardViewController
-                let navigationController = UINavigationController(rootViewController: addCardViewController)
-                self.present(navigationController, animated: true, completion: nil)
             }
         }
         
@@ -232,20 +216,6 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         return CGSize(width: self.collectionView.frame.width, height: self.view.frame.height - self.collectionView.frame.origin.y)
-    }
-    
-    // MARK: - Stripe methods
-    
-    func addCardViewControllerDidCancel(_ addCardViewController: STPAddCardViewController) {
-        
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    func addCardViewController(_ addCardViewController: STPAddCardViewController, didCreateToken token: STPToken, completion: @escaping STPErrorBlock) {
-        
-        self.token = token.tokenId
-        self.dismiss(animated: true, completion: nil)
-        self.performSegue(withIdentifier: "stripeSegue", sender: self)
     }
 
     // MARK: - Navigation

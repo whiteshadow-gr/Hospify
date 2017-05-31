@@ -11,7 +11,6 @@
  */
 
 import HatForIOS
-import SwiftyJSON
 
 // MARK: Class
 
@@ -43,7 +42,7 @@ class PhataTableViewController: UITableViewController, UserCredentialsProtocol {
     
     func tableCreated(dictionary: Dictionary<String, Any>, renewedToken: String?) {
         
-        self.profile = HATProfileObject(from: dictionary as! Dictionary<String, JSON>)
+        HATPhataService.getProfileFromHAT(userDomain: userDomain, userToken: userToken, successCallback: getProfile, failCallback: logError)
     }
     
     private func logError(error: HATTableError) {

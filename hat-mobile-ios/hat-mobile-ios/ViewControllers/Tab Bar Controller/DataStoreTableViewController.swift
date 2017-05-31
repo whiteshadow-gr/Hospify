@@ -38,16 +38,37 @@ class DataStoreTableViewController: UITableViewController, UserCredentialsProtoc
         
         super.viewWillAppear(animated)
         
-        HATPhataService.getProfileFromHAT(userDomain: userDomain, userToken: userToken, successCallback: {[weak self]receivedProfile in
+        HATPhataService.getProfileFromHAT(userDomain: userDomain, userToken: userToken, successCallback: getProfile, failCallback: logError)
+    }
+    
+    func tableCreated(dictionary: Dictionary<String, Any>, renewedToken: String?) {
+        
+        HATPhataService.getProfileFromHAT(userDomain: userDomain, userToken: userToken, successCallback: getProfile, failCallback: logError)
+    }
+    
+    private func getProfile(receivedProfile: HATProfileObject) {
+        
+        self.profile = receivedProfile
+    }
+    
+    private func logError(error: HATTableError) {
+        
+        self.profile = HATProfileObject()
+        
+        switch error {
+        case .tableDoesNotExist:
             
-            if self != nil {
+            let tableJSON = HATJSONHelper.createProfileTableJSON()
+            HATAccountService.createHatTable(userDomain: userDomain, token: userToken, notablesTableStructure: tableJSON, failed: {(error) in
                 
-                self!.profile = receivedProfile
-            }
-        }, failCallback: { error in
+                _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+            })(
                 
+                HATAccountService.checkHatTableExistsForUploading(userDomain: userDomain, tableName: "profile", sourceName: "rumpel", authToken: userToken, successCallback: tableCreated, errorCallback: logError)
+            )
+        default:
             _ = CrashLoggerHelper.hatTableErrorLog(error: error)
-        })
+        }
     }
 
     override func didReceiveMemoryWarning() {

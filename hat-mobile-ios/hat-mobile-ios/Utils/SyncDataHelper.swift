@@ -227,9 +227,16 @@ class SyncDataHelper {
             
             switch r {
                 
-            case .isSuccess(let isSuccess, _, let result, _):
+            case .isSuccess(let isSuccess, let statusCode, let result, _):
                 
                 if isSuccess{
+                    
+                    // 404 error is thrown when the datasource does not exist
+                    if statusCode == 404 {
+                        
+                        // the DS does not exist, we can configure a new datasource
+                        self.ConfigureANewDatasource(userHATAccessToken, dataPoints: dataPoints)
+                    }
                     
                     // belt and braces.. check we have an id in the returned JSON
                     if result[checkResult].exists() {
@@ -265,23 +272,15 @@ class SyncDataHelper {
             // inform user that there was an error, except the status is 404 that is to be expected
             case .error(let error, let statusCode):
                 
-                // 404 error is thrown when the datasource does not exist
-                if statusCode == 404 {
+                let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
+                
+                // else it's a more general error
+                if (self.dataSyncDelegate != nil) {
                     
-                    // the DS does not exist, we can configure a new datasource
-                    self.ConfigureANewDatasource(userHATAccessToken, dataPoints: dataPoints)
-                } else {
-                    
-                    let msg: String = NetworkHelper.ExceptionFriendlyMessage(statusCode, defaultMessage: error.localizedDescription)
-                    
-                    // else it's a more general error
-                    if (self.dataSyncDelegate != nil) {
-                        
-                        self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
-                    }
-                    
-                    _ = CrashLoggerHelper.customErrorLog(message: msg, error: error)
+                    self.dataSyncDelegate?.onDataSyncFeedback(false, message: msg)
                 }
+                
+                _ = CrashLoggerHelper.customErrorLog(message: msg, error: error)
             }
         }
     }

@@ -29,7 +29,7 @@ public class HATLocationService: NSObject {
         
         if let escapedUserHATDomain: String = userHATDomain.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) {
             
-            let url: String = "https://marketsquare.hubofallthings.com/api/dataplugs/" +
+            let url: String = "https://dex.hubofallthings.com/api/dataplugs/" +
                 dataPlugID + "/" + "connect?hat=" + escapedUserHATDomain
             
             return url

@@ -15,7 +15,7 @@ import Alamofire
 // MARK: Class
 
 public class HATFileService: NSObject {
-
+    
     // MARK: - Functions
     
     /**
@@ -27,19 +27,29 @@ public class HATFileService: NSObject {
      - parameter successCallback: An @escaping ([FileUploadObject]) -> Void function to execute when the server has returned the files we were looking for
      - parameter errorCallBack: An @escaping (HATError) -> Void to execute when something went wrong
      */
-    public class func searchFiles(userDomain: String, token: String, status: String? = "Completed", tags: [String]? = ["iphone"], successCallback: @escaping ([FileUploadObject], String?) -> Void, errorCallBack: @escaping (HATError) -> Void) {
+    public class func searchFiles(userDomain: String, token: String, status: String? = "Completed", tags: [String]? = [""], successCallback: @escaping ([FileUploadObject], String?) -> Void, errorCallBack: @escaping (HATError) -> Void) {
         
         let url: String = "https://" + userDomain + "/api/v2/files/search"
         let headers = ["X-Auth-Token" : token]
         
-        let parameters: Dictionary <String, Any> = ["source" : "iPhone",
+        var parameters: Dictionary <String, Any> = ["source" : "iPhone",
                                                     "name": "",
-                                                    "tags" : tags!,
                                                     "status" : [
                                                         
                                                         "status" : status!,
                                                         "size" : 0]
-                                                    ]
+        ]
+        if tags! != [""] {
+            
+            parameters = ["source" : "iPhone",
+                          "name" : "",
+                          "tags" : tags!,
+                          "status" : [
+                            
+                            "status" : status!,
+                            "size" : 0]
+            ]
+        }
         
         HATNetworkHelper.AsynchronousRequest(url, method: .post, encoding: Alamofire.JSONEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r) -> Void in
             
@@ -84,7 +94,7 @@ public class HATFileService: NSObject {
         
         let url: String = "https://" + userDomain + "/api/v2/files/file/" + fileID
         let headers = ["X-Auth-Token" : token]
-
+        
         HATNetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: headers, completion: { (r) -> Void in
             // handle result
             switch r {
@@ -331,7 +341,7 @@ public class HATFileService: NSObject {
     public class func updateParametersOfFile(fileID: String, fileName: String, token: String, userDomain: String, tags: [String], completion: @escaping (FileUploadObject, String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
         
         // create the url
-        let updateURL = "https://" + userDomain + "/api/v2/files/" + fileID
+        let updateURL = "https://" + userDomain + "/api/v2/files/file/" + fileID
         
         // create parameters and headers
         let parameters: Dictionary<String, Any> = HATJSONHelper.createFileUploadingJSONFrom(fileName: fileName, tags: tags)

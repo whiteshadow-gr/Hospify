@@ -42,7 +42,7 @@ extension HATDataPlugsService: UserCredentialsProtocol {
         }
         
         // get token async
-        HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: checkPlugForToken, failCallBack: { (error) in
+        HATService.getApplicationTokenFor(serviceName: "dex", userDomain: userDomain, token: userToken, resource: "https://dex.hubofallthings.com", succesfulCallBack: checkPlugForToken, failCallBack: { (error) in
             
             tokenErrorCallback()
             CrashLoggerHelper.JSONParsingErrorLogWithoutAlert(error: error)
@@ -67,7 +67,7 @@ extension HATDataPlugsService: UserCredentialsProtocol {
             }
             
             // get applicationToken async
-            HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: { (error) in
+            HATService.getApplicationTokenFor(serviceName: "dex", userDomain: userDomain, token: userToken, resource: "https://dex.hubofallthings.com", succesfulCallBack: offerClaimForToken, failCallBack: { (error) in
                 
                 tokenErrorCallback()
                 CrashLoggerHelper.JSONParsingErrorLogWithoutAlert(error: error)

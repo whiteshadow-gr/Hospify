@@ -30,6 +30,10 @@ extension UIColor {
     
     /**
      Returns an UIColor object from a RGB value
+     
+     - parameter rgbValue: The rgb value as UInt
+     
+     - returns: A UIColor based on the rgbValue
      */
     public class func fromRGB(_ rgbValue: UInt) -> UIColor {
         

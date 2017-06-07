@@ -41,16 +41,32 @@ class DataStoreTableViewController: UITableViewController, UserCredentialsProtoc
         HATPhataService.getProfileFromHAT(userDomain: userDomain, userToken: userToken, successCallback: getProfile, failCallback: logError)
     }
     
+    /**
+     If the profile table has been created get the profile values from HAT
+     
+     - parameter dictionary: The dictionary returned from hat
+     - parameter renewedToken: The new token returned from hat
+     */
     func tableCreated(dictionary: Dictionary<String, Any>, renewedToken: String?) {
         
         HATPhataService.getProfileFromHAT(userDomain: userDomain, userToken: userToken, successCallback: getProfile, failCallback: logError)
     }
     
+    /**
+     Gets profile from hat and saves it to a local variable
+     
+     - parameter receivedProfile: The received HATProfileObject from HAT
+     */
     private func getProfile(receivedProfile: HATProfileObject) {
         
         self.profile = receivedProfile
     }
     
+    /**
+     Logs the error occured
+     
+     - parameter error: The HATTableError occured
+     */
     private func logError(error: HATTableError) {
         
         self.profile = HATProfileObject()
@@ -147,6 +163,7 @@ class DataStoreTableViewController: UITableViewController, UserCredentialsProtoc
      
      - parameter cell: The cell to set up
      - parameter indexPath: The index path of the cell
+     
      - returns: The set up cell
      */
     func setUpCell(cell: UITableViewCell, indexPath: IndexPath) -> UITableViewCell {

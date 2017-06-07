@@ -25,6 +25,7 @@ extension SFSafariViewController {
      - parameter viewController: The view controller to present the safari
      - parameter animated: A bool value to enable or disable the animated presentation
      - parameter completion: An optional completion handler to execute some code after presenting the safari
+     
      - returns: An optional SFSafariViewController. In case the string cannot be converted to URL return nil, else returns the SFSafariViewController
      */
     class func openInSafari(url: String, on viewController: UIViewController, animated: Bool, completion: ((Void) -> Void)?) -> SFSafariViewController? {

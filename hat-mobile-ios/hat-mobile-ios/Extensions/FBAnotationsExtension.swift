@@ -27,8 +27,9 @@ extension FBClusteringManager {
      Fetch the DataPoints in a background thread and update the UI once complete
      
      - parameter predicate: The predicate to filter the data points with
+     - parameter mapView: The mapView to show the cluster points to
      */
-    func fetchAndClusterPoints(_ predicate: NSPredicate, mapView: MKMapView) -> Void {
+    func fetchAndClusterPoints(_ predicate: NSPredicate, mapView: MKMapView) {
         
         DispatchQueue.global().async { [weak self] () -> Void in
             
@@ -59,20 +60,22 @@ extension FBClusteringManager {
      Adds the pins to the map
      
      - parameter annottationArray: The anottations, pins, to add to the map
+     - parameter mapView: The mapView to show the cluster points to
      */
     func addPointsToMap(annottationArray: [FBAnnotation], mapView: MKMapView) {
         
         // we must set annotations to replace old ones
         self.removeAll()
         self.add(annotations: annottationArray)
-        // force map changed to refresh the map and any pins
-        //mapView(self.mapView, regionDidChangeAnimated: true)
         
         DispatchQueue.main.async(execute: { [weak self] () -> Void in
             
-            if(annottationArray.count > 0) {
+            if let weakSelf = self {
                 
-                self!.fitMapViewToAnnotaionList(annottationArray, mapView: mapView)
+                if (annottationArray.count > 0) {
+                    
+                    weakSelf.fitMapViewToAnnotaionList(annottationArray, mapView: mapView)
+                }
             }
         })
     }
@@ -105,6 +108,7 @@ extension FBClusteringManager {
      Updates map view with the annotations provided
      
      - parameter annotations: The annotations to add on the map in an array of FBAnnotation
+     - parameter mapView: The mapView to show the cluster points to
      */
     func fitMapViewToAnnotaionList(_ annotations: [FBAnnotation], mapView: MKMapView) -> Void {
         

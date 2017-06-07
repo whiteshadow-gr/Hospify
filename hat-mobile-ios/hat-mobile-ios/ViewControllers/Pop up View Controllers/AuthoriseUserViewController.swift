@@ -83,6 +83,7 @@ class AuthoriseUserViewController: UIViewController, UserCredentialsProtocol {
      Sets up a new AuthoriseUserViewController in order to present it to one UIView
      
      - parameter view: The UIView to show the view controller
+     
      - returns: A ready to use AuthoriseUserViewController
      */
     class func setupAuthoriseViewController(view: UIView) -> AuthoriseUserViewController {

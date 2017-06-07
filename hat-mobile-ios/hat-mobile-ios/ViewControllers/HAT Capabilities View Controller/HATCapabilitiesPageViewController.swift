@@ -71,6 +71,7 @@ class HATCapabilitiesPageViewController: UIPageViewController, UIPageViewControl
      Create the view controller to present
      
      - parameter itemIndex: The number of the page to create
+     
      - returns: An optional HATCapabilitiesViewController
      */
     private func getItemController(itemIndex: Int) -> HATCapabilitiesViewController? {

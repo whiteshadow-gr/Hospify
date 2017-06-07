@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// The social feed collection view cell class
-class SocialFeedCollectionViewCell: UICollectionViewCell {
+class SocialFeedCollectionViewCell: UICollectionViewCell, UserCredentialsProtocol {
     
     // MARK: - IBOutlets
     
@@ -42,6 +42,7 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
      - parameter cell: The cell to set up
      - parameter indexPath: The index path of the currect cell
      - parameter posts: The post to display in this cell
+     
      - returns: A formatted social feed cell of type SocialFeedCollectionViewCell
      */
     class func setUpCell(cell: SocialFeedCollectionViewCell, indexPath: IndexPath, posts: Any) -> SocialFeedCollectionViewCell {
@@ -61,8 +62,6 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
             if post.data.posts.type == "photo" {
                 
                 if let url = URL(string: post.data.posts.fullPicture) {
-                    
-                    let userToken = HATAccountService.getUsersTokenFromKeychain()
                     
                     cell.socialNetworkImage.downloadedFrom(url: url, userToken: userToken, progressUpdater: nil, completion: nil)
                 }
@@ -107,6 +106,7 @@ class SocialFeedCollectionViewCell: UICollectionViewCell {
      
      - parameter data: A FacebookDataPostsSocialFeedObject object that contains the data we need
      - parameter textView: The textview to setup
+     
      - returns: An already set up textview
      */
     private class func constructMessageLabelFrom(data: HATFacebookDataPostsSocialFeedObject, for textView: UITextView) -> UITextView {

@@ -868,6 +868,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
      Combines an Array of strings in one string
      
      - parameter array: The array that has all the strings we want to combine
+     
      - returns: A String
      */
     private func constructStringFromArray(array: [String]) -> String {

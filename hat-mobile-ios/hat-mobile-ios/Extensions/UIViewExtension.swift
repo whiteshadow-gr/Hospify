@@ -37,6 +37,14 @@ extension UIView {
     
     /**
      Adds a floating view while fetching the data plugs
+     
+     - parameter frame: The frame of the view
+     - parameter color: The background color of the view
+     - parameter cornerRadius: The corner radius of the view
+     - parameter view: The view to create the floating view to
+     - parameter text: The text to display in the floating view
+     - parameter textColor: The color of the text in the floating view
+     - parameter font: The font of the text in the floating view
      */
     class func createLoadingView(with frame: CGRect, color: UIColor, cornerRadius: CGFloat, in view: UIView, with text: String, textColor: UIColor, font: UIFont) -> UIView {
         

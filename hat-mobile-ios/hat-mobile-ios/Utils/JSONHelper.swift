@@ -23,7 +23,8 @@ struct JSONHelper {
      Creates the json file to purchase a HAT
      
      - parameter purchaseModel: The purchase model with all the necessary values
-     - returns: A Dictionary <String, Any>
+     
+     - returns: A Dictionary with the values from the Purchase model with type of <String, Any>
      */
     static func createPurchaseJSONFrom(purchaseModel: PurchaseModel) -> Dictionary <String, Any> {
         

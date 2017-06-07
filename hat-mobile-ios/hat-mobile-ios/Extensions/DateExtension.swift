@@ -19,9 +19,7 @@ extension Date {
     // MARK: - Time ago
     
     /**
-     Takes a NSDate and returns a string of time ago
-     
-     - parameter date: NSDate object
+     Returns a string of time ago
      
      - returns: a formatted string of time-ago
      */
@@ -100,6 +98,7 @@ extension Date {
         var components = DateComponents()
         components.day = 1
         components.second = -1
+        
         return Calendar.current.date(byAdding: components, to: self.startOfTheDay())
     }
 }

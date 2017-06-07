@@ -28,10 +28,7 @@ struct MapsHelper {
         
         let preferences = UserDefaults.standard
         
-        if preferences.object(forKey: Constants.Preferences.UserNewDefaultAccuracy) != nil {
-            
-            // already done
-        } else {
+        if preferences.object(forKey: Constants.Preferences.UserNewDefaultAccuracy) == nil {
             
             // if none, best or 10m we go to 100m accuracy instead
             let existingAccuracy:CLLocationAccuracy = preferences.object(forKey: Constants.Preferences.MapLocationAccuracy) as? CLLocationAccuracy ?? kCLLocationAccuracyHundredMeters
@@ -45,9 +42,7 @@ struct MapsHelper {
             preferences.set("UserNewDefaultAccuracy", forKey: Constants.Preferences.UserNewDefaultAccuracy)
         }
         
-        let newAccuracy:CLLocationAccuracy = preferences.object(forKey: Constants.Preferences.MapLocationAccuracy) as? CLLocationAccuracy ?? kCLLocationAccuracyHundredMeters
-        
-        return newAccuracy
+        return preferences.object(forKey: Constants.Preferences.MapLocationAccuracy) as? CLLocationAccuracy ?? kCLLocationAccuracyHundredMeters
     }
     
     /**

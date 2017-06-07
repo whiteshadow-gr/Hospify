@@ -34,7 +34,8 @@ class HomeCollectionViewCell: UICollectionViewCell {
      
      - parameter cell: The UICollectionViewCell to set up
      - parameter indexPath: The index path of the cell
-     - parameter hatProvider: The object to take the values from
+     - parameter object: The HomeScreenObject to take the values from
+     - parameter orientation: The current orientation of the phone
      
      - returns: An UICollectionViewCell
      */

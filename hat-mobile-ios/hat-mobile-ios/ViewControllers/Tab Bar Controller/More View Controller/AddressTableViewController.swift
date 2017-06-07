@@ -192,6 +192,8 @@ class AddressTableViewController: UITableViewController, UserCredentialsProtocol
         return cell
     }
     
+    // MARK: - UITextViewDelegate
+    
     func textFieldValueChanged(textField: UITextField) {
         
         var text = textField.text!
@@ -255,6 +257,13 @@ class AddressTableViewController: UITableViewController, UserCredentialsProtocol
         }
     }
     
+    // MARK: - Get countries
+    
+    /**
+     Gets all the countries available
+     
+     - returns: An array of strings for the countries found
+     */
     private func getCountries() -> [String] {
         
         let locale: NSLocale = NSLocale.current as NSLocale

@@ -127,7 +127,6 @@ class PhotosHelper: NSObject {
      Saves the image to the photo library
      
      - parameter image: The image to save to the photo library
-     - parameter metadata: The metadata of the image to save
      */
     func saveImage(image: UIImage) {
         

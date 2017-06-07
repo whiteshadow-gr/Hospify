@@ -70,6 +70,7 @@ extension UIAlertController {
      - parameter alertTitle: The desired alert title
      - parameter okTitle: The desired button title
      - parameter proceedCompletion: The desired function to execute on button press
+     
      - returns: A UIAlertController ready to be presented from the view
      */
     class func createOKAlert(alertMessage: String, alertTitle: String, okTitle: String, proceedCompletion: @escaping () -> Void) -> UIAlertController {

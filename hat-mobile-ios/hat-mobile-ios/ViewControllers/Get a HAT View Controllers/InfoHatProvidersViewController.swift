@@ -72,6 +72,7 @@ class InfoHatProvidersViewController: UIViewController {
      Creates and returns an InfoHatProvidersViewController
      
      - parameter storyBoard: The storyboard to init the view controller from
+     
      - returns: An optional InfoHatProvidersViewController
      */
     class func setUpInfoHatProviderViewControllerPopUp(from storyBoard: UIStoryboard) -> InfoHatProvidersViewController? {

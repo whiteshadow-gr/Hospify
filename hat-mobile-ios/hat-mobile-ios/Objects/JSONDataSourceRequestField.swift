@@ -10,7 +10,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-// MARK: Struct
+// MARK: Class
 
 /// The request field structure
 class JSONDataSourceRequestField {

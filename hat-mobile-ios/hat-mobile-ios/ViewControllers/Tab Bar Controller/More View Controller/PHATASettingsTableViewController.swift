@@ -113,6 +113,8 @@ class PHATASettingsTableViewController: UITableViewController, UserCredentialsPr
         })
     }
     
+    // MARK: - View Contoller functions
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()

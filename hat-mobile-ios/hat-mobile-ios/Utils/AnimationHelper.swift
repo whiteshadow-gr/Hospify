@@ -90,6 +90,7 @@ struct AnimationHelper {
      Adds a blured UIView to the view
      
      - parameter view: The view to show the blur to
+     
      - returns: A UIVisualEffectView
      */
     static func addBlurToView(_ view: UIView) -> UIVisualEffectView {

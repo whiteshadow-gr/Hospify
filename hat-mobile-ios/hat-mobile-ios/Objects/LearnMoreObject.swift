@@ -12,7 +12,7 @@
 
 import UIKit
 
-// MARK: Struct
+// MARK: Class
 
 /// LearnMoreObject used in learn more button in the login screen
 class LearnMoreObject {
@@ -145,6 +145,7 @@ class LearnMoreObject {
      - parameter pageIndex: The page number to set up the title for
      - parameter learnMoreObject: The object from which to take the data
      - parameter learnMoreButton: The button to modify according to the data if need be
+     
      - returns: An optional NSAttributedString. If page index is wrong it returns nil
      */
     class func setUpTitleString(for pageIndex: Int, learnMoreObject: LearnMoreObject, learnMoreButton: UIButton) -> NSAttributedString? {

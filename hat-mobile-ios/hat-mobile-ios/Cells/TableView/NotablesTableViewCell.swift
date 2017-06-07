@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// the notables table view cell class
-class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
+class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -25,7 +25,8 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
     /// an UIImage to hold the full size image
     var fullSizeImage: UIImage? = nil
     
-    var notesDelegate: NotablesViewController? = nil
+    /// a delegate to update the value of the cell
+    weak var notesDelegate: NotablesViewController? = nil
     
     // MARK: - IBOutlets
 
@@ -55,6 +56,7 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
      - parameter cell: The cell to set up
      - parameter note: The data to show on the cell
      - parameter indexPath: The index path of the cell
+     
      - returns: NotablesTableViewCell
      */
     func setUpCell(_ cell: NotablesTableViewCell, note: HATNotesData, indexPath: IndexPath) -> NotablesTableViewCell {
@@ -132,8 +134,6 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
         cell.ringProgressBar.ringRadius = 10
         cell.ringProgressBar.ringLineWidth = 4
         cell.ringProgressBar.ringColor = .white
-        
-        let userToken = HATAccountService.getUsersTokenFromKeychain()
         
         cell.attachedImage.downloadedFrom(url: url, userToken: userToken, progressUpdater: { progress in
             
@@ -220,6 +220,8 @@ class NotablesTableViewCell: UITableViewCell, UICollectionViewDataSource {
      
      - parameter date: The date to add to the string
      - parameter shared: A bool value defining if the note is shared
+     - parameter publicUntil: An optional Date value defining the date that this note will turn to private
+     
      - returns: An NSAttributesString with 2 different colors
      */
     private func formatInfoLabel(date: String, shared: Bool, publicUntil: Date?) -> NSAttributedString {

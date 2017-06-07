@@ -186,6 +186,7 @@ class DataStoreRelationshipAndHouseholdTableViewController: UITableViewControlle
      - parameter cell: The cell to set up
      - parameter indexPath: The index path of the cell
      - parameter nationality: The nationality object used to set up the cell
+     
      - returns: The set up cell
      */
     func setUpCell(cell: PhataTableViewCell, indexPath: IndexPath, relationshipAndHousehold: HATProfileRelationshipAndHouseholdObject) -> UITableViewCell {

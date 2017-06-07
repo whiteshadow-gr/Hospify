@@ -25,18 +25,11 @@ struct KeychainHelper {
      - parameter String: the key
      - parameter String: the value
      
-     - returns: Bool
+     - returns: The result of the saving into keychain
      */
     static func SetKeychainValue(key: String, value: String) -> Bool {
         
-        if KeychainSwift().set(value, forKey: key, withAccess: .accessibleWhenUnlocked) {
-            
-            // Keychain item is saved successfully
-            return true
-        } else {
-            
-            return false
-        }
+        return KeychainSwift().set(value, forKey: key, withAccess: .accessibleWhenUnlocked)
     }
     
     /**

@@ -22,6 +22,7 @@ extension HATProviderObject {
      Sets up the string to display on the get a hat info view controller
      
      - parameter hatProvider: A hatProvider object to take the data from
+     
      - returns: A NSAttributedString based on the hatProvider object
      */
     public static func setupLabelForInfoViewController(hatProvider: HATProviderObject) -> NSAttributedString {

@@ -29,6 +29,7 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
     /// The file url, used to show the pdf file for terms of service
     private var fileURL: String?
     
+    /// A mail ViewController helper
     private let mailVC = MailHelper()
     
     // MARK: - IBOutlets
@@ -140,6 +141,14 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // MARK: - Update cell
     
+    /**
+     Sets up the cell based on indexPath
+     
+     - parameter cell: The UITableViewCell to set up
+     - parameter indexPath: the indexPath of the cell
+
+     - returns: A set up UITableViewCell
+     */
     func setUpCell(cell: UITableViewCell, indexPath: IndexPath) -> UITableViewCell {
         
         cell.textLabel?.text = self.sections[indexPath.section][indexPath.row]
@@ -222,6 +231,13 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // MARK: - Update system status
     
+    /**
+     Updates the stats for the hat
+     
+     - parameter cell: The UITableViewCell to update
+     
+     - returns: A tuple with the HATSystemStatusObject and the renewed token
+     */
     func updateSystemStatusLabel(cell: UITableViewCell) -> (([HATSystemStatusObject], String?) -> Void) {
         
         return { (systemStatusFile, renewedUserToken) in

@@ -67,7 +67,6 @@ extension String {
     /**
      Trims a given String
      
-     - parameter string: the String to trim
      - returns: trimmed String
      */
     func TrimString() -> String {
@@ -83,6 +82,7 @@ extension String {
      - parameter foregroundColor: Foreground color of the string
      - parameter strokeColor: stroke color of the string
      - parameter font: the desired font for the string
+     
      - returns: An attributed string formatted according to the parameters
      */
     func createTextAttributes(foregroundColor: UIColor, strokeColor: UIColor, font: UIFont) -> NSAttributedString {

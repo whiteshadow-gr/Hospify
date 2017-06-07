@@ -23,7 +23,8 @@ struct FormatterHelper {
      Formats a date to ISO 8601 format
      
      - parameter date: The date to format
-     - returns: String
+     
+     - returns: The date as a String in ISO format
      */
     static func formatDateToISO(date: Date) -> String {
         
@@ -40,6 +41,7 @@ struct FormatterHelper {
      - parameter date: The date to localize
      - parameter dateStyle: The date style to return
      - parameter timeStyle: The time style to return
+     
      - returns: A String representing the formatted date
      */
     static func formatDateStringToUsersDefinedDate(date: Date, dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
@@ -51,6 +53,7 @@ struct FormatterHelper {
      Returns a string from UTC formatted date in with full date and medium time styles
      
      - parameter datetime: The date to convert to string
+     
      - returns: A String representing the date passed as a parameter
      */
     static func getDateString(_ datetime : Date) -> String {
@@ -68,6 +71,7 @@ struct FormatterHelper {
      
      - parameter datetime: The date to convert to string
      - parameter format: The format of the date
+     
      - returns: A String representing the date passed as a parameter
      */
     static func getDateString(_ datetime : Date, format: String) -> String {
@@ -85,7 +89,8 @@ struct FormatterHelper {
      Formats a string into a Date
      
      - parameter string: The string to format to a Date
-     - returns: Date
+     
+     - returns: The String passed in the function as an optional Date. The Date object is nil if the formatting fails
      */
     static func formatStringToDate(string: String) -> Date? {
         
@@ -127,6 +132,7 @@ struct FormatterHelper {
      Returns a Date string from a string representing a UTC date
      
      - parameter dateString: The string to convert into date
+     
      - returns: The date that the string was representing
      */
     static func getDateFromString(_ dateString : String) -> Date! {

@@ -104,6 +104,7 @@ class LoadingScreenWithProgressRingViewController: UIViewController {
      
      - parameter stringToShow: The string to show to the pop up
      - parameter storyBoard: The storyboard to init the view from
+     
      - returns: An optional instance of TextPopUpViewController ready to present from a view controller
      */
     class func customInit(completion: Double, from storyBoard: UIStoryboard) -> LoadingScreenWithProgressRingViewController? {

@@ -27,7 +27,7 @@ public class HATDataPlugsService: NSObject {
      */
     public class func getAvailableDataPlugs(succesfulCallBack: @escaping ([HATDataPlugObject], String?) -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> Void {
         
-        let url: String = "https://marketsquare.hubofallthings.com/api/dataplugs"
+        let url: String = "https://dex.hubofallthings.com/api/dataplugs"
         
         HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: [:], headers: [:], completion: { (r: HATNetworkHelper.ResultType) -> Void in
             

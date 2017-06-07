@@ -162,6 +162,7 @@ class DataStoreContactInfoTableViewController: UITableViewController, UserCreden
      
      - parameter cell: The cell to set up
      - parameter indexPath: The index path of the cell
+     
      - returns: The set up cell
      */
     func setUpCell(cell: PhataTableViewCell, indexPath: IndexPath) -> UITableViewCell {

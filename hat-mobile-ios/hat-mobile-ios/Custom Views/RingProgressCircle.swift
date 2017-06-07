@@ -21,26 +21,33 @@ import UIKit
     
     ///The ring radius
     @IBInspectable open var ringRadius: CGFloat = 55
+    ///The ring line width
+    @IBInspectable open var ringLineWidth: CGFloat = 12.0
+    
     ///The ring color
     @IBInspectable open var ringColor: UIColor = UIColor.red
     ///The ring fill color
     @IBInspectable open var ringFillColor: UIColor = UIColor.clear
-    ///The ring line width
-    @IBInspectable open var ringLineWidth: CGFloat = 12.0
+    
     ///The background ring color
     @IBInspectable open var backgroundRingColor: UIColor = UIColor.gray
     ///The background ring fill color
     @IBInspectable open var backgroundRingFillColor: UIColor = UIColor.clear
+    
     ///The ring's start point
     @IBInspectable open var startPoint: CGFloat = CGFloat(Double.pi / 2)
     ///The ring's end point
     @IBInspectable open var endPoint: CGFloat = CGFloat((Double.pi / 4) / 4)
+    
     ///The ring's shadow radius
     @IBInspectable open var ringShadowRadius: CGFloat = 0.0
+    
     ///The ring's shadow opacity
     @IBInspectable open var ringShadowOpacity: Float = 0.0
+    
     ///The ring's shadow offset
     @IBInspectable open var ringShadowOffset: CGSize = CGSize.zero
+    
     ///The animation duration.
     @IBInspectable open var animationDuration: CGFloat = 0.2
     
@@ -48,11 +55,15 @@ import UIKit
     
     ///The UILabel in the middle of the UIView
     private var label: UILabel! = UILabel()
+    
     private var path: CGPath? = nil
+    
     private var previousArc: CAShapeLayer? = nil
-    private var hasAnimationFinished: Bool = true
+    
     private var timer: Timer? = nil
     
+    private var hasAnimationFinished: Bool = true
+
     // MARK: - Inits
     
     required public init?(coder aDecoder: NSCoder) {

@@ -103,6 +103,7 @@ class RealmHelper {
      Purge all data for a predicate
      
      - parameter predicate: The predicate used to filter the data
+     
      - returns: always true if sucessful
      */
     class func purge(_ predicate: NSPredicate?) -> Bool {

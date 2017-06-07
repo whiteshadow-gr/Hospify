@@ -76,7 +76,9 @@ extension HATAccountService {
      Checks if token has expired
      
      - parameter token: The token to check if expired
-     - returns: The token if everything ok, 401 if token has expired or error if something went wrong
+     - parameter expiredCallBack: A function to execute if the token has expired
+     - parameter tokenValidCallBack: A function to execute if the token is valid
+     - parameter errorCallBack: A function to execute when something has gone wrong
      */
     class func checkIfTokenExpired(token: String, expiredCallBack: (Void) -> Void, tokenValidCallBack: (String?) -> Void, errorCallBack: (String, String, String, @escaping (Void) -> Void) -> Void) {
         
@@ -103,6 +105,7 @@ extension HATAccountService {
      Verify the domain if it's what we expect
      
      - parameter domain: The formated doamain
+     
      - returns: Bool, true if the domain matches what we expect and false otherwise
      */
     class func verifyDomain(_ domain: String) -> Bool {
@@ -124,10 +127,7 @@ extension HATAccountService {
      */
     class func TheUserHATAccessTokenURL() -> Constants.UserHATAccessTokenURLAlias {
         
-        let url: Constants.UserHATAccessTokenURLAlias = "https://" + self.TheUserHATDomain() +
-            "/users/access_token?username=" + self.TheHATUsername() + "&password=" + self.TheHATPassword()
-        
-        return url
+        return "https://" + self.TheUserHATDomain() + "/users/access_token?username=" + self.TheHATUsername() + "&password=" + self.TheHATPassword()
     }
     
     /**
@@ -135,6 +135,7 @@ extension HATAccountService {
      
      - parameter tableName: The table name
      - parameter sourceName: The source name
+     
      - returns: String
      */
     class func TheUserHATCheckIfTableExistsURL(tableName: String, sourceName: String) -> String {
@@ -156,6 +157,7 @@ extension HATAccountService {
      Constructs the URL to get a field from a table
      
      - parameter fieldID: The fieldID number
+     
      - returns: String
      */
     class func TheGetFieldInformationUsingTableIDURL(_ fieldID: Int) -> String {
@@ -181,6 +183,7 @@ extension HATAccountService {
      - parameter token: The user's token
      - parameter userDomain: The user's domain
      - parameter fileToUpload: The image to upload
+     - parameter tags: The tags to attach to the image
      - parameter progressUpdater: A function to execute on the progress of the upload is moving forward
      - parameter completion: A function to execute on success
      - parameter errorCallBack: A Function to execute on failure

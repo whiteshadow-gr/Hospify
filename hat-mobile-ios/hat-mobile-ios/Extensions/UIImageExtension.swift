@@ -12,8 +12,20 @@
 
 import UIKit
 
+// MARK: Extension
+
 extension UIImage {
     
+    // MARK: - Resized UIImage
+    
+    /**
+     Resize UIImage based on maximum allowed size
+     
+     - parameter fileSize: The current file size of the UIImage
+     - parameter maximumSize: The maxium allowed file size
+
+     - returns: The resized UIImage
+     */
     func resized(fileSize: Float, maximumSize: Float) -> UIImage? {
         
         let percentage = CGFloat(maximumSize/fileSize)
@@ -25,6 +37,13 @@ extension UIImage {
         return UIGraphicsGetImageFromCurrentImageContext()
     }
     
+    /**
+     Resize UIImage based on width
+     
+     - parameter width: The width to resize this UIImage
+     
+     - returns: The resized UIImage
+     */
     func resized(toWidth width: CGFloat) -> UIImage? {
         
         let canvasSize = CGSize(width: width, height: CGFloat(ceil(width/size.width * size.height)))

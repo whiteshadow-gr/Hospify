@@ -23,6 +23,7 @@ struct CrashLoggerHelper {
      Logs the error to crashlytics
      
      - parameter error: The error returned from the server
+     
      - returns: A ready to present UIAlertController with alert type and one OK button
      */
     static func authenticationErrorLog(error: AuthenicationError) -> UIAlertController {
@@ -79,6 +80,7 @@ struct CrashLoggerHelper {
      Logs the error to crashlytics
      
      - parameter error: The error returned from the server
+     
      - returns: A ready to present UIAlertController with alert type and one OK button
      */
     static func dataPlugErrorLog(error: DataPlugError) -> UIAlertController? {
@@ -116,6 +118,7 @@ struct CrashLoggerHelper {
      Logs the error to crashlytics
      
      - parameter error: The error returned from the server
+     
      - returns: A ready to present UIAlertController with alert type and one OK button
      */
     static func JSONParsingErrorLog(error: JSONParsingError) -> UIAlertController {
@@ -151,6 +154,7 @@ struct CrashLoggerHelper {
      Logs the error to crashlytics
      
      - parameter error: The error returned from the server
+     
      - returns: A ready to present UIAlertController with alert type and one OK button
      */
     static func JSONParsingErrorLogWithoutAlert(error: JSONParsingError) -> Void {
@@ -179,6 +183,7 @@ struct CrashLoggerHelper {
      Logs the error to crashlytics
      
      - parameter error: The error returned from the server
+     
      - returns: A ready to present UIAlertController with alert type and one OK button
      */
     static func hatTableErrorLog(error: HATTableError) -> UIAlertController {
@@ -225,6 +230,7 @@ struct CrashLoggerHelper {
      Logs the error to crashlytics
      
      - parameter error: The error returned from the server
+     
      - returns: A ready to present UIAlertController with alert type and one OK button
      */
     static func hatErrorLog(error: HATError) -> UIAlertController {
@@ -254,6 +260,7 @@ struct CrashLoggerHelper {
      
      - parameter message: The custom message to add to crashlytics
      - parameter error: The error returned from the server
+     
      - returns: A ready to present UIAlertController with alert type and one OK button
      */
     static func customErrorLog(message: String, error: Error) -> UIAlertController {

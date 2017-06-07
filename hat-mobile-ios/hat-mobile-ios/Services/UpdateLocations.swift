@@ -45,6 +45,9 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
         self.resumeLocationServices()
     }
     
+    /**
+     Inits locationManager to default values
+     */
     func initLocationManager() {
         
         self.locationManager = CLLocationManager()
@@ -57,6 +60,12 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
         self.locationManager?.delegate = self
     }
     
+    /**
+     Sets up the location object properties and delegate
+     
+     - parameter locationObject: A location object that confronts to UpdateLocations protocol
+     - parameter delegate: A viewController that confronts to UpdateLocations protocol
+     */
     func setUpLocationObject(_ locationObject: UpdateLocations, delegate: UpdateLocations) {
         
         locationObject.initLocationManager()
@@ -65,13 +74,6 @@ class UpdateLocations: NSObject, CLLocationManagerDelegate {
     
     // MARK: - Location Manager Delegate Functions
     
-    /**
-     The CLLocationManagerDelegate delegate
-     Called when location update changes
-     
-     - parameter manager:   The CLLocation manager used
-     - parameter locations: Array of locations
-     */
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         // add locations gather to database

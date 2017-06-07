@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// The collection view cell class for data plugs screen
-class DataPlugCollectionViewCell: UICollectionViewCell {
+class DataPlugCollectionViewCell: UICollectionViewCell, UserCredentialsProtocol {
     
     // MARK: - IBOutlets
     
@@ -36,13 +36,12 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
      
      - parameter cell: The UICollectionViewCell to set up
      - parameter indexPath: The index path of the cell
-     - parameter hatProvider: The object to take the values from
+     - parameter dataPlug: The HATDataPlugObject to take the values from
+     - parameter orientation: The current orientation of the phone
      
      - returns: An UICollectionViewCell
      */
     class func setUp(cell: DataPlugCollectionViewCell, indexPath: IndexPath, dataPlug: HATDataPlugObject, orientation: UIInterfaceOrientation) -> UICollectionViewCell {
-        
-        let userToken = HATAccountService.getUsersTokenFromKeychain()
         
         // Configure the cell
         cell.dataPlugTitleLabel.text = dataPlug.name
@@ -62,6 +61,7 @@ class DataPlugCollectionViewCell: UICollectionViewCell {
      
      - parameter indexPath: The index path of the cell
      - parameter orientation: The device current orientation
+     
      - returns: The color of the cell based on the index path and the device orientation
      */
     private class func backgroundColorOfCellForIndexPath(_ indexPath: IndexPath, in orientation: UIInterfaceOrientation) -> UIColor {

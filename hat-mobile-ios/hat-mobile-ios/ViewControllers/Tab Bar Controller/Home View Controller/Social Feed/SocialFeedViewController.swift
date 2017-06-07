@@ -761,6 +761,52 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
      */
     @objc private func filterSocialNetworksButtonAction() {
         
+        func reloadCollectionViewBaseOnFilter(_ filter: String, viewController: SocialFeedViewController) {
+            
+            viewController.cachedDataArray.removeAll()
+            
+            if filter == "Facebook" {
+                
+                if viewController.posts.count > 0 {
+                    
+                    for i in 0...viewController.posts.count - 1 {
+                        
+                        viewController.cachedDataArray.append(viewController.posts[i] as HATSocialFeedObject)
+                    }
+                }
+            } else if filter == "Twitter" {
+                
+                if viewController.tweets.count > 0 {
+                    
+                    for i in 0...viewController.tweets.count - 1 {
+                        
+                        viewController.cachedDataArray.append(viewController.tweets[i])
+                    }
+                }
+            } else {
+                
+                if viewController.tweets.count > 0 {
+                    
+                    for i in 0...viewController.tweets.count - 1 {
+                        
+                        viewController.cachedDataArray.append(viewController.tweets[i])
+                    }
+                }
+                
+                if viewController.posts.count > 0 {
+                    
+                    for i in 0...viewController.posts.count - 1 {
+                        
+                        viewController.cachedDataArray.append(viewController.posts[i] as HATSocialFeedObject)
+                    }
+                }
+            }
+            
+            viewController.filterBy = filter
+            
+            viewController.reloadCollectionView(with: viewController.filterBy)
+        }
+        
         // create alert
         let alert = UIAlertController(title: "Filter by:", message: "", preferredStyle: .actionSheet)
         
@@ -769,19 +815,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             
             if let weakSelf = self {
                 
-                weakSelf.cachedDataArray.removeAll()
-                
-                if weakSelf.posts.count > 0 {
-                    
-                    for i in 0...weakSelf.posts.count - 1 {
-                        
-                        weakSelf.cachedDataArray.append(weakSelf.posts[i] as HATSocialFeedObject)
-                    }
-                }
-                
-                weakSelf.filterBy = "Facebook"
-                
-                weakSelf.reloadCollectionView(with: weakSelf.filterBy)
+                reloadCollectionViewBaseOnFilter("Facebook", viewController: weakSelf)
             }
         })
         
@@ -789,19 +823,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             
              if let weakSelf = self {
                 
-                weakSelf.cachedDataArray.removeAll()
-                
-                if weakSelf.tweets.count > 0 {
-                    
-                    for i in 0...weakSelf.tweets.count - 1 {
-                        
-                        weakSelf.cachedDataArray.append(weakSelf.tweets[i])
-                    }
-                }
-                
-                weakSelf.filterBy = "Twitter"
-                
-                weakSelf.reloadCollectionView(with: weakSelf.filterBy)
+                reloadCollectionViewBaseOnFilter("Twitter", viewController: weakSelf)
             }
         })
         
@@ -809,27 +831,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             
             if let weakSelf = self {
                 
-                weakSelf.cachedDataArray.removeAll()
-                
-                if weakSelf.tweets.count > 0 {
-                    
-                    for i in 0...weakSelf.tweets.count - 1 {
-                        
-                        weakSelf.cachedDataArray.append(weakSelf.tweets[i])
-                    }
-                }
-                
-                if weakSelf.posts.count > 0 {
-                    
-                    for i in 0...weakSelf.posts.count - 1 {
-                        
-                        weakSelf.cachedDataArray.append(weakSelf.posts[i] as HATSocialFeedObject)
-                    }
-                }
-                
-                weakSelf.filterBy = "All"
-                
-                weakSelf.reloadCollectionView(with: weakSelf.filterBy)
+                reloadCollectionViewBaseOnFilter("All", viewController: weakSelf)
             }
         })
         

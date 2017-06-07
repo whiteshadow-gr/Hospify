@@ -47,6 +47,11 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     
     // MARK: - IBActions
     
+    /**
+     Triggers the sign up sequence
+     
+     - parameter sender: The object that called this method
+     */
     @IBAction func signUpButtonAction(_ sender: Any) {
         
         let indexPath = IndexPath(row: 0, section: 0)
@@ -55,6 +60,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         
         self.registerForHatInfo(cell: cell, indexPath: indexPath)
     }
+    
     /**
      Presents a pop up view showing the user more information about HAT
      

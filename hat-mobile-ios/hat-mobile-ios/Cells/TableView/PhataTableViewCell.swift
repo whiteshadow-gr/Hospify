@@ -41,7 +41,6 @@ class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UITextViewDelega
      - parameter sender: The object that called this function
      */
     @IBAction func valueDidChange(_ sender: Any) {
-        
     }
     
     // MARK: - PickerView methods
@@ -132,6 +131,12 @@ class PhataTableViewCell: UITableViewCell, UITextFieldDelegate, UITextViewDelega
     
     // MARK: - Find Row in picker view for this item
     
+    /**
+     Searches and returns the position of a string in the data source of the picker view
+     
+     - parameter item: The item we are looking for
+     - returns: 0 if not found else the index of the string in the array
+     */
     private func getRowForItemInDataSource(item: String?) -> Int {
         
         var isFound = false

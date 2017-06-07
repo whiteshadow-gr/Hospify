@@ -229,9 +229,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
     
     // MARK: - Image picker methods
     
-    func didFinishWithError(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
-        
-        
+    func didFinishWithError(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {    
     }
     
     func didChooseImageWithInfo(_ info: [String : Any]) {

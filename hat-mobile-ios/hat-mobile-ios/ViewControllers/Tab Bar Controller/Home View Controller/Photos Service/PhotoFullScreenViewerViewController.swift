@@ -39,6 +39,7 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
     @IBOutlet weak var deleteButton: UIButton!
     /// An IBOutlet for handling the ring progress bar
     @IBOutlet weak var ringProgressBar: RingProgressCircle!
+    /// An IBOutlet for handling the scrollView
     @IBOutlet weak var scrollView: UIScrollView!
     
     // MARK: - IBActions

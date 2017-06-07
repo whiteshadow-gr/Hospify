@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Struct
 
 /// A class about the methods concerning marketsquare
-struct MarketSquareService {
+struct MarketSquareService: UserCredentialsProtocol {
     
     // MARK: - Methods
     
@@ -48,9 +48,6 @@ struct MarketSquareService {
      - parameter failed: An @escaping (Void) -> Void) method executed on a failed response
      */
     static func getAppTokenForMarketsquare(successful: @escaping (String, String?) -> Void, failed: @escaping (Void) -> Void) {
-        
-        let userDomain = HATAccountService.TheUserHATDomain()
-        let userToken = HATAccountService.getUsersTokenFromKeychain()
         
         HATService.getApplicationTokenFor(serviceName: "MarketSquare", userDomain: userDomain, token: userToken, resource: "https://marketsquare.hubofallthings.com", succesfulCallBack: successful, failCallBack: {(error) in
             

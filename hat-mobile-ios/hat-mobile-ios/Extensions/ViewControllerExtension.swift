@@ -114,6 +114,7 @@ extension UIViewController {
      Function executed when the return key is pressed in order to hide the keyboard
      
      - parameter textField: The textfield that confronts to this function
+     
      - returns: Bool
      */
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

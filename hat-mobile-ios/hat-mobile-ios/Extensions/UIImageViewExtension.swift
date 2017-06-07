@@ -22,7 +22,10 @@ extension UIImageView {
      Downloads an Image from a url and shows it in the imageview that called this method
      
      - parameter url: The url to download the image from
+     - parameter userToken: The user's token
      - parameter mode: The content mode of the image, default value = scaleAspectFit
+     - parameter progressUpdater: A function to execute in order to get the current progress of the download
+     - parameter completion: A function to execute when the download has completed
      */
     public func downloadedFrom(url: URL, userToken: String, contentMode mode: UIViewContentMode = .scaleAspectFit, progressUpdater: ((Double) -> Void)?, completion: ((Void) -> Void)?) {
         

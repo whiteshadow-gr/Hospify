@@ -44,6 +44,7 @@ class AuthenticationHelper: NSObject {
      
      - parameter token: The token to validate
      - parameter networkResponse: The response of the network request. If "" then it's a refresh token situation
+     
      - returns: An AuthenticationResponse object
      */
     class func decodeToken(token: String, networkResponse: String) -> AuthenticationResponse {

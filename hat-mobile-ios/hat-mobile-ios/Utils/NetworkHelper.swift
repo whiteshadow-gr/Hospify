@@ -70,6 +70,7 @@ class NetworkHelper {
         
         return ["Accept": Constants.ContentType.JSON, "Content-Type": Constants.ContentType.JSON, "X-Auth-Token": xAuthToken]
     }
+    
     /**
      Makes ansychronous data request
      used to POST data TO HAT

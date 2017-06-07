@@ -121,6 +121,7 @@ class GetAHATInfoViewController: UIViewController {
      
      - parameter storyBoard: The storyboard to initiate the view controller from
      - parameter hatProvider: The HATProviderObject to pass on the new view controller
+     
      - returns: An optional GetAHATInfoViewController
      */
     class func setUpInfoHatProviderViewControllerPopUp(from storyBoard: UIStoryboard, hatProvider: HATProviderObject) -> GetAHATInfoViewController? {

@@ -22,6 +22,7 @@ extension HATDataPlugsService: UserCredentialsProtocol {
      Ensure if the data plug is ready
      
      - parameter succesfulCallBack: A function to call if everything is ok
+     - parameter tokenErrorCallback: A function to call if there is something wrong with the token
      - parameter failCallBack: A function to call if fail
      */
     class func ensureOffersReady(succesfulCallBack: @escaping (String) -> Void, tokenErrorCallback: @escaping () -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> Void {
@@ -54,6 +55,7 @@ extension HATDataPlugsService: UserCredentialsProtocol {
      
      - parameter offerID: The offerID as a String
      - parameter succesfulCallBack: A function to call if everything is ok
+     - parameter tokenErrorCallback: A function to call if there is something wrong with the token
      - parameter failCallBack: A function to call if fail
      */
     class func ensureOfferEnabled(offerID: String, succesfulCallBack: @escaping (String) -> Void, tokenErrorCallback: @escaping () -> Void, failCallBack: @escaping (DataPlugError) -> Void) -> (String) -> Void {
@@ -165,6 +167,7 @@ extension HATDataPlugsService: UserCredentialsProtocol {
      
      - parameter socialServiceName: The name of the social service
      - parameter socialServiceURL: The url of the social service
+     
      - returns: A ready URL as a String if everything ok else nil
      */
     public class func createURLBasedOn(socialServiceName: String, socialServiceURL: String) -> String? {

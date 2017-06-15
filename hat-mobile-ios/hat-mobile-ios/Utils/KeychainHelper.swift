@@ -27,9 +27,14 @@ struct KeychainHelper {
      
      - returns: The result of the saving into keychain
      */
-    static func SetKeychainValue(key: String, value: String) -> Bool {
+    static func SetKeychainValue(key: String, value: String?) -> Bool {
         
-        return KeychainSwift().set(value, forKey: key, withAccess: .accessibleWhenUnlocked)
+        if value != nil {
+            
+            return KeychainSwift().set(value!, forKey: key, withAccess: .accessibleWhenUnlocked)
+        }
+        
+        return false
     }
     
     /**

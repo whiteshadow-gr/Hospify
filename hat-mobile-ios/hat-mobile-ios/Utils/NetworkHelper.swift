@@ -71,6 +71,8 @@ class NetworkHelper {
         return ["Accept": Constants.ContentType.JSON, "Content-Type": Constants.ContentType.JSON, "X-Auth-Token": xAuthToken]
     }
     
+    // MARK: - Async Request
+    
     /**
      Makes ansychronous data request
      used to POST data TO HAT
@@ -144,6 +146,20 @@ class NetworkHelper {
             }
           
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        }
+    }
+    
+    // MARK: - Stop Background Newtwork Tasks
+    
+    /**
+     Stops all background networks tasks
+     */
+    class func stopBackgroundNetworkTasks() {
+        
+        Alamofire.SessionManager.default.session.getTasksWithCompletionHandler { (sessionDataTask, uploadData, downloadData) in
+            sessionDataTask.forEach { $0.cancel() }
+            uploadData.forEach { $0.cancel() }
+            downloadData.forEach { $0.cancel() }
         }
     }
 }

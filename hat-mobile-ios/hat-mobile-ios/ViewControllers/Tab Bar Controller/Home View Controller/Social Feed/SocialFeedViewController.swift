@@ -193,10 +193,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
             }, failed: {_ in failed()})
         
         // refresh user token
-        if renewedUserToken != nil {
-            
-            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-        }
+        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
     }
     
     /**
@@ -349,10 +346,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                         failed: {_ in failed()})
         
         // refresh user token
-        if renewedUserToken != nil {
-            
-            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-        }
+        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
     }
     
     /**
@@ -404,10 +398,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                             }
                             
                             // refresh user token
-                            if renewedUserToken != nil {
-                                
-                                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-                            }
+                            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
                         }
                         // fetch facebook image
                         HATFacebookService.fetchProfileFacebookPhoto(authToken: weakSelf2.userToken, userDomain: weakSelf2.userDomain, parameters: ["starttime" : "0"], success: success)
@@ -504,10 +495,7 @@ class SocialFeedViewController: UIViewController, UICollectionViewDataSource, UI
                     }
                     
                     // refresh user token
-                    if renewedUserToken != nil {
-                        
-                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-                    }
+                    _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
                 }
             }
         }

@@ -56,10 +56,7 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
             self.checkDataPlugsIfActive()
             
             // refresh user token
-            if renewedUserToken != nil {
-                
-                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-            }
+            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
         }
         
         /// method to execute on a failed callback
@@ -114,13 +111,16 @@ class DataPlugsCollectionViewController: UICollectionViewController, UICollectio
         func setupCheckMark(on: String, value: Bool) {
             
             // search in data plugs array for facebook and enable the checkmark
-            for i in 0 ... self.dataPlugs.count - 1 where self.dataPlugs.count > 1 {
+            if self.dataPlugs.count > 0 {
                 
-                if self.dataPlugs[i].name == on {
+                for i in 0 ... self.dataPlugs.count - 1 {
                     
-                    self.dataPlugs[i].showCheckMark = value
-                    self.collectionView?.reloadData()
-                    self.loadingView.removeFromSuperview()
+                    if self.dataPlugs[i].name == on {
+                        
+                        self.dataPlugs[i].showCheckMark = value
+                        self.collectionView?.reloadData()
+                        self.loadingView.removeFromSuperview()
+                    }
                 }
             }
         }

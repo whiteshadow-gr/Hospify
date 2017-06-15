@@ -29,8 +29,6 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         }
     }
     
-    /// A loading ring progress bar used while uploading a new image
-    private var loadingScr: LoadingScreenWithProgressRingViewController?
     /// The reuse identifier of the cell
     private let reuseIdentifier = "photosCell"
     
@@ -177,10 +175,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
                 self.collectionView.isHidden = true
             }
             
-            if userToken != nil {
-                
-                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: userToken!)
-            }
+            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: userToken)
         }
         
         func failed(error: HATError) {
@@ -199,32 +194,16 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         super.didReceiveMemoryWarning()
     }
     
-//    override func viewDidDisappear(_ animated: Bool) {
-//        
-//        Alamofire.SessionManager.default.session.getTasksWithCompletionHandler { (sessionDataTask, uploadData, downloadData) in
-//            sessionDataTask.forEach { $0.cancel() }
-//            uploadData.forEach { $0.cancel() }
-//            downloadData.forEach { $0.cancel() }
-//        }
-//        
-//        super.viewDidDisappear(animated)
-//    }
+    override func viewDidDisappear(_ animated: Bool) {
+    
+        NetworkHelper.stopBackgroundNetworkTasks()
+        
+        super.viewDidDisappear(animated)
+    }
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         
-        self.loadingScr?.view.frame = CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 80, width: 150, height: 160)
         self.collectionView.reloadData()
-    }
-    
-    // MARK: - Show progress ring
-    
-    private func showProgressRing() {
-        
-        self.loadingScr = LoadingScreenWithProgressRingViewController.customInit(completion: 0, from: self.storyboard!)
-        
-        self.loadingScr!.view.createFloatingView(frame:CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 80, width: 150, height: 160), color: .teal, cornerRadius: 15)
-        
-        self.addViewController(self.loadingScr!)
     }
     
     // MARK: - Image picker methods
@@ -234,53 +213,13 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
     
     func didChooseImageWithInfo(_ info: [String : Any]) {
         
-        let image = (info[UIImagePickerControllerOriginalImage] as! UIImage)
+        func addFileToImages(file: FileUploadObject) {
+            
+            self.files.append(file)
+            self.collectionView.isHidden = false
+        }
         
-        self.showProgressRing()
-        
-        HATAccountService.uploadFileToHATWrapper(token: self.userToken, userDomain: self.userDomain, fileToUpload: image, tags: ["iphone", "viewer", "photo"],
-            progressUpdater: {progress in
-                
-                self.loadingScr?.updateView(completion: progress, animateFrom: Float((self.loadingScr?.progressRing.endPoint)!), removePreviousRingLayer: false)
-            },
-            completion: {[weak self] (file, renewedUserToken) in
-        
-                if self?.loadingScr != nil {
-                    
-                    self?.loadingScr?.removeFromParentViewController()
-                    self?.loadingScr?.view.removeFromSuperview()
-                    self?.loadingScr = nil
-                }
-                
-                if let weakSelf = self {
-                    
-                    weakSelf.files.append(file)
-                    
-                    weakSelf.collectionView.isHidden = false
-                }
-                
-                // refresh user token
-                if renewedUserToken != nil {
-                    
-                    _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-                }
-            },
-            errorCallBack: {[weak self] error in
-                
-                if self != nil {
-                    
-                    if self?.loadingScr != nil {
-                        
-                        self?.loadingScr?.removeFromParentViewController()
-                        self?.loadingScr?.view.removeFromSuperview()
-                    }
-                    
-                    self!.createClassicOKAlertWith(alertMessage: "There was an error with the uploading of the file, please try again later", alertTitle: "Upload failed", okTitle: "OK", proceedCompletion: {})
-                    
-                    _ = CrashLoggerHelper.hatTableErrorLog(error: error)
-                }
-            }
-        )
+        photoPicker.handleUploadImage(info: info, completion: addFileToImages, callingViewController: self, fromReference: self.photoPicker)
     }
     
     // MARK: - UICollectionView methods
@@ -357,7 +296,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         
         let approxWidth = CGFloat(100.0)
         let frameWidth = self.view.frame.width
-        let width = CGFloat(frameWidth /  CGFloat(Int(frameWidth / approxWidth))) - 5
+        let width = CGFloat(frameWidth / CGFloat(Int(frameWidth / approxWidth))) - 5
         
         return CGSize(width: width, height: width)
     }

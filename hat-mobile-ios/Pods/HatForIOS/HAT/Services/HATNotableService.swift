@@ -169,10 +169,16 @@ public class HATNotablesService: NSObject {
                             
                             if innerNote.lastUpdated > note.lastUpdated {
                                 
-                                arrayToReturn.remove(at: outterIndex)
+                                if outterIndex < arrayToReturn.count {
+                                    
+                                    arrayToReturn.remove(at: outterIndex)
+                                }
                             } else {
                                 
-                                arrayToReturn.remove(at: innerIndex)
+                                if innerIndex < arrayToReturn.count {
+                                    
+                                    arrayToReturn.remove(at: innerIndex)
+                                }
                             }
                         }
                     }

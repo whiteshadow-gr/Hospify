@@ -360,10 +360,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                         }
                         
                         // refresh user token
-                        if renewedUserToken != nil {
-                            
-                            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-                        }
+                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
                     }, errorCallBack: {[weak self](error) -> Void in
                         
                         if self != nil {
@@ -583,10 +580,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 func facebookTokenReceived(token: String, renewedUserToken: String?) {
                     
                     // refresh user token
-                    if renewedUserToken != nil {
-                        
-                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-                    }
+                    _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
                     
                     func successfulCallback(isActive: Bool) {
                         
@@ -638,10 +632,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                                     }
                                 }
                                 
-                                if renewedUserToken != nil {
-                                    
-                                    _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-                                }
+                                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
                             }
                             
                             HATDataPlugsService.getAvailableDataPlugs(succesfulCallBack: successfullCallBack, failCallBack: {(error) in
@@ -749,10 +740,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         func checkDataPlug(appToken: String, renewedUserToken: String?) {
             
             // refresh user token
-            if renewedUserToken != nil {
-                
-                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-            }
+            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
             
             // data plug enabled, set up publish button accordingly
             func dataPlugIsEnabled(isActive: Bool) {
@@ -955,7 +943,7 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
                 self.imageSelected.image = self.selectedImage
                 self.imagesToUpload.append(self.imageSelected.image!)
                 self.collectionView.isHidden = false
-            } else if let url = URL(string: (self.receivedNote?.data.photoData.link)!) {
+            } else if let _ = URL(string: (self.receivedNote?.data.photoData.link)!) {
                 
                 self.collectionView.isHidden = false
                 self.imagesToUpload.append(UIImage(named: "Image Placeholder")!)

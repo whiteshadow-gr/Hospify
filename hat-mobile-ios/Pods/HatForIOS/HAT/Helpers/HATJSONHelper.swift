@@ -416,8 +416,7 @@ public struct HATJSONHelper {
         // the record json fields
         let recordDictionary: Dictionary = [
             
-            "name": iso8601String,
-            "lastUpdated":iso8601String
+            "name": iso8601String
             ] as [String : Any]
         
         // for each json file in hatTableStructure
@@ -588,6 +587,7 @@ public struct HATJSONHelper {
             if jsonFile["values"][itemNumber]["field"]["name"] == "updated_time" {
                 
                 jsonFile["values"][itemNumber]["value"] = JSON(HATFormatterHelper.formatDateToISO(date: Date()))
+                print("created time: \(HATFormatterHelper.formatDateToISO(date: Date()))")
             }
         }
         
@@ -613,6 +613,8 @@ public struct HATJSONHelper {
                 if jsonFile["values"][itemNumber]["value"] == "" {
                     
                     jsonFile["values"][itemNumber]["value"] = JSON(HATFormatterHelper.formatDateToISO(date: date))
+                    print("created time: \(HATFormatterHelper.formatDateToISO(date: date))")
+
                 }
             }
         }
@@ -758,6 +760,14 @@ public struct HATJSONHelper {
     public static func updateNotesJSONFile(file: Dictionary<String, Any>, noteFile: HATNotesData, userDomain: String) -> Dictionary<String, Any> {
         
         var jsonFile = JSON(file)
+        
+        let date = Date()
+        let calendar = Calendar.current
+        let hour = calendar.component(.hour, from: date)
+        let minutes = calendar.component(.minute, from: date)
+        let seconds = calendar.component(.second, from: date)
+        
+        print("system time: \(hour):\(minutes):\(seconds)")
         
         //update message
         jsonFile = HATJSONHelper.updateMessageOnJSON(file: jsonFile, message: noteFile.data.message)

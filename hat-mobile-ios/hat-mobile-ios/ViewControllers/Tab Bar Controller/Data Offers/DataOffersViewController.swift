@@ -32,13 +32,28 @@ class DataOffersViewController: UIViewController, UICollectionViewDataSource, UI
         
         for _ in 0...10 {
             
-            offers.append(DataOfferObject())
+            var offer = DataOfferObject()
+            offer.title = "Starbucks"
+            offer.shortDescription = "Expired"
+            offer.isPPIRequested = true
+            offer.image = UIImage(named: "Image Placeholder")
+            
+            offers.append(offer)
         }
         
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         
         self.collectionView.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+        super.viewDidAppear(animated)
+        
+        self.navigationController?.hidesBarsOnSwipe = true
+        //self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,7 +67,7 @@ class DataOffersViewController: UIViewController, UICollectionViewDataSource, UI
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "offerCell", for: indexPath) as! DataOffersCollectionViewCell
         
-        return self.setUpCell(cell: cell, dataOffer: offers[indexPath.row])
+        return cell.setUpCell(cell: cell, dataOffer: offers[indexPath.row])
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -70,29 +85,6 @@ class DataOffersViewController: UIViewController, UICollectionViewDataSource, UI
         let cell = collectionView.cellForItem(at: indexPath)
         self.performSegue(withIdentifier: "offerToOfferDetailsSegue", sender: cell)
     }
-    
-    // MARK: - Set up cell
-    
-    /**
-     <#Function Details#>
-     
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-
-     - returns: <#Returns#>
-     */
-    private func setUpCell(cell: DataOffersCollectionViewCell, dataOffer: DataOfferObject) -> UICollectionViewCell {
-        
-        cell.titleLabel.text = dataOffer.name
-        cell.detailsLabel.text = dataOffer.details
-        cell.imageView.image = dataOffer.image
-        
-        cell.layer.cornerRadius = 5
-        cell.layer.borderWidth = 2
-        cell.layer.borderColor = UIColor(colorLiteralRed: 231/255, green: 231/255, blue: 231/255, alpha: 1.0).cgColor
-        
-        return cell
-    }
 
     // MARK: - Navigation
 
@@ -104,6 +96,8 @@ class DataOffersViewController: UIViewController, UICollectionViewDataSource, UI
         
         if segue.destination is DataOfferDetailsViewController {
             
+            navigationController?.isNavigationBarHidden = false
+
             weak var destinationVC = segue.destination as? DataOfferDetailsViewController
             
             if segue.identifier == "offerToOfferDetailsSegue" {

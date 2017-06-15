@@ -10,12 +10,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
+import HatForIOS
 
 // MARK: Class
 
 /// A class responsible for handling the photo picker
-class PhotosHelperViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class PhotosHelperViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -23,6 +23,9 @@ class PhotosHelperViewController: UIViewController, UIImagePickerControllerDeleg
     weak var delegate: PhotoPickerDelegate?
     /// The source type of the photo picker
     private var sourceType: UIImagePickerControllerSourceType?
+    
+    /// A loading ring progress bar used while uploading a new image
+    private var loadingScr: LoadingScreenWithProgressRingViewController?
     
     /// A variable holding a reference to the image picker view used to present the photo library or camera
     private var imagePicker: UIImagePickerController!
@@ -32,6 +35,11 @@ class PhotosHelperViewController: UIViewController, UIImagePickerControllerDeleg
     override func viewDidLoad() {
         
         super.viewDidLoad()
+    }
+    
+    override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
+        
+        self.loadingScr?.view.frame = CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 80, width: 150, height: 160)
     }
 
     override func didReceiveMemoryWarning() {
@@ -78,6 +86,78 @@ class PhotosHelperViewController: UIViewController, UIImagePickerControllerDeleg
         }
         
         return self.imagePicker
+    }
+    
+    /**
+     Shows the progress ring view controller whilst the image is being uploaded to hat
+     */
+    private func showProgressRing() {
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        self.loadingScr = LoadingScreenWithProgressRingViewController.customInit(completion: 0, from: storyboard)
+        
+        self.loadingScr!.view.createFloatingView(frame:CGRect(x: self.view.frame.midX - 75, y: self.view.frame.midY - 80, width: 150, height: 160), color: .teal, cornerRadius: 15)
+        
+        self.addViewController(self.loadingScr!)
+    }
+    
+    // MARK: - Remove progress ring
+    
+    /**
+     Removes the progress ring view controller on error or after the upload has been completed
+     */
+    private func removeProgressRing() {
+        
+        if self.loadingScr != nil {
+            
+            self.loadingScr?.removeFromParentViewController()
+            self.loadingScr?.view.removeFromSuperview()
+            self.loadingScr = nil
+        }
+    }
+    
+    // MARK: - Image picker methods
+    
+    func handleUploadImage(info: [String : Any], completion: @escaping (FileUploadObject) -> Void, callingViewController: UIViewController, fromReference: PhotosHelperViewController) {
+        
+        callingViewController.view.addSubview(fromReference.view)
+        callingViewController.view.bringSubview(toFront: fromReference.view)
+        fromReference.willMove(toParentViewController: callingViewController)
+        
+        let image = (info[UIImagePickerControllerOriginalImage] as! UIImage)
+        
+        self.showProgressRing()
+        
+        HATAccountService.uploadFileToHATWrapper(
+            token: self.userToken,
+            userDomain: self.userDomain,
+            fileToUpload: image,
+            tags: ["iphone", "viewer", "photo"],
+            progressUpdater: {progress in
+                                                    
+                self.loadingScr?.updateView(completion: progress, animateFrom: Float((self.loadingScr?.progressRing.endPoint)!), removePreviousRingLayer: false)
+                            },
+            completion: {[weak self] (file, renewedUserToken) in
+                                                    
+                self?.removeProgressRing()
+                
+                completion(file)
+                
+                // refresh user token
+                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
+            },
+            errorCallBack: {[weak self] error in
+                                                    
+                if self != nil {
+                    
+                    self?.removeProgressRing()
+                    
+                    self!.createClassicOKAlertWith(alertMessage: "There was an error with the uploading of the file, please try again later", alertTitle: "Upload failed", okTitle: "OK", proceedCompletion: {})
+                    
+                    _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                }
+            }
+        )
     }
 
 }

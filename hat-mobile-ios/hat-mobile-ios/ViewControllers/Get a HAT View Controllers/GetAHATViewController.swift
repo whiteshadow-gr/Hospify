@@ -11,11 +11,19 @@
  */
 
 import HatForIOS
+import StoreKit
 
 // MARK: Class
 
 /// Get A hat view controller, used in onboarding of new users
-class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, InAppPurchasesDelegateProtocol {
+    
+    
+    func inAppPurchaseRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse, products: [SKProduct]) {
+        
+        print("it works")
+    }
+
     
     // MARK: - Variables
     
@@ -33,6 +41,9 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
     
     /// the information of the hat provider cell that the user tapped
     private var selectedHATProvider: HATProviderObject? = nil
+    
+    /// the helper for performing in App Purchases
+    private var inAppPurchaseHelper: InAppPurchaseHelper = InAppPurchaseHelper()
 
     // MARK: - IBOutlets
 
@@ -103,6 +114,9 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
         // add notification observers
         NotificationCenter.default.addObserver(self, selector: #selector(hidePopUpView), name: NSNotification.Name(Constants.NotificationNames.hideGetAHATPopUp.rawValue), object: nil)
         
+        inAppPurchaseHelper.inAppPurchaseDelegate = self
+        inAppPurchaseHelper.requestProductInfo()
+        
         // fetch available hat providers
         HATService.getAvailableHATProviders(succesfulCallBack: refreshCollectionView, failCallBack: {(error) -> Void in return})
     }
@@ -133,10 +147,7 @@ class GetAHATViewController: UIViewController, UICollectionViewDataSource, UICol
             self.collectionView.reloadData()
             
             // refresh user token
-            if renewedUserToken != nil {
-                
-                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-            }
+            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
         }
     }
     

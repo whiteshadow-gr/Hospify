@@ -248,10 +248,7 @@ class NotablesViewController: UIViewController, UITableViewDataSource, UITableVi
                     weakSelf.showReceivedNotesFrom(array: array)
                     
                     // refresh user token
-                    if renewedUserToken != nil {
-                        
-                        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-                    }
+                    _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
                 }
             }
         }

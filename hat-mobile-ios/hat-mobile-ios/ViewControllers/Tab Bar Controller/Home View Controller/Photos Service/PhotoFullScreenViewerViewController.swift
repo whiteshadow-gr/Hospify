@@ -56,10 +56,7 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
             func success(isSuccess: Bool, renewedUserToken: String?) {
                 
                 // refresh user token
-                if renewedUserToken != nil {
-                    
-                    _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-                }
+                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
                 
                 _ = self.navigationController?.popViewController(animated: true)
             }

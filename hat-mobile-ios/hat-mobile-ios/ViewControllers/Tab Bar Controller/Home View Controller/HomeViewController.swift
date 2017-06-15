@@ -297,10 +297,7 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         }
         
         // refresh user token
-        if renewedUserToken != nil {
-            
-            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-        }
+        _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
     }
     
 }

@@ -18,10 +18,8 @@ class DataOfferDetailsViewController: UIViewController {
     
     // MARK: - IBOutlets
 
-    @IBOutlet weak var ticketView: UIView!
-    
-    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var textField: UITextView!
+    @IBOutlet weak var dataRequirmentTextView: UITextView!
     
     @IBOutlet weak var imageView: UIImageView!
 
@@ -29,7 +27,10 @@ class DataOfferDetailsViewController: UIViewController {
     @IBOutlet weak var detailsLabel: UILabel!
     @IBOutlet weak var offersRemainingLabel: UILabel!
     @IBOutlet weak var ppiEnabledLabel: UILabel!
-    @IBOutlet weak var dataRequirementsLabel: UILabel!
+    
+    @IBOutlet weak var stackView: UIStackView!
+    
+    @IBOutlet weak var infoView: UIView!
     
     // MARK: - Variables
     
@@ -43,21 +44,36 @@ class DataOfferDetailsViewController: UIViewController {
         
         if receivedOffer != nil {
             
-            self.titleLabel.text = receivedOffer!.name
-            self.detailsLabel.text = receivedOffer!.details
-            self.imageView.image = receivedOffer?.image
-            self.textField.text = receivedOffer?.offerDescription
-            self.offersRemainingLabel.text = receivedOffer?.offersRemaining
-            self.ppiEnabledLabel.text = String(describing: receivedOffer?.isPPIRequested)
-            self.dataRequirementsLabel.text = receivedOffer?.requirements[0]
+//            self.titleLabel.text = receivedOffer!.name
+//            self.detailsLabel.text = receivedOffer!.details
+//            self.imageView.image = receivedOffer?.image
+//            self.textField.text = receivedOffer?.offerDescription
+//            self.offersRemainingLabel.text = (receivedOffer?.offersRemaining)! + " REMAINING"
+//            self.dataRequirmentTextView.text = receivedOffer?.requirements[0]
+            
+            if receivedOffer!.isPPIRequested {
+                
+                self.ppiEnabledLabel.text = "PPI ENABLED"
+            } else {
+                
+                self.ppiEnabledLabel.text = "PPI DISABLED"
+            }
         }
+        
+        self.stackView.isHidden = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
         
         super.viewDidAppear(animated)
-
-        self.drawTicketView()
+        
+        self.stackView.isHidden = false
+        
+        navigationController?.hidesBarsOnSwipe = false
+        
+        let view = self.stackView.arrangedSubviews[1]
+        view.addLine(view: self.infoView, x: self.infoView.bounds.midX, y: 0)
+        view.drawTicketView()
     }
     
     override func didReceiveMemoryWarning() {
@@ -67,122 +83,9 @@ class DataOfferDetailsViewController: UIViewController {
     
     override func didRotate(from fromInterfaceOrientation: UIInterfaceOrientation) {
         
-        self.drawTicketView()
-    }
-    
-    // MARK: - Create half circles
-    
-    /**
-     <#Function Details#>
-     
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-
-     - returns: <#Returns#>
-     */
-    private func createOverlay(view: UIView, xOffset: CGFloat, yOffset: CGFloat, radius: CGFloat) -> CAShapeLayer {
-        
-        let path = CGMutablePath()
-        path.addRect(view.bounds)
-        path.addArc(center: CGPoint(x: xOffset, y: yOffset), radius: radius, startAngle: 0.0, endAngle: 2 * 3.14, clockwise: false)
-        path.closeSubpath()
-        
-        let maskLayer = CAShapeLayer()
-        maskLayer.path = path
-        maskLayer.fillRule = kCAFillRuleEvenOdd
-        
-        // Release the path since it's not covered by ARC.
-        view.layer.mask = maskLayer
-        view.clipsToBounds = true
-        
-        return maskLayer
-    }
-    
-    /**
-     <#Function Details#>
-     
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-
-     - returns: <#Returns#>
-     */
-    private func createOverlay(view: UIView, layer: CAShapeLayer, xOffset: CGFloat, yOffset: CGFloat, radius: CGFloat) -> CAShapeLayer {
-        
-        let path = CGMutablePath()
-        path.addPath(layer.path!)
-        path.addArc(center: CGPoint(x: xOffset, y: yOffset), radius: radius, startAngle: 0.0, endAngle: 2 * 3.14, clockwise: false)
-        path.closeSubpath()
-        
-        let maskLayer = CAShapeLayer()
-        maskLayer.path = path
-        maskLayer.fillRule = kCAFillRuleEvenOdd
-        
-        // Release the path since it's not covered by ARC.
-        view.layer.mask = maskLayer
-        view.clipsToBounds = true
-        
-        return maskLayer
-    }
-    
-    /**
-     <#Function Details#>
-     
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-     - parameter <#Parameter#>: <#Parameter description#>
-     
-     - returns: <#Returns#>
-     */
-    private func addDashedLine(color: UIColor = .lightGray, view: UIView, x: CGFloat, y: CGFloat) {
-        
-        let path = CGMutablePath()
-        path.move(to: CGPoint(x: x + 30, y: y))
-        path.addLine(to: CGPoint(x: view.frame.width - 20, y: y))
-        path.closeSubpath()
-        
-        let shapeLayer = CAShapeLayer()
-        shapeLayer.name = "DashedTopLine"
-        shapeLayer.bounds = view.bounds
-        shapeLayer.position = CGPoint(x: view.frame.width / 2, y: view.frame.height / 2)
-        shapeLayer.fillColor = UIColor.clear.cgColor
-        shapeLayer.strokeColor = color.cgColor
-        shapeLayer.lineWidth = 2
-        shapeLayer.lineJoin = kCALineJoinRound
-        shapeLayer.lineDashPattern = [5, 5]
-        shapeLayer.path = path
-        
-        view.layer.addSublayer(shapeLayer)
-    }
-    
-    /**
-     <#Function Details#>
-     */
-    private func drawTicketView() {
-        
-        self.ticketView.layer.mask = nil
-        
-        self.textField.sizeToFit()
-        
-        _ = self.ticketView.layer.sublayers?.filter({ $0.name == "DashedTopLine" }).map({ $0.removeFromSuperlayer() })
-        
-        let maskLayer = self.createOverlay(view: self.ticketView, xOffset: -5, yOffset: self.textField.frame.origin.y - 10, radius: 20)
-        let maskLayer2 = self.createOverlay(view: self.ticketView, layer: maskLayer, xOffset: -5, yOffset: self.textField.frame.maxY + 10, radius: 20)
-        
-        self.addDashedLine(view: self.ticketView, x: -5, y: self.textField.frame.minY - 5)
-        
-        let maskLayer3 = self.createOverlay(view: self.ticketView, layer: maskLayer2, xOffset: self.ticketView.bounds.maxX + 5, yOffset: self.textField.frame.origin.y - 10, radius: 20)
-        let _ = self.createOverlay(view: self.ticketView, layer: maskLayer3, xOffset: self.ticketView.bounds.maxX + 5, yOffset: self.textField.frame.maxY + 10, radius: 20)
-        
-        self.addDashedLine(view: self.ticketView, x: -5, y: self.textField.frame.maxY + 5)
-        
-        self.ticketView.layer.borderWidth = 2
-        self.ticketView.layer.borderColor = UIColor(colorLiteralRed: 231/255, green: 231/255, blue: 231/255, alpha: 1.0).cgColor
+        let view = self.stackView.arrangedSubviews[1]
+        view.drawTicketView()
+        view.addLine(view: self.infoView, x: self.infoView.bounds.midX, y: 0)
     }
 
 }

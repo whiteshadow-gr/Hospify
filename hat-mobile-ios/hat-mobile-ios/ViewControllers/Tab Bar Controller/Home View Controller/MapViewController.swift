@@ -225,10 +225,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, MapSettingsDelegat
                 clusteringManager.addPointsToMap(annottationArray: pins, mapView: self.mapView)
                 
                 // refresh user token
-                if renewedUserToken != nil {
-                    
-                    _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-                }
+                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
                 
                 view.removeFromSuperview()
             }

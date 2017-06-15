@@ -20,7 +20,7 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
     // MARK: - Variables
     
     /// The sections of the table view
-    private let sections: [[String]] = [["PHATA Page"], ["Storage Info", "Change Password"], ["Show Data", "Location Settings"], ["Release Notes", "Rumpel Terms of Service", "HAT Terms of Service"], ["Report Problem"], ["Log Out", "Version"]]
+    private let sections: [[String]] = [["PHATA Page"], ["Storage Info", "Change Password"], ["Show Data", "Location Settings"], [/*"Release Notes",*/ "Rumpel Terms of Service", "HAT Terms of Service"], ["Report Problem"], ["Log Out", "Version"]]
     /// The headers of the table view
     private let headers: [String] = ["PHATA Page", "HAT", "Location", "About", "", ""]
     /// The footers of the table view
@@ -259,10 +259,7 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             
             // refresh user token
-            if renewedUserToken != nil {
-                
-                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken!)
-            }
+            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
         }
     }
 

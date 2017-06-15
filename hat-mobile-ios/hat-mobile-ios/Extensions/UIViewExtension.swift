@@ -62,4 +62,148 @@ extension UIView {
         
         return tempView
     }
+    
+    // MARK: - Create half circles
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     
+     - returns: <#Returns#>
+     */
+    func createOverlay(view: UIView, xOffset: CGFloat, yOffset: CGFloat, radius: CGFloat) -> CAShapeLayer {
+        
+        let path = CGMutablePath()
+        path.addRect(view.bounds)
+        path.addArc(center: CGPoint(x: xOffset, y: yOffset), radius: radius, startAngle: 0.0, endAngle: 2 * 3.14, clockwise: false)
+        path.closeSubpath()
+        
+        let maskLayer = CAShapeLayer()
+        maskLayer.path = path
+        maskLayer.fillRule = kCAFillRuleEvenOdd
+        
+        // Release the path since it's not covered by ARC.
+        view.layer.mask = maskLayer
+        view.clipsToBounds = true
+        
+        return maskLayer
+    }
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     
+     - returns: <#Returns#>
+     */
+    func createOverlay(view: UIView, layer: CAShapeLayer, xOffset: CGFloat, yOffset: CGFloat, radius: CGFloat) -> CAShapeLayer {
+        
+        let path = CGMutablePath()
+        path.addPath(layer.path!)
+        path.addArc(center: CGPoint(x: xOffset, y: yOffset), radius: radius, startAngle: 0.0, endAngle: 2 * 3.14, clockwise: false)
+        path.closeSubpath()
+        
+        let maskLayer = CAShapeLayer()
+        maskLayer.path = path
+        maskLayer.fillRule = kCAFillRuleEvenOdd
+        
+        // Release the path since it's not covered by ARC.
+        view.layer.mask = maskLayer
+        view.clipsToBounds = true
+        
+        return maskLayer
+    }
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     
+     - returns: <#Returns#>
+     */
+    func addDashedLine(color: UIColor = .lightGray, view: UIView, x: CGFloat, y: CGFloat) {
+        
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: x + 30, y: y))
+        path.addLine(to: CGPoint(x: view.frame.width - 20, y: y))
+        path.closeSubpath()
+        
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.name = "DashedTopLine"
+        shapeLayer.bounds = view.bounds
+        shapeLayer.position = CGPoint(x: view.frame.width / 2, y: view.frame.height / 2)
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.strokeColor = color.cgColor
+        shapeLayer.lineWidth = 1.5
+        shapeLayer.lineJoin = kCALineJoinRound
+        shapeLayer.lineDashPattern = [4, 4]
+        shapeLayer.path = path
+        
+        view.layer.addSublayer(shapeLayer)
+    }
+    
+    /**
+     <#Function Details#>
+     
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     - parameter <#Parameter#>: <#Parameter description#>
+     
+     - returns: <#Returns#>
+     */
+    func addLine(color: UIColor = .lightGray, view: UIView, x: CGFloat, y: CGFloat) {
+        
+        _ = view.layer.sublayers?.filter({ $0.name == "Line" }).map({ $0.removeFromSuperlayer() })
+        
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: x, y: y + 10))
+        path.addLine(to: CGPoint(x: x, y: view.bounds.maxY - 10))
+        path.closeSubpath()
+        
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.name = "Line"
+        shapeLayer.bounds = view.bounds
+        shapeLayer.position = CGPoint(x: view.bounds.width / 2, y: view.bounds.height / 2)
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.strokeColor = color.cgColor
+        shapeLayer.lineWidth = 1
+        shapeLayer.path = path
+        
+        view.layer.addSublayer(shapeLayer)
+    }
+    
+    /**
+     <#Function Details#>
+     */
+    func drawTicketView() {
+        
+        self.layer.mask = nil
+        
+        _ = self.layer.sublayers?.filter({ $0.name == "DashedTopLine" }).map({ $0.removeFromSuperlayer() })
+        
+        let maskLayer = self.createOverlay(view: self, xOffset: -5, yOffset: self.bounds.origin.y + 20, radius: 20)
+        let maskLayer2 = self.createOverlay(view: self, layer: maskLayer, xOffset: -5, yOffset: self.bounds.maxY - 20, radius: 20)
+        
+        self.addDashedLine(view: self, x: -5, y: self.bounds.minY + 18)
+        
+        let maskLayer3 = self.createOverlay(view: self, layer: maskLayer2, xOffset: self.bounds.maxX + 5, yOffset: self.bounds.origin.y + 20, radius: 20)
+        let _ = self.createOverlay(view: self, layer: maskLayer3, xOffset: self.bounds.maxX + 5, yOffset: self.bounds.maxY - 20, radius: 20)
+        
+        self.addDashedLine(view: self, x: -5, y: self.bounds.maxY - 18)
+        
+        //        self.stackView.layer.borderWidth = 2
+        //        self.stackView.layer.borderColor = UIColor(colorLiteralRed: 231/255, green: 231/255, blue: 231/255, alpha: 1.0).cgColor
+    }
 }

@@ -74,10 +74,10 @@ public class HATAccountService: NSObject {
      - parameter successCallback: A callback called when successful of type @escaping ([JSON]) -> Void
      - parameter errorCallback: A callback called when failed of type @escaping (Void) -> Void)
      */
-    public class func getHatTableValuesv2(token: String, userDomain: String, dataPath: String, parameters: Dictionary<String, String>, successCallback: @escaping ([JSON], String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
+    public class func getHatTableValuesv2(token: String, userDomain: String, source: String, scope: String, parameters: Dictionary<String, String>, successCallback: @escaping ([JSON], String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
         
         // form the url
-        let url = "https://" + userDomain + "/api/v2/data/rumpellite/" + dataPath
+        let url = "https://" + userDomain + "/api/v2/data/" + source + "/" + scope
         
         // create parameters and headers
         let headers = [RequestHeaders.xAuthToken : token]
@@ -118,10 +118,10 @@ public class HATAccountService: NSObject {
      - parameter successCallback: A callback called when successful of type @escaping ([JSON]) -> Void
      - parameter errorCallback: A callback called when failed of type @escaping (Void) -> Void)
      */
-    public class func createTableValuev2(token: String, userDomain: String, dataPath: String, parameters: Dictionary<String, Any>, successCallback: @escaping (JSON, String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
+    public class func createTableValuev2(token: String, userDomain: String, source: String, dataPath: String, parameters: Dictionary<String, Any>, successCallback: @escaping (JSON, String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
         
         // form the url
-        let url = "https://" + userDomain + "/api/v2/data/rumpellite/" + dataPath
+        let url = "https://" + userDomain + "/api/v2/data/" + source + "/" + dataPath
         
         // create parameters and headers
         let headers = [RequestHeaders.xAuthToken : token]
@@ -136,11 +136,16 @@ public class HATAccountService: NSObject {
                     
                     let message = NSLocalizedString("Server responded with error", comment: "")
                     errorCallback(.generalError(message, statusCode, error))
-                case .isSuccess(let isSuccess, _, let result, let token):
+                case .isSuccess(let isSuccess, let statusCode, let result, let token):
                     
                     if isSuccess {
                         
                         successCallback(result, token)
+                    }
+                    
+                    if statusCode == 404 {
+                        
+                        errorCallback(.tableDoesNotExist)
                     }
                 }
         })
@@ -317,7 +322,7 @@ public class HATAccountService: NSObject {
     public class func deleteHatRecord(userDomain: String, token: String, recordId: Int, success: @escaping (String) -> Void, failed: @ escaping (HATTableError) -> Void) {
         
         // form the url
-        let url = "https://" + userDomain+"/data/record/" + String(recordId)
+        let url = "https://" + userDomain + "/data/record/" + String(recordId)
         
         // create parameters and headers
         let parameters: Dictionary<String, String> = [:]
@@ -345,6 +350,95 @@ public class HATAccountService: NSObject {
                 
                 let message = NSLocalizedString("Server responded with error", comment: "")
                 failed(.generalError(message, statusCode, error))
+            }
+        })
+    }
+    /**
+     Deletes a record from hat using V2 API
+     
+     - parameter token: The user's token
+     - parameter recordId: The record id to delete
+     - parameter success: A callback called when successful of type @escaping (String) -> Void
+     */
+    public class func deleteHatRecordV2(userDomain: String, token: String, recordId: [Int], success: @escaping (String) -> Void, failed: @ escaping (HATTableError) -> Void) {
+        
+        // form the url
+        let url = "https://" + userDomain + "/api/v2/data/"
+        
+        // create parameters and headers
+        let parameters: NSMutableDictionary = [:]
+        
+        for record in recordId {
+            
+            parameters.addEntries(from: ["records" : record])
+        }
+        let headers = [RequestHeaders.xAuthToken: token]
+        
+        // make the request
+        HATNetworkHelper.AsynchronousRequest(url, method: .delete, encoding: Alamofire.URLEncoding.default, contentType: ContentType.Text, parameters: parameters.dictionaryWithValues(forKeys: ["records"]), headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
+            
+            // handle result
+            switch r {
+                
+            case .isSuccess(let isSuccess, let statusCode, _, _):
+                
+                if isSuccess {
+                    
+                    success(token)
+                    HATAccountService.triggerHatUpdate(userDomain: userDomain, completion: {() -> Void in return})
+                } else {
+                    
+                    let message = NSLocalizedString("The request was unsuccesful", comment: "")
+                    failed(.generalError(message, statusCode, nil))
+                }
+                
+            case .error(let error, let statusCode):
+                
+                let message = NSLocalizedString("Server responded with error", comment: "")
+                failed(.generalError(message, statusCode, error))
+            }
+        })
+    }
+    
+    // MARK: - Edit record
+    
+    /**
+     Edits a record from hat using v2 API's
+     
+     - parameter token: The user's token
+     - parameter recordId: The record id to delete
+     - parameter success: A callback called when successful of type @escaping (String) -> Void
+     */
+    public class func editHatRecordV2(userDomain: String, token: String, parameters: Dictionary<String, Any>, successCallback: @escaping ([JSON], String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) {
+        
+        // form the url
+        let url = "https://" + userDomain + "/api/v2/data/"
+        
+        // create parameters and headers
+        let headers = [RequestHeaders.xAuthToken: token]
+        
+        // make the request
+        HATNetworkHelper.AsynchronousRequest(url, method: .put, encoding: Alamofire.URLEncoding.default, contentType: ContentType.Text, parameters: parameters, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
+            
+            // handle result
+            switch r {
+                
+            case .error(let error, let statusCode):
+                
+                let message = NSLocalizedString("Server responded with error", comment: "")
+                errorCallback(.generalError(message, statusCode, error))
+            case .isSuccess(let isSuccess, _, let result, let token):
+                
+                if isSuccess {
+                    
+                    guard let array = result.array else {
+                        
+                        errorCallback(.noValuesFound)
+                        return
+                    }
+                    
+                    successCallback(array, token)
+                }
             }
         })
     }

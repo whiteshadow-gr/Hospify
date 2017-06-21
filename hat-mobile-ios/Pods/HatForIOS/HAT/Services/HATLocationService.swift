@@ -53,9 +53,9 @@ public class HATLocationService: NSObject {
         let parameters: Dictionary<String, String> = [:]
         
         // auth header
-        let headers: [String : String] = ["Accept": ContentType.JSON,
-                                          "Content-Type": ContentType.JSON,
-                                          RequestHeaders.xAuthToken: HATDataPlugCredentials.Market_AccessToken]
+        let headers: [String : String] = ["Accept" : ContentType.JSON,
+                                          "Content-Type" : ContentType.JSON,
+                                          RequestHeaders.xAuthToken : HATDataPlugCredentials.Market_AccessToken]
         // construct url
         let url = HATLocationService.locationDataPlugURL(userDomain, dataPlugID: HATDataPlugCredentials.Market_DataPlugID)
         
@@ -72,12 +72,12 @@ public class HATLocationService: NSObject {
                         
                         // save the hatdomain from the token to the device Keychain
                         success(true)
-                        // No message field in JSON file
+                    // No message field in JSON file
                     } else {
                         
                         failed(.expectedFieldNotFound)
                     }
-                    // general error
+                // general error
                 } else {
                     
                     failed(.generalError(isSuccess.description, statusCode, nil))

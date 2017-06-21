@@ -27,7 +27,7 @@ public class HATFacebookService: NSObject {
      - parameter parameters: The parameters to use in the request
      - parameter success: An @escaping (_ array: [JSON]) -> Void) method executed on a successful response
      */
-    public class func fetchProfileFacebookPhoto(authToken: String, userDomain: String, parameters: Dictionary<String, String>,success: @escaping (_ array: [JSON], String?) -> Void) -> Void {
+    public class func fetchProfileFacebookPhoto(authToken: String, userDomain: String, parameters: Dictionary<String, String>, success: @escaping (_ array: [JSON], String?) -> Void) -> Void {
         
         HATAccountService.checkHatTableExists(userDomain: userDomain,
                                               tableName: "profile_picture",
@@ -35,6 +35,30 @@ public class HATFacebookService: NSObject {
                                               authToken: authToken,
                                               successCallback: getPosts(token: authToken, userDomain: userDomain, parameters: parameters, success: success),
                                               errorCallback: {(error: HATTableError) -> Void in return})
+    }
+    
+    /**
+     Fetches the facebook profile image of the user with v2 API's
+     
+     - parameter authToken: The authorisation token to authenticate with the hat
+     - parameter parameters: The parameters to use in the request
+     - parameter success: An @escaping (_ array: [JSON]) -> Void) method executed on a successful response
+     */
+    public class func fetchProfileFacebookPhotoV2(authToken: String, userDomain: String, parameters: Dictionary<String, String>, successCallback: @escaping (_ array: [HATFacebookProfileImageObject], String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) -> Void {
+        
+        func sendObjectBack(jsonArray: [JSON], token: String?) {
+            
+            var array: [HATFacebookProfileImageObject] = []
+            
+            for object in jsonArray {
+                
+                array.append(HATFacebookProfileImageObject(from: object.dictionaryValue))
+            }
+            
+            successCallback(array, token)
+        }
+        
+        HATAccountService.getHatTableValuesv2(token: authToken, userDomain: userDomain, source: Facebook.sourceName, scope: "profile_picture", parameters: parameters, successCallback: sendObjectBack, errorCallback: errorCallback)
     }
     
     // MARK: - Facebook data plug
@@ -54,6 +78,30 @@ public class HATFacebookService: NSObject {
                                               authToken: authToken,
                                               successCallback: getPosts(token: authToken, userDomain: userDomain, parameters: parameters, success: success),
                                               errorCallback: {(error: HATTableError) -> Void in return})
+    }
+    
+    /**
+     Fetched the user's posts from facebook with v2 API's
+     
+     - parameter authToken: The authorisation token to authenticate with the hat
+     - parameter parameters: The parameters to use in the request
+     - parameter success: An @escaping (_ array: [JSON]) -> Void) method executed on a successful response
+     */
+    public class func getFacebookData(authToken: String, userDomain: String, parameters: Dictionary<String, String>, successCallback: @escaping (_ array: [HATFacebookSocialFeedObject], String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) -> Void {
+        
+        func sendObjectBack(jsonArray: [JSON], token: String?) {
+            
+            var array: [HATFacebookSocialFeedObject] = []
+            
+            for object in jsonArray {
+                
+                array.append(HATFacebookSocialFeedObject(from: object.dictionaryValue))
+            }
+            
+            successCallback(array, token)
+        }
+        
+        HATAccountService.getHatTableValuesv2(token: authToken, userDomain: userDomain, source: Facebook.sourceName, scope: Facebook.tableName, parameters: parameters, successCallback: sendObjectBack, errorCallback: errorCallback)
     }
     
     /**

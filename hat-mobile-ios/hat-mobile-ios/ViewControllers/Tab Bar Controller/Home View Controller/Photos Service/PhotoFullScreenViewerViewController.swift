@@ -28,6 +28,10 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
     /// The image, passed on from previous view controller
     var image: UIImage?
     
+    weak var profileViewControllerDelegate: PhataPictureViewController?
+    
+    /// A Bool value to determine if the image is shown is from profile pictures
+    var isImageForProfile: Bool = false
     /// A Bool value to determine of the ui is visible or not
     private var isUIHidden: Bool = false
     
@@ -35,15 +39,38 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
     
     /// An IBOutlet for handling the image view
     @IBOutlet weak var imageView: UIImageView!
+    
     /// An IBOutlet for handling the delete button
     @IBOutlet weak var deleteButton: UIButton!
+    /// An IBOutlet for handling the set image as profilel image button
+    @IBOutlet weak var setImageAsProfileImageButton: UIButton!
+    
     /// An IBOutlet for handling the ring progress bar
     @IBOutlet weak var ringProgressBar: RingProgressCircle!
+    
     /// An IBOutlet for handling the scrollView
     @IBOutlet weak var scrollView: UIScrollView!
     
     // MARK: - IBActions
 
+    /**
+     Sets image as profile image
+     
+     - parameter sender: The object that called this method
+     */
+    @IBAction func setImageAsProfileImageAction(_ sender: Any) {
+        
+        if self.image != nil {
+            
+            profileViewControllerDelegate?.setImageAsProfileImage(image: image!)
+        } else {
+            
+            profileViewControllerDelegate?.setImageAsProfileImage(file: file!)
+        }
+        
+        self.navigationController?.popViewController(animated: true)
+    }
+    
     /**
      Deletes the image visible
      
@@ -78,7 +105,6 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
                 
                 delete()
             }
-            
         }
     }
     
@@ -101,19 +127,29 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
         self.scrollView.maximumZoomScale = 5.0
         self.scrollView.minimumZoomScale = 1.0
         self.scrollView.delegate = self
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         
-        if self.file != nil {
+        super.viewDidAppear(animated)
+        
+        self.setImageAsProfileImageButton.isHidden = !self.isImageForProfile
+        
+        if self.image != nil && self.image != UIImage(named: "Image Placeholder") {
+            
+            self.imageView.image = self.image!
+        } else  if self.file != nil {
             
             let imageURL: String = "https://" + userDomain + "/api/v2/files/content/" + file!.fileID
             
             self.ringProgressBar.isHidden = false
-
-            self.imageView!.downloadedFrom(url: URL(string: imageURL)!, userToken: userToken, progressUpdater: {progress in
             
+            self.imageView!.downloadedFrom(url: URL(string: imageURL)!, userToken: userToken, progressUpdater: {progress in
+                
                 let completion = Float(progress)
                 self.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(self.ringProgressBar.endPoint), to: completion, removePreviousLayer: false)
             }, completion: {
-            
+                
                 self.ringProgressBar.isHidden = true
             })
         } else if self.imageURL != nil {
@@ -121,20 +157,17 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
             let url = URL(string: self.imageURL!)
             
             self.ringProgressBar.isHidden = false
-
+            
             self.imageView.downloadedFrom(url: url!, userToken: userToken, progressUpdater: {progress in
                 
                 let completion = Float(progress)
                 self.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(self.ringProgressBar.endPoint), to: completion, removePreviousLayer: false)
             }, completion: {
-            
+                
                 self.deleteButton.isHidden = true
                 self.deleteButton = nil
                 self.ringProgressBar.isHidden = true
             })
-        } else if self.image != nil {
-            
-            self.imageView.image = self.image!
         }
         
         self.view.backgroundColor = .black
@@ -152,12 +185,16 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
      */
     @objc private func hideUI() {
         
-        self.navigationController?.isNavigationBarHidden = !(self.isUIHidden)
+        self.navigationController?.setNavigationBarHidden(!(self.isUIHidden), animated: true)
         self.tabBarController?.tabBar.isHidden = !(self.isUIHidden)
         self.tabBarController?.hidesBottomBarWhenPushed = !(self.isUIHidden)
         if self.deleteButton != nil {
             
             self.deleteButton.isHidden = !(self.isUIHidden)
+        }
+        if self.setImageAsProfileImageButton != nil {
+            
+            self.setImageAsProfileImageButton.isHidden = !(self.isUIHidden)
         }
         self.isUIHidden = !(self.isUIHidden)
     }

@@ -32,7 +32,7 @@ public class HATFormatterHelper: NSObject {
         dateFormatter.locale = Locale.current
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
         
-        return dateFormatter.string(from: date as Date)
+        return dateFormatter.string(from: date)
     }
     
     /**

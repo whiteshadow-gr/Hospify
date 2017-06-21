@@ -24,6 +24,11 @@ class DataOffersViewController: UIViewController, UICollectionViewDataSource, UI
     
     @IBOutlet weak var collectionView: UICollectionView!
     
+    @IBOutlet weak var availableDataOffersView: UIView!
+    @IBOutlet weak var redeemedDataOffersView: UIView!
+    @IBOutlet weak var rejectedDataOffersView: UIView!
+    @IBOutlet weak var selectionIndicatorView: UIView!
+    
     // MARK: - View controller functions
     
     override func viewDidLoad() {
@@ -45,6 +50,42 @@ class DataOffersViewController: UIViewController, UICollectionViewDataSource, UI
         self.collectionView.dataSource = self
         
         self.collectionView.reloadData()
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(filterCollectionView(gesture:)))
+        let tapGesture1 = UITapGestureRecognizer(target: self, action: #selector(filterCollectionView(gesture:)))
+        let tapGesture2 = UITapGestureRecognizer(target: self, action: #selector(filterCollectionView(gesture:)))
+        
+        self.availableDataOffersView.addGestureRecognizer(tapGesture)
+        self.redeemedDataOffersView.addGestureRecognizer(tapGesture1)
+        self.rejectedDataOffersView.addGestureRecognizer(tapGesture2)
+    }
+    
+    func filterCollectionView(gesture: UITapGestureRecognizer) {
+        
+        func animation(index: Int) {
+            
+            if index == 0 {
+                
+                self.selectionIndicatorView.frame = CGRect(x: self.availableDataOffersView.frame.origin.x, y: self.selectionIndicatorView.frame.origin.y, width: self.selectionIndicatorView.frame.width, height: self.selectionIndicatorView.frame.height)
+            } else if index == 1{
+                
+                self.selectionIndicatorView.frame = CGRect(x: self.redeemedDataOffersView.frame.origin.x, y: self.selectionIndicatorView.frame.origin.y, width: self.selectionIndicatorView.frame.width, height: self.selectionIndicatorView.frame.height)
+            } else {
+                
+                self.selectionIndicatorView.frame = CGRect(x: self.rejectedDataOffersView.frame.origin.x, y: self.selectionIndicatorView.frame.origin.y, width: self.selectionIndicatorView.frame.width, height: self.selectionIndicatorView.frame.height)
+            }
+        }
+        
+        AnimationHelper.animateView(self.selectionIndicatorView,
+                                    duration: 0.25,
+                                    animations: {
+                                        
+                                        animation(index: (gesture.view?.tag)!)
+                                    },
+                                    completion: { result in
+        
+                                        print(result)
+                                    })
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -52,13 +93,32 @@ class DataOffersViewController: UIViewController, UICollectionViewDataSource, UI
         super.viewDidAppear(animated)
         
         self.navigationController?.hidesBarsOnSwipe = true
-        //self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        self.navigationController?.navigationBar.shadowImage = UIImage()
+        
+        navigationController?.navigationBar.setBackgroundImage(UIImage(named: "Teal Image"), for: .any, barMetrics: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.isTranslucent = false
     }
 
     override func didReceiveMemoryWarning() {
         
         super.didReceiveMemoryWarning()
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        let translation = scrollView.panGestureRecognizer.translation(in: scrollView.superview!)
+        if translation.y < 0 {
+            // swipes from top to bottom of screen -> down
+            self.navigationController?.setNavigationBarHidden(true, animated: true)
+        } else {
+            // swipes from bottom to top of screen -> up
+            self.navigationController?.setNavigationBarHidden(false, animated: true)
+        }
+    }
+    
+    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+        
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
     // MARK: - Collection View functions

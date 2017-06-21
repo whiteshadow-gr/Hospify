@@ -162,4 +162,30 @@ class NetworkHelper {
             downloadData.forEach { $0.cancel() }
         }
     }
+    
+    /**
+     Pauses all background networks tasks
+     */
+    class func pauseBackgroundNetworkTasks(completion: @escaping (Void) -> Void) {
+        
+        Alamofire.SessionManager.default.session.getTasksWithCompletionHandler { (sessionDataTask, uploadData, downloadData) in
+            sessionDataTask.forEach { $0.suspend() }
+            uploadData.forEach { $0.suspend() }
+            downloadData.forEach { $0.suspend() }
+            
+            completion()
+        }
+    }
+    
+    /**
+     Resumes all background networks tasks
+     */
+    class func resumeBackgroundNetworkTasks() {
+        
+        Alamofire.SessionManager.default.session.getTasksWithCompletionHandler { (sessionDataTask, uploadData, downloadData) in
+            sessionDataTask.forEach { $0.resume() }
+            uploadData.forEach { $0.resume() }
+            downloadData.forEach { $0.resume() }
+        }
+    }
 }

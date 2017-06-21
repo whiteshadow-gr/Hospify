@@ -52,6 +52,12 @@ public struct HATNotesData: Comparable {
     /// the note id
     public var id: Int = 0
     
+    /// The endPoint of the note, used in v2 API only
+    public var endPoint: String = ""
+    
+    /// The recordID of the note, used in v2 API only
+    public var recordID: String = ""
+    
     /// the name of the note
     public var name: String  = ""
     
@@ -70,6 +76,8 @@ public struct HATNotesData: Comparable {
         
         id = 0
         name = ""
+        endPoint = ""
+        recordID = ""
         lastUpdated = Date()
         data = HATNotesNotablesData()
     }
@@ -95,5 +103,49 @@ public struct HATNotesData: Comparable {
             
             data = HATNotesNotablesData.init(dict: tempData)
         }
+    }
+    
+    /**
+     It initialises everything from the received JSON file from the HAT using v2 API
+     */
+    public init(dictV2: Dictionary<String, JSON>) {
+        
+        if let tempEndpoint = dictV2["endpoint"]?.string {
+            
+            endPoint = tempEndpoint
+        }
+        
+        if let tempRecordID = dictV2["recordId"]?.string {
+            
+            recordID = tempRecordID
+        }
+        
+        if let tempData = dictV2["data"]?.dictionary {
+            
+            if let tempLastUpdated = tempData["lastUpdated"]?.string {
+                
+                lastUpdated = HATFormatterHelper.formatStringToDate(string: tempLastUpdated)!
+            }
+            if let tempNotablesData = tempData["notablesv1"]?.dictionary {
+                
+                data = HATNotesNotablesData.init(dict: tempNotablesData)
+            }
+        }
+    }
+    
+    // MARK: - JSON Mapper
+    
+    /**
+     Returns the object as Dictionary, JSON
+     
+     - returns: Dictionary<String, String>
+     */
+    public func toJSON() -> Dictionary<String, Any> {
+        
+        return [
+            
+            "notablesv1" : self.data.toJSON(),
+            "lastUpdated" : Int(HATFormatterHelper.formatDateToEpoch(date: Date())!)!
+        ]
     }
 }

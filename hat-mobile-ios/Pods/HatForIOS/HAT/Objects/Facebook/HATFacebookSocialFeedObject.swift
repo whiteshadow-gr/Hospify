@@ -65,6 +65,12 @@ public struct HATFacebookSocialFeedObject: HATSocialFeedObject, Comparable {
     /// The name of the record in database
     public var name: String = ""
     
+    /// The endPoint of the note, used in v2 API only
+    public var endPoint: String = ""
+    
+    /// The recordID of the note, used in v2 API only
+    public var recordID: String = ""
+    
     /// The actual data of the record
     public var data: HATFacebookDataSocialFeedObject = HATFacebookDataSocialFeedObject()
     
@@ -82,6 +88,8 @@ public struct HATFacebookSocialFeedObject: HATSocialFeedObject, Comparable {
     public init() {
         
         name = ""
+        recordID = ""
+        endPoint = ""
         data = HATFacebookDataSocialFeedObject()
         id = -1
         lastUpdated = nil
@@ -111,5 +119,35 @@ public struct HATFacebookSocialFeedObject: HATSocialFeedObject, Comparable {
             lastUpdated = HATFormatterHelper.formatStringToDate(string: tempLastUpdated)
             protocolLastUpdate = lastUpdated
         }
+    }
+    
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
+    public init(fromV2 dict: Dictionary<String, JSON>) {
+        
+        self.init()
+        
+        if let tempEndpoint = dict["endpoint"]?.string {
+            
+            endPoint = tempEndpoint
+        }
+        
+        if let tempRecordID = dict["recordId"]?.string {
+            
+            recordID = tempRecordID
+        }
+        
+        if let tempData = dict["data"]?.dictionaryValue {
+            
+            if let tempLastUpdated = tempData["lastUpdated"]?.stringValue {
+                
+                lastUpdated = HATFormatterHelper.formatStringToDate(string: tempLastUpdated)
+                protocolLastUpdate = lastUpdated
+            }
+            
+            data = HATFacebookDataSocialFeedObject(from: tempData)
+        }
+        
     }
 }

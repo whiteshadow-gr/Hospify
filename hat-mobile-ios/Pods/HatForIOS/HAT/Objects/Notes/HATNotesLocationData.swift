@@ -175,4 +175,26 @@ public struct HATNotesLocationData: Comparable {
             }
         }
     }
+    
+    // MARK: - JSON Mapper
+    
+    /**
+     Returns the object as Dictionary, JSON
+     
+     - returns: Dictionary<String, String>
+     */
+    public func toJSON() -> Dictionary<String, Any> {
+        
+        return [
+            
+            "altitude" : self.altitude,
+            "altitude_accuracy" : self.altitudeAccuracy,
+            "latitude" : self.latitude ?? 0,
+            "heading" : self.heading,
+            "shared" : String(describing: self.shared),
+            "accuracy" : self.accuracy,
+            "longitude" : self.longitude ?? 0,
+            "speed" : self.speed
+        ]
+    }
 }

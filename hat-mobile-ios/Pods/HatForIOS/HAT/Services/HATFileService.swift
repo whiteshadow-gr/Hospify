@@ -382,5 +382,55 @@ public class HATFileService: NSObject {
                 }
         })
     }
+    // MARK: - Upload file to hat wrapper
+    
+    /**
+     Uploads a file to HAT
+     
+     - parameter token: The user's token
+     - parameter userDomain: The user's domain
+     - parameter fileToUpload: The image to upload
+     - parameter tags: The tags to attach to the image
+     - parameter progressUpdater: A function to execute on the progress of the upload is moving forward
+     - parameter completion: A function to execute on success
+     - parameter errorCallBack: A Function to execute on failure
+     */
+    class func uploadFileToHATWrapper(token: String, userDomain: String, fileToUpload: UIImage, tags: [String], progressUpdater: ((Double) -> Void)?, completion: ((FileUploadObject, String?) -> Void)?, errorCallBack: ((HATTableError) -> Void)?) {
+        
+        HATFileService.uploadFileToHAT(
+            fileName: "rumpelPhoto",
+            token: token,
+            userDomain: userDomain, tags: tags,
+            completion: {(fileObject, renewedUserToken) -> Void in
+                
+                let data = UIImageJPEGRepresentation(fileToUpload, 1.0)
+                HATNetworkHelper.uploadFile(
+                    image: data!,
+                    url: fileObject.contentURL,
+                    progressUpdateHandler: {(progress) -> Void in
+                        
+                        progressUpdater?(progress)
+                },completion: {(result) -> Void in
+                    
+                    HATFileService.completeUploadFileToHAT(fileID: fileObject.fileID, token: token, tags: tags, userDomain: userDomain, completion: {(uploadedFile, renewedUserToken) -> Void in
+                        
+                        // refresh user token
+                        if renewedUserToken != nil {
+                            
+                            completion?(uploadedFile, renewedUserToken!)
+                        } else {
+                            
+                            completion?(uploadedFile, nil)
+                        }
+                    }, errorCallback: {(error) -> Void in
+                        
+                        errorCallBack?(error)
+                    })
+                })
+        }, errorCallback: {(error) -> Void in
+            
+            errorCallBack?(error)
+        })
+    }
     
 }

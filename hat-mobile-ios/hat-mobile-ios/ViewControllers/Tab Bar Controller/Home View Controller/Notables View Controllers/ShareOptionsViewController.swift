@@ -16,13 +16,59 @@ import HatForIOS
 // MARK: Class
 
 /// The share options view controller
-class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafariViewControllerDelegate, PhotoPickerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, SendLocationDataDelegate, UserCredentialsProtocol {
+class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafariViewControllerDelegate, PhotoPickerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, SendLocationDataDelegate, UserCredentialsProtocol, SelectedPhotosProtocol {
     
     func locationDataReceived(latitude: Double, longitude: Double, accuracy: Double) {
         
         self.receivedNote?.data.locationData.latitude = latitude
         self.receivedNote?.data.locationData.longitude = longitude
         self.receivedNote?.data.locationData.accuracy = accuracy
+    }
+    
+    // MARK: - Protocol's Variables
+    
+    /// User's selected files
+    var selectedFiles: [FileUploadObject] = [] {
+        
+        didSet {
+            
+            if self.selectedFiles.count > 0 {
+                
+                let file = self.selectedFiles[0]
+                if file.image != UIImage(named: "Image Placeholder") {
+                    
+                    self.imageSelected.image = file.image
+                    
+                    self.imagesToUpload.append(file.image!)
+                    self.collectionView.isHidden = false
+                    self.collectionView.reloadData()
+                } else {
+                    
+                    if let url = URL(string: "https://" + userDomain + "/api/v2/files/content/" + file.fileID) {
+                        
+                        self.imageSelected.downloadedFrom(url: url, userToken: userToken, progressUpdater: nil, completion: {
+                        
+                            self.imagesToUpload.append(self.imageSelected.image!)
+                            self.collectionView.isHidden = false
+                            self.collectionView.reloadData()
+                        })
+                    }
+                }
+            }
+        }
+    }
+    
+    /// User's selected photos
+    var selectedPhotos: [UIImage] = [] {
+        
+        didSet {
+            
+            self.imageSelected.image = self.selectedFiles[0].image
+            
+            self.imagesToUpload.append(self.selectedFiles[0].image!)
+            self.collectionView.isHidden = false
+            self.collectionView.reloadData()
+        }
     }
 
     // MARK: - Variables
@@ -127,9 +173,14 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
             self.present(picker, animated: true, completion: nil)
         })
         
+        let selectFromHATAction = UIAlertAction(title: "Choose from HAT", style: .default, handler: { [unowned self] (action) -> Void in
+            
+            self.performSegue(withIdentifier: "createNoteToHATPhotosSegue", sender: self)
+        })
+        
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        alertController.addActions(actions: [cameraAction, libraryAction, cancel])
+        alertController.addActions(actions: [cameraAction, libraryAction, selectFromHATAction, cancel])
         alertController.addiPadSupport(sourceRect: self.addButton.frame, sourceView: self.shareForView)
         
         // present alert controller
@@ -1398,14 +1449,20 @@ class ShareOptionsViewController: UIViewController, UITextViewDelegate, SFSafari
         
         if segue.identifier == "checkInSegue" {
             
-            let checkInMapVC = segue.destination as? CheckInMapViewController
+            weak var checkInMapVC = segue.destination as? CheckInMapViewController
             
             checkInMapVC?.noteOptionsDelegate = self
         } else if segue.identifier == "goToFullScreenSegue" {
             
-            let fullScreenPhotoVC = segue.destination as? PhotoFullScreenViewerViewController
+            weak var fullScreenPhotoVC = segue.destination as? PhotoFullScreenViewerViewController
             
             fullScreenPhotoVC?.image = self.selectedImage
+        } else if segue.identifier == "createNoteToHATPhotosSegue" {
+            
+            weak var destinationVC = segue.destination as? PhotoViewerViewController
+            
+            destinationVC?.selectedPhotosDelegate = self
+            destinationVC?.allowsMultipleSelection = true
         }
     }
 }

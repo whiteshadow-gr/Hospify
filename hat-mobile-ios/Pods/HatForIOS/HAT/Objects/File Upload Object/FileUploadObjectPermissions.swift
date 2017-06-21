@@ -47,4 +47,22 @@ public struct FileUploadObjectPermissions {
             contentReadable = tempContentReadable
         }
     }
+    
+    // MARK: - JSON Mapper
+    
+    /**
+     Returns the object as Dictionary, JSON
+     
+     - returns: Dictionary<String, String>
+     */
+    public func toJSON() -> Dictionary<String, Any> {
+        
+        return [
+            
+            "userID" : self.userID,
+            "contentReadable" : self.contentReadable,
+            "unixTimeStamp" : Int(HATFormatterHelper.formatDateToEpoch(date: Date())!)!
+        ]
+        
+    }
 }

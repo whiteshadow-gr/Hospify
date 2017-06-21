@@ -11,12 +11,19 @@
  */
 
 import HatForIOS
-import SwiftyJSON
 
 // MARK: Class
 
 /// A class responsible for the profile picture UIViewController of the PHATA section
-class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PhotoPickerDelegate {
+class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PhotoPickerDelegate, SelectedPhotosProtocol {
+
+    // MARK: - Protocol's Variables
+    
+    /// User's selected files
+    var selectedFiles: [FileUploadObject] = []
+    
+    /// User's selected photos
+    var selectedPhotos: [UIImage] = []
     
     // MARK: - Variables
     
@@ -26,6 +33,9 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
     private var darkView: UIView = UIView()
     
     private var images: [FileUploadObject] = []
+    
+    /// The selected image file to view full screen
+    private var selectedFileToView: FileUploadObject?
     
     /// The Photo picker used to upload a new photo
     private let photoPicker = PhotosHelperViewController()
@@ -79,14 +89,16 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
         
         let selectFromHATAction = UIAlertAction(title: "Choose from HAT", style: .default, handler: { [unowned self] (action) -> Void in
             
-            //let photoPickerContorller = self.photoPicker.presentPicker(sourceType: .photoLibrary)
-            //self.present(photoPickerContorller, animated: true, completion: nil)
+            self.performSegue(withIdentifier: "profileToHATPhotosSegue", sender: self)
         })
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         alertController.addActions(actions: [cameraAction, libraryAction, selectFromHATAction, cancel])
-        //alertController.addiPadSupport(sourceRect: self.addPictureButtonOutlet.frame, sourceView: self.addPictureButtonOutlet)
+        if let button = sender as? UIButton {
+            
+            alertController.addiPadSupport(sourceRect: button.frame, sourceView: button)
+        }
         
         // present alert controller
         self.navigationController!.present(alertController, animated: true, completion: nil)
@@ -143,7 +155,7 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
         // create alert actions
         let removeAction = UIAlertAction(title: "Remove profile photo", style: .default, handler: { [unowned self] (action) -> Void in
             
-            
+            self.imageView.image = UIImage(named: "Image Placeholder")
         })
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -223,7 +235,12 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
         }
         
         // search for available files on hat
-        //HATFileService.searchFiles(userDomain: userDomain, token: userToken, successCallback: success, errorCallBack: failed)
+        HATFileService.searchFiles(userDomain: userDomain, token: userToken, successCallback: success, errorCallBack: failed)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+        super.viewDidAppear(animated)
     }
 
     override func didReceiveMemoryWarning() {
@@ -284,11 +301,18 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
                                        completion: {[weak self] in
                                         
                                         cell?.ringProgressView.isHidden = true
+                                        self?.images[indexPath.row].image = cell?.image.image
                                         cell?.image.cropImage(width: (cell?.image.frame.size.width)!, height: (cell?.image.frame.size.height)!)
             })
         }
         
         return cell!
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        self.selectedFileToView = self.images[indexPath.row]
+        self.performSegue(withIdentifier: "profilePhotoToFullScreenPhotoSegue", sender: self)
     }
     
     // MARK: - Image picker methods
@@ -307,5 +331,53 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
         
         photoPicker.handleUploadImage(info: info, completion: addFileToImages, callingViewController: self, fromReference: self.photoPicker)
     }
-
+    
+    // MARK: - Navigation
+    
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if segue.destination is PhotoFullScreenViewerViewController {
+            
+            weak var destinationVC = segue.destination as? PhotoFullScreenViewerViewController
+            
+            destinationVC?.file = self.selectedFileToView
+            destinationVC?.image = self.selectedFileToView?.image
+            destinationVC?.isImageForProfile = true
+            destinationVC?.profileViewControllerDelegate = self
+        } else if segue.destination is PhotoViewerViewController {
+            
+            weak var destinationVC = segue.destination as? PhotoViewerViewController
+            
+            destinationVC?.selectedPhotosDelegate = self
+            destinationVC?.allowsMultipleSelection = true
+        }
+    }
+    
+    // MARK: - Delegate functions 
+    
+    func setImageAsProfileImage(image: UIImage) {
+        
+        self.imageView.image = image
+    }
+    
+    func setImageAsProfileImage(file: FileUploadObject) {
+        
+        func updateProfileImage() {
+            
+            
+        }
+        
+        if file.image != nil {
+            
+            self.imageView.image = file.image
+            updateProfileImage()
+        } else {
+            
+            if let imageURL: URL = URL(string: "https://" + userDomain + "/api/v2/files/content/" + file.fileID) {
+                
+                self.imageView.downloadedFrom(url: imageURL, userToken: userToken, progressUpdater: nil, completion: updateProfileImage)
+            }
+        }
+    }
 }

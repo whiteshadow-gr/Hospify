@@ -390,4 +390,40 @@ public struct HATProfileDataProfileObject: Comparable {
         }
     }
     
+    // MARK: - JSON Mapper
+    
+    /**
+     Returns the object as Dictionary, JSON
+     
+     - returns: Dictionary<String, String>
+     */
+    public func toJSON() -> Dictionary<String, Any> {
+        
+        return [
+            
+            "website" : self.website.toJSON(),
+            "nick" : self.nick.toJSON(),
+            "primary_email" : self.primaryEmail.toJSON(),
+            "private" : String(describing: self.isPrivate),
+            "youtube" : self.youtube.toJSON(),
+            "address_global" : self.addressGlobal.toJSON(),
+            "linkedin" : self.linkedIn.toJSON(),
+            "birth" : self.birth.toJSON(),
+            "home_phone" : self.homePhone.toJSON(),
+            "google" : self.google.toJSON(),
+            "age" : self.age.toJSON(),
+            "personal" : self.personal.toJSON(),
+            "blog" : self.blog.toJSON(),
+            "facebook" : self.facebook.toJSON(),
+            "address_details" : self.addressDetails.toJSON(),
+            "emergency_contact" : self.emergencyContact.toJSON(),
+            "alternative_email" : self.alternativeEmail.toJSON(),
+            "fb_profile_photo" : self.facebookProfilePhoto.toJSON(),
+            "twitter" : self.twitter.toJSON(),
+            "about" : self.about.toJSON(),
+            "mobile" : self.mobile.toJSON(),
+            "gender" : self.gender.toJSON()
+        ]
+    }
+    
 }

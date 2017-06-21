@@ -77,7 +77,7 @@ public class HATDataPlugsService: NSObject {
         let headers = ["X-Auth-Token": appToken]
         
         // contruct the url
-        let url = "https://marketsquare.hubofallthings.com/api/offer/" + offerID + "/userClaim"
+        let url = "https://dex.hubofallthings.com/api/offer/" + offerID + "/userClaim"
         
         // make async request
         HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in
@@ -139,7 +139,7 @@ public class HATDataPlugsService: NSObject {
         let headers = ["X-Auth-Token": appToken]
         
         // contruct the url
-        let url = "https://marketsquare.hubofallthings.com/api/offer/" + offerID + "/claim"
+        let url = "https://dex.hubofallthings.com/api/offer/" + offerID + "/claim"
         
         // make async request
         HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in

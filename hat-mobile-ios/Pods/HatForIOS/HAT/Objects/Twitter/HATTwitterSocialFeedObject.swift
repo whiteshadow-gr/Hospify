@@ -74,6 +74,12 @@ public struct HATTwitterSocialFeedObject: HATSocialFeedObject, Comparable {
     /// The last updated field of the record
     public var lastUpdated: Date? = nil
     
+    /// The endPoint of the note, used in v2 API only
+    public var endPoint: String = ""
+    
+    /// The recordID of the note, used in v2 API only
+    public var recordID: String = ""
+    
     // MARK: - Initialisers
     
     /**
@@ -85,6 +91,8 @@ public struct HATTwitterSocialFeedObject: HATSocialFeedObject, Comparable {
         data = HATTwitterDataSocialFeedObject()
         id = ""
         lastUpdated = nil
+        endPoint = ""
+        recordID = ""
     }
     
     /**
@@ -110,6 +118,35 @@ public struct HATTwitterSocialFeedObject: HATSocialFeedObject, Comparable {
             
             lastUpdated = HATFormatterHelper.formatStringToDate(string: tempLastUpdated)
             protocolLastUpdate = lastUpdated
+        }
+    }
+    
+    /**
+     It initialises everything from the received JSON file from the HAT
+     */
+    public init(fromV2 dictionary: Dictionary<String, JSON>) {
+        
+        self.init()
+        
+        if let tempEndpoint = dictionary["endpoint"]?.string {
+            
+            endPoint = tempEndpoint
+        }
+        
+        if let tempRecordID = dictionary["recordId"]?.string {
+            
+            recordID = tempRecordID
+        }
+        
+        if let tempData = dictionary["data"]?.dictionaryValue {
+            
+            if let tempLastUpdated = tempData["lastUpdated"]?.stringValue {
+                
+                lastUpdated = HATFormatterHelper.formatStringToDate(string: tempLastUpdated)
+                protocolLastUpdate = lastUpdated
+            }
+            
+            data = HATTwitterDataSocialFeedObject(from: tempData)
         }
     }
 }

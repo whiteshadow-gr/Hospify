@@ -167,4 +167,37 @@ public struct HATNotesNotablesData: Comparable {
             kind = tempKind
         }
     }
+    
+    // MARK: - JSON Mapper
+    
+    /**
+     Returns the object as Dictionary, JSON
+     
+     - returns: Dictionary<String, String>
+     */
+    public func toJSON() -> Dictionary<String, Any> {
+        
+        var tempPublicUntil = 0
+        if self.publicUntil == nil {
+            
+            tempPublicUntil = Int(HATFormatterHelper.formatDateToEpoch(date: Date())!)!
+        } else {
+            
+            tempPublicUntil = Int(HATFormatterHelper.formatDateToEpoch(date: self.publicUntil!)!)!
+        }
+        
+        return [
+            
+            "authorv1" : self.authorData.toJSON(),
+            "photov1" : self.photoData.toJSON(),
+            "locationv1" : self.locationData.toJSON(),
+            "shared_on" : self.sharedOn,
+            "public_until" : tempPublicUntil,
+            "created_time" : Int(HATFormatterHelper.formatDateToEpoch(date: self.createdTime)!)!,
+            "updated_time" : Int(HATFormatterHelper.formatDateToEpoch(date: self.updatedTime)!)!,
+            "shared" : String(describing: self.shared),
+            "message" : self.message,
+            "kind" : self.kind
+        ]
+    }
 }

@@ -34,7 +34,7 @@ public class HATService: NSObject {
         let headers = [RequestHeaders.xAuthToken: token]
         
         // contruct the url
-        let url = "https://" + userDomain + "/users/application_token?"
+        let url = "https://" + userDomain + "/users/application_token"
         
         // async request
         HATNetworkHelper.AsynchronousRequest(url, method: .get, encoding: Alamofire.URLEncoding.default, contentType: ContentType.JSON, parameters: parameters, headers: headers, completion: { (r: HATNetworkHelper.ResultType) -> Void in

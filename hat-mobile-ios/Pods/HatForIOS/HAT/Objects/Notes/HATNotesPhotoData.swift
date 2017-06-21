@@ -104,4 +104,22 @@ public struct HATNotesPhotoData: Comparable {
             caption = tempCaption
         }
     }
+    
+    // MARK: - JSON Mapper
+    
+    /**
+     Returns the object as Dictionary, JSON
+     
+     - returns: Dictionary<String, String>
+     */
+    public func toJSON() -> Dictionary<String, Any> {
+        
+        return [
+            
+            "shared" : String(describing: self.shared),
+            "link" : self.link,
+            "source" : self.source,
+            "caption" : self.caption
+        ]
+    }
 }

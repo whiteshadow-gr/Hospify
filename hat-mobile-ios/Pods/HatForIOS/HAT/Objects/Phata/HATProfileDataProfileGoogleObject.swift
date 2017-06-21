@@ -154,4 +154,20 @@ public struct HATProfileDataProfileGoogleObject: Comparable {
         }
     }
     
+    // MARK: - JSON Mapper
+    
+    /**
+     Returns the object as Dictionary, JSON
+     
+     - returns: Dictionary<String, String>
+     */
+    public func toJSON() -> Dictionary<String, Any> {
+        
+        return [
+            
+            "private" : String(describing: self.isPrivate),
+            "link" : self.link
+        ]
+    }
+    
 }

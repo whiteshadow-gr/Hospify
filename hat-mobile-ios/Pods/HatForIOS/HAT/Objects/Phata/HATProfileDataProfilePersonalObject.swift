@@ -278,4 +278,24 @@ public struct HATProfileDataProfilePersonalObject: Comparable {
         }
     }
     
+    // MARK: - JSON Mapper
+    
+    /**
+     Returns the object as Dictionary, JSON
+     
+     - returns: Dictionary<String, String>
+     */
+    public func toJSON() -> Dictionary<String, Any> {
+        
+        return [
+            
+            "private" : String(describing: self.isPrivate),
+            "first_name" : self.firstName,
+            "last_name" : self.lastName,
+            "preferred_name" : self.prefferedName,
+            "middle_name" : self.middleName,
+            "title" : self.title
+        ]
+    }
+    
 }

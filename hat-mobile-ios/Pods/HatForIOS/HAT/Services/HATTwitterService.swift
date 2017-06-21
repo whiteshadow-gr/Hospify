@@ -93,6 +93,30 @@ public class HATTwitterService: NSObject {
         }
     }
     
+    /**
+     Fetches the facebook profile image of the user with v2 API's
+     
+     - parameter authToken: The authorisation token to authenticate with the hat
+     - parameter parameters: The parameters to use in the request
+     - parameter success: An @escaping (_ array: [JSON]) -> Void) method executed on a successful response
+     */
+    public class func fetchTweetsV2(authToken: String, userDomain: String, parameters: Dictionary<String, String>, successCallback: @escaping (_ array: [HATTwitterSocialFeedObject], String?) -> Void, errorCallback: @escaping (HATTableError) -> Void) -> Void {
+        
+        func sendObjectBack(jsonArray: [JSON], token: String?) {
+            
+            var array: [HATTwitterSocialFeedObject] = []
+            
+            for object in jsonArray {
+                
+                array.append(HATTwitterSocialFeedObject(from: object.dictionaryValue))
+            }
+            
+            successCallback(array, token)
+        }
+        
+        HATAccountService.getHatTableValuesv2(token: authToken, userDomain: userDomain, source: Twitter.sourceName, scope: Twitter.tableName, parameters: parameters, successCallback: sendObjectBack, errorCallback: errorCallback)
+    }
+    
     // MARK: - Get application token for twitter
     
     /**

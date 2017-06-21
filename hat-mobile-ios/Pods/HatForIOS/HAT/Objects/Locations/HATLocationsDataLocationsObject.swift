@@ -84,4 +84,22 @@ public struct HATLocationsDataLocationsObject: Equatable {
             timeStamp = HATFormatterHelper.formatStringToDate(string: tempTimeStamp)
         }
     }
+    
+    // MARK: - JSON Mapper
+    
+    /**
+     Returns the object as Dictionary, JSON
+     
+     - returns: Dictionary<String, String>
+     */
+    public func toJSON() -> Dictionary<String, Any> {
+        
+        return [
+            
+            "latitude" : self.latitude,
+            "longitude" : self.longitude,
+            "accuracy" : self.accuracy,
+            "timestamp" : Int(HATFormatterHelper.formatDateToEpoch(date: Date())!)!
+        ]
+    }
 }

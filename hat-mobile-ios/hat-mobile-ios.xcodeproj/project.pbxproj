@@ -101,6 +101,7 @@
 		6050E2E31ED2E990002AD0C9 /* DataStoreNationalityTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6050E2E21ED2E990002AD0C9 /* DataStoreNationalityTableViewController.swift */; };
 		6050E2E51ED2E9A4002AD0C9 /* DataStoreRelationshipAndHouseholdTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6050E2E41ED2E9A4002AD0C9 /* DataStoreRelationshipAndHouseholdTableViewController.swift */; };
 		6050E2E71ED2E9B4002AD0C9 /* DataStoreEducationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6050E2E61ED2E9B4002AD0C9 /* DataStoreEducationTableViewController.swift */; };
+		6054B35A1EF970D4004BD104 /* SelectedPhotosProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6054B3591EF970D4004BD104 /* SelectedPhotosProtocol.swift */; };
 		6055D9831EC9F16E00461C75 /* UITableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6055D9821EC9F16E00461C75 /* UITableViewExtension.swift */; };
 		605EE0341E8DBF8600B265F6 /* UpdateLocationsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605EE0331E8DBF8600B265F6 /* UpdateLocationsDelegate.swift */; };
 		605EE0361E8DC02F00B265F6 /* UpdateLocations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605EE0351E8DC02F00B265F6 /* UpdateLocations.swift */; };
@@ -283,6 +284,7 @@
 		6050E2E21ED2E990002AD0C9 /* DataStoreNationalityTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataStoreNationalityTableViewController.swift; path = DataStore/DataStoreNationalityTableViewController.swift; sourceTree = "<group>"; };
 		6050E2E41ED2E9A4002AD0C9 /* DataStoreRelationshipAndHouseholdTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataStoreRelationshipAndHouseholdTableViewController.swift; path = DataStore/DataStoreRelationshipAndHouseholdTableViewController.swift; sourceTree = "<group>"; };
 		6050E2E61ED2E9B4002AD0C9 /* DataStoreEducationTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataStoreEducationTableViewController.swift; path = DataStore/DataStoreEducationTableViewController.swift; sourceTree = "<group>"; };
+		6054B3591EF970D4004BD104 /* SelectedPhotosProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedPhotosProtocol.swift; sourceTree = "<group>"; };
 		6055D9821EC9F16E00461C75 /* UITableViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UITableViewExtension.swift; sourceTree = "<group>"; };
 		605EE0331E8DBF8600B265F6 /* UpdateLocationsDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateLocationsDelegate.swift; sourceTree = "<group>"; };
 		605EE0351E8DC02F00B265F6 /* UpdateLocations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateLocations.swift; sourceTree = "<group>"; };
@@ -831,6 +833,7 @@
 				60938DBB1E9BA4190058F6CC /* PhotoPickerDelegate.swift */,
 				60AFA1E71E9F6CE100AFA28B /* SendLocationDataDelegate.swift */,
 				605EE0331E8DBF8600B265F6 /* UpdateLocationsDelegate.swift */,
+				6054B3591EF970D4004BD104 /* SelectedPhotosProtocol.swift */,
 				604EAC101EB8C5F20084EEC8 /* UserCredentialsProtocol.swift */,
 			);
 			path = Protocols;
@@ -1249,6 +1252,7 @@
 				603689BE1EF1416B00D300B4 /* DataOfferRewarsObject.swift in Sources */,
 				60CC29AB1EEAEFEF0083C6D8 /* HATImagesRealmObject.swift in Sources */,
 				603A10071E720FA0003B62D4 /* SafariViewControllerExtension.swift in Sources */,
+				6054B35A1EF970D4004BD104 /* SelectedPhotosProtocol.swift in Sources */,
 				60AFA1E81E9F6CE100AFA28B /* SendLocationDataDelegate.swift in Sources */,
 				6044B2181DDB3151003A1263 /* TabBarViewController.swift in Sources */,
 				6097C0691E327506000E771A /* TermsAndConditionsViewController.swift in Sources */,

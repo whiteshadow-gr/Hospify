@@ -48,4 +48,33 @@ public struct FileUploadObjectStatus {
             size = tempSize
         }
     }
+    
+    // MARK: - JSON Mapper
+    
+    /**
+     Returns the object as Dictionary, JSON
+     
+     - returns: Dictionary<String, String>
+     */
+    public func toJSON() -> Dictionary<String, Any> {
+        
+        if size != nil {
+            
+            return [
+                
+                "status" : self.status,
+                "size" : self.size!,
+                "unixTimeStamp" : Int(HATFormatterHelper.formatDateToEpoch(date: Date())!)!
+            ]
+        } else {
+            
+            return [
+                
+                "status" : self.status,
+                "unixTimeStamp" : Int(HATFormatterHelper.formatDateToEpoch(date: Date())!)!
+            ]
+        }
+        
+        
+    }
 }

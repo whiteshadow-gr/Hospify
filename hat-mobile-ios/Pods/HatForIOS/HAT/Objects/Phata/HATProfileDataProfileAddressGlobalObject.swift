@@ -216,4 +216,22 @@ public struct HATProfileDataProfileAddressGlobalObject: Comparable {
             }
         }
     }
+    
+    // MARK: - JSON Mapper
+    
+    /**
+     Returns the object as Dictionary, JSON
+     
+     - returns: Dictionary<String, String>
+     */
+    public func toJSON() -> Dictionary<String, Any> {
+        
+        return [
+            
+            "private" : String(describing: self.isPrivate),
+            "city" : self.city,
+            "county" : self.county,
+            "country" : self.country
+        ]
+    }
 }

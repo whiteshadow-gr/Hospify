@@ -15,7 +15,7 @@ import SwiftyJSON
 // MARK: Struct
 
 /// A struct for working with JSON files. Either creating or updating an existing JSON file
-struct JSONHelper {
+internal struct JSONHelper {
     
     // MARK: - Create JSON for purchasing
     
@@ -31,20 +31,20 @@ struct JSONHelper {
         // hat table dictionary
         let hat: Dictionary =  [
             
-            "address" : purchaseModel.address,
-            "termsAgreed" : purchaseModel.termsAgreed,
-            "country" : purchaseModel.country
+            "address": purchaseModel.address,
+            "termsAgreed": purchaseModel.termsAgreed,
+            "country": purchaseModel.country
         ] as [String : Any]
         
         // user table dictionary
         let user: Dictionary =  [
             
-            "firstName" : purchaseModel.firstName,
-            "lastName" : purchaseModel.lastName,
-            "password" : purchaseModel.password,
-            "termsAgreed" : purchaseModel.termsAgreed,
-            "nick" : purchaseModel.nick,
-            "email" : purchaseModel.email
+            "firstName": purchaseModel.firstName,
+            "lastName": purchaseModel.lastName,
+            "password": purchaseModel.password,
+            "termsAgreed": purchaseModel.termsAgreed,
+            "nick": purchaseModel.nick,
+            "email": purchaseModel.email
         ] as [String : Any]
         
         // items table dictionary
@@ -60,25 +60,25 @@ struct JSONHelper {
             // purchase table dictionary
             purchase = [
                 
-                "stripePaymentToken" : purchaseModel.token,
-                "items" : [items]
+                "stripePaymentToken": purchaseModel.token,
+                "items": [items]
                 ]
         } else {
             
             // purchase table dictionary
             purchase = [
                 
-                "items" : [items]
+                "items": [items]
                 ]
         }
         
         // the final JSON file to be returned
         let json: Dictionary = [
         
-            "purchase" : purchase,
-            "user" : user,
-            "hat" : hat,
-            "password" : purchaseModel.password
+            "purchase": purchase,
+            "user": user,
+            "hat": hat,
+            "password": purchaseModel.password
         ] as [String : Any]
         
         return json

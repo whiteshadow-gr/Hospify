@@ -15,7 +15,7 @@ import zxcvbn_ios
 // MARK: Class
 
 /// A class to handle the zxcvbn meter
-class ZXCVBNHelper: NSObject {
+internal class ZXCVBNHelper: NSObject {
     
     // MARK: - Show strength meter
     

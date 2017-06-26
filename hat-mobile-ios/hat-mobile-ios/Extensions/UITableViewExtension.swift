@@ -33,7 +33,8 @@ extension UITableView {
     /**
      Hides keyboard
      */
-    @objc private func hideKeyboard() {
+    @objc
+    private func hideKeyboard() {
         
         self.endEditing(true)
     }

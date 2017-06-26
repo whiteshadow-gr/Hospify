@@ -12,10 +12,11 @@
 
 import UIKit
 
-//MARK: Class
+// MARK: Class
 
 ///A custom UIView with a label and a ring around it
-@IBDesignable open class RingProgressCircle: UIView {
+@IBDesignable
+open class RingProgressCircle: UIView {
     
     // MARK: - IBInspectable variables
     
@@ -54,13 +55,13 @@ import UIKit
     // MARK: - Variables
     
     ///The UILabel in the middle of the UIView
-    private var label: UILabel! = UILabel()
+    private var label: UILabel = UILabel()
     
-    private var path: CGPath? = nil
+    private var path: CGPath?
     
-    private var previousArc: CAShapeLayer? = nil
+    private var previousArc: CAShapeLayer?
     
-    private var timer: Timer? = nil
+    private var timer: Timer?
     
     private var hasAnimationFinished: Bool = true
 
@@ -82,7 +83,7 @@ import UIKit
      - version: 1.0
      - copyright: Copyright © 2016 Marios-Andreas Tsekis. All rights reserved.
      */
-    func initRingProgressCircle() -> Void {
+    func initRingProgressCircle() {
         
         //init ring progress bar
         ringRadius = 55
@@ -177,7 +178,7 @@ import UIKit
         let mainArc = self.addOval(self.ringLineWidth, path: self.path!, strokeStart: self.startPoint, strokeEnd: self.endPoint, strokeColor: self.ringColor, fillColor: self.ringFillColor, shadowRadius: self.ringShadowRadius, shadowOpacity: self.ringShadowOpacity, shadowOffset: self.ringShadowOffset)
         
         //animate main circle
-        AnimationHelper.animateCircle(from: 0, to: 1, duration: TimeInterval(self.animationDuration), arc: mainArc)
+        AnimationHelper.animateCircle(from: 0, toValue: 1, duration: TimeInterval(self.animationDuration), arc: mainArc)
     }
     
     // MARK: - Timer method
@@ -197,10 +198,9 @@ import UIKit
      
      - parameter end: The new value to represent
      - parameter from: Animate circle from this point
-     - parameter to: Animate circle to this point
      - parameter removePreviousLayer: A Bool value defining if it removes the previous arc or adds a new one on top
      */
-    func updateCircle(end: CGFloat, animate from: Float, to: Float, removePreviousLayer: Bool) {
+    func updateCircle(end: CGFloat, animate from: Float, removePreviousLayer: Bool) {
         
         //get the mid position of the view
         let X = self.bounds.midX
@@ -224,7 +224,7 @@ import UIKit
         
             //animate main circle
         
-            AnimationHelper.animateCircle(from: from, to: Float(end), duration: TimeInterval(self.animationDuration), arc: self.previousArc!)
+            AnimationHelper.animateCircle(from: from, toValue: Float(end), duration: TimeInterval(self.animationDuration), arc: self.previousArc!)
             
             self.hasAnimationFinished = false
         }

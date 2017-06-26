@@ -10,10 +10,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import HatForIOS
-import RealmSwift
-import MapKit
 import FBAnnotationClusteringSwift
+import HatForIOS
+import MapKit
+import RealmSwift
 
 // MARK: Extension
 
@@ -72,7 +72,7 @@ extension FBClusteringManager {
             
             if let weakSelf = self {
                 
-                if (annottationArray.count > 0) {
+                if !annottationArray.isEmpty {
                     
                     weakSelf.fitMapViewToAnnotaionList(annottationArray, mapView: mapView)
                 }
@@ -86,6 +86,7 @@ extension FBClusteringManager {
      Converts the LocationsObjects to pins to add in the map later
      
      - parameter objects: The LocationsObjects to convert to FBAnnotation, pins
+     
      - returns: An array of FBAnnotation, pins
      */
     func createAnnotationsFrom(objects: [HATLocationsObject]) -> [FBAnnotation] {
@@ -110,7 +111,7 @@ extension FBClusteringManager {
      - parameter annotations: The annotations to add on the map in an array of FBAnnotation
      - parameter mapView: The mapView to show the cluster points to
      */
-    func fitMapViewToAnnotaionList(_ annotations: [FBAnnotation], mapView: MKMapView) -> Void {
+    func fitMapViewToAnnotaionList(_ annotations: [FBAnnotation], mapView: MKMapView) {
         
         // calculate map padding and zoom
         let mapEdgePadding = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)

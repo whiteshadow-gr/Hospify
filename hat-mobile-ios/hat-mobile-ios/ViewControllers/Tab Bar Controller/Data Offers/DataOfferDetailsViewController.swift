@@ -10,31 +10,83 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-import UIKit
+import HatForIOS
 
 // MARK: Class
 
-class DataOfferDetailsViewController: UIViewController {
+internal class DataOfferDetailsViewController: UIViewController, UserCredentialsProtocol {
     
     // MARK: - IBOutlets
 
-    @IBOutlet weak var textField: UITextView!
-    @IBOutlet weak var dataRequirmentTextView: UITextView!
+    @IBOutlet private weak var textField: UITextView!
+    @IBOutlet private weak var dataRequirmentTextView: UITextView!
     
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet private weak var piiExplainedLabel: UILabel!
+    @IBOutlet private weak var imageView: UIImageView!
 
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var detailsLabel: UILabel!
-    @IBOutlet weak var offersRemainingLabel: UILabel!
-    @IBOutlet weak var ppiEnabledLabel: UILabel!
+    @IBOutlet private weak var titleLabel: UILabel!
+    @IBOutlet private weak var detailsLabel: UILabel!
+    @IBOutlet private weak var offersRemainingLabel: UILabel!
+    @IBOutlet private weak var ppiEnabledLabel: UILabel!
     
-    @IBOutlet weak var stackView: UIStackView!
+    @IBOutlet private weak var stackView: UIStackView!
     
-    @IBOutlet weak var infoView: UIView!
+    @IBOutlet private weak var infoView: UIView!
+    
+    @IBOutlet private weak var acceptOfferButton: UIButton!
     
     // MARK: - Variables
     
-    var receivedOffer: DataOfferObject? = nil
+    var receivedOffer: DataOfferObject?
+    
+    // MARK: - IBActions
+    
+    @IBAction func acceptOfferAction(_ sender: Any) {
+        
+        let remaining = (receivedOffer?.requiredMaxUsers)! - (receivedOffer?.usersClaimedOffer)!
+        if remaining > 0 {
+            
+            func gotApplicationToken(appToken: String, newUserToken: String?) {
+                
+                func success(claimResult: String, renewedUserToken: String?) {
+                    
+                    print(claimResult)
+                    self.navigationController?.popViewController(animated: true)
+                }
+                
+                func failed(error: DataPlugError) {
+                    
+                    print(error)
+                }
+                
+                HATDataOffersService.claimOffer(
+                    applicationToken: appToken,
+                    offerID: (receivedOffer?.dataOfferID)!,
+                    succesfulCallBack: success,
+                    failCallBack: failed)
+            }
+            
+            func failedGettingAppToken(error: JSONParsingError) {
+                
+                print(error)
+            }
+            
+            HATService.getApplicationTokenFor(
+                serviceName: "DataBuyer",
+                userDomain: self.userDomain,
+                token: self.userToken,
+                resource: "https://databuyer.hubofallthings.com/",
+                succesfulCallBack: gotApplicationToken,
+                failCallBack: failedGettingAppToken)
+        } else {
+            
+            self.createClassicOKAlertWith(
+                alertMessage: "There are no remaining spots for this offer",
+                alertTitle: "Offer reched maximum allowed user number",
+                okTitle: "OK",
+                proceedCompletion: {})
+        }
+    }
     
     // MARK: - View controller methods
     
@@ -42,21 +94,25 @@ class DataOfferDetailsViewController: UIViewController {
         
         super.viewDidLoad()
         
+        self.acceptOfferButton.addBorderToButton(width: 1, color: .white)
+        
         if receivedOffer != nil {
             
-//            self.titleLabel.text = receivedOffer!.name
-//            self.detailsLabel.text = receivedOffer!.details
-//            self.imageView.image = receivedOffer?.image
-//            self.textField.text = receivedOffer?.offerDescription
-//            self.offersRemainingLabel.text = (receivedOffer?.offersRemaining)! + " REMAINING"
-//            self.dataRequirmentTextView.text = receivedOffer?.requirements[0]
+            self.titleLabel.text = receivedOffer?.title
+            self.detailsLabel.text = receivedOffer?.shortDescription
+            self.imageView.image = receivedOffer?.image
+            self.textField.text = receivedOffer?.longDescription
+            self.offersRemainingLabel.text = String(describing: ((receivedOffer?.requiredMaxUsers)! - (receivedOffer?.usersClaimedOffer)!)) + " REMAINING"
+            self.dataRequirmentTextView.attributedText = self.formatRequiredDataDefinitionText(requiredDataDefinition: (receivedOffer?.requiredDataDefinition)!)
             
-            if receivedOffer!.isPPIRequested {
+            if receivedOffer!.isPΙIRequested {
                 
-                self.ppiEnabledLabel.text = "PPI ENABLED"
+                self.ppiEnabledLabel.text = "PII ENABLED"
+                self.piiExplainedLabel.text = "PERSONALLY IDENTIFIABLE INFORMATION (PII) IS REQUIRED IN THIS OFFER"
             } else {
                 
-                self.ppiEnabledLabel.text = "PPI DISABLED"
+                self.ppiEnabledLabel.text = "PII DISABLED"
+                self.piiExplainedLabel.text = "NO PERSONALLY IDENTIFIABLE INFORMATION (PII) IS REQUIRED IN THIS OFFER"
             }
         }
         
@@ -72,7 +128,7 @@ class DataOfferDetailsViewController: UIViewController {
         navigationController?.hidesBarsOnSwipe = false
         
         let view = self.stackView.arrangedSubviews[1]
-        view.addLine(view: self.infoView, x: self.infoView.bounds.midX, y: 0)
+        view.addLine(view: self.infoView, xPoint: self.infoView.bounds.midX, yPoint: 0)
         view.drawTicketView()
     }
     
@@ -85,7 +141,57 @@ class DataOfferDetailsViewController: UIViewController {
         
         let view = self.stackView.arrangedSubviews[1]
         view.drawTicketView()
-        view.addLine(view: self.infoView, x: self.infoView.bounds.midX, y: 0)
+        view.addLine(view: self.infoView, xPoint: self.infoView.bounds.midX, yPoint: 0)
+    }
+    
+    // MARK: - Format Text
+    
+    /**
+     Formatts the requirements to show in a nice way
+     
+     - parameter requiredDataDefinition: The requred data definition array, holding all the requirements for this offer
+     
+     - returns: An NSMutableString with the requirements formmated as needed
+     */
+    private func formatRequiredDataDefinitionText(requiredDataDefinition: [DataOfferRequiredDataDefinitionObject]) -> NSMutableAttributedString {
+        
+        let textToReturn = NSMutableAttributedString(string: "REQUIREMENTS:\n", attributes: [NSFontAttributeName: UIFont(name: "OpenSans", size: 13)!])
+        
+        for requiredData in requiredDataDefinition {
+            
+            let string = NSMutableAttributedString(string: "\(requiredData.source)\n", attributes: [NSFontAttributeName: UIFont(name: "OpenSans-Bold", size: 13)!])
+            
+            textToReturn.append(string)
+            
+            for dataSet in requiredData.dataSets {
+                
+                func reccuringFields(fieldsArray: [DataOfferRequiredDataDefinitionDataSetsFieldsObject], intend: String) -> NSMutableAttributedString {
+                    
+                    let tempText = NSMutableAttributedString(string: "", attributes: [NSFontAttributeName: UIFont(name: "OpenSans", size: 13)!])
+                    
+                    for field in fieldsArray {
+                        
+                        let fieldString = NSMutableAttributedString(string: "\(intend)\(field.name)\n", attributes: [NSFontAttributeName: UIFont(name: "OpenSans", size: 13)!])
+                        
+                        tempText.append(fieldString)
+                        
+                        if !field.fields.isEmpty {
+                            
+                            tempText.append(reccuringFields(fieldsArray: field.fields, intend: intend + "\t"))
+                        }
+                    }
+                    
+                    return tempText
+                }
+                
+                let dataName = NSMutableAttributedString(string: "\t\(dataSet.name)\n", attributes: [NSFontAttributeName: UIFont(name: "OpenSans", size: 13)!])
+                
+                textToReturn.append(dataName)
+                textToReturn.append(reccuringFields(fieldsArray: dataSet.fields, intend: "\t\t"))
+            }
+        }
+        
+        return textToReturn
     }
 
 }

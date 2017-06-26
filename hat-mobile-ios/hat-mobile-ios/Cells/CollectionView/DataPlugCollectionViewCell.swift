@@ -15,19 +15,19 @@ import HatForIOS
 // MARK: Class
 
 /// The collection view cell class for data plugs screen
-class DataPlugCollectionViewCell: UICollectionViewCell, UserCredentialsProtocol {
+internal class DataPlugCollectionViewCell: UICollectionViewCell, UserCredentialsProtocol {
     
     // MARK: - IBOutlets
     
     /// The image for the data plug
-    @IBOutlet weak var dataPlugImage: UIImageView!
+    @IBOutlet private weak var dataPlugImage: UIImageView!
     /// The checkmark image for the data plug. It's hidden if it's not active
-    @IBOutlet weak var checkMarkImage: UIImageView!
+    @IBOutlet private weak var checkMarkImage: UIImageView!
     
     /// The title for the data plug
-    @IBOutlet weak var dataPlugTitleLabel: UILabel!
+    @IBOutlet private weak var dataPlugTitleLabel: UILabel!
     /// Some details for the data plug
-    @IBOutlet weak var dataPlugDetailsLabel: UILabel!
+    @IBOutlet private weak var dataPlugDetailsLabel: UILabel!
     
     // MARK: - Set up cell
     
@@ -69,14 +69,14 @@ class DataPlugCollectionViewCell: UICollectionViewCell, UserCredentialsProtocol 
         if orientation.isPortrait {
             
             // create this zebra like color based on the index of the cell
-            if (indexPath.row % 4 == 0 || indexPath.row % 3 == 0) {
+            if (indexPath.row % 4 == 0) || (indexPath.row % 3 == 0) {
                 
                 return .rumpelVeryLightGray
             }
         } else {
             
             // create this zebra like color based on the index of the cell
-            if (indexPath.row % 2 == 0 ) {
+            if indexPath.row % 2 == 0 {
                 
                 return .rumpelVeryLightGray
             }

@@ -15,7 +15,7 @@ import RealmSwift
 // MARK: Class
 
 /// The DataPoint object representation
-class HATImagesRealmObject : Object {
+internal class HATImagesRealmObject: Object {
     
     // MARK: - Variables
     

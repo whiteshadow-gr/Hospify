@@ -15,7 +15,7 @@ import RealmSwift
 // MARK: Class
 
 /// The DataPoint object representation
-class DataPoint : Object {
+internal class DataPoint: Object {
     
     // MARK: - Variables
     

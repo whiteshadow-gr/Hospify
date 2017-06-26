@@ -14,18 +14,15 @@ import HatForIOS
 
 // MARK: Class
 
-class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PhotoPickerDelegate, UserCredentialsProtocol {
+internal class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PhotoPickerDelegate, UserCredentialsProtocol {
     
     // MARK: - Variables
     
     /// The files, images, to show in the cells
     private var files: [FileUploadObject] = []
     
-    /// The reuse identifier of the cell
-    private let reuseIdentifier = "photosCell"
-    
     /// The Photo picker used to upload a new photo
-    private let photoPicker = PhotosHelperViewController()
+    private let photoPicker: PhotosHelperViewController = PhotosHelperViewController()
     
     /// The selected image file to view full screen
     private var selectedFileToView: FileUploadObject?
@@ -40,13 +37,13 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
     // MARK: - IBOutlets
     
     /// An IBOutlet for handling the collection view
-    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet private weak var collectionView: UICollectionView!
     
     /// An IBOutlet for handling the imageView
-    @IBOutlet weak var addFirstPhotoFileImageView: UIImageView!
+    @IBOutlet private weak var addFirstPhotoFileImageView: UIImageView!
     
     /// An IBOutlet for handling the add picture button
-    @IBOutlet weak var addPictureButtonOutlet: UIButton!
+    @IBOutlet private weak var addPictureButtonOutlet: UIButton!
     
     // MARK: - IBActions
 
@@ -66,13 +63,13 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
             let alertController = UIAlertController(title: "Select options", message: "Select from where to upload image", preferredStyle: .actionSheet)
             
             // create alert actions
-            let cameraAction = UIAlertAction(title: "Take photo", style: .default, handler: { [unowned self] (action) -> Void in
+            let cameraAction = UIAlertAction(title: "Take photo", style: .default, handler: { [unowned self] (_) -> Void in
                 
                 let photoPickerContorller = self.photoPicker.presentPicker(sourceType: .camera)
                 self.present(photoPickerContorller, animated: true, completion: nil)
             })
             
-            let libraryAction = UIAlertAction(title: "Choose from library", style: .default, handler: { [unowned self] (action) -> Void in
+            let libraryAction = UIAlertAction(title: "Choose from library", style: .default, handler: { [unowned self] (_) -> Void in
                 
                 let photoPickerContorller = self.photoPicker.presentPicker(sourceType: .photoLibrary)
                 self.present(photoPickerContorller, animated: true, completion: nil)
@@ -111,7 +108,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         
         func success(filesReceived: [FileUploadObject], userToken: String?) {
             
-            if filesReceived.count > 0 {
+            if !filesReceived.isEmpty {
                 
                 self.collectionView.isHidden = false
                 
@@ -126,22 +123,30 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
                             
                             var tempFile = file
                             tempFile.tags.append("photo")
-                            HATFileService.updateParametersOfFile(fileID: tempFile.fileID, fileName: tempFile.name, token: userToken!, userDomain: userDomain, tags: tempFile.tags, completion: {[weak self] file2 in
+                            HATFileService.updateParametersOfFile(
+                                fileID: tempFile.fileID,
+                                fileName: tempFile.name,
+                                token: userToken!,
+                                userDomain: userDomain,
+                                tags: tempFile.tags,
+                                completion: {[weak self] file2 in
                                 
-                                if self != nil {
-                                    
-                                    var tempFile2 = file2
-                                    tempFile2.0.image = UIImage(named: "Image Placeholder")
-                                    self!.files.append(tempFile2.0)
+                                    if self != nil {
+                                        
+                                        var tempFile2 = file2
+                                        tempFile2.0.image = UIImage(named: Constants.ImageNames.placeholderImage)
+                                        self!.files.append(tempFile2.0)
+                                    }
+                                },
+                                errorCallback: {error in
+                                
+                                    _ = CrashLoggerHelper.hatTableErrorLog(error: error)
                                 }
-                            }, errorCallback: {error in
-                            
-                                _ = CrashLoggerHelper.hatTableErrorLog(error: error)
-                            })
+                            )
                         } else {
                             
                             var tempFile = file
-                            tempFile.image = UIImage(named: "Image Placeholder")
+                            tempFile.image = UIImage(named: Constants.ImageNames.placeholderImage)
                             self.files.append(tempFile)
                         }
                     }
@@ -155,7 +160,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
                 self.collectionView.isHidden = true
             }
             
-            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: userToken)
+            _ = KeychainHelper.setKeychainValue(key: Constants.Keychain.userToken, value: userToken)
         }
         
         func failed(error: HATError) {
@@ -181,7 +186,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
     
     // MARK: - Image picker methods
     
-    func didFinishWithError(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {    
+    func didFinishWithError(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
     }
     
     func didChooseImageWithInfo(_ info: [String : Any]) {
@@ -209,11 +214,11 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? PhotosCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.CellReuseIDs.photosCell, for: indexPath) as? PhotosCollectionViewCell
         
         return (cell?.setUpCell(userDomain: userDomain, userToken: userToken, files: self.files, indexPath: indexPath, completion: { [weak self] image in
             
-            cell?.image.cropImage(width: (cell?.image.frame.size.width)!, height: (cell?.image.frame.size.height)!)
+            cell?.cropImage()
 
             self?.files[indexPath.row].image = image
         }))!
@@ -231,7 +236,7 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         } else {
             
             self.selectedFileToView = self.files[indexPath.row]
-            self.performSegue(withIdentifier: "fullScreenPhotoViewerSegue", sender: self)
+            self.performSegue(withIdentifier: Constants.Segue.fullScreenPhotoViewerSegue, sender: self)
         }
     }
     
@@ -241,13 +246,10 @@ class PhotoViewerViewController: UIViewController, UICollectionViewDataSource, U
         cell?.contentView.layer.borderWidth = 3.0
         cell?.contentView.layer.borderColor = UIColor.clear.cgColor
         
-        for (index, file) in self.files.enumerated() {
+        for (index, file) in self.files.enumerated() where file == self.files[indexPath.row] {
             
-            if file == self.files[indexPath.row] {
-                
-                self.selectedFiles.remove(at: index)
-                break
-            }
+            self.selectedFiles.remove(at: index)
+            break
         }
     }
     

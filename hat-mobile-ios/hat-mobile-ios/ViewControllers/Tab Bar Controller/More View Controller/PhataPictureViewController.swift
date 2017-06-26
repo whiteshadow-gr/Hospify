@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the profile picture UIViewController of the PHATA section
-class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PhotoPickerDelegate, SelectedPhotosProtocol {
+internal class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, PhotoPickerDelegate, SelectedPhotosProtocol {
 
     // MARK: - Protocol's Variables
     
@@ -38,21 +38,21 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
     private var selectedFileToView: FileUploadObject?
     
     /// The Photo picker used to upload a new photo
-    private let photoPicker = PhotosHelperViewController()
+    private let photoPicker: PhotosHelperViewController = PhotosHelperViewController()
     
     /// User's profile passed on from previous view controller
-    var profile: HATProfileObject? = nil
+    var profile: HATProfileObject?
     
     // MARK: - IBoutlets
 
     /// An IBOutlet for handling the image view
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet private weak var imageView: UIImageView!
     
     /// An IBOutlet for handling the custom switch
-    @IBOutlet weak var customSwitch: CustomSwitch!
+    @IBOutlet private weak var customSwitch: CustomSwitch!
     
     /// An IBOutlet for handling the collectionView
-    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet private weak var collectionView: UICollectionView!
     
     // MARK: - IBActions
     
@@ -75,21 +75,21 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
         let alertController = UIAlertController(title: "Select options", message: "Select from where to upload image", preferredStyle: .actionSheet)
         
         // create alert actions
-        let cameraAction = UIAlertAction(title: "Take photo", style: .default, handler: { [unowned self] (action) -> Void in
+        let cameraAction = UIAlertAction(title: "Take photo", style: .default, handler: { [unowned self] (_) -> Void in
             
             let photoPickerContorller = self.photoPicker.presentPicker(sourceType: .camera)
             self.present(photoPickerContorller, animated: true, completion: nil)
         })
         
-        let libraryAction = UIAlertAction(title: "Choose from library", style: .default, handler: { [unowned self] (action) -> Void in
+        let libraryAction = UIAlertAction(title: "Choose from library", style: .default, handler: { [unowned self] (_) -> Void in
             
             let photoPickerContorller = self.photoPicker.presentPicker(sourceType: .photoLibrary)
             self.present(photoPickerContorller, animated: true, completion: nil)
         })
         
-        let selectFromHATAction = UIAlertAction(title: "Choose from HAT", style: .default, handler: { [unowned self] (action) -> Void in
+        let selectFromHATAction = UIAlertAction(title: "Choose from HAT", style: .default, handler: { [unowned self] (_) -> Void in
             
-            self.performSegue(withIdentifier: "profileToHATPhotosSegue", sender: self)
+            self.performSegue(withIdentifier: Constants.Segue.profileToHATPhotosSegue, sender: self)
         })
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -117,33 +117,46 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
         
         self.view.addSubview(self.darkView)
         
-        self.loadingView = UIView.createLoadingView(with: CGRect(x: (self.view?.frame.midX)! - 70, y: (self.view?.frame.midY)! - 15, width: 140, height: 30), color: .teal, cornerRadius: 15, in: self.view, with: "Updating profile...", textColor: .white, font: UIFont(name: "OpenSans", size: 12)!)
+        self.loadingView = UIView.createLoadingView(with: CGRect(x: (self.view?.frame.midX)! - 70, y: (self.view?.frame.midY)! - 15, width: 140, height: 30), color: .teal, cornerRadius: 15, in: self.view, with: "Updating profile...", textColor: .white, font: UIFont(name: Constants.FontNames.openSans, size: 12)!)
         
         func tableExists(dict: Dictionary<String, Any>, renewedUserToken: String?) {
             
-            HATPhataService.postProfile(userDomain: userDomain, userToken: userToken, hatProfile: self.profile!, successCallBack: {
+            HATPhataService.postProfile(
+                userDomain: userDomain,
+                userToken: userToken,
+                hatProfile: self.profile!,
+                successCallBack: {
                 
-                self.loadingView.removeFromSuperview()
-                self.darkView.removeFromSuperview()
-                
-                _ = self.navigationController?.popViewController(animated: true)
-            }, errorCallback: {error in
-                
-                self.loadingView.removeFromSuperview()
-                self.darkView.removeFromSuperview()
-                
-                _ = CrashLoggerHelper.hatTableErrorLog(error: error)
-            })
+                    self.loadingView.removeFromSuperview()
+                    self.darkView.removeFromSuperview()
+                    
+                    _ = self.navigationController?.popViewController(animated: true)
+                },
+                errorCallback: {error in
+                    
+                    self.loadingView.removeFromSuperview()
+                    self.darkView.removeFromSuperview()
+                    
+                    _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                }
+            )
         }
         
-        HATAccountService.checkHatTableExistsForUploading(userDomain: userDomain, tableName: "profile", sourceName: "rumpel", authToken: userToken, successCallback: tableExists, errorCallback: {[weak self] _ in
+        HATAccountService.checkHatTableExistsForUploading(
+            userDomain: userDomain,
+            tableName: Constants.HATTableName.Profile.name,
+            sourceName: Constants.HATTableName.Profile.source,
+            authToken: userToken,
+            successCallback: tableExists,
+            errorCallback: {[weak self] _ in
             
-            if let weakSelf = self {
-                
-                weakSelf.loadingView.removeFromSuperview()
-                weakSelf.darkView.removeFromSuperview()
+                if let weakSelf = self {
+                    
+                    weakSelf.loadingView.removeFromSuperview()
+                    weakSelf.darkView.removeFromSuperview()
+                }
             }
-        })
+        )
     }
     
     // MARK: - View controller methods
@@ -153,9 +166,9 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
         let alertController = UIAlertController(title: "Options", message: "Please select one option", preferredStyle: .actionSheet)
         
         // create alert actions
-        let removeAction = UIAlertAction(title: "Remove profile photo", style: .default, handler: { [unowned self] (action) -> Void in
+        let removeAction = UIAlertAction(title: "Remove profile photo", style: .default, handler: { [unowned self] (_) -> Void in
             
-            self.imageView.image = UIImage(named: "Image Placeholder")
+            self.imageView.image = UIImage(named: Constants.ImageNames.placeholderImage)
         })
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -169,7 +182,7 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
     
     func handleLongTapGesture(gesture: UILongPressGestureRecognizer) {
         
-        switch(gesture.state) {
+        switch gesture.state {
             
         case .began:
             
@@ -262,11 +275,12 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
-        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "profileImageHeader", for: indexPath) as! PhotosHeaderCollectionReusableView
+        if let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.Segue.profileImageHeader, for: indexPath) as? PhotosHeaderCollectionReusableView {
+            
+            return headerView.setUp(stringToShow: "My Profile Photos")
+        }
         
-        headerView.headerTitle.text = "My Profile Photos"
-        
-        return headerView
+        return collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: Constants.Segue.profileImageHeader, for: indexPath)
     }
     
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
@@ -279,40 +293,20 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "profilePictureCell", for: indexPath) as? PhotosCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.Segue.profilePictureCell, for: indexPath) as? PhotosCollectionViewCell
         
-        let imageURL: String = "https://" + self.userDomain + "/api/v2/files/content/" + self.images[indexPath.row].fileID
-        
-        if cell?.image.image == UIImage(named: "Image Placeholder") && URL(string: imageURL) != nil {
+        return (cell?.setUpCell(userDomain: userDomain, userToken: userToken, files: self.images, indexPath: indexPath, completion: { [weak self] image in
             
-            cell?.ringProgressView.isHidden = false
-            cell?.ringProgressView?.ringRadius = 15
-            cell?.ringProgressView?.animationDuration = 0
-            cell?.ringProgressView?.ringLineWidth = 4
-            cell?.ringProgressView?.ringColor = .white
-            cell?.ringProgressView.animationDuration = 0.2
+            cell?.cropImage()
             
-            cell!.image.downloadedFrom(url: URL(string: imageURL)!, userToken: userToken,
-                                       progressUpdater: {progress in
-                                        
-                                        let completion = CGFloat(progress)
-                                        cell?.ringProgressView.updateCircle(end: completion, animate: Float((cell?.ringProgressView.endPoint)!), to: Float(progress), removePreviousLayer: false)
-            },
-                                       completion: {[weak self] in
-                                        
-                                        cell?.ringProgressView.isHidden = true
-                                        self?.images[indexPath.row].image = cell?.image.image
-                                        cell?.image.cropImage(width: (cell?.image.frame.size.width)!, height: (cell?.image.frame.size.height)!)
-            })
-        }
-        
-        return cell!
+            self?.images[indexPath.row].image = image
+        }))!
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         self.selectedFileToView = self.images[indexPath.row]
-        self.performSegue(withIdentifier: "profilePhotoToFullScreenPhotoSegue", sender: self)
+        self.performSegue(withIdentifier: Constants.Segue.profilePhotoToFullScreenPhotoSegue, sender: self)
     }
     
     // MARK: - Image picker methods
@@ -354,7 +348,7 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
         }
     }
     
-    // MARK: - Delegate functions 
+    // MARK: - Delegate functions
     
     func setImageAsProfileImage(image: UIImage) {
         
@@ -365,7 +359,6 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
         
         func updateProfileImage() {
             
-            
         }
         
         if file.image != nil {
@@ -374,7 +367,7 @@ class PhataPictureViewController: UIViewController, UserCredentialsProtocol, UIC
             updateProfileImage()
         } else {
             
-            if let imageURL: URL = URL(string: "https://" + userDomain + "/api/v2/files/content/" + file.fileID) {
+            if let imageURL: URL = URL(string: Constants.HATEndpoints.fileInfoURL(fileID: file.fileID, userDomain: userDomain)) {
                 
                 self.imageView.downloadedFrom(url: imageURL, userToken: userToken, progressUpdater: nil, completion: updateProfileImage)
             }

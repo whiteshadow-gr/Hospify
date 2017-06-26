@@ -15,7 +15,7 @@ import KeychainSwift
 // MARK: Struct
 
 /// A struct for working with the keychain
-struct KeychainHelper {
+internal struct KeychainHelper {
 
     // MARK: - Keychain methods
     
@@ -27,7 +27,7 @@ struct KeychainHelper {
      
      - returns: The result of the saving into keychain
      */
-    static func SetKeychainValue(key: String, value: String?) -> Bool {
+    static func setKeychainValue(key: String, value: String?) -> Bool {
         
         if value != nil {
             
@@ -44,7 +44,7 @@ struct KeychainHelper {
      
      - returns: String
      */
-    static func GetKeychainValue(key: String) -> String? {
+    static func getKeychainValue(key: String) -> String? {
         
         return KeychainSwift().get(key)
     }
@@ -56,7 +56,7 @@ struct KeychainHelper {
      
      - returns: String
      */
-    static func ClearKeychainKey(key: String) -> Bool {
+    static func clearKeychainKey(key: String) -> Bool {
         
         return KeychainSwift().delete(key)
     }

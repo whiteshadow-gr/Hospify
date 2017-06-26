@@ -14,14 +14,14 @@ import HatForIOS
 
 // MARK: Protocol
 
-protocol SelectedPhotosProtocol: class {
+internal protocol SelectedPhotosProtocol: class {
     
     // MARK: - Variables
 
     /// User's selected photos
-    var selectedPhotos: [UIImage] {get set}
+    var selectedPhotos: [UIImage] { get set }
     /// User's selected files
-    var selectedFiles: [FileUploadObject] {get set}
+    var selectedFiles: [FileUploadObject] { get set }
     
     // MARK: - Functions
     

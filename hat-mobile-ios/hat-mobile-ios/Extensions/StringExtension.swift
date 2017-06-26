@@ -25,21 +25,21 @@ extension String {
      
      returns: A Base64 String
      */
-    public func fromBase64URLToBase64(s: String) -> String {
+    func fromBase64URLToBase64(stringToConvert: String) -> String {
         
-        var s = s
-        if (s.characters.count % 4 == 2 ) {
+        var convertedString = stringToConvert
+        if convertedString.characters.count % 4 == 2 {
             
-            s = s + "=="
-        } else if (s.characters.count % 4 == 3 ) {
+            convertedString += "=="
+        } else if convertedString.characters.count % 4 == 3 {
             
-            s = s + "="
+            convertedString += "="
         }
         
-        s = s.replacingOccurrences(of: "-", with: "+")
-        s = s.replacingOccurrences(of: "_", with: "/")
+        convertedString = convertedString.replacingOccurrences(of: "-", with: "+")
+        convertedString = convertedString.replacingOccurrences(of: "_", with: "/")
         
-        return s
+        return convertedString
     }
     
     // MARK: - Split a comma separated string to an Array of String
@@ -69,7 +69,7 @@ extension String {
      
      - returns: trimmed String
      */
-    func TrimString() -> String {
+    func trimString() -> String {
         
         return self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
     }

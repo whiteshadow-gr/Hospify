@@ -14,14 +14,29 @@ import UIKit
 
 // MARK: Class
 
-class PhotosHeaderCollectionReusableView: UICollectionReusableView {
+internal class PhotosHeaderCollectionReusableView: UICollectionReusableView {
     
     // MARK: - IBOutlets
     
     /// The header title
-    @IBOutlet weak var headerTitle: UILabel!
+    @IBOutlet private weak var headerTitle: UILabel!
     
     /// The add image button
-    @IBOutlet weak var addImageButton: UIButton!
+    @IBOutlet private weak var addImageButton: UIButton!
+    
+    // MARK: - Set Up
+    
+    /**
+     Sets the desired title in the reusableView
+     
+     - parameter stringToShow: The string to show as title
+     
+     - returns: UICollectionReusableView
+     */
+    internal func setUp(stringToShow: String) -> UICollectionReusableView {
         
+        self.headerTitle.text = stringToShow
+        
+        return self
+    }
 }

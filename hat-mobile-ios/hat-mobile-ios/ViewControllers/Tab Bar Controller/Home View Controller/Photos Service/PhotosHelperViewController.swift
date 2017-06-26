@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for handling the photo picker
-class PhotosHelperViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UserCredentialsProtocol {
+internal class PhotosHelperViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -28,7 +28,7 @@ class PhotosHelperViewController: UIViewController, UIImagePickerControllerDeleg
     private var loadingScr: LoadingScreenWithProgressRingViewController?
     
     /// A variable holding a reference to the image picker view used to present the photo library or camera
-    private var imagePicker: UIImagePickerController!
+    private var imagePicker: UIImagePickerController?
     
     // MARK: - View controller methods
     
@@ -51,7 +51,7 @@ class PhotosHelperViewController: UIViewController, UIImagePickerControllerDeleg
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
-        self.imagePicker.dismiss(animated: true, completion: nil)
+        self.imagePicker?.dismiss(animated: true, completion: nil)
         let image = info[UIImagePickerControllerOriginalImage] as? UIImage
         
         delegate?.didChooseImageWithInfo(info)
@@ -76,16 +76,16 @@ class PhotosHelperViewController: UIViewController, UIImagePickerControllerDeleg
     func presentPicker(sourceType: UIImagePickerControllerSourceType) -> UIImagePickerController {
         
         self.imagePicker = UIImagePickerController()
-        self.imagePicker.delegate = self
-        self.imagePicker.sourceType = sourceType
+        self.imagePicker?.delegate = self
+        self.imagePicker?.sourceType = sourceType
         self.sourceType = sourceType
         
         if sourceType == .photoLibrary {
             
-            self.imagePicker.mediaTypes = UIImagePickerController.availableMediaTypes(for: UIImagePickerControllerSourceType.photoLibrary)!
+            self.imagePicker?.mediaTypes = UIImagePickerController.availableMediaTypes(for: UIImagePickerControllerSourceType.photoLibrary)!
         }
         
-        return self.imagePicker
+        return self.imagePicker!
     }
     
     /**
@@ -124,40 +124,42 @@ class PhotosHelperViewController: UIViewController, UIImagePickerControllerDeleg
         callingViewController.view.bringSubview(toFront: fromReference.view)
         fromReference.willMove(toParentViewController: callingViewController)
         
-        let image = (info[UIImagePickerControllerOriginalImage] as! UIImage)
-        
-        self.showProgressRing()
-        
-        HATAccountService.uploadFileToHATWrapper(
-            token: self.userToken,
-            userDomain: self.userDomain,
-            fileToUpload: image,
-            tags: ["iphone", "viewer", "photo"],
-            progressUpdater: {progress in
-                                                    
-                self.loadingScr?.updateView(completion: progress, animateFrom: Float((self.loadingScr?.progressRing.endPoint)!), removePreviousRingLayer: false)
-                            },
-            completion: {[weak self] (file, renewedUserToken) in
-                                                    
-                self?.removeProgressRing()
-                
-                completion(file)
-                
-                // refresh user token
-                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
+        if let image = (info[UIImagePickerControllerOriginalImage] as? UIImage) {
+            
+            self.showProgressRing()
+            
+            HATFileService.uploadFileToHATWrapper(
+                token: self.userToken,
+                userDomain: self.userDomain,
+                fileToUpload: image,
+                tags: ["iphone", "viewer", "photo"],
+                progressUpdater: {progress in
+                    
+                    let endPoint = self.loadingScr?.getRingEndPoint()
+                    self.loadingScr?.updateView(completion: progress, animateFrom: Float((endPoint)!), removePreviousRingLayer: false)
             },
-            errorCallBack: {[weak self] error in
-                                                    
-                if self != nil {
+                completion: {[weak self] (file, renewedUserToken) in
                     
                     self?.removeProgressRing()
                     
-                    self!.createClassicOKAlertWith(alertMessage: "There was an error with the uploading of the file, please try again later", alertTitle: "Upload failed", okTitle: "OK", proceedCompletion: {})
+                    completion(file)
                     
-                    _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                    // refresh user token
+                    _ = KeychainHelper.setKeychainValue(key: Constants.Keychain.userToken, value: renewedUserToken)
+                },
+                errorCallBack: {[weak self] error in
+                    
+                    if self != nil {
+                        
+                        self?.removeProgressRing()
+                        
+                        self!.createClassicOKAlertWith(alertMessage: "There was an error with the uploading of the file, please try again later", alertTitle: "Upload failed", okTitle: "OK", proceedCompletion: {})
+                        
+                        _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
 }

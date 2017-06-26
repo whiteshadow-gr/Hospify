@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the full screen viewer UIViewController
-class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProtocol, UIScrollViewDelegate {
+internal class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProtocol, UIScrollViewDelegate {
     
     // MARK: - Variables
     
@@ -38,18 +38,18 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
     // MARK: - IBOutlets
     
     /// An IBOutlet for handling the image view
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet private weak var imageView: UIImageView!
     
     /// An IBOutlet for handling the delete button
-    @IBOutlet weak var deleteButton: UIButton!
+    @IBOutlet private weak var deleteButton: UIButton!
     /// An IBOutlet for handling the set image as profilel image button
-    @IBOutlet weak var setImageAsProfileImageButton: UIButton!
+    @IBOutlet private weak var setImageAsProfileImageButton: UIButton!
     
     /// An IBOutlet for handling the ring progress bar
-    @IBOutlet weak var ringProgressBar: RingProgressCircle!
+    @IBOutlet private weak var ringProgressBar: RingProgressCircle!
     
     /// An IBOutlet for handling the scrollView
-    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet private weak var scrollView: UIScrollView!
     
     // MARK: - IBActions
 
@@ -83,7 +83,7 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
             func success(isSuccess: Bool, renewedUserToken: String?) {
                 
                 // refresh user token
-                _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
+                _ = KeychainHelper.setKeychainValue(key: Constants.Keychain.userToken, value: renewedUserToken)
                 
                 _ = self.navigationController?.popViewController(animated: true)
             }
@@ -135,39 +135,47 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
         
         self.setImageAsProfileImageButton.isHidden = !self.isImageForProfile
         
-        if self.image != nil && self.image != UIImage(named: "Image Placeholder") {
+        if self.image != nil && self.image != UIImage(named: Constants.ImageNames.placeholderImage) {
             
             self.imageView.image = self.image!
         } else  if self.file != nil {
             
-            let imageURL: String = "https://" + userDomain + "/api/v2/files/content/" + file!.fileID
-            
             self.ringProgressBar.isHidden = false
             
-            self.imageView!.downloadedFrom(url: URL(string: imageURL)!, userToken: userToken, progressUpdater: {progress in
+            self.imageView!.downloadedFrom(
+                url: URL(string: Constants.HATEndpoints.fileInfoURL(fileID: file!.fileID, userDomain: self.userDomain))!,
+                userToken: userToken,
+                progressUpdater: {progress in
                 
-                let completion = Float(progress)
-                self.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(self.ringProgressBar.endPoint), to: completion, removePreviousLayer: false)
-            }, completion: {
-                
-                self.ringProgressBar.isHidden = true
-            })
+                    let completion = Float(progress)
+                    self.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(self.ringProgressBar.endPoint), removePreviousLayer: false)
+                },
+                completion: {
+                    
+                    self.ringProgressBar.isHidden = true
+                }
+            )
         } else if self.imageURL != nil {
             
             let url = URL(string: self.imageURL!)
             
             self.ringProgressBar.isHidden = false
             
-            self.imageView.downloadedFrom(url: url!, userToken: userToken, progressUpdater: {progress in
+            self.imageView.downloadedFrom(
+                url: url!,
+                userToken: userToken,
+                progressUpdater: {progress in
                 
-                let completion = Float(progress)
-                self.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(self.ringProgressBar.endPoint), to: completion, removePreviousLayer: false)
-            }, completion: {
-                
-                self.deleteButton.isHidden = true
-                self.deleteButton = nil
-                self.ringProgressBar.isHidden = true
-            })
+                    let completion = Float(progress)
+                    self.ringProgressBar.updateCircle(end: CGFloat(completion), animate: Float(self.ringProgressBar.endPoint), removePreviousLayer: false)
+                },
+                completion: {
+                    
+                    self.deleteButton.isHidden = true
+                    self.deleteButton = nil
+                    self.ringProgressBar.isHidden = true
+                }
+            )
         }
         
         self.view.backgroundColor = .black
@@ -183,7 +191,8 @@ class PhotoFullScreenViewerViewController: UIViewController, UserCredentialsProt
     /**
      Hides the navigation bar, tab bar and delete button
      */
-    @objc private func hideUI() {
+    @objc
+    private func hideUI() {
         
         self.navigationController?.setNavigationBarHidden(!(self.isUIHidden), animated: true)
         self.tabBarController?.tabBar.isHidden = !(self.isUIHidden)

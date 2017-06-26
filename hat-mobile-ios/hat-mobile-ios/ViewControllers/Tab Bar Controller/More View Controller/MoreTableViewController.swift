@@ -15,7 +15,7 @@ import HatForIOS
 // MARK: Class
 
 /// A class responsible for the more tab in the tab bar controller
-class MoreTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UserCredentialsProtocol {
+internal class MoreTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UserCredentialsProtocol {
     
     // MARK: - Variables
     
@@ -30,12 +30,12 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
     private var fileURL: String?
     
     /// A mail ViewController helper
-    private let mailVC = MailHelper()
+    private let mailVC: MailHelper = MailHelper()
     
     // MARK: - IBOutlets
 
     /// An IBOutlet for handling the table view
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet private weak var tableView: UITableView!
     
     // MARK: - View controller methods
     
@@ -63,7 +63,7 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "optionsCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.CellReuseIDs.optionsCell, for: indexPath)
 
         return setUpCell(cell: cell, indexPath: indexPath)
     }
@@ -72,38 +72,38 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
         
         if indexPath.section == 0 {
             
-            self.performSegue(withIdentifier: "phataSegue", sender: self)
+            self.performSegue(withIdentifier: Constants.Segue.phataSegue, sender: self)
         } else if indexPath.section == 1 {
             
             if indexPath.row == 1 {
                 
-                self.performSegue(withIdentifier: "moreToResetPasswordSegue", sender: self)
+                self.performSegue(withIdentifier: Constants.Segue.moreToResetPasswordSegue, sender: self)
             }
         } else if indexPath.section == 2 {
             
             if self.sections[indexPath.section][indexPath.row] == "Show Data" {
                 
-                self.performSegue(withIdentifier: "dataSegue", sender: self)
+                self.performSegue(withIdentifier: Constants.Segue.dataSegue, sender: self)
             } else if self.sections[indexPath.section][indexPath.row] == "Location Settings" {
                 
-                self.performSegue(withIdentifier: "locationsSettingsSegue", sender: self)
+                self.performSegue(withIdentifier: Constants.Segue.locationsSettingsSegue, sender: self)
             }
         } else if indexPath.section == 3 {
             
             if self.sections[indexPath.section][indexPath.row] == "Rumpel Terms of Service" {
                 
                 self.fileURL = (Bundle.main.url(forResource: "Rumpel Lite iOS Application Terms of Service", withExtension: "pdf", subdirectory: nil, localization: nil)?.absoluteString)!
-                self.performSegue(withIdentifier: "moreToTermsSegue", sender: self)
+                self.performSegue(withIdentifier: Constants.Segue.moreToTermsSegue, sender: self)
             } else if self.sections[indexPath.section][indexPath.row] == "HAT Terms of Service" {
                 
                 self.fileURL = (Bundle.main.url(forResource: "2.1 HATTermsofService v1.0", withExtension: "pdf", subdirectory: nil, localization: nil)?.absoluteString)!
-                self.performSegue(withIdentifier: "moreToTermsSegue", sender: self)
+                self.performSegue(withIdentifier: Constants.Segue.moreToTermsSegue, sender: self)
             }
         } else if indexPath.section == 4 {
             
             if self.sections[indexPath.section][indexPath.row] == "Report Problem" {
                 
-                self.mailVC.sendEmail(at: "contact@hatdex.org", onBehalf: self)
+                self.mailVC.sendEmail(atAddress: "contact@hatdex.org", onBehalf: self)
             } else if self.sections[indexPath.section][indexPath.row] == "Log Out" {
                 
                 TabBarViewController.logoutUser(from: self)
@@ -242,7 +242,7 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
         
         return { (systemStatusFile, renewedUserToken) in
         
-            if systemStatusFile.count > 0 {
+            if !systemStatusFile.isEmpty {
                 
                 let totalSpaceAvailable = systemStatusFile[2].kind.metric + " " + systemStatusFile[2].kind.units!
                 let usedSpace = String(describing: Int(Float(systemStatusFile[4].kind.metric)!)) + " " + systemStatusFile[4].kind.units!
@@ -259,7 +259,7 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             
             // refresh user token
-            _ = KeychainHelper.SetKeychainValue(key: "UserToken", value: renewedUserToken)
+            _ = KeychainHelper.setKeychainValue(key: Constants.Keychain.userToken, value: renewedUserToken)
         }
     }
 
@@ -268,12 +268,13 @@ class MoreTableViewController: UIViewController, UITableViewDelegate, UITableVie
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        if segue.identifier == "moreToTermsSegue" && self.fileURL != nil {
+        if segue.identifier == Constants.Segue.moreToTermsSegue && self.fileURL != nil {
             
             // pass data to next view
-            let termsVC = segue.destination as! TermsAndConditionsViewController
-            
-            termsVC.filePathURL = self.fileURL!
+            if let termsVC = segue.destination as? TermsAndConditionsViewController {
+                
+                termsVC.filePathURL = self.fileURL!
+            }
         }
     }
     

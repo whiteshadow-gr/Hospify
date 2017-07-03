@@ -87,26 +87,42 @@ internal class DataStoreRelationshipAndHouseholdTableViewController: UITableView
             }
         }
         
-        HATProfileService.postRelationshipAndHouseholdToHAT(
-            userDomain: userDomain,
-            userToken: userToken,
-            relationshipAndHouseholdObject: self.relationshipAndHousehold,
-            successCallback: {_ in
+        func gotApplicationToken(appToken: String, newUserToken: String?) {
             
-                self.loadingView.removeFromSuperview()
-                self.darkView.removeFromSuperview()
-                
-                _ = self.navigationController?.popViewController(animated: true)
-            },
-            failCallback: {error in
-                
-                self.loadingView.removeFromSuperview()
-                self.darkView.removeFromSuperview()
-                
-                self.createClassicOKAlertWith(alertMessage: "There was an error posting profile", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
-                _ = CrashLoggerHelper.hatTableErrorLog(error: error)
-            }
-        )
+            HATProfileService.postRelationshipAndHouseholdToHAT(
+                userDomain: userDomain,
+                userToken: appToken,
+                relationshipAndHouseholdObject: self.relationshipAndHousehold,
+                successCallback: {_ in
+                    
+                    self.loadingView.removeFromSuperview()
+                    self.darkView.removeFromSuperview()
+                    
+                    _ = self.navigationController?.popViewController(animated: true)
+                },
+                failCallback: {error in
+                    
+                    self.loadingView.removeFromSuperview()
+                    self.darkView.removeFromSuperview()
+                    
+                    self.createClassicOKAlertWith(alertMessage: "There was an error posting profile", alertTitle: "Error", okTitle: "OK", proceedCompletion: {})
+                    _ = CrashLoggerHelper.hatTableErrorLog(error: error)
+                }
+            )
+        }
+        
+        func gotErrorWhenGettingApplicationToken(error: JSONParsingError) {
+            
+            CrashLoggerHelper.JSONParsingErrorLog(error: error)
+        }
+        
+        HATService.getApplicationTokenFor(
+            serviceName: "Rumpel",
+            userDomain: self.userDomain,
+            token: self.userToken,
+            resource: "https://rumpel.hubofallthings.com",
+            succesfulCallBack: gotApplicationToken,
+            failCallBack: gotErrorWhenGettingApplicationToken)
     }
     
     // MARK: - View Controller functions

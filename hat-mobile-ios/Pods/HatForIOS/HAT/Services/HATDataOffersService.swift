@@ -90,7 +90,7 @@ public class HATDataOffersService: NSObject {
 
                     let dictionaryResponse = result.dictionaryValue
                     
-                    if let claimed = dictionaryResponse["claimed"]?.stringValue {
+                    if let claimed = dictionaryResponse["status"]?.stringValue {
                         
                         succesfulCallBack(claimed, token)
                     } else {

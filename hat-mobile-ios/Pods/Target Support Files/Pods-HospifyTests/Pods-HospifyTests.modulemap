@@ -1,0 +1,6 @@
+framework module Pods_HospifyTests {
+  umbrella header "Pods-HospifyTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

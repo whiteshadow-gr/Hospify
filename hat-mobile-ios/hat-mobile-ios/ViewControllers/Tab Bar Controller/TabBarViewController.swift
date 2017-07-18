@@ -28,14 +28,20 @@ internal class TabBarViewController: UITabBarController {
         // hide back button
         self.navigationItem.hidesBackButton = true
         
-        // change tint color, the color of the selected icon in tab bar
-        self.tabBar.tintColor = .white
-        self.tabBar.barTintColor = .teal
-        
         // change navigation bar title
         self.navigationController?.navigationBar.titleTextAttributes =
             [NSForegroundColorAttributeName: UIColor.white,
              NSFontAttributeName: UIFont(name: Constants.FontNames.openSansBold, size: 21)!]
+        
+        tabBar.items?.forEach({ (item) -> Void in
+            
+            item.image = item.selectedImage?.imageWithColor(color1: .black).withRenderingMode(.alwaysOriginal)
+        })
+        
+        // change tint color, the color of the selected icon in tab bar
+        self.tabBar.tintColor = .white
+        self.tabBar.barTintColor = .teal
+        self.tabBar.backgroundColor = .black
     }
 
     override func didReceiveMemoryWarning() {

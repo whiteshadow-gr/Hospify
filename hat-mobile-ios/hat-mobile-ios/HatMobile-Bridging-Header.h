@@ -10,7 +10,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/
  */
 
-
 #ifndef HatMobile_Bridging_Header_h
 #define HatMobile_Bridging_Header_h
 
